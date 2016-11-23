@@ -1,0 +1,844 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="JAHomesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="ACCOMMODATIONS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="STREET_ADDRESS" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="CITY" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="LATITUE" Type="varchar" MaxLength="10" />
+    <Property Name="LOGITUDE" Type="varchar" MaxLength="10" />
+    <Property Name="PRICE" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="SECURITY_DEPOSIT" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="OCCUPANCY" Type="smallint" Nullable="false" />
+    <Property Name="GENDER_PREFERENCE" Type="char" MaxLength="1" Nullable="false" />
+    <Property Name="DESCRIPTION" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="WATER" Type="bit" Nullable="false" />
+    <Property Name="ELECTRICITY" Type="bit" Nullable="false" />
+    <Property Name="CABLE" Type="bit" Nullable="false" />
+    <Property Name="GAS" Type="bit" Nullable="false" />
+    <Property Name="INTERNET" Type="bit" Nullable="false" />
+    <Property Name="AVAILABILITY" Type="bit" Nullable="false" />
+    <Property Name="ENROLMENT_KEY" Type="varchar" MaxLength="10" />
+    <Property Name="TERMS_AGREEMENT" Type="nvarchar(max)" />
+    <Property Name="OWNER" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="IS_STUDENT_ACC" Type="bit" Nullable="false" />
+    <Property Name="HOUSE_BATHROOM_AMOUNT" Type="smallint" Nullable="false" />
+    <Property Name="DATE_ADDED" Type="datetime" />
+    <Property Name="IMAGE_URL" Type="varchar(max)" />
+  </EntityType>
+  <EntityType Name="aspnet_Users">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+    <Property Name="LoweredUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+    <Property Name="MobileAlias" Type="nvarchar" MaxLength="16" />
+    <Property Name="IsAnonymous" Type="bit" Nullable="false" />
+    <Property Name="LastActivityDate" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="aspnet_UsersInRoles">
+    <Key>
+      <PropertyRef Name="UserId" />
+      <PropertyRef Name="RoleId" />
+    </Key>
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="BILLS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="B_TYPE" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="B_AMOUNT" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="DESCRIPTION" Type="varchar(max)" />
+    <Property Name="DATE_ISSUED" Type="datetime" Nullable="false" />
+    <Property Name="DATE_DUE" Type="datetime" Nullable="false" />
+    <Property Name="BILL_URL" Type="varchar(max)" />
+    <Property Name="ACCOMMODATION_ID" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="COMPLAINTS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="COMPLAINER_ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="COMPLAINT" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="C_DATE" Type="datetime" Nullable="false" />
+    <Property Name="C_TIME" Type="time" Precision="7" Nullable="false" />
+  </EntityType>
+  <EntityType Name="HOUSE">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="STREET_ADDRESS" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="CITY" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PRICE" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="BED_ROOM_AMOUNT" Type="varchar" MaxLength="2" Nullable="false" />
+    <Property Name="LIVING_ROOM_AMOUNT" Type="varchar" MaxLength="2" Nullable="false" />
+    <Property Name="BATH_ROOM_AMOUNT" Type="varchar" MaxLength="2" Nullable="false" />
+    <Property Name="PURPOSE" Type="varchar" MaxLength="13" Nullable="false" />
+    <Property Name="ISFURNISHED" Type="bit" Nullable="false" />
+    <Property Name="DESCRIPTION" Type="varchar(max)" Nullable="false" />
+    <Property Name="IMAGE_URL" Type="varchar(max)" />
+    <Property Name="OWNER" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="DATE_ADDED" Type="datetime" />
+  </EntityType>
+  <EntityType Name="LAND">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="STREET_ADDRESS" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="CITY" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PURPOSE" Type="varchar" MaxLength="13" Nullable="false" />
+    <Property Name="PRICE" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="AREA" Type="varchar" MaxLength="7" Nullable="false" />
+    <Property Name="IMAGE_URL" Type="varchar(max)" />
+    <Property Name="OWNER" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="DATE_ADDED" Type="datetime" />
+    <Property Name="DESCRIPTION" Type="varchar(max)" />
+  </EntityType>
+  <EntityType Name="LANDLORDS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FIRST_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="MIDDLE_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="LAST_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="GENDER" Type="char" MaxLength="1" Nullable="false" />
+    <Property Name="CELL" Type="varchar" MaxLength="12" Nullable="false" />
+    <Property Name="EMAIL" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PICTURE_URL" Type="varchar" MaxLength="80" />
+  </EntityType>
+  <EntityType Name="MEETINGS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LANDLORD_ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LOCATION" Type="varchar" MaxLength="30" Nullable="false" />
+    <Property Name="M_DATE" Type="datetime" Nullable="false" />
+    <Property Name="M_TIME" Type="time" Precision="7" Nullable="false" />
+  </EntityType>
+  <EntityType Name="MESSAGES">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="MESSENGER_ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="RECIPIENT_ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="MESSAGE" Type="varchar(max)" Nullable="false" />
+    <Property Name="DATE" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="REQUISITION_PROPERTY_MAPPINGS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="ACCOMMODATION_ID" Type="uniqueidentifier" />
+    <Property Name="HOUSE_ID" Type="uniqueidentifier" />
+    <Property Name="LAND_ID" Type="uniqueidentifier" />
+  </EntityType>
+  <EntityType Name="REQUISITIONS">
+    <Key>
+      <PropertyRef Name="REQUISITION_ID" />
+    </Key>
+    <Property Name="REQUISITION_ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="R_DATE" Type="datetime" Nullable="false" />
+    <Property Name="FIRST_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="LAST_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="EMAIL" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="CELL" Type="varchar" MaxLength="12" Nullable="false" />
+    <Property Name="ACCEPTED" Type="bit" Nullable="false" />
+    <Property Name="GENDER" Type="char" MaxLength="1" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SUBSCRIPTIONS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LANDLORD_ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="START_DATE" Type="datetime" Nullable="false" />
+    <Property Name="END_DATE" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="TENNANTS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="DOB" Type="datetime" Nullable="false" />
+    <Property Name="FIRST_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="MIDDLE_NAME" Type="varchar" MaxLength="40" />
+    <Property Name="LAST_NAME" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="GENDER" Type="char" MaxLength="1" Nullable="false" />
+    <Property Name="STREET_ADDRESS" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="CITY" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="CELL" Type="varchar" MaxLength="12" Nullable="false" />
+    <Property Name="EMAIL" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="UNIVERSITY" Type="varchar" MaxLength="40" />
+    <Property Name="PROGRAMME_NAME" Type="varchar" MaxLength="40" />
+    <Property Name="PROGRAMME_START_DATE" Type="datetime" />
+    <Property Name="PROGRAMME_END_DATE" Type="datetime" />
+    <Property Name="SETTLEMENT_PERIOD" Type="smallint" />
+    <Property Name="DESCRIPTION" Type="nvarchar(max)" />
+    <Property Name="PICTURE_URL" Type="varchar" MaxLength="80" />
+    <Property Name="ACCOMMODATION_ID" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <Association Name="accommodation_owner">
+    <End Role="LANDLORDS" Type="Self.LANDLORDS" Multiplicity="1" />
+    <End Role="ACCOMMODATIONS" Type="Self.ACCOMMODATIONS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LANDLORDS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="ACCOMMODATIONS">
+        <PropertyRef Name="OWNER" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__aspnet_Us__UserI__11158940">
+    <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
+    <End Role="aspnet_UsersInRoles" Type="Self.aspnet_UsersInRoles" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="aspnet_Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="aspnet_UsersInRoles">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_accommodation_id">
+    <End Role="ACCOMMODATIONS" Type="Self.ACCOMMODATIONS" Multiplicity="1" />
+    <End Role="TENNANTS" Type="Self.TENNANTS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ACCOMMODATIONS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TENNANTS">
+        <PropertyRef Name="ACCOMMODATION_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ACCOMMODATION_ID_BILLS_ID">
+    <End Role="ACCOMMODATIONS" Type="Self.ACCOMMODATIONS" Multiplicity="1" />
+    <End Role="BILLS" Type="Self.BILLS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ACCOMMODATIONS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="BILLS">
+        <PropertyRef Name="ACCOMMODATION_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_HOUSE_OWNER">
+    <End Role="LANDLORDS" Type="Self.LANDLORDS" Multiplicity="1" />
+    <End Role="HOUSE" Type="Self.HOUSE" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LANDLORDS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="HOUSE">
+        <PropertyRef Name="OWNER" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_LAND_OWNER">
+    <End Role="LANDLORDS" Type="Self.LANDLORDS" Multiplicity="1" />
+    <End Role="LAND" Type="Self.LAND" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LANDLORDS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="LAND">
+        <PropertyRef Name="OWNER" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_landlord_id">
+    <End Role="LANDLORDS" Type="Self.LANDLORDS" Multiplicity="1" />
+    <End Role="MEETINGS" Type="Self.MEETINGS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LANDLORDS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="MEETINGS">
+        <PropertyRef Name="LANDLORD_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_requisition_accommodation_id">
+    <End Role="ACCOMMODATIONS" Type="Self.ACCOMMODATIONS" Multiplicity="0..1" />
+    <End Role="REQUISITION_PROPERTY_MAPPINGS" Type="Self.REQUISITION_PROPERTY_MAPPINGS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ACCOMMODATIONS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="REQUISITION_PROPERTY_MAPPINGS">
+        <PropertyRef Name="ACCOMMODATION_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_requisition_house_id">
+    <End Role="HOUSE" Type="Self.HOUSE" Multiplicity="0..1" />
+    <End Role="REQUISITION_PROPERTY_MAPPINGS" Type="Self.REQUISITION_PROPERTY_MAPPINGS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="HOUSE">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="REQUISITION_PROPERTY_MAPPINGS">
+        <PropertyRef Name="HOUSE_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_requisition_id">
+    <End Role="REQUISITION_PROPERTY_MAPPINGS" Type="Self.REQUISITION_PROPERTY_MAPPINGS" Multiplicity="1" />
+    <End Role="REQUISITIONS" Type="Self.REQUISITIONS" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="REQUISITION_PROPERTY_MAPPINGS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="REQUISITIONS">
+        <PropertyRef Name="REQUISITION_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_requisition_land_id">
+    <End Role="LAND" Type="Self.LAND" Multiplicity="0..1" />
+    <End Role="REQUISITION_PROPERTY_MAPPINGS" Type="Self.REQUISITION_PROPERTY_MAPPINGS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LAND">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="REQUISITION_PROPERTY_MAPPINGS">
+        <PropertyRef Name="LAND_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_subscriptions_landlord_id">
+    <End Role="LANDLORDS" Type="Self.LANDLORDS" Multiplicity="1" />
+    <End Role="SUBSCRIPTIONS" Type="Self.SUBSCRIPTIONS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LANDLORDS">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="SUBSCRIPTIONS">
+        <PropertyRef Name="LANDLORD_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Function Name="aspnet_AnyDataInTables" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="TablesToCheck" Type="int" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Applications_CreateApplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_CheckSchemaVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Feature" Type="nvarchar" Mode="In" />
+    <Parameter Name="CompatibleSchemaVersion" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_ChangePasswordQuestionAndAnswer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="NewPasswordQuestion" Type="nvarchar" Mode="In" />
+    <Parameter Name="NewPasswordAnswer" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_CreateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Password" Type="nvarchar" Mode="In" />
+    <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+    <Parameter Name="Email" Type="nvarchar" Mode="In" />
+    <Parameter Name="PasswordQuestion" Type="nvarchar" Mode="In" />
+    <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+    <Parameter Name="IsApproved" Type="bit" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="CreateDate" Type="datetime" Mode="In" />
+    <Parameter Name="UniqueEmail" Type="int" Mode="In" />
+    <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+    <Parameter Name="UserId" Type="uniqueidentifier" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_Membership_FindUsersByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="EmailToMatch" Type="nvarchar" Mode="In" />
+    <Parameter Name="PageIndex" Type="int" Mode="In" />
+    <Parameter Name="PageSize" Type="int" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_FindUsersByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserNameToMatch" Type="nvarchar" Mode="In" />
+    <Parameter Name="PageIndex" Type="int" Mode="In" />
+    <Parameter Name="PageSize" Type="int" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetAllUsers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="PageIndex" Type="int" Mode="In" />
+    <Parameter Name="PageSize" Type="int" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetNumberOfUsersOnline" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="MinutesSinceLastInActive" Type="int" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="MaxInvalidPasswordAttempts" Type="int" Mode="In" />
+    <Parameter Name="PasswordAttemptWindow" Type="int" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetPasswordWithFormat" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UpdateLastLoginActivityDate" Type="bit" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetUserByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Email" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetUserByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="UpdateLastActivity" Type="bit" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_GetUserByUserId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="UpdateLastActivity" Type="bit" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_ResetPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="NewPassword" Type="nvarchar" Mode="In" />
+    <Parameter Name="MaxInvalidPasswordAttempts" Type="int" Mode="In" />
+    <Parameter Name="PasswordAttemptWindow" Type="int" Mode="In" />
+    <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+    <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_SetPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="NewPassword" Type="nvarchar" Mode="In" />
+    <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_UnlockUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_UpdateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Email" Type="nvarchar" Mode="In" />
+    <Parameter Name="Comment" Type="ntext" Mode="In" />
+    <Parameter Name="IsApproved" Type="bit" Mode="In" />
+    <Parameter Name="LastLoginDate" Type="datetime" Mode="In" />
+    <Parameter Name="LastActivityDate" Type="datetime" Mode="In" />
+    <Parameter Name="UniqueEmail" Type="int" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Membership_UpdateUserInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="IsPasswordCorrect" Type="bit" Mode="In" />
+    <Parameter Name="UpdateLastLoginActivityDate" Type="bit" Mode="In" />
+    <Parameter Name="MaxInvalidPasswordAttempts" Type="int" Mode="In" />
+    <Parameter Name="PasswordAttemptWindow" Type="int" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="LastLoginDate" Type="datetime" Mode="In" />
+    <Parameter Name="LastActivityDate" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Paths_CreatePath" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="PathId" Type="uniqueidentifier" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_Personalization_GetApplicationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAdministration_DeleteAllState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="AllUsersScope" Type="bit" Mode="In" />
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Count" Type="int" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAdministration_FindState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="AllUsersScope" Type="bit" Mode="In" />
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="PageIndex" Type="int" Mode="In" />
+    <Parameter Name="PageSize" Type="int" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAdministration_GetCountOfState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Count" Type="int" Mode="InOut" />
+    <Parameter Name="AllUsersScope" Type="bit" Mode="In" />
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAdministration_ResetSharedState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Count" Type="int" Mode="InOut" />
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAdministration_ResetUserState" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Count" Type="int" Mode="InOut" />
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAllUsers_GetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAllUsers_ResetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationAllUsers_SetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="PageSettings" Type="image" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationPerUser_GetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationPerUser_ResetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_PersonalizationPerUser_SetPageSettings" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Path" Type="nvarchar" Mode="In" />
+    <Parameter Name="PageSettings" Type="image" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Profile_DeleteInactiveProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="ProfileAuthOptions" Type="int" Mode="In" />
+    <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Profile_DeleteProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserNames" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Profile_GetNumberOfInactiveProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="ProfileAuthOptions" Type="int" Mode="In" />
+    <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Profile_GetProfiles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="ProfileAuthOptions" Type="int" Mode="In" />
+    <Parameter Name="PageIndex" Type="int" Mode="In" />
+    <Parameter Name="PageSize" Type="int" Mode="In" />
+    <Parameter Name="UserNameToMatch" Type="nvarchar" Mode="In" />
+    <Parameter Name="InactiveSinceDate" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Profile_GetProperties" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Profile_SetProperties" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="PropertyNames" Type="ntext" Mode="In" />
+    <Parameter Name="PropertyValuesString" Type="ntext" Mode="In" />
+    <Parameter Name="PropertyValuesBinary" Type="image" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="IsUserAnonymous" Type="bit" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_RegisterSchemaVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Feature" Type="nvarchar" Mode="In" />
+    <Parameter Name="CompatibleSchemaVersion" Type="nvarchar" Mode="In" />
+    <Parameter Name="IsCurrentVersion" Type="bit" Mode="In" />
+    <Parameter Name="RemoveIncompatibleSchema" Type="bit" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Roles_CreateRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Roles_DeleteRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+    <Parameter Name="DeleteOnlyIfRoleIsEmpty" Type="bit" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Roles_GetAllRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Roles_RoleExists" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Setup_RemoveAllRoleMembers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="name" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Setup_RestorePermissions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="name" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_UnRegisterSchemaVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Feature" Type="nvarchar" Mode="In" />
+    <Parameter Name="CompatibleSchemaVersion" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_Users_CreateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationId" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="IsUserAnonymous" Type="bit" Mode="In" />
+    <Parameter Name="LastActivityDate" Type="datetime" Mode="In" />
+    <Parameter Name="UserId" Type="uniqueidentifier" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_Users_DeleteUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="TablesToDeleteFrom" Type="int" Mode="In" />
+    <Parameter Name="NumTablesDeletedFrom" Type="int" Mode="InOut" />
+  </Function>
+  <Function Name="aspnet_UsersInRoles_AddUsersToRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserNames" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleNames" Type="nvarchar" Mode="In" />
+    <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+  </Function>
+  <Function Name="aspnet_UsersInRoles_FindUsersInRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserNameToMatch" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_UsersInRoles_GetRolesForUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_UsersInRoles_GetUsersInRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_UsersInRoles_IsUserInRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleName" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_UsersInRoles_RemoveUsersFromRoles" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserNames" Type="nvarchar" Mode="In" />
+    <Parameter Name="RoleNames" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="aspnet_WebEvent_LogEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="EventId" Type="char" Mode="In" />
+    <Parameter Name="EventTimeUtc" Type="datetime" Mode="In" />
+    <Parameter Name="EventTime" Type="datetime" Mode="In" />
+    <Parameter Name="EventType" Type="nvarchar" Mode="In" />
+    <Parameter Name="EventSequence" Type="decimal" Mode="In" />
+    <Parameter Name="EventOccurrence" Type="decimal" Mode="In" />
+    <Parameter Name="EventCode" Type="int" Mode="In" />
+    <Parameter Name="EventDetailCode" Type="int" Mode="In" />
+    <Parameter Name="Message" Type="nvarchar" Mode="In" />
+    <Parameter Name="ApplicationPath" Type="nvarchar" Mode="In" />
+    <Parameter Name="ApplicationVirtualPath" Type="nvarchar" Mode="In" />
+    <Parameter Name="MachineName" Type="nvarchar" Mode="In" />
+    <Parameter Name="RequestUrl" Type="nvarchar" Mode="In" />
+    <Parameter Name="ExceptionType" Type="nvarchar" Mode="In" />
+    <Parameter Name="Details" Type="ntext" Mode="In" />
+  </Function>
+  <Function Name="sp_get_requisitions" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="EMAIL" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="sp_get_tennants_partial_info" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="landlord_id" Type="uniqueidentifier" Mode="In" />
+  </Function>
+  <Function Name="sp_insert_accommodation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="street_address" Type="varchar" Mode="In" />
+    <Parameter Name="city" Type="varchar" Mode="In" />
+    <Parameter Name="parish" Type="varchar" Mode="In" />
+    <Parameter Name="latitude" Type="varchar" Mode="In" />
+    <Parameter Name="longitude" Type="varchar" Mode="In" />
+    <Parameter Name="price" Type="decimal" Mode="In" />
+    <Parameter Name="security_deposit" Type="decimal" Mode="In" />
+    <Parameter Name="occupancy" Type="smallint" Mode="In" />
+    <Parameter Name="gender_preference" Type="char" Mode="In" />
+    <Parameter Name="description" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="water" Type="bit" Mode="In" />
+    <Parameter Name="electricity" Type="bit" Mode="In" />
+    <Parameter Name="cable" Type="bit" Mode="In" />
+    <Parameter Name="gas" Type="bit" Mode="In" />
+    <Parameter Name="internet" Type="bit" Mode="In" />
+    <Parameter Name="availability" Type="bit" Mode="In" />
+    <Parameter Name="enrolment_key" Type="varchar" Mode="In" />
+    <Parameter Name="image_url" Type="varchar" Mode="In" />
+    <Parameter Name="terms_agreement" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="owner" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="is_student_acc" Type="bit" Mode="In" />
+    <Parameter Name="house_bathroom_amount" Type="smallint" Mode="In" />
+  </Function>
+  <Function Name="sp_insert_bill" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="b_type" Type="varchar" Mode="In" />
+    <Parameter Name="b_amount" Type="decimal" Mode="In" />
+    <Parameter Name="description" Type="varchar(max)" Mode="In" />
+    <Parameter Name="date_issued" Type="date" Mode="In" />
+    <Parameter Name="date_due" Type="date" Mode="In" />
+    <Parameter Name="accommodation_id" Type="uniqueidentifier" Mode="In" />
+  </Function>
+  <Function Name="sp_insert_house" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="street_address" Type="varchar" Mode="In" />
+    <Parameter Name="city" Type="varchar" Mode="In" />
+    <Parameter Name="parish" Type="varchar" Mode="In" />
+    <Parameter Name="price" Type="decimal" Mode="In" />
+    <Parameter Name="bed_room_amount" Type="varchar" Mode="In" />
+    <Parameter Name="living_room_amount" Type="varchar" Mode="In" />
+    <Parameter Name="bath_room_amount" Type="varchar" Mode="In" />
+    <Parameter Name="purpose" Type="varchar" Mode="In" />
+    <Parameter Name="is_furnished" Type="bit" Mode="In" />
+    <Parameter Name="description" Type="varchar(max)" Mode="In" />
+    <Parameter Name="image_url" Type="varchar(max)" Mode="In" />
+    <Parameter Name="owner" Type="uniqueidentifier" Mode="In" />
+  </Function>
+  <Function Name="sp_insert_land" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="street_address" Type="varchar" Mode="In" />
+    <Parameter Name="city" Type="varchar" Mode="In" />
+    <Parameter Name="parish" Type="varchar" Mode="In" />
+    <Parameter Name="purpose" Type="varchar" Mode="In" />
+    <Parameter Name="price" Type="decimal" Mode="In" />
+    <Parameter Name="area" Type="varchar" Mode="In" />
+    <Parameter Name="description" Type="varchar(max)" Mode="In" />
+    <Parameter Name="image_url" Type="varchar(max)" Mode="In" />
+    <Parameter Name="owner" Type="uniqueidentifier" Mode="In" />
+  </Function>
+  <Function Name="sp_insert_landlord" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="first_name" Type="varchar" Mode="In" />
+    <Parameter Name="middle_name" Type="varchar" Mode="In" />
+    <Parameter Name="last_name" Type="varchar" Mode="In" />
+    <Parameter Name="gender" Type="char" Mode="In" />
+    <Parameter Name="cell" Type="varchar" Mode="In" />
+    <Parameter Name="email" Type="varchar" Mode="In" />
+    <Parameter Name="picture_url" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="sp_insert_tennants" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="accommodation_id" Type="varchar(max)" Mode="In" />
+    <Parameter Name="first_name" Type="varchar" Mode="In" />
+    <Parameter Name="last_name" Type="varchar" Mode="In" />
+    <Parameter Name="gender" Type="char" Mode="In" />
+    <Parameter Name="dob" Type="date" Mode="In" />
+    <Parameter Name="street_address" Type="varchar" Mode="In" />
+    <Parameter Name="city" Type="varchar" Mode="In" />
+    <Parameter Name="parish" Type="varchar" Mode="In" />
+    <Parameter Name="cell" Type="varchar" Mode="In" />
+    <Parameter Name="email" Type="varchar" Mode="In" />
+    <Parameter Name="university" Type="varchar" Mode="In" />
+    <Parameter Name="programme_name" Type="varchar" Mode="In" />
+    <Parameter Name="programme_start_date" Type="date" Mode="In" />
+    <Parameter Name="programme_end_date" Type="date" Mode="In" />
+    <Parameter Name="settlement_period" Type="smallint" Mode="In" />
+    <Parameter Name="description" Type="nvarchar(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_make_requisition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="property_id" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="first_name" Type="varchar" Mode="In" />
+    <Parameter Name="last_name" Type="varchar" Mode="In" />
+    <Parameter Name="gender" Type="char" Mode="In" />
+    <Parameter Name="email" Type="varchar" Mode="In" />
+    <Parameter Name="cell" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="sp_request_reply" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="accommodationID" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="cell" Type="varchar" Mode="In" />
+    <Parameter Name="answer" Type="bit" Mode="In" />
+  </Function>
+  <Function Name="sp_update_bill_pic_url" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="accommodation_id" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="bill_url" Type="varchar(max)" Mode="In" />
+  </Function>
+  <EntityContainer Name="JAHomesModelStoreContainer">
+    <EntitySet Name="ACCOMMODATIONS" EntityType="Self.ACCOMMODATIONS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="aspnet_Users" EntityType="Self.aspnet_Users" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="aspnet_UsersInRoles" EntityType="Self.aspnet_UsersInRoles" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="BILLS" EntityType="Self.BILLS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="COMPLAINTS" EntityType="Self.COMPLAINTS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="HOUSE" EntityType="Self.HOUSE" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="LAND" EntityType="Self.LAND" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="LANDLORDS" EntityType="Self.LANDLORDS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="MEETINGS" EntityType="Self.MEETINGS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="MESSAGES" EntityType="Self.MESSAGES" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="REQUISITION_PROPERTY_MAPPINGS" EntityType="Self.REQUISITION_PROPERTY_MAPPINGS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="REQUISITIONS" EntityType="Self.REQUISITIONS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SUBSCRIPTIONS" EntityType="Self.SUBSCRIPTIONS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="TENNANTS" EntityType="Self.TENNANTS" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="accommodation_owner" Association="Self.accommodation_owner">
+      <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+      <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
+    </AssociationSet>
+    <AssociationSet Name="FK__aspnet_Us__UserI__11158940" Association="Self.FK__aspnet_Us__UserI__11158940">
+      <End Role="aspnet_Users" EntitySet="aspnet_Users" />
+      <End Role="aspnet_UsersInRoles" EntitySet="aspnet_UsersInRoles" />
+    </AssociationSet>
+    <AssociationSet Name="fk_accommodation_id" Association="Self.fk_accommodation_id">
+      <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
+      <End Role="TENNANTS" EntitySet="TENNANTS" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ACCOMMODATION_ID_BILLS_ID" Association="Self.FK_ACCOMMODATION_ID_BILLS_ID">
+      <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
+      <End Role="BILLS" EntitySet="BILLS" />
+    </AssociationSet>
+    <AssociationSet Name="FK_HOUSE_OWNER" Association="Self.FK_HOUSE_OWNER">
+      <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+      <End Role="HOUSE" EntitySet="HOUSE" />
+    </AssociationSet>
+    <AssociationSet Name="FK_LAND_OWNER" Association="Self.FK_LAND_OWNER">
+      <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+      <End Role="LAND" EntitySet="LAND" />
+    </AssociationSet>
+    <AssociationSet Name="fk_landlord_id" Association="Self.fk_landlord_id">
+      <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+      <End Role="MEETINGS" EntitySet="MEETINGS" />
+    </AssociationSet>
+    <AssociationSet Name="fk_requisition_accommodation_id" Association="Self.fk_requisition_accommodation_id">
+      <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
+      <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+    </AssociationSet>
+    <AssociationSet Name="fk_requisition_house_id" Association="Self.fk_requisition_house_id">
+      <End Role="HOUSE" EntitySet="HOUSE" />
+      <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+    </AssociationSet>
+    <AssociationSet Name="fk_requisition_id" Association="Self.fk_requisition_id">
+      <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+      <End Role="REQUISITIONS" EntitySet="REQUISITIONS" />
+    </AssociationSet>
+    <AssociationSet Name="fk_requisition_land_id" Association="Self.fk_requisition_land_id">
+      <End Role="LAND" EntitySet="LAND" />
+      <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+    </AssociationSet>
+    <AssociationSet Name="fk_subscriptions_landlord_id" Association="Self.fk_subscriptions_landlord_id">
+      <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+      <End Role="SUBSCRIPTIONS" EntitySet="SUBSCRIPTIONS" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

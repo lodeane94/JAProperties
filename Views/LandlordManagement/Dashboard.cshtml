@@ -1,0 +1,205 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+@section pageScript
+{
+
+    (function(){
+    $('#dashboard').attr('class','active');
+    })();
+}
+@using SS.Code
+@Html.Partial("_ModelManagement")
+@{
+    //displays the message for property removal error
+    if (Session["propertyRemovedMesssage"] != null) 
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>@Session["propertyRemovedMesssage"]</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["propertyRemovedMesssage"] = null;
+    }
+    //displays registration error
+    if (Session["userSignedInCheck"] != null) 
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>@Session["userSignedInCheck"]</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["userSignedInCheck"] = null;
+    }
+    //displays registration error
+    if (Session["registrationErrorMessage"] != null) 
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>@Session["registrationErrorMessage"]</strong> <span class="glyphicon glyphicon-check"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["registrationErrorMessage"] = null;
+    }
+    //displays registration success
+    if (Session["propertyUpdateSuccess"] != null) 
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>@Session["propertyUpdateSuccess"]</strong> <span class="glyphicon glyphicon-check"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["propertyUpdateSuccess"] = null;
+    }
+    //displays registration success
+    if (Session["isRegistrationComplete"] != null) 
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>Your property has been uploaded successfully</strong> <span class="glyphicon glyphicon-check"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["isRegistrationComplete"] = null;
+    }
+    //displays cancelled request success
+    if (Session["cancelRequestCheck"] != null)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>@Session["cancelRequestCheck"]</strong> <span class="glyphicon glyphicon-check"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["cancelRequestCheck"] = null;
+    }
+    //displays acceptance success
+    if (Session["acceptedRequestCheck"] != null)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>@Session["acceptedRequestCheck"]</strong> <span class="glyphicon glyphicon-check"></span>
+                        <em>View history to see the requestee information. Call requestee if necessary.</em>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["acceptedRequestCheck"] = null;
+    }
+}
+@section quickAction
+{
+    @{
+        <aside id="quick-action">
+            <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-pushpin"></span>Quick Actions</div>
+            <ul>
+                <li>
+                    <a id="messages" href="~/messages">
+                        <span class="glyph-style glyphicon glyphicon-inbox"></span>Messages
+                        <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                    <ul>
+                        <li>
+                            <a id="new-message" href="">
+                                <span class="glyph-style glyphicon glyphicon-pencil"></span>Compose New
+                            </a>
+                        </li>
+                        <li>
+                            <a id="broadcast-message" href="~/broadcast-message">
+                                <span class="glyph-style glyphicon glyphicon-export"></span>Broadcast New
+                            </a>
+                        </li>
+                        <li>
+                            <a id="view-all-messages" href="~/view-all-messages">
+                                <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @if (ViewBag.hasAccommodation != 0)
+                {
+                    <li>
+                        <a id="utility-bills" href="~/utility-bills">
+                            <span class="glyph-style glyphicon glyphicon-flash"></span>Utility Bills
+                            <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a id="new-bill" href="~/new-bill">
+                                    <span class="glyph-style glyphicon glyphicon-plus-sign"></span>Add New
+                                </a>
+                            </li>
+                            <li>
+                                <a id="view-all-bills" href="~/view-all-bills">
+                                    <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </aside>
+    }
+}
+@section tennants
+{
+    @if (ViewBag.hasAccommodation != 0)
+    {
+        <aside id="quick-action">
+            <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-user"></span><lab>Tennants</div>
+            <ul>
+                @{
+                    /*foreach (var tennant in UtilityHelper.loadTennants(HttpContext.Current.User.Identity.Name))
+                    {
+                        <li>
+                            <a id="tennant-management" href="@tennant.ID">
+                                @tennant.FirstName
+                            </a>
+                        </li>
+                    }*/
+                }
+            </ul>
+            <h3>Coming Soon ....</h3>
+        </aside>
+    }
+}
+
+<div id="angular-main" ng-app="dashboardApp">
+    <input type="hidden" id="hasAccommodation" value="@ViewBag.hasAccommodation" />
+    <input type="hidden" id="hasHouse" value="@ViewBag.hasHouse" />
+    <input type="hidden" id="hasLand" value="@ViewBag.hasLand" />
+    <ng-view></ng-view>
+</div>

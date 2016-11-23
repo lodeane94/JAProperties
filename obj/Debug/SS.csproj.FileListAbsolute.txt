@@ -1,0 +1,191 @@
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\csc.exe
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\vbc.exe
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\VBCSCompiler.exe
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\SS.dll.config
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\SS.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\SS.pdb
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\EntityFramework.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\EntityFramework.SqlServer.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Helpers.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Mvc.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Razor.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Deployment.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Webpages.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Razor.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\EntityFramework.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\EntityFramework.SqlServer.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Razor.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Webpages.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Deployment.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Razor.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Helpers.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Mvc.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\obj\Debug\SS.csprojResolveAssemblyReference.cache
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\obj\Debug\SS.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\obj\Debug\SS.pdb
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\Newtonsoft.Json.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Net.Http.Formatting.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Http.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Http.WebHost.dll
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\Newtonsoft.Json.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Net.Http.Formatting.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Http.xml
+C:\Users\lodeane\documents\visual studio 2015\Projects\SS\SS\bin\System.Web.Http.WebHost.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\csc.exe
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\vbc.exe
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\VBCSCompiler.exe
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\SS.dll.config
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\SS.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\SS.pdb
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\EntityFramework.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\EntityFramework.SqlServer.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\FluentValidationNA.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\Newtonsoft.Json.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Linq.Dynamic.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Net.Http.Formatting.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Helpers.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Http.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Http.WebHost.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Mvc.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Razor.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Webpages.Deployment.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Webpages.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Webpages.Razor.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\EntityFramework.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\EntityFramework.SqlServer.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\FluentValidationNA.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\Newtonsoft.Json.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Linq.Dynamic.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Net.Http.Formatting.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Http.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Http.WebHost.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Razor.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Webpages.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Webpages.Deployment.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Webpages.Razor.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Helpers.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\bin\System.Web.Mvc.xml
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\obj\Debug\SS.csprojResolveAssemblyReference.cache
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\obj\Debug\SS.dll
+C:\Users\lodeane\Documents\Visual Studio 2013\Projects\SS\SS\obj\Debug\SS.pdb
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\obj\Debug\SS.csprojResolveAssemblyReference.cache
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\obj\Debug\SS.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\obj\Debug\SS.pdb
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\csc.exe
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\vbc.exe
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\VBCSCompiler.exe
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\SS.dll.config
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\SS.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\SS.pdb
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\EntityFramework.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\EntityFramework.SqlServer.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\FluentValidationNA.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\Newtonsoft.Json.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Linq.Dynamic.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Net.Http.Formatting.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Helpers.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Http.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Http.WebHost.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Mvc.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Razor.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Deployment.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Webpages.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Razor.dll
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\EntityFramework.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\EntityFramework.SqlServer.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\FluentValidationNA.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\Newtonsoft.Json.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Linq.Dynamic.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Net.Http.Formatting.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Http.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Http.WebHost.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Razor.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Webpages.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Deployment.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Webpages.Razor.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Helpers.xml
+C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\bin\System.Web.Mvc.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\csc.exe
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\vbc.exe
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\VBCSCompiler.exe
+C:\Users\lkelly\JAProperties\SS\SS\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\lkelly\JAProperties\SS\SS\bin\SS.dll.config
+C:\Users\lkelly\JAProperties\SS\SS\bin\SS.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\SS.pdb
+C:\Users\lkelly\JAProperties\SS\SS\bin\EntityFramework.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\EntityFramework.SqlServer.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\FluentValidationNA.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\Newtonsoft.Json.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Linq.Dynamic.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Net.Http.Formatting.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Helpers.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Http.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Http.WebHost.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Mvc.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Razor.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Webpages.Deployment.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Webpages.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Webpages.Razor.dll
+C:\Users\lkelly\JAProperties\SS\SS\bin\EntityFramework.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\EntityFramework.SqlServer.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\FluentValidationNA.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\Newtonsoft.Json.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Linq.Dynamic.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Net.Http.Formatting.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Http.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Http.WebHost.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Razor.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Webpages.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Webpages.Deployment.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Webpages.Razor.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Helpers.xml
+C:\Users\lkelly\JAProperties\SS\SS\bin\System.Web.Mvc.xml
+C:\Users\lkelly\JAProperties\SS\SS\obj\Debug\SS.csprojResolveAssemblyReference.cache
+C:\Users\lkelly\JAProperties\SS\SS\obj\Debug\SS.dll
+C:\Users\lkelly\JAProperties\SS\SS\obj\Debug\SS.pdb

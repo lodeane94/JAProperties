@@ -1,0 +1,69 @@
+﻿@model SS.Models.REQUISITIONS
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="propertyModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <div class="property-details table-responsive">
+                            <div class="ctnr-headers"><label>Property Information</label></div>
+                            <table class="table-condensed">
+                                <tr>
+                                    <td>
+                                        <div class="image-container">
+                                            <img style="width: 180px; height: 180px;" id="" class="modal-image" src="" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="image-details">
+                                            <img class="ajax-load" style="display:none" src="~/Content/ajax-loader-dark.gif" />
+                                            <!--ajax content-->
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            </div>
+                        </div>
+                        <div class="modal-body hide">
+                            @using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post))
+                            { 
+                                <div class="ctnr-headers"><label>Request Property</label></div>
+                                    <table id="personal-information" class="table-condensed">
+                                        <tr>
+                                            <td>First Name</td>
+                                            <td>@Html.TextBoxFor(model => model.FIRST_NAME, new { @required = true }) @Html.ValidationMessageFor(model => model.FIRST_NAME)</td>
+                                            <td>Last Name</td>
+                                            <td>@Html.TextBoxFor(model => model.LAST_NAME, new { @required = true }) @Html.ValidationMessageFor(model => model.LAST_NAME)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Gender</td>
+                                            <td>
+                                                M @Html.RadioButtonFor(model => model.GENDER, "M", new { @required = true })
+                                                F @Html.RadioButtonFor(model => model.GENDER, "F", new { @required = true })
+                                                @Html.ValidationMessageFor(model => model.GENDER)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cell Number</td>
+                                            <td>@Html.TextBoxFor(model => model.CELL, new { @required = true }) @Html.ValidationMessageFor(model => model.CELL)</td>
+                                            <td>Email</td>
+                                            <td>@Html.TextBoxFor(model => model.EMAIL, new { @required = true })</td>
+                                        </tr>
+                                    </table>
+                                    @Html.Hidden("propertyID")
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <p class="text-warning"><small>If you click close, your selection will be lost.</small></p>
+                            <button type="button" class="btn btn-warning">Request This Property</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <input class="btn btn-primary hide" type="submit" value="Request Property" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

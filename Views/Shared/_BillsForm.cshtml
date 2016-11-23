@@ -1,0 +1,52 @@
+﻿@model SS.Models.BILLS
+<div id="bills-container" class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <a id="new-bill" href="">Add New Bill</a>
+        </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <form enctype="multipart/form-data"></form>
+    <input formenctype="multipart/form-data" />
+    <div id="utility-col" style="display:none;" class="col-md-10">
+        @using (Ajax.BeginForm("BillSubmission", "LandlordManagement",
+                    new AjaxOptions
+                    {
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "bills-container",
+                        OnSuccess = "billSubmissionOnSuccess"
+                    }))
+        {
+            @Html.HiddenFor(model => model.B_TYPE)
+            <table class="table-condensed">
+                <tr>
+                    <td>Date Issued</td>
+                    <td>@Html.TextBoxFor(model => model.DATE_ISSUED, new { @class = "form-control" })</td>
+                </tr>
+                <tr>
+                    <td>Date Due</td>
+                    <td>@Html.TextBoxFor(model => model.DATE_DUE, new { @class = "form-control" })</td>
+                </tr>
+                <tr>
+                    <td>Bill Amount</td>
+                    <td>@Html.TextBoxFor(model => model.B_AMOUNT, new { @class = "form-control" })</td>
+                </tr>
+                <tr>
+                    <td>Message to tennants</td>
+                    <td colspan="2">@Html.TextAreaFor(model => model.DESCRIPTION, 10, 40, new { @class = "form-control" })</td>
+                </tr>
+                <tr>
+                    <td>Image of bill</td>
+                    <td><input id="bill_image" name="bill_image" type="file"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input id="bills-cancel" class="btn pull-right" type="button" value="Cancel"></td>
+                    <td><input id="bills-submit" class="btn pull-right" type="submit" value="Post Bill"></td>
+                </tr>
+            </table>
+        }
+    </div>
+</div>
+</div>

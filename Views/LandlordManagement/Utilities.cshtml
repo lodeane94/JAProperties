@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = "Utilities";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+@section utilities
+{
+    <aside id="Utilities">
+        <div class="s-header">Utilities</div>
+        <ul>
+            <li><a href="Electricity">Electricity</a></li>
+            <li><a href="Internet">Internet</a></li>
+            <li><a href="Water">Water</a></li>
+            <li><a href="Gas">Gas</a></li>
+            <li><a href="Cable">Cable</a></li>
+        </ul>
+    </aside>
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table-striped" width="100%">
+                <tr>
+                    <th>Bill Type</th>
+                    <th>Bill Amount</th>
+                    <th>Date Issued</th>
+                    <th>Date Due</th>
+                </tr>
+                @foreach (var bill in ViewBag.billsInformation)
+                {
+                    <tr>
+                        <td>@bill.BType</td>
+                        <td>@bill.BAmount</td>
+                        <td>@bill.DateIssued</td>
+                        <td>@bill.DateDue</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

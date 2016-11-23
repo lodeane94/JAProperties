@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Jamprops - Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pageScript
+{
+    (function(){
+    $('#home').attr('class','active');
+    })();
+
+    (function(){
+    $.ajax({
+    url: 'getRoomPartialView',
+    type: 'Get',
+    beforeSend: function () {
+    $('#ajax-holder').fadeIn();
+    },
+    success: function (data) {
+    $('#ajax-holder').fadeOut();
+    $('#property-type').html(data);
+    },
+    complete:function(){
+    $('form').removeData('validator');
+    $.validator.unobtrusive.parse($('form'));
+    }
+    });
+
+    })();
+
+}
+@{
+    if (Session["registrationErrorMessage"] != null)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-danger" style="display:none;">
+                        <strong>@Session["registrationErrorMessage"].ToString()</strong> <span class="glyphicon glyphicon-exclamation-sign"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["registrationErrorMessage"] = null;
+    }
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="ctnr-headers"><label>Ready to advertise ?</label></div>
+            <div class="ctnr">
+                <div class="ctnr-info">
+                    <div class="ctnr-headers"><label>How To Advertise</label></div>
+                    <ul>
+                        <li><em>To advertise your property using the registration process:</em> simply fill out the form below your property will be added instantly</li>
+                        <li>
+                            <em>To advertise your property using email:</em>
+                            this requires that you send information about your property to this email address:jamprops@hotmail.com;
+                            with the following information:
+                            <ul>
+                                <li>Your name(required)</li>
+                                <li>The address of your property(required)</li>
+                                <li>Your contact number(s)(required)</li>
+                                <li>Your email address(not required)</li>
+                                <li>Any details you think the public needs to know about your property Eg. Cost, security deposit,any facilities included etc.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="ctnr-headers"><label>Pricing</label></div>
+                    The cost to advertise your property is $0.00! that is correct, it's free to advertise your property.
+                    <div class="ctnr-headers"><label>Advertisment Period</label></div>
+                    Your property will be advertised for a period of two(2) month after which your property will be deleted
+                    if the property is still available. You will be required to signin and add your property once again if you want to upload
+                    this same property or if you want to advertise another property.
+                </div>
+            </div>
+            <br />
+            <div class="panel panel-default">
+                <div class="panel-heading"><div class="ctnr-headers">Fill out this form</div></div>
+                <div class="panel-body">
+                    <div id="landlord-info">@Html.Partial("_OwnerInformationRegistration")</div>
+                    <div id="property-type"><div id="ajax-holder" style="display:none;margin-left:45%;"><img src="~/Content/ajax-loader-dark.gif" /></div></div>
+                </div>
+                <div class="panel-footer"><input id="btnRegister" class="btn btn-primary" type="submit" value="Register" /></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="ctnr-headers"><label>Coming soon ..........</label></div>
+            <div class="ctnr">
+                <div class="ctnr-info">
+                    There will be premium feature available for users that are advertising room accommodations
+                    The features will include the following:
+                    <hr />
+                    <ul>
+                        <li>Management of Tennants</li>
+                        <li>Notification of Bills</li>
+                        <li>Management of Complaints</li>
+                        <li>Messaging Tennants</li>
+                    </ul>
+                    <a href="~/accounts/premiumfeature" target="_blank">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

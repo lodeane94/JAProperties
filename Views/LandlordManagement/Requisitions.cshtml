@@ -1,0 +1,52 @@
+﻿@model SS.Models.REQUISITIONS
+
+@{
+    ViewBag.Title = "Requisitions";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @if (ViewBag.Requisitions.Count != 0)
+            {
+                <table id="tblRequisitions" class="table-condensed" width="100%">
+                    <tr>
+                        <th></th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Cell</th>
+                        <th>Date</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @{int count = 1; }
+                    @foreach (var requisition in ViewBag.Requisitions)
+                    {
+                        if (!requisition.accepted)
+                        {
+                            <tr>
+                                <td class="acc_id">@count<input id="accommodation_id" type="hidden" value="@requisition.ID" /></td>
+                                <td class="first_name">@requisition.FirstName</td>
+                                <td class="last_name">@requisition.LastName</td>
+                                <td class="gender">@requisition.Gender</td>
+                                <td class="email">@requisition.Email</td>
+                                <td class="cell">@requisition.Cell</td>
+                                <td>@requisition.Date</td>
+                                <td><input class="btnAcceptRequest btn" type="button" value="Accept"></td>
+                                <td><input class="btnDenyRequest btn" type="button" value="Deny"></td>
+                            </tr>
+                            count++;
+                        }
+                    }
+                </table>
+                        }
+                        else
+                        {
+                            <strong>No Requisition was made for this room</strong>
+                        }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "JamProps";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pageScript
+{
+    (function(){
+    getProperties();
+    })();
+
+    (function(){
+    $('#home').attr('class','active');
+    })();
+
+
+}
+
+@{
+    //displays registration success flass
+    if (Session["isRegistrationComplete"] != null)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>Your property has been uploaded successfully</strong> <span class="glyphicon glyphicon-check"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["isRegistrationComplete"] = null;
+    }
+    if (Session["isRequisitionSent"] != null)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="registration-success" class="alert-success" style="display:none;">
+                        <strong>Your property requisition was successful</strong> <span class="glyphicon glyphicon-check"></span>
+                        <br /><em>The owner will be notified immediately and you will recieve a SMS text or an email shortly, regarding the status</em>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        Session["isRequisitionSent"] = null;
+    }
+}
+<br />
+<div class="row">
+    <div class="col-md-2">
+        <aside class="ctnr-aside">
+            <div class="ctnr-info"><label>View By Parish</label></div>
+            <ul class="aside-property" id="filter-parish">
+                <li><a id="kingston" href="">Kingston <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="standrew" href="">St. Andrew <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="clarendon" href="">Clarendon <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="portland" href="">Portland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="westmoreland" href="">Westmoreland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="hanover" href="">Hanover <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="trelawny" href="">Trelawny <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="manchester" href="">Manchester <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="stthomas" href="">St. Thomas <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="stelizabeth" href="">St. Elizabeth <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="stcatherine" href="">St. Catherine <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="stmary" href="">St. Mary <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="stjames" href="">St. James <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                <li><a id="stann" href="">St. Ann <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+            </ul>
+        </aside>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ctnr-info">
+                    <label>SHOWING RENTAL ROOMS IN <span class="property-location"></span></label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row">&nbsp;</div>
+            <div class="col-md-12">
+                <div class="ctnr home">
+                    <div class="rooms-load" id="rooms-load"><!--ajax content--></div>
+                    <div class="home-property-category">
+                        <span class="left">
+                            <a href="" id="accommodations-previous"><span class="glyphicon glyphicon-chevron-left to-left"></span></a>
+                        </span>
+                        <span class="right">
+                            <a href="" id="accommodations-next"><span class="glyphicon glyphicon-chevron-right to-right"></span></a>
+                        </span>
+                    </div>
+                </div>
+                <div class="properties-view-all-container">
+                    <div style="padding-left:90%;"><a href="~/properties/rooms">View All <span class="glyphicon glyphicon-eye-open"></span></a></div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ctnr-info">
+                    <label>SHOWING RENTAL OR SELLING HOUSES IN <span class="property-location"></span></label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row">&nbsp;</div>
+            <div class="col-md-12">
+                <div class="ctnr">
+                    <div class="house-load" id="house-load"><!--ajax content--></div>
+                    <div class="home-property-category">
+                        <span class="left">
+                            <a href="" id="house-previous"><span class="glyphicon glyphicon-chevron-left to-left"></span></a>
+                        </span>
+                        <span class="right">
+                            <a href="" id="house-next"><span class="glyphicon glyphicon-chevron-right to-right"></span></a>
+                        </span>
+                    </div>
+                </div>
+                <div class="properties-view-all-container">
+                    <div style="padding-left:90%;"><a href="~/properties/houses">View All <span class="glyphicon glyphicon-eye-open"></span></a></div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ctnr-info">
+                    <label>SHOWING RENTAL OR SELLING OR LEASED LANDS IN <span class="property-location"></span></label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row">&nbsp;</div>
+            <div class="col-md-12">
+                <div class="ctnr">
+                    <div class="land-load"><!--ajax content--></div>
+                    <div class="home-property-category">
+                        <span class="left">
+                            <a href="" id="land-previous"><span class="glyphicon glyphicon-chevron-left to-left"></span></a>
+                        </span>
+                        <span class="right">
+                            <a href="" id="land-next"><span class="glyphicon glyphicon-chevron-right to-right"></span></a>
+                        </span>
+                    </div>
+                </div>
+                <div class="properties-view-all-container">
+                    <div style="padding-left:90%;"><a href="~/properties/lands">View All <span class="glyphicon glyphicon-eye-open"></span></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //initialization of bootstrap popover
+        $('[data-toggle="popover"]').popover({ trigger: 'hover' });
+    });
+</script>

@@ -1,0 +1,67 @@
+﻿@model SS.Models.TENNANTS
+@{
+    ViewBag.Title = "Requisition";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10">
+            @using (Html.BeginForm("Enroll", "Enrolment",FormMethod.Post))
+            {
+            <fieldset>
+                <legend>Tennant Personal Information</legend>
+                <table class="table-responsive registration-form" width="100%">
+                    <tr>
+                        <td>Street Address</td>
+                        <td>@Html.TextBoxFor(model => model.STREET_ADDRESS)</td>
+                        <td>City</td>
+                        <td>@Html.TextBoxFor(model => model.CITY)</td>
+                        <td>Parish</td>
+                        <td>@Html.TextBoxFor(model => model.PARISH)</td>
+                    </tr>
+                    <tr>
+                        <td>Date of Birth</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.DOB,new { @placeholder = "DD/MM/YYYY" }) 
+                        </td>
+                        <td>University Student</td>
+                        <td>
+                            Yes @Html.RadioButton("university_student", true, true)
+                            No @Html.RadioButton("university_student", false, false)
+                        </td>
+                        <td>Settlement Period</td>
+                        <td>@Html.TextBoxFor(model => model.SETTLEMENT_PERIOD, new { @type = "number", @placeholder = "Years" })</td>
+                    </tr>
+                    <tr id="university_info">
+                        <td>University Name</td>
+                        <td>@Html.TextBoxFor(model => model.UNIVERSITY)</td>
+                        <td>Programme Name</td>
+                        <td>@Html.TextBoxFor(model => model.PROGRAMME_NAME)</td>
+                        <td>Programme Start Date</td>
+                        <td>@Html.TextBoxFor(model => model.PROGRAMME_START_DATE)</td>
+                    </tr>
+                    <tr>
+                        <td class="end_date">Programme End Date</td>
+                        <td class="end_date">@Html.TextBoxFor(model => model.PROGRAMME_END_DATE)</td>
+                        <td>Brief description</td>
+                        <td colspan="2">@Html.TextAreaFor(model => model.DESCRIPTION, 6, 120, null)</td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>@Html.Password("password")</td>
+                        <td>Confirmed Password</td>
+                        <td>@Html.Password("confirmedPassword")</td>
+                    </tr>
+                    <tr>
+                        <td>Enrolment key</td>
+                        <td>@Html.TextBox("enrolmentKey", null, new { @placeholder = "Enrolment Key From Email" })</td>
+                    </tr>
+                    <tr>
+                        <td><input id="submitEnrolment" class="btn " type="submit" value="Enroll"></td>
+                    </tr>
+                </table>
+            </fieldset>
+            }
+        </div>
+    </div>
+</div>
