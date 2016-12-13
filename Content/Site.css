@@ -395,8 +395,7 @@ background-color: #FFFFFF;
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
-select,
-textarea {
+select {
 max-width: 280px;
 }
 
@@ -437,9 +436,7 @@ border-radius: 3px;
 }
 
 #image-details {
-border: 1px solid #D1D1D1;
-border-radius: 3px;
-padding: 10px;
+
 }
 
 textarea.input-validation-error, input[type="number"].input-validation-error, input[type="password"].input-validation-error, input[type="text"].input-validation-error, select.input-validation {
@@ -549,7 +546,15 @@ color:white;
 }*/
 
 .modal-dialog {
-width: 75%;
+    display: table;
+    overflow-y: auto;    
+    overflow-x: auto;
+    width: auto;
+    min-width: 300px;  
+}
+
+.modal-header {
+    border:0px;
 }
 
 #modal-loading {
@@ -584,6 +589,11 @@ min-height: 100%;
 font-family: Arial,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.properties-load {
+    padding-bottom: 100px;
+}
+
+
 .properties-result-container {
 background-color: #FFFFFF;
 border-top-left-radius: 2px;
@@ -614,17 +624,16 @@ padding-right: 0px;
 }
 
 .properties-table-style {
-border: 2px solid #F0F0F0;
+border: 1px solid #F0F0F0;
 }
 
 .properties-table-style th {
-text-align: center;
+text-align: left;
 font-family: Verdana, Geneva, Tahoma, sans-serif;
 font-size: 14px;
-font-weight: 500;
+font-weight: 600;
 padding: 5px 5px;
 background-color: #303c42;
-border-right: 1px solid #FFFFFF;
 color: #FFFFFF;
 }
 
@@ -634,18 +643,11 @@ font-family: Verdana, Geneva, Tahoma, sans-serif;
 font-size: 12px;
 padding: 10px 5px;
 font-weight: 500;
-border: 1px ridge #FFFFFF;
-border-bottom: 1px solid #422880;
 }
 
-.properties-table-style tr:nth-child(1) th {
-    background-color: #263238;
+.properties-table-style tr:nth-child(odd){
+    background-color: #EBEBEB;
 }
-
-.properties-table-style tr:nth-child(6) th {
-    background-color: #263238;
-}
-
 
 .quick-action-header {
 width: 100%;
@@ -740,9 +742,9 @@ padding-top: 20px;
 }
 
 #room-properties td {
-color: #E44424;
+color: #FFFFFF;
 font-family: Verdana, Geneva, Tahoma, sans-serif;
-font-size: 15px;
+font-size: 13px;
 }
 
 select.sort-select-style {
@@ -777,12 +779,7 @@ input[type="text"].search-box {
     width: 250px;
 }
 
-textarea {
-width: 240px;
-height: 80px;
-border-radius: 1px;
-border: 2px solid #F0F0F0;
-}
+
 
 input[type="button"].sort-btn-style {
 width: 80px;
@@ -835,3 +832,13 @@ width: 100%;
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
 }
+
+textarea {
+border-radius: 1px;
+border: 1px solid #F0F0F0;
+}
+
+textarea.txt-area-desc{
+    width: 100%;
+}
+

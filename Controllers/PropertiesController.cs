@@ -22,7 +22,7 @@ namespace SS.Controllers
             string hasGas, string hasInternet, int? pg = 0)
         {
             //the amount of properties that should be returned
-            short fetchAmount = 16;
+            short fetchAmount = 2;
 
             using (JAHomesEntities dbCtx = new JAHomesEntities())
             {
@@ -181,11 +181,17 @@ namespace SS.Controllers
                     propertiesInformation = dbCtx.ACCOMMODATIONS.Where(deleg)
                         .OrderByDescending(x => x.DATE_ADDED)
                         .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+
+                    resultCount = dbCtx.ACCOMMODATIONS.Where(deleg).Count();
                 }
                 else
+                {
                     propertiesInformation = dbCtx.ACCOMMODATIONS.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
                         .OrderByDescending(x => x.DATE_ADDED)
                         .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+
+                    resultCount = dbCtx.ACCOMMODATIONS.Count();
+                }
 
                 //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
                 foreach (var r in propertiesInformation)
@@ -199,7 +205,6 @@ namespace SS.Controllers
                     accommodations.ImageURL = r.IMAGE_URL;
 
                     accommodationProperties.accommodationList.Add(accommodations);
-                    resultCount++;
                 }
 
                 ViewBag.totalItemsFound = resultCount;
@@ -214,7 +219,7 @@ namespace SS.Controllers
         public ActionResult Houses(string parish, string cr1, string cr2,
             string bedrooms, string purpose, string bathrooms, string isFurnished, int? pg = 0)
         {
-            short fetchAmount = 16;
+            short fetchAmount = 2;
 
             using (JAHomesEntities dbCtx = new JAHomesEntities())
             {
@@ -288,7 +293,7 @@ namespace SS.Controllers
                     {
                         PropertyName = "isfurnished",
                         Operation = Op.Equals,
-                        Value = Boolean.Parse(bedrooms)
+                        Value = Boolean.Parse(isFurnished)
                     };
 
                     filters.Add(filter);
@@ -303,11 +308,17 @@ namespace SS.Controllers
                     propertiesInformation = dbCtx.HOUSE.Where(deleg)
                         .OrderByDescending(x => x.DATE_ADDED)
                         .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+
+                    resultCount = dbCtx.HOUSE.Where(deleg).Count();
                 }
                 else
+                {
                     propertiesInformation = dbCtx.HOUSE.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
                         .OrderByDescending(x => x.DATE_ADDED)
                         .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+
+                    resultCount = dbCtx.HOUSE.Count();
+                }
 
                 //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
                 foreach (var r in propertiesInformation)
@@ -321,7 +332,6 @@ namespace SS.Controllers
                     house.ImageURL = r.IMAGE_URL;
 
                     houseProperties.houseList.Add(house);
-                    resultCount++;
                 }
 
                 ViewBag.totalItemsFound = resultCount;
@@ -336,7 +346,7 @@ namespace SS.Controllers
         public ActionResult Lands(string parish, string cr1, string cr2,
             string ar1, string ar2, string purpose, string direction, int? pg = 0)
         {
-            short fetchAmount = 16;
+            short fetchAmount = 2;
 
             using (JAHomesEntities dbCtx = new JAHomesEntities())
             {
@@ -399,11 +409,17 @@ namespace SS.Controllers
                     propertiesInformation = dbCtx.LAND.Where(deleg)
                         .OrderByDescending(x => x.DATE_ADDED)
                         .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+
+                    resultCount = dbCtx.LAND.Where(deleg).Count();
                 }
                 else
+                {
                     propertiesInformation = dbCtx.LAND.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
                         .OrderByDescending(x => x.DATE_ADDED)
                         .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+
+                    resultCount = dbCtx.LAND.Count();
+                }
 
                 //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
                 foreach (var r in propertiesInformation)
@@ -417,7 +433,6 @@ namespace SS.Controllers
                     land.ImageURL = r.IMAGE_URL;
 
                     landProperties.landList.Add(land);
-                    resultCount++;
                 }
 
                 ViewBag.totalItemsFound = resultCount;

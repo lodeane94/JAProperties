@@ -21,15 +21,15 @@ $(function () {
     var noOfPages = $('#noOfPages').val();
     var currentPageNumber = $('#currentPageNumber').val();
 
-    if (currentPageNumber == 1 && noOfPages > 1) {
+    if (currentPageNumber == 0 && noOfPages - 1 > 0) {
         $('.next-page').show();
     }
 
-    if (currentPageNumber == noOfPages && noOfPages > 1) {
+    if (currentPageNumber == noOfPages -1 && noOfPages - 1 > 0) {
         $('.previous-page').show();
     }
 
-    if (currentPageNumber != 1 && currentPageNumber != noOfPages && noOfPages > 1) {
+    if (currentPageNumber != 0 && currentPageNumber != noOfPages -1 && noOfPages - 1 > 0) {
         $('.next-page').show();
         $('.previous-page').show();
     }
@@ -83,10 +83,11 @@ function loadPropertiesHTML(data, propertyPagination) {
             }*/
             // if ((data[count][count2].Occupancy != "" && data[count][count2].Occupancy != undefined) || propertyPagination == 'accommodations') {
             //alert('room not null');
-            $('.' + tagName).append('<a class="image-link" data-toggle="popover" data-content="No Content" title="Click to view more information" href="' + data[count][count2].ID + '">'
-                        + '<div class="col-md-3">'
+            $('.' + tagName).append('<div class="col-md-3">'
+                        + '<a class="image-link" data-toggle="popover" data-content="No Content" title="Click to view more information" href="' + data[count][count2].ID + '">'
                             + '<div class="image-container">'
                              + '<img id="' + data[count][count2].ID + '" class="room-images" src="/Uploads/' + data[count][count2].ImageURL + '">'
+                             + '</div>'
                              + '</a>'
                             + '<div class="image-information-container">'
                                 + '<ul>'
@@ -95,65 +96,9 @@ function loadPropertiesHTML(data, propertyPagination) {
                                     + '<li><label> Cost: $' + data[count][count2].Price + ' JMD </label></li>'
                                 + '<ul>'
                             + '</div>'
-                            + '<a href="" class="btn btn-warning btn-block">Show Details <span class="caret"></span></a>'
-                            + '</div>'
+                             + '<a href="' + data[count][count2].ID + '" class="btn btn-warning btn-block prop-details-btn">Show Details <span class="caret"></span></a>'
                      + '</div>'
                      );
-            /*} else if ((data[count][count2].BedroomAmount != "" && data[count][count2].BedroomAmount != undefined) || propertyPagination == 'houses') {
-                // alert('House not null');
-                $('.' + "house-load").append('<a class="image-link" data-toggle="popover" data-content="No Content" title="Click to view more information" href="' + data[count][count2].ID + '">'
-                            + '<div class="col-md-3">'
-                                + '<div class="image-container">'
-                                 + '<img id="' + data[count][count2].ID + '" class="room-images" src="/Uploads/' + data[count][count2].ImageURL + '">'
-                                + '</div>'
-                                + '<div class="image-information-container">'
-                                    + '<table width="100%" class="table-condensed table-striped">'
-                                        + '<tbody>'
-                                            + '<tr>'
-                                                + '<td>Address</td>'
-                                                + '<td>' + data[count][count2].StreetAddress + '</td>'
-                                            + '</tr>'
-                                            + '<tr>'
-                                                + '<td>Parish</td>'
-                                                + '<td>' + data[count][count2].Parish + '</td>'
-                                            + '</tr>'
-                                            + '<tr>'
-                                                + '<td>Price</td>'
-                                                + '<td>' + data[count][count2].Price + '</td>'
-                                            + '</tr>'
-                                        + '</tbody>'
-                                    + '</table>'
-                                + '</div>'
-                         + '</div>'
-                         + '</a>');
-            } else if ((data[count][count2].Area != "" && data[count][count2].Area != undefined) || propertyPagination == 'lands') {
-                // alert('land not null');
-                $('.' + "land-load").append('<a class="image-link" data-toggle="popover" data-content="No Content" title="Click to view more information" href="' + data[count][count2].ID + '">'
-                            + '<div class="col-md-3">'
-                                + '<div class="image-container">'
-                                 + '<img id="' + data[count][count2].ID + '" class="room-images" src="/Uploads/' + data[count][count2].ImageURL + '">'
-                                + '</div>'
-                                + '<div class="image-information-container">'
-                                    + '<table width="100%" class="table-condensed table-striped">'
-                                        + '<tbody>'
-                                            + '<tr>'
-                                                + '<td>Address</td>'
-                                                + '<td>' + data[count][count2].StreetAddress + '</td>'
-                                            + '</tr>'
-                                            + '<tr>'
-                                                + '<td>Parish</td>'
-                                                + '<td>' + data[count][count2].Parish + '</td>'
-                                            + '</tr>'
-                                            + '<tr>'
-                                                + '<td>Price</td>'
-                                                + '<td>' + data[count][count2].Price + '</td>'
-                                            + '</tr>'
-                                        + '</tbody>'
-                                    + '</table>'
-                                + '</div>'
-                         + '</div>'
-                         + '</a>');
-            }*/
         }
     }
 }
@@ -280,16 +225,9 @@ $(document).ready(function () {
         }
     });
 
-    //modal display for selected house
-    $(document.body).on('click', '.house-load .image-link', function (event) {
-        event.preventDefault();
-        //getting id selected
-        var imageSelectedID = $(this).attr('href');
-        //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
-        //send id of image to the getSelected action in the rooms controller
+    function loadSelectedModalProperty(url, imageSelectedID) {
         $.ajax({
-            url: '/Properties/RetrieveSelectedHouse',
+            url: url,
             type: 'get',
             data: { 'property_id': imageSelectedID },
             beforeSend: function () {
@@ -305,11 +243,40 @@ $(document).ready(function () {
                         //setting accommodation id for form to be sent
                         $('#propertyID').attr('value', imageSelectedID);
 
-                        //dynamically adding the data for the property
-                        $('#image-details').html('<table class="properties-table-style"><tr><th colspan="8">House For Sale/Rent</th></tr><tr><th>Street Address</th><th>City</th><th>Parish</th><th>Price</th><th>Bedrooms</th><th>Bathrooms</th><th>Purpose</th><th>Furnished</th></tr>'
-                                                + '<tr><td>' + value.StreetAddress + '</td><td>' + value.City + '</td><td>' + value.Parish + '</td><td>' + value.Price + '</td><td>' + value.BedroomAmount + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Purpose + '</td><td>' + value.isFurnished + '</td></tr>'
-                                                + '<tr><th colspan="14">Property Description</th></tr><tr><td colspan="14">' + value.Description + '</td></tr><tr><th colspan="14">Property Owner Information</th></tr><tr><th>Name</th><th>Gender</th><th>Cellphone Number</th><th>Email Address</th></tr>'
-                                                + '<tr><td>' + value.ownerModel.FirstName + ' ' + value.ownerModel.LastName + '</td><td>' + value.ownerModel.Gender + '</td><td>' + value.ownerModel.Cell + '</td><td>' + value.ownerModel.Email + '</td></tr></table>');
+                        $('#property-owner-det-details').html('<table class="properties-table-style"><tr><th colspan="2">Property Owner Information</th></tr><tr><td>First Name</td><td>' + value.ownerModel.FirstName + '</td></tr>'
+                                    + '<tr><td>Last Name</td><td>' + value.ownerModel.LastName + '</td></tr>'
+                                    + '<tr><td>Gender</td><td>' + value.ownerModel.Gender + '</td></tr>'
+                                    + '<tr><td>Email</td><td>' + value.ownerModel.Email + '</td></tr>'
+                                    + '<tr><td>Cell</td><td>' + value.ownerModel.Cell + '</td></tr>'
+                                    + '</table>');
+
+                        if (value.Occupancy != null && value.Occupancy != undefined) {
+                            //dynamically adding the data for the property
+                            $('#image-details').html('<table width="100%" class="properties-table-style">' //+ '<tr style="border-bottom:1px solid #FFFFFF;"><th colspan="3" style="text-align:center;">Property Information<th></tr>'
+                                + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
+                                + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Monthly Rent: ' + value.Price + '</td><td>Occupancy: ' + value.Occupancy + '</td></tr>'
+                                + '<tr><td>City: ' + value.City + '</td><td>Security Deposit: ' + value.SecurityDeposit + '</td><td>Gender Preference: ' + value.GenderPreference + '</td></tr>'
+                                + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td>'
+                                + '<td><table width="100%"><tr><th>Availability</th><th>Bathrooms</th><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
+                                + '<tr><td>' + value.Availability + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Water + '</td><td>' + value.Electricity + '</td><td>' + value.Internet + '</td><td>' + value.Cable + '</td><td>' + value.Gas + '</td></tr></table></td></tr>'
+                                + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
+                        } else if (value.BedroomAmount != null && value.BedroomAmount != undefined) {
+                            //dynamically adding the data for the property
+                            $('#image-details').html('<table width="100%" class="properties-table-style">'
+                                + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
+                                + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Price: ' + value.Price + '</td><td><table width="100%"><tr><th>Bedroom Amount</th><th>Bathroom Amount</th><th>Purpose</th><th>Is Furnished</th></td></tr><tr><td>' + value.BedroomAmount + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Purpose + '</td><td>' + value.isFurnished + '</td></tr></table></tr>'
+                                + '<tr><td>City: ' + value.City + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+                                + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td><td>&nbsp;</td>'
+                                + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
+                        } else {
+                            //dynamically adding the data for the property
+                            $('#image-details').html('<table width="100%" class="properties-table-style">'
+                                + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
+                                + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Price: ' + value.Price + '</td><td><table width="100%"><tr><th>Purpose</th><th>Area</th></td></tr><tr><td>' + value.Purpose + '</td><td>' + value.Area + '</td></tr></table></tr>'
+                                + '<tr><td>City: ' + value.City + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+                                + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td><td>&nbsp;</td>'
+                                + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
+                        }
                     });
                 }
             },
@@ -319,97 +286,30 @@ $(document).ready(function () {
             error: function () {
                 alert('An error occurred');
             }
-
         });
-    });
-    //modal display for selected land
-    $(document.body).on('click', '.land-load .image-link', function (event) {
+    }
+
+    //modal display for selected property
+    $(document.body).on('click', '.image-link, .prop-details-btn', function (event) {
         event.preventDefault();
         //getting id selected
         var imageSelectedID = $(this).attr('href');
+        //getting the name of the property's parent in order to programmatically decide the layout that should be used
+        var propertyParentClass = $(this).parent().parent().attr('class');//.split(' ');
+        var url = '';
+        //setting URL that should be called
+        if (propertyParentClass == 'rooms-load') {
+            url = '/Properties/RetrieveSelectedAccommodation';
+        } else if (propertyParentClass == 'house-load') {
+            url = '/Properties/RetrieveSelectedHouse';
+        } else
+            url = '/Properties/RetrieveSelectedLand';
         //displays the modal whenever an image is selected
         sys.showModal('#propertyModal');
-        //send id of image to the getSelected action in the rooms controller
-        $.ajax({
-            url: '/Properties/RetrieveSelectedLand',
-            type: 'get',
-            data: { 'property_id': imageSelectedID },
-            beforeSend: function () {
-                $('.ajax-load').show();
-            },
-            success: function (data) {
-                if (!$.isEmptyObject(data)) {
-                    $.each(data, function (index, value) {
-                        //setting the modal image with this same id
-                        $('.modal-image').attr('id', imageSelectedID);
-                        //setting modal image source with the returned image location
-                        $('.modal-image').attr('src', '/Uploads/' + value.ImageURL);
-                        //setting accommodation id for form to be sent
-                        $('#propertyID').attr('value', imageSelectedID);
-
-                        //dynamically adding the data for the property
-                        $('#image-details').html('<table class="properties-table-style"><tr><th colspan="8">Land For Sale/Rent/Lease</th></tr><tr><th>Street Address</th><th>City</th><th>Parish</th><th>Price</th><th>Purpose</th><th>Area</th></tr>'
-                                                + '<tr><td>' + value.StreetAddress + '</td><td>' + value.City + '</td><td>' + value.Parish + '</td><td>' + value.Price + '</td><td>' + value.Purpose + '</td><td>' + value.Area + '</td></tr>'
-                                                + '<tr><th colspan="14">Property Description</th></tr><tr><td colspan="14">' + value.Description + '</td></tr><tr><th colspan="14">Property Owner Information</th></tr><tr><th>Name</th><th>Gender</th><th>Cellphone Number</th><th>Email Address</th></tr>'
-                                                + '<tr><td>' + value.ownerModel.FirstName + ' ' + value.ownerModel.LastName + '</td><td>' + value.ownerModel.Gender + '</td><td>' + value.ownerModel.Cell + '</td><td>' + value.ownerModel.Email + '</td></tr></table>');
-                    });
-                }
-            },
-            complete: function () {
-                $('.ajax-load').hide();
-            },
-            error: function () {
-                alert('An error occurred');
-            }
-
-        });
+        //calling function to load modal view
+        loadSelectedModalProperty(url, imageSelectedID);
     });
-    //modal display for selected room
-    $(document.body).on('click', '.rooms-load .image-link', function (event) {
-        event.preventDefault();
-        //getting id selected
-        var imageSelectedID = $(this).attr('href');
-        //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
-        //send id of image to the getSelected action in the rooms controller
-        $.ajax({
-            url: '/Properties/RetrieveSelectedAccommodation',
-            type: 'get',
-            data: { 'property_id': imageSelectedID },
-            beforeSend: function () {
-                $('.ajax-load').show();
-            },
-            success: function (data) {
-                if (!$.isEmptyObject(data)) {
-                    $.each(data, function (index, value) {
-                        //setting the modal image with this same id
-                        $('.modal-image').attr('id', imageSelectedID);
-                        //setting modal image source with the returned image location
-                        $('.modal-image').attr('src', '/Uploads/' + value.ImageURL);
-                        //setting accommodation id for form to be sent
-                        $('#propertyID').attr('value', imageSelectedID);
 
-                        //dynamically adding the data for the property
-                        $('#image-details').html('<table class="properties-table-style">'
-                            + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
-                            + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Monthly Rent: ' + value.Price + '</td><td>Occupancy: ' + value.Occupancy + '</td></tr>'
-                            + '<tr><td>City: ' + value.City + '</td><td>Security Deposit: ' + value.SecurityDeposit + '</td><td>Gender Preference: ' + value.GenderPreference + '</td></tr>'
-                            + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td>'
-                            + '<td><table><tr><th>Availability</th><th>Bathrooms</th><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
-                            + '<tr><td>' + value.Availability + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Water + '</td><td>' + value.Electricity + '</td><td>' + value.Internet + '</td><td>' + value.Cable + '</td><td>' + value.Gas + '</td></tr></table></td></tr>'
-                            + '</table>');
-                    });
-                }
-            },
-            complete: function () {
-                $('.ajax-load').hide();
-            },
-            error: function () {
-                alert('An error occurred');
-            }
-
-        });
-    });
     //function to filter rooms
     function filterProperties(filterName, filterCookieName, filterValue, filterOffRegex, filterOnRegex) {
         var queryString = $.cookie('queryString');

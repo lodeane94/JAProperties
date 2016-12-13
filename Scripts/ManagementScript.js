@@ -289,7 +289,7 @@ $(document).ready(function () {
 
                         if (value.BedroomAmount !== undefined) {
 
-                            $('#action-body').html('<input type="button" class="btn btn-danger btn-block" id="removeProperty" value="Remove Property"/><br/><br/><img style="width:480px;height:300px;"  id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/><hr/><form action="/landlordmanagement/updatehouse" method="post"><table class="table-condensed" id="property-information">');
+                            $('#action-body').html('<input type="button" class="btn btn-danger btn-block" id="removeProperty" value="Remove Property"/><br/><br/><img style="width:250px;height:250px;"  id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/><hr/><form action="/landlordmanagement/updatehouse" method="post"><table class="table-condensed" id="property-information">');
 
                             $('#action-body #property-information ').append('<tr><td>Price</td><<td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td></tr>'
                                                                             + '<tr><td>Bedroom Amount</td><<td><input  class="form-control" type="text" name="bedroomAmount" value="' + value.BedroomAmount + '"></td></tr>'

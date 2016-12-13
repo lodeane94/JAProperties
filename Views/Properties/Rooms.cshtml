@@ -70,187 +70,178 @@
 
 @Html.Partial("_ModelPropertyInformation")
 
-<div class="container">
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-md-2">
-            <div class="ctnr-info"><label>Room Properties</label></div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-md-2">
+        <div class="ctnr-aside"><div class="ctnr-info"><label>Room Properties</label></div></div>
+        <div class="aside-property">
+            <table class="table-condensed" id="room-properties">
+                <tr>
+                    <td>Gender</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select id="genderPreference" class="sort-select-style">
+                            <option value="no_filter" selected>No Filter</option>
+                            <option value="both">Any Gender</option>
+                            <option value="males">Males Only</option>
+                            <option value="females">Females Only</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Occupancy</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select id="occupancy" class="sort-select-style">
+                            <option value="no_filter" selected>No Filter</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Bathrooms</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select id="bathroomAmount" class="sort-select-style">
+                            <option value="no_filter" selected>No Filter</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Student</td>
+                    <td><input type="checkbox" id="isStudent" /></td>
+                </tr>
+                <tr>
+                    <td>Water</td>
+                    <td><input type="checkbox" id="hasWater" /></td>
+                </tr>
+                <tr>
+                    <td>Cable</td>
+                    <td><input type="checkbox" id="hasCable" /></td>
+                </tr>
+                <tr>
+                    <td>Electricity</td>
+                    <td><input type="checkbox" id="hasElectricity" /></td>
+                </tr>
+                <tr>
+                    <td>Gas</td>
+                    <td><input type="checkbox" id="hasGas" /></td>
+                </tr>
+                <tr>
+                    <td>Internet</td>
+                    <td><input type="checkbox" id="hasInternet" /></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div>
+            <div class="ctnr-aside"><div class="ctnr-info"><label>Cost Range</label></div></div>
             <div>
-                <table class="table-condensed" id="room-properties">
-                    <tr>
-                        <td>Gender</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <select id="genderPreference" class="sort-select-style">
-                                <option value="no_filter" selected>No Filter</option>
-                                <option value="both">Any Gender</option>
-                                <option value="males">Males Only</option>
-                                <option value="females">Females Only</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Occupancy</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <select id="occupancy" class="sort-select-style">
-                                <option value="no_filter" selected>No Filter</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Bathrooms</td>  
-                    </tr>
-                    <tr>
-                        <td>
-                            <select id="bathroomAmount" class="sort-select-style">
-                                <option value="no_filter" selected>No Filter</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Student</td>
-                        <td><input type="checkbox" id="isStudent" /></td>
-                    </tr>
-                    <tr>
-                        <td>Water</td>
-                        <td><input type="checkbox" id="hasWater" /></td>
-                    </tr>
-                    <tr>
-                        <td>Cable</td>
-                        <td><input type="checkbox" id="hasCable" /></td>
-                    </tr>
-                    <tr>
-                        <td>Electricity</td>
-                        <td><input type="checkbox" id="hasElectricity" /></td>
-                    </tr>
-                    <tr>
-                        <td>Gas</td>
-                        <td><input type="checkbox" id="hasGas" /></td>
-                    </tr>
-                    <tr>
-                        <td>Internet</td>
-                        <td><input type="checkbox" id="hasInternet" /></td>
-                    </tr>
-                </table>
-            </div>
-            <br />
-            <div>
-                <div class="ctnr-info"><label>Cost Range</label></div>
-                <div>
-                    <ul class="aside-property" id="range-cost">
-                        <li><a id="10000-15000" href="">$10,000.00 - $15,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="16000-20000" href="">$16,000.00 - $20,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="21000-25000" href="">$21,000.00 - $25,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="26000-30000" href="">$26,000.00 - $30,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="31000-35000" href="">$31,000.00 - $35,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="36000-40000" href="">$36,000.00 - $40,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="gt-40000" href=""> > $40,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                    </ul>
-                </div>
-            </div>
-            <br />
-            <div>
-                <div class="ctnr-info"><label>Filter Parishes</label></div>
-                <div>
-                    <ul class="aside-property" id="filter-room-parish">
-                        <li><a id="kingston" href="">Kingston <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="standrew" href="">St. Andrew <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="clarendon" href="">Clarendon <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="portland" href="">Portland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="westmoreland" href="">Westmoreland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="hanover" href="">Hanover <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="trelawny" href="">Trelawny <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="manchester" href="">Manchester <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="stthomas" href="">St. Thomas <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="stelizabeth" href="">St. Elizabeth <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="stcatherine" href="">St. Catherine <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="stmary" href="">St. Mary <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="stjames" href="">St. James <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                        <li><a id="stann" href="">St. Ann <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                    </ul>
-                </div>
+                <ul class="aside-property" id="range-cost">
+                    <li><a id="10000-15000" href="">$10,000.00 - $15,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="16000-20000" href="">$16,000.00 - $20,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="21000-25000" href="">$21,000.00 - $25,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="26000-30000" href="">$26,000.00 - $30,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="31000-35000" href="">$31,000.00 - $35,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="36000-40000" href="">$36,000.00 - $40,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="gt-40000" href=""> > $40,000.00 <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                </ul>
             </div>
         </div>
-        <div class="col-md-8">
-            @{
-                int count = 0;
-                <div class="ctnr-info">
-                    <span><span id="totalItemCount">@ViewBag.totalItemsFound</span> ROOMS WERE FOUND</span>
-                    <span style="float:right">showing <span id="fetchAmount">@ViewBag.fetchAmount properties per page</span></span>
-                </div>
-                <hr />
-                <div id="rooms-content">
-                    @if (ViewBag.properties != null && ViewBag.properties.Count != 0)
+        <br />
+        <div>
+            <div class="ctnr-aside"><div class="ctnr-info"><label>Filter Parishes</label></div></div>
+            <div>
+                <ul class="aside-property" id="filter-room-parish">
+                    <li><a id="kingston" href="">Kingston <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="standrew" href="">St. Andrew <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="clarendon" href="">Clarendon <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="portland" href="">Portland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="westmoreland" href="">Westmoreland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="hanover" href="">Hanover <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="trelawny" href="">Trelawny <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="manchester" href="">Manchester <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="stthomas" href="">St. Thomas <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="stelizabeth" href="">St. Elizabeth <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="stcatherine" href="">St. Catherine <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="stmary" href="">St. Mary <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="stjames" href="">St. James <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                    <li><a id="stann" href="">St. Ann <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        @{
+            int count = 0;
+            <div class="ctnr-info">
+                <span><span id="totalItemCount">@ViewBag.totalItemsFound</span> ROOMS WERE FOUND</span>
+                <span style="float:right">showing <span id="fetchAmount">@ViewBag.fetchAmount properties per page</span></span>
+            </div>
+            <hr />
+            <div id="rooms-content">
+                @if (ViewBag.properties != null && ViewBag.properties.Count != 0)
+                {
+                    foreach (var rooms in ViewBag.properties)
                     {
-                        foreach (var rooms in ViewBag.properties)
-                        {
-                            <div class="col-md-3 rooms-load">
+                        <div class="rooms-load">
+                            <div class="col-md-3 properties-load">
                                 <a href="@rooms.ID" class="image-link">
                                     <div class="image-container">
                                         <img id="@rooms.ID" src="/Uploads/@rooms.ImageURL">
                                     </div>
-                                    <div class="image-information-container">
-                                        <table width="100%" class="table-condensed table-striped">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Address</td>
-                                                    <td>@rooms.StreetAddress</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Parish</td>
-                                                    <td>@rooms.Parish</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Price</td>
-                                                    <td>@rooms.Price</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </a>
+                                <div class="image-information-container">
+                                    <ul>
+                                        <li><label> Address: @rooms.StreetAddress </label></li>
+                                        <li>Parish: @rooms.Parish</li>
+                                        <li>Price: @rooms.Price</li>
+                                    </ul>
+                                </div>
+                                <a href="@rooms.ID" class="btn btn-warning btn-block prop-details-btn">Show Details <span class="caret"></span></a>
                             </div>
-                            count++;
-                        }
-                    }
-                    else
-                    {
-                        <div class="ctnr">
-                            <div class="ctnr-info">No room(s) was found</div>
                         </div>
+                        count++;
                     }
-                </div>
-                <div class="ctnr-options">
-                    <center>
-                        <ul class="pagination pagination-sm">
-                            @{
-                                double noOfPages = Math.Ceiling((Convert.ToDouble(ViewBag.totalItemsFound) / Convert.ToDouble(ViewBag.fetchAmount)));
-                                <input type="hidden" id="noOfPages" value="@noOfPages" />
-
-                                for (int itemCount = 0; itemCount < noOfPages; itemCount++)
-                                {
-                                    <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
-                                }
+                }
+                else
+                {
+                    <div class="ctnr">
+                        <div class="ctnr-info">No room(s) was found</div>
+                    </div>
+                }
+            </div>
+            <div class="ctnr-options">
+                <center>
+                    @{
+                        double noOfPages = Math.Ceiling((Convert.ToDouble(ViewBag.totalItemsFound) / Convert.ToDouble(ViewBag.fetchAmount)));
+                        <input type="hidden" id="noOfPages" value="@noOfPages" />
+                    }
+                    <ul class="pagination pagination-sm">
+                        @{
+                            for (int itemCount = 0; itemCount < noOfPages; itemCount++)
+                            {
+                                <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
                             }
-                        </ul>
-                    </center>
-                    <span class="previous-page" style="float: left; display: none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
-                    <span class="next-page" style="float:right; display: none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
-                </div>
+                        }
+                    </ul>
+                </center>
+                <span class="previous-page" style="float: left; display: none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
+                <span class="next-page" style="float:right; display: none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
+            </div>
                 <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
-            }
-        </div>
+        }
     </div>
 </div>
