@@ -253,23 +253,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="LAND">
-      <EntityTypeMapping TypeName="JAHomesModel.LAND">
-        <MappingFragment StoreEntitySet="LAND">
-          <ScalarProperty Name="DESCRIPTION" ColumnName="DESCRIPTION" />
-          <ScalarProperty Name="DATE_ADDED" ColumnName="DATE_ADDED" />
-          <ScalarProperty Name="OWNER" ColumnName="OWNER" />
-          <ScalarProperty Name="IMAGE_URL" ColumnName="IMAGE_URL" />
-          <ScalarProperty Name="AREA" ColumnName="AREA" />
-          <ScalarProperty Name="PRICE" ColumnName="PRICE" />
-          <ScalarProperty Name="PURPOSE" ColumnName="PURPOSE" />
-          <ScalarProperty Name="PARISH" ColumnName="PARISH" />
-          <ScalarProperty Name="CITY" ColumnName="CITY" />
-          <ScalarProperty Name="STREET_ADDRESS" ColumnName="STREET_ADDRESS" />
-          <ScalarProperty Name="ID" ColumnName="ID" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="LANDLORDS">
       <EntityTypeMapping TypeName="JAHomesModel.LANDLORDS">
         <MappingFragment StoreEntitySet="LANDLORDS">
@@ -361,6 +344,23 @@
           <ScalarProperty Name="MIDDLE_NAME" ColumnName="MIDDLE_NAME" />
           <ScalarProperty Name="FIRST_NAME" ColumnName="FIRST_NAME" />
           <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="ID" ColumnName="ID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LAND">
+      <EntityTypeMapping TypeName="JAHomesModel.LAND">
+        <MappingFragment StoreEntitySet="LAND">
+          <ScalarProperty Name="DESCRIPTION" ColumnName="DESCRIPTION" />
+          <ScalarProperty Name="DATE_ADDED" ColumnName="DATE_ADDED" />
+          <ScalarProperty Name="OWNER" ColumnName="OWNER" />
+          <ScalarProperty Name="IMAGE_URL" ColumnName="IMAGE_URL" />
+          <ScalarProperty Name="AREA" ColumnName="AREA" />
+          <ScalarProperty Name="PRICE" ColumnName="PRICE" />
+          <ScalarProperty Name="PURPOSE" ColumnName="PURPOSE" />
+          <ScalarProperty Name="PARISH" ColumnName="PARISH" />
+          <ScalarProperty Name="CITY" ColumnName="CITY" />
+          <ScalarProperty Name="STREET_ADDRESS" ColumnName="STREET_ADDRESS" />
           <ScalarProperty Name="ID" ColumnName="ID" />
         </MappingFragment>
       </EntityTypeMapping>

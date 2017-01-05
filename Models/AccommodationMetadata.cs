@@ -37,6 +37,6 @@ namespace SS.Models
         [Display(Name = "bathroom amount")]
         [DataType(DataType.Currency, ErrorMessage = "Must be a decimal value")]
         public short HOUSE_BATHROOM_AMOUNT { get; set; }
-      //  public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
+        public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
     }
 }

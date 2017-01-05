@@ -25,11 +25,11 @@ $(function () {
         $('.next-page').show();
     }
 
-    if (currentPageNumber == noOfPages -1 && noOfPages - 1 > 0) {
+    if (currentPageNumber == noOfPages - 1 && noOfPages - 1 > 0) {
         $('.previous-page').show();
     }
 
-    if (currentPageNumber != 0 && currentPageNumber != noOfPages -1 && noOfPages - 1 > 0) {
+    if (currentPageNumber != 0 && currentPageNumber != noOfPages - 1 && noOfPages - 1 > 0) {
         $('.next-page').show();
         $('.previous-page').show();
     }
@@ -215,6 +215,27 @@ $(document).ready(function () {
     }
 
     var sys = new system();
+    //sets checked attribute on isStudent true once student rooms for rent link is clicked
+    $(function () {
+        var url = window.location.protocol + '//' + window.location.host + '/properties/rooms?isStudent=true';
+
+        if (window.location.href == url && !$('#isStudent').prop('checked')) {
+            $('#isStudent').prop('checked', true);
+            filterProperties('isStudent', 'filterIsStudent', true, /isStudent=[a-z]+&*/g, /isStudent=[a-z]+/g);
+        }
+    });
+
+    $(function () {
+        var url = window.location.protocol + '//' + window.location.host + '/properties/rooms?isStudent=true';
+        //TODO::check url to see if it matches the path in the varaible above, if it does then keep the student link active
+        if (window.location.href == url && $('#isStudent').prop('checked')) {
+            if ($('#rooms').prop('class') == 'active') {
+                $('#rooms').removeClass('active');
+                $('#student_rooms').attr('class', 'active');
+            }else
+                $('#student_rooms').attr('class', 'active');
+        }
+    });
 
     //sets the menu to fixed after scrolling pass a certain amount of pixels
     $(window).scroll(function () {
@@ -257,7 +278,7 @@ $(document).ready(function () {
                                 + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Monthly Rent: ' + value.Price + '</td><td>Occupancy: ' + value.Occupancy + '</td></tr>'
                                 + '<tr><td>City: ' + value.City + '</td><td>Security Deposit: ' + value.SecurityDeposit + '</td><td>Gender Preference: ' + value.GenderPreference + '</td></tr>'
                                 + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td>'
-                                + '<td><table width="100%"><tr><th>Availability</th><th>Bathrooms</th><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
+                                + '<td><table width="100%"><tr><th style="border-bottom:1px solid #FFFFFF" colspan="7">Inclusives Of The Room</th></tr><tr><th>Availability</th><th>Bathrooms</th><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
                                 + '<tr><td>' + value.Availability + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Water + '</td><td>' + value.Electricity + '</td><td>' + value.Internet + '</td><td>' + value.Cable + '</td><td>' + value.Gas + '</td></tr></table></td></tr>'
                                 + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
                         } else if (value.BedroomAmount != null && value.BedroomAmount != undefined) {
@@ -402,7 +423,7 @@ $(document).ready(function () {
     $('#hasCable').change(function () {
         filterProperties('hasCable', 'filterHasCable', $(this).is(':checked'), /hasCable=[a-z]+&*/g, /hasCable=[a-z]+/g);
     });
-    //filter rooms by has elextricity
+    //filter rooms by has electricity
     $('#hasElectricity').change(function () {
         filterProperties('hasElectricity', 'filterHasElectricity', $(this).is(':checked'), /hasElectricity=[a-z]+&*/g, /hasElectricity=[a-z]+/g);
     });
@@ -819,7 +840,6 @@ $(document).ready(function () {
         //adding any file to the global file variable to be later used
         files = event.target.files;
     });
-
 
 });
 

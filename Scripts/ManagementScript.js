@@ -289,12 +289,12 @@ $(document).ready(function () {
 
                         if (value.BedroomAmount !== undefined) {
 
-                            $('#action-body').html('<input type="button" class="btn btn-danger btn-block" id="removeProperty" value="Remove Property"/><br/><br/><img style="width:250px;height:250px;"  id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/><hr/><form action="/landlordmanagement/updatehouse" method="post"><table class="table-condensed" id="property-information">');
+                            $('#action-body').html('<input type="button" class="btn btn-danger btn-block" id="removeProperty" value="Remove Property"/><br/><br/><img style="width:480px;height:300px;"  id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/><hr/><form action="/landlordmanagement/updatehouse" method="post"><table class="table-condensed" id="property-information">');
 
-                            $('#action-body #property-information ').append('<tr><td>Price</td><<td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td></tr>'
-                                                                            + '<tr><td>Bedroom Amount</td><<td><input  class="form-control" type="text" name="bedroomAmount" value="' + value.BedroomAmount + '"></td></tr>'
-                                                                            + '<tr><td>Bathroom Amount</td><<td><input  class="form-control" type="text" name="bathroomAmount" value="' + value.BathroomAmount + '"></td></tr>'
-                                                                            + '<tr><td>Purpose</td><<td><select class="form-control" id="purpose" name="purpose"><option value="Rent">Rent</option><option value="Sale">Sale</option></select></td></tr>'
+                            $('#action-body #property-information ').append('<tr><td>Price</td><<td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td>'
+                                                                            + '<td>Bedroom Amount</td><<td><input  class="form-control" type="text" name="bedroomAmount" value="' + value.BedroomAmount + '"></td></tr>'
+                                                                            + '<tr><td>Bathroom Amount</td><<td><input  class="form-control" type="text" name="bathroomAmount" value="' + value.BathroomAmount + '"></td>'
+                                                                            + '<td>Purpose</td><<td><select class="form-control" id="purpose" name="purpose"><option value="Rent">Rent</option><option value="Sale">Sale</option></select></td></tr>'
                                                                             + '<tr><td>Is Room Furnished</td><<td><select class="form-control" id="isFurnished" name="isFurnished"><option value="True">Yes</option><option value="False">No</option></select></td></tr>'
                                                                             + '<tr><td>Description</td><td><textarea class="form-control" rows="6" cols="35" name="description">' + value.Description + '</textarea></td></tr>'
                                                                             + '<tr><td><input type="hidden" name="id" id="id" value="' + value.ID + '"/></td></tr></table></form>');
@@ -307,8 +307,8 @@ $(document).ready(function () {
 
                                 $('#action-body').html('<input type="button" class="btn btn-danger btn-block" id="removeProperty" value="Remove Property"/><br/><br/><img style="width:480px;height:300px;"  id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/><hr/><form action="/landlordmanagement/updateland" method="post"><table class="table-condensed" id="property-information">');
 
-                                $('#action-body #property-information ').append('<tr><td>Price</td><<td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td></tr>'
-                                                                                + '<tr><td>Purpose</td><<td><select class="form-control" id="purpose" name="purpose"><option value="Rent">Rent</option><option value="Sale">Sale</option><option value="Lease">Lease</option></select></td></tr>'
+                                $('#action-body #property-information ').append('<tr><td>Price</td><<td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td>'
+                                                                                + '<td>Purpose</td><<td><select class="form-control" id="purpose" name="purpose"><option value="Rent">Rent</option><option value="Sale">Sale</option><option value="Lease">Lease</option></select></td></tr>'
                                                                                 + '<tr><td>Area</td><<td><input  class="form-control" type="text" name="area" value="' + value.Area + '"></td></tr>'
                                                                                 + '<tr><td>Description</td><td><textarea class="form-control" rows="6" cols="35" name="description">' + value.Description + '</textarea></td></tr>'
                                                                                 + '<tr><td><input type="hidden" name="id" id="id" value="' + value.ID + '"/></td></tr></table></form>');
@@ -326,16 +326,16 @@ $(document).ready(function () {
 
                                 $('#action-body').html('<input type="button" class="btn btn-danger btn-block" id="removeProperty" value="Remove Property"/><br/><br/><img style="width:480px;height:300px;"  id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/><hr/><form action="/landlordmanagement/updateaccommodation" method="post"><table class="table-condensed" id="property-information">');
 
-                                $('#action-body #property-information ').append('<tr><td>Price</td><td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td></tr>'
-                                + '<tr><td>Occupancy</td><td><input  class="form-control" type="text" name="occupancy" value="' + value.Occupancy + '"></td></tr>'
-                                + '<tr><td>Security Deposit</td><td><input class="form-control" type="text" name="security_deposit" value="' + value.SecurityDeposit + '"></td></tr>'
-                                + '<tr><td>Water</td><td><select id="water" name="water" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
-                                + '<tr><td>Internet</td><td><select id="internet" name="internet" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
-                                + '<tr><td>Electricity</td><td><select id="electricity" name="electricity" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
-                                + '<tr><td>Cable</td><td><select id="cable" name="cable" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
-                                + '<tr><td>Gas</td><td><select id="gas" name="gas" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
-                                + '<tr><td>Availability</td><td><select id="availability" name="availability" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
-                                + '<tr><td>Gender Preference</td><td><select class="form-control" id="gender_preference" name="gender_preference" class="form-control"><option value="B">Both</option><option value="M">Male</option><option value="F">Female</option></select></td></tr>'
+                                $('#action-body #property-information ').append('<tr><td>Price</td><td><input  class="form-control" type="text" name="price" value="' + value.Price + '"></td>'
+                                + '<td>Occupancy</td><td><input  class="form-control" type="text" name="occupancy" value="' + value.Occupancy + '"></td></tr>'
+                                + '<tr><td>Security Deposit</td><td><input class="form-control" type="text" name="security_deposit" value="' + value.SecurityDeposit + '"></td>'
+                                + '<td>Water</td><td><select id="water" name="water" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
+                                + '<tr><td>Internet</td><td><select id="internet" name="internet" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td>'
+                                + '<td>Electricity</td><td><select id="electricity" name="electricity" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
+                                + '<tr><td>Cable</td><td><select id="cable" name="cable" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td>'
+                                + '<td>Gas</td><td><select id="gas" name="gas" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td></tr>'
+                                + '<tr><td>Availability</td><td><select id="availability" name="availability" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></td>'
+                                + '<td>Gender Preference</td><td><select class="form-control" id="gender_preference" name="gender_preference" class="form-control"><option value="B">Both</option><option value="M">Male</option><option value="F">Female</option></select></td></tr>'
                                 + '<tr><td>Security Deposit</td><td><input class="form-control" type="text" name="security_deposit" value="' + value.SecurityDeposit + '"></td></tr>'
                                 + '<tr><td>Description</td><td><textarea class="form-control" rows="6" cols="35" name="description">' + value.Description + '</textarea></td></tr>'
                                 + '<tr><td><input type="hidden" name="id" id="id" value="' + value.ID + '"/></td></tr></table></form>');

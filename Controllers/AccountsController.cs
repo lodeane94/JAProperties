@@ -427,7 +427,7 @@ namespace SS.Controllers
                                 Roles.AddUserToRole(landlord.CELL, "Landlords");
 
                                 //inserts land into the appropriate table
-                                dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA, land.DESCRIPTION, propertyPicName, landlord_id);
+                                dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA.ToString(), land.DESCRIPTION, propertyPicName, landlord_id);
 
                                 Session["isRegistrationComplete"] = true;
 
@@ -443,7 +443,7 @@ namespace SS.Controllers
                             landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
 
                             //inserts land into the appropriate table
-                            dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA, land.DESCRIPTION, propertyPicName, landlord_id);
+                            dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA.ToString(), land.DESCRIPTION, propertyPicName, landlord_id);
 
                             Session["isRegistrationComplete"] = true;
                         } 
@@ -603,7 +603,7 @@ namespace SS.Controllers
         {
             LAND land = new LAND();
 
-           /* land.Parishes = new[]
+            land.Parishes = new[]
             {
                 new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
                 new SelectListItem {Value = "hanover",Text = "Hanover"},
@@ -619,7 +619,7 @@ namespace SS.Controllers
                 new SelectListItem {Value = "clarendon",Text = "Clarendon"},
                 new SelectListItem {Value = "manchester",Text = "Manchester"},
                 new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
-            };*/
+            };
 
             return PartialView("_LandInformationRegistration",land);
         }

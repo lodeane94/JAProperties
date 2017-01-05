@@ -44,25 +44,52 @@ namespace SS.Controllers
                     filters.Add(filter);
                 }
                 //cr1 and cr2
-                /*if (!string.IsNullOrEmpty(cr1))
+                if (!string.IsNullOrEmpty(cr1))
                 {
                     if (cr1.Equals("gt"))
                     {
-                        filterString += filterString == "" ? "price > " + "'" + cr2 + "'" : " AND price > " + "'" + cr2 + "'";
+                        Filter filter = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.GreaterThan,
+                            Value = Decimal.Parse(cr2)
+                        };
+
+                        filters.Add(filter);
                     }
                     else
-                        filterString += filterString == "" ? "price BETWEEN " + "'" + cr1 + "'" + " AND " + "'" + cr2 + "'" : " AND price BETWEEN " + "'" + cr1 + "'" + " AND " + "'" + cr2 + "'";
-                }*/
+                    {
+
+                        Filter filter1 = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.GreaterThanOrEqual,
+                            Value = Decimal.Parse(cr1)
+                        };
+
+                        Filter filter2 = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.LessThanOrEqual,
+                            Value = Decimal.Parse(cr2)
+                        };
+                        filters.Add(filter1);
+                        filters.Add(filter2);
+                    }
+                }
                 //gender
                 if (!string.IsNullOrEmpty(gender))
                 {
                     switch (gender)
                     {
-                        case "males": gender = "M";
+                        case "males":
+                            gender = "M";
                             break;
-                        case "females": gender = "F";
+                        case "females":
+                            gender = "F";
                             break;
-                        case "both": gender = "B";
+                        case "both":
+                            gender = "B";
                             break;
                     }
 
@@ -241,15 +268,39 @@ namespace SS.Controllers
                     filters.Add(filter);
                 }
                 //cr1 and cr2
-                /*if (!string.IsNullOrEmpty(cr1))
+                if (!string.IsNullOrEmpty(cr1))
                 {
                     if (cr1.Equals("gt"))
                     {
-                        filterString += filterString == "" ? "price > " + "'" + cr2 + "'" : " AND price > " + "'" + cr2 + "'";
+                        Filter filter = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.GreaterThan,
+                            Value = Decimal.Parse(cr2)
+                        };
+
+                        filters.Add(filter);
                     }
                     else
-                        filterString += filterString == "" ? "price BETWEEN " + "'" + cr1 + "'" + " AND " + "'" + cr2 + "'" : " AND price BETWEEN " + "'" + cr1 + "'" + " AND " + "'" + cr2 + "'";
-                }*/
+                    {
+
+                        Filter filter1 = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.GreaterThanOrEqual,
+                            Value = Decimal.Parse(cr1)
+                        };
+
+                        Filter filter2 = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.LessThanOrEqual,
+                            Value = Decimal.Parse(cr2)
+                        };
+                        filters.Add(filter1);
+                        filters.Add(filter2);
+                    }
+                }
                 //purpose
                 if (!string.IsNullOrEmpty(purpose))
                 {
@@ -367,16 +418,39 @@ namespace SS.Controllers
 
                     filters.Add(filter);
                 }
-                /*cr1 and cr2
                 if (!string.IsNullOrEmpty(cr1))
                 {
                     if (cr1.Equals("gt"))
                     {
-                        filterString += filterString == "" ? "price > " + "'" + cr2 + "'" : " AND price > " + "'" + cr2 + "'";
+                        Filter filter = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.GreaterThan,
+                            Value = Decimal.Parse(cr2)
+                        };
+
+                        filters.Add(filter);
                     }
                     else
-                        filterString += filterString == "" ? "price BETWEEN " + "'" + cr1 + "'" + " AND " + "'" + cr2 + "'" : " AND price BETWEEN " + "'" + cr1 + "'" + " AND " + "'" + cr2 + "'";
-                }*/
+                    {
+
+                        Filter filter1 = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.GreaterThanOrEqual,
+                            Value = Decimal.Parse(cr1)
+                        };
+
+                        Filter filter2 = new Filter()
+                        {
+                            PropertyName = "price",
+                            Operation = Op.LessThanOrEqual,
+                            Value = Decimal.Parse(cr2)
+                        };
+                        filters.Add(filter1);
+                        filters.Add(filter2);
+                    }
+                }
                 //purpose
                 if (!string.IsNullOrEmpty(purpose))
                 {
@@ -389,16 +463,40 @@ namespace SS.Controllers
 
                     filters.Add(filter);
                 }
-                /*area
+                //area
                 if (!string.IsNullOrEmpty(ar1))
                 {
-                    if (ar1.Equals("gt"))
-                    {
-                        filterString += filterString == "" ? "price > " + "'" + ar2 + "'" : " AND price > " + "'" + ar2 + "'";
-                    }
-                    else
-                        filterString += filterString == "" ? "price BETWEEN " + "'" + ar1 + "'" + " AND " + "'" + ar2 + "'" : " AND price BETWEEN " + "'" + ar1 + "'" + " AND " + "'" + ar2 + "'";
-                }*/
+                        if (ar1.Equals("gt"))
+                        {
+                            Filter filter = new Filter()
+                            {
+                                PropertyName = "area",
+                                Operation = Op.GreaterThan,
+                                Value = Decimal.Parse(ar2)
+                            };
+
+                            filters.Add(filter);
+                        }
+                        else
+                        {
+
+                            Filter filter1 = new Filter()
+                            {
+                                PropertyName = "area",
+                                Operation = Op.GreaterThanOrEqual,
+                                Value = Decimal.Parse(ar1)
+                            };
+
+                            Filter filter2 = new Filter()
+                            {
+                                PropertyName = "area",
+                                Operation = Op.LessThanOrEqual,
+                                Value = Decimal.Parse(ar2)
+                            };
+                            filters.Add(filter1);
+                            filters.Add(filter2);
+                        }
+                }
                 #endregion
 
                 var propertiesInformation = (dynamic)null;
@@ -483,14 +581,14 @@ namespace SS.Controllers
                     R_DATE = DateTime.Now
                 };
 
-               // dbCtx.REQUISITION_PROPERTY_MAPPINGS.Add(requisitionMapping);
+                // dbCtx.REQUISITION_PROPERTY_MAPPINGS.Add(requisitionMapping);
                 dbCtx.REQUISITIONS.Add(requisition);
                 dbCtx.SaveChanges();
 
                 try
                 {
                     //dbCtx.sp_make_requisition(propertyID, requisitions.FIRST_NAME, requisitions.LAST_NAME, requisitions.GENDER, requisitions.EMAIL, requisitions.CELL);
-                   // dbCtx.SaveChanges();
+                    // dbCtx.SaveChanges();
                     //TODO: after requisition of property, send mail to property owner 
                     //alerting them of the requisition
                 }

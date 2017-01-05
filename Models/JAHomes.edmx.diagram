@@ -11,7 +11,6 @@
         <EntityTypeShape EntityType="JAHomesModel.BILLS" Width="1.5" PointX="5.25" PointY="23" />
         <EntityTypeShape EntityType="JAHomesModel.COMPLAINTS" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="JAHomesModel.HOUSE" Width="1.5" PointX="3" PointY="23" />
-        <EntityTypeShape EntityType="JAHomesModel.LAND" Width="1.5" PointX="3" PointY="9.5" />
         <EntityTypeShape EntityType="JAHomesModel.LANDLORDS" Width="1.5" PointX="0.75" PointY="13.75" />
         <EntityTypeShape EntityType="JAHomesModel.MEETINGS" Width="1.5" PointX="3" PointY="3.875" />
         <EntityTypeShape EntityType="JAHomesModel.MESSAGES" Width="1.5" PointX="2.75" PointY="0.75" />
@@ -26,11 +25,12 @@
         <AssociationConnector Association="JAHomesModel.FK__aspnet_Us__UserI__11158940" />
         <AssociationConnector Association="JAHomesModel.FK_HOUSE_OWNER" />
         <AssociationConnector Association="JAHomesModel.fk_requisition_house_id" />
-        <AssociationConnector Association="JAHomesModel.FK_LAND_OWNER" />
-        <AssociationConnector Association="JAHomesModel.fk_requisition_land_id" />
         <AssociationConnector Association="JAHomesModel.fk_landlord_id" />
         <AssociationConnector Association="JAHomesModel.fk_subscriptions_landlord_id" />
         <AssociationConnector Association="JAHomesModel.fk_requisition_id" />
+        <EntityTypeShape EntityType="JAHomesModel.LAND" Width="1.5" PointX="3" PointY="9.75" />
+        <AssociationConnector Association="JAHomesModel.FK_LAND_OWNER" />
+        <AssociationConnector Association="JAHomesModel.fk_requisition_land_id" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

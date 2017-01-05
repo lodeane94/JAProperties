@@ -704,7 +704,7 @@ namespace SS.Controllers
                 prop.PURPOSE = purpose;
                 prop.PRICE = price;
                 prop.DESCRIPTION = description;
-                prop.AREA = area;
+                prop.AREA = Decimal.Parse(area);
             }
             //dbCtx.sp_update_land(id, purpose, price, area, description);
             try

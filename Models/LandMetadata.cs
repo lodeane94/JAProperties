@@ -24,6 +24,6 @@ namespace SS.Models
         [Display(Name="Area")]
         [DataType(DataType.Currency)]
         public string AREA { get; set; }
-        //public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
+        public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
     }
 }

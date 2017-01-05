@@ -101,7 +101,7 @@
     <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
     <Property Name="PURPOSE" Type="varchar" MaxLength="13" Nullable="false" />
     <Property Name="PRICE" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-    <Property Name="AREA" Type="varchar" MaxLength="7" Nullable="false" />
+    <Property Name="AREA" Type="decimal" Precision="18" Scale="0" />
     <Property Name="IMAGE_URL" Type="varchar(max)" />
     <Property Name="OWNER" Type="uniqueidentifier" Nullable="false" />
     <Property Name="DATE_ADDED" Type="datetime" />

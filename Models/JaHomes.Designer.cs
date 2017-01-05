@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Users\lkelly\Documents\Visual Studio 2015\Projects\SS\SS\Models\JAHomes.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\Lodeane\Source\Repos\JAProperties\Models\JAHomes.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
