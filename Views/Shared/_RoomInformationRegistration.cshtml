@@ -22,7 +22,7 @@
                 <td>@Html.TextBoxFor(model => model.OCCUPANCY, new { @type = "number" }) @Html.ValidationMessageFor(model => model.OCCUPANCY)</td>
             </tr>
             <tr>
-                <td>House Bathroom Amount</td>
+                <td>Personal bathroom amount</td>
                 <td>@Html.TextBoxFor(model => model.HOUSE_BATHROOM_AMOUNT, new { @type = "number" }) @Html.ValidationMessageFor(model => model.HOUSE_BATHROOM_AMOUNT)</td>
                 <td>Gender Preference</td>
                 <td>
@@ -39,7 +39,7 @@
                     @Html.RadioButtonFor(model => model.IS_STUDENT_ACC, false) No
                     @Html.ValidationMessageFor(model => model.IS_STUDENT_ACC)
                 </td>
-                <td>Inclusions of Room</td>
+                <td>Rent Covers</td>
                 <td colspan="3">
                     @Html.CheckBoxFor(model => model.WATER)Water
                     @Html.CheckBoxFor(model => model.ELECTRICITY)Electricity

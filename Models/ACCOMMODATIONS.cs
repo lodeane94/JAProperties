@@ -12,7 +12,7 @@
 namespace SS.Models
 {
 
-    using System;
+using System;
     using System.Collections.Generic;
 
     public partial class ACCOMMODATIONS
@@ -78,17 +78,18 @@ namespace SS.Models
 
         public string IMAGE_URL { get; set; }
 
-        public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
+        public System.Web.Mvc.SelectListItem[] Parishes { get;set;}
 
 
-        public virtual LANDLORDS LANDLORDS { get; set; }
 
-        public virtual ICollection<TENNANTS> TENNANTS { get; set; }
+    public virtual ICollection<TENNANTS> TENNANTS { get; set; }
 
-        public virtual ICollection<BILLS> BILLS { get; set; }
+    public virtual ICollection<BILLS> BILLS { get; set; }
 
-        public virtual ICollection<REQUISITION_PROPERTY_MAPPINGS> REQUISITION_PROPERTY_MAPPINGS { get; set; }
+    public virtual ICollection<REQUISITION_PROPERTY_MAPPINGS> REQUISITION_PROPERTY_MAPPINGS { get; set; }
 
-    }
+    public virtual LANDLORDS LANDLORDS { get; set; }
+
+}
 
 }

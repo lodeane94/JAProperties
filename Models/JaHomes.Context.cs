@@ -47,8 +47,6 @@ public partial class JAHomesEntities : DbContext
 
     public virtual DbSet<HOUSE> HOUSE { get; set; }
 
-    public virtual DbSet<LANDLORDS> LANDLORDS { get; set; }
-
     public virtual DbSet<MEETINGS> MEETINGS { get; set; }
 
     public virtual DbSet<MESSAGES> MESSAGES { get; set; }
@@ -62,6 +60,8 @@ public partial class JAHomesEntities : DbContext
     public virtual DbSet<TENNANTS> TENNANTS { get; set; }
 
     public virtual DbSet<LAND> LAND { get; set; }
+
+    public virtual DbSet<LANDLORDS> LANDLORDS { get; set; }
 
 
     public virtual ObjectResult<sp_get_properties_Result> sp_get_properties(string table_name, Nullable<short> fetch_amount, string filter_string, ObjectParameter rowcount)
@@ -383,7 +383,7 @@ public partial class JAHomesEntities : DbContext
     }
 
 
-    public virtual int sp_insert_landlord(string first_name, string middle_name, string last_name, string gender, string cell, string email, string picture_url)
+    public virtual int sp_insert_landlord(string first_name, string middle_name, string last_name, string gender, string cell, string email, string picture_url, string username)
     {
 
         var first_nameParameter = first_name != null ?
@@ -421,7 +421,12 @@ public partial class JAHomesEntities : DbContext
             new ObjectParameter("picture_url", typeof(string));
 
 
-        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_insert_landlord", first_nameParameter, middle_nameParameter, last_nameParameter, genderParameter, cellParameter, emailParameter, picture_urlParameter);
+        var usernameParameter = username != null ?
+            new ObjectParameter("username", username) :
+            new ObjectParameter("username", typeof(string));
+
+
+        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_insert_landlord", first_nameParameter, middle_nameParameter, last_nameParameter, genderParameter, cellParameter, emailParameter, picture_urlParameter, usernameParameter);
     }
 
 

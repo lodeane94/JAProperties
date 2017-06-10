@@ -54,13 +54,12 @@ namespace SS.Models
 
         public Nullable<System.DateTime> DATE_ADDED { get; set; }
 
-        public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
+        public System.Web.Mvc.SelectListItem[] Parishes { get; set; }
 
-
-
-        public virtual LANDLORDS LANDLORDS { get; set; }
 
         public virtual ICollection<REQUISITION_PROPERTY_MAPPINGS> REQUISITION_PROPERTY_MAPPINGS { get; set; }
+
+        public virtual LANDLORDS LANDLORDS { get; set; }
 
     }
 

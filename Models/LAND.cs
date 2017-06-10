@@ -38,7 +38,7 @@ namespace SS.Models
 
         public decimal PRICE { get; set; }
 
-        public Nullable<decimal> AREA { get; set; }
+        public decimal AREA { get; set; }
 
         public string IMAGE_URL { get; set; }
 
@@ -48,12 +48,13 @@ namespace SS.Models
 
         public string DESCRIPTION { get; set; }
 
-        public IEnumerable<System.Web.Mvc.SelectListItem> Parishes { get; set; }
+        public System.Web.Mvc.SelectListItem[] Parishes { get; set; }
 
 
-        public virtual LANDLORDS LANDLORDS { get; set; }
 
         public virtual ICollection<REQUISITION_PROPERTY_MAPPINGS> REQUISITION_PROPERTY_MAPPINGS { get; set; }
+
+        public virtual LANDLORDS LANDLORDS { get; set; }
 
     }
 

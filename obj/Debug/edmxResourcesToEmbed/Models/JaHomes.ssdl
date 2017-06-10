@@ -101,7 +101,7 @@
     <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
     <Property Name="PURPOSE" Type="varchar" MaxLength="13" Nullable="false" />
     <Property Name="PRICE" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-    <Property Name="AREA" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="AREA" Type="decimal" Precision="18" Scale="0" Nullable="false" />
     <Property Name="IMAGE_URL" Type="varchar(max)" />
     <Property Name="OWNER" Type="uniqueidentifier" Nullable="false" />
     <Property Name="DATE_ADDED" Type="datetime" />
@@ -119,6 +119,7 @@
     <Property Name="CELL" Type="varchar" MaxLength="12" Nullable="false" />
     <Property Name="EMAIL" Type="varchar" MaxLength="40" Nullable="false" />
     <Property Name="PICTURE_URL" Type="varchar" MaxLength="80" />
+    <Property Name="USERNAME" Type="varchar" MaxLength="7" />
   </EntityType>
   <EntityType Name="MEETINGS">
     <Key>
@@ -741,6 +742,7 @@
     <Parameter Name="cell" Type="varchar" Mode="In" />
     <Parameter Name="email" Type="varchar" Mode="In" />
     <Parameter Name="picture_url" Type="varchar" Mode="In" />
+    <Parameter Name="username" Type="varchar" Mode="In" />
   </Function>
   <Function Name="sp_insert_tennants" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
     <Parameter Name="accommodation_id" Type="varchar(max)" Mode="In" />

@@ -32,14 +32,14 @@ namespace SS.Controllers
         }
         //action that signin user into the system
         [HttpPost]
-        public ActionResult SignIn(string cell, string password)
+        public ActionResult SignIn(string username, string password)
         {
             try
             {
                 //validating user using the contact number of that person
-                if (Membership.ValidateUser(cell, password))
+                if (Membership.ValidateUser(username, password))
                 {
-                    FormsAuthentication.SetAuthCookie(cell, true);
+                    FormsAuthentication.SetAuthCookie(username, true);
 
                     return RedirectToAction("Dashboard", "LandlordManagement");
                 }
@@ -91,7 +91,7 @@ namespace SS.Controllers
                             * checking if user exists before create one 
                             * if user exists, redirect to a page that will give the user futher instructions
                         */
-                        userExistCount = dbCtx.LANDLORDS.Where(e => e.CELL == landlord.CELL).Count();
+                        userExistCount = dbCtx.LANDLORDS.Where(e => e.USERNAME == landlord.USERNAME).Count();
 
                         if (userExistCount > 0)
                             throw new Exception("This user already exists.\nIf your already have a registered propert\nplease signin into your account then add your property from the portal");
@@ -193,15 +193,15 @@ namespace SS.Controllers
                         if (String.IsNullOrEmpty(HttpContext.User.Identity.Name))
                         {
                             // creating user using the asp membership utility
-                            MembershipUser newUser = Membership.CreateUser(landlord.CELL, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
+                            MembershipUser newUser = Membership.CreateUser(landlord.USERNAME, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
 
                             //ensures that the user was created before adding the additional information
                             if (newUser != null)
                             {
                                 //inserts landlord into the appropriate table
-                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "");
+                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "", landlord.USERNAME);
                                 //retrieving landlord id to support stored procedure
-                                landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == landlord.CELL).Select(i => i.ID).Single();
+                                landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == landlord.USERNAME).Select(i => i.ID).Single();
                                 //puts user in landlord role
                                 Roles.AddUserToRole(landlord.CELL, "Landlords");
 
@@ -222,7 +222,7 @@ namespace SS.Controllers
                         {
                             Session["isAdditionalProperty"] = true;
                             //retrieving landlord id to support stored procedure
-                            landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
+                            landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
 
                             //inserts accommodation into the appropriate table
                             dbCtx.sp_insert_accommodation(accommodation.STREET_ADDRESS, accommodation.CITY, accommodation.PARISH, "", "", accommodation.PRICE
@@ -313,15 +313,15 @@ namespace SS.Controllers
                         if (String.IsNullOrEmpty(HttpContext.User.Identity.Name))
                         {
                             // creating user using the asp membership utility
-                            MembershipUser newUser = Membership.CreateUser(landlord.CELL, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
+                            MembershipUser newUser = Membership.CreateUser(landlord.USERNAME, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
 
                             //ensures that the user was created before adding the additional information
                             if (newUser != null)
                             {
                                 //inserts landlord into the appropriate table
-                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "");
+                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "", landlord.USERNAME);
                                 //retrieving landlord id to support stored procedure
-                                landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == landlord.CELL).Select(i => i.ID).Single();
+                                landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == landlord.USERNAME).Select(i => i.ID).Single();
                                 //puts user in landlord role
                                 Roles.AddUserToRole(landlord.CELL, "Landlords");
                                 //inserts house into the appropriate table
@@ -339,7 +339,7 @@ namespace SS.Controllers
                         {
                             Session["isAdditionalProperty"] = true;
                             //retrieving landlord id to support stored procedure
-                            landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
+                            landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
 
                             //inserts house into the appropriate table
                             dbCtx.sp_insert_house(house.STREET_ADDRESS, house.CITY, house.PARISH, house.PRICE, house.BED_ROOM_AMOUNT, house.LIVING_ROOM_AMOUNT,
@@ -414,15 +414,15 @@ namespace SS.Controllers
                         if (String.IsNullOrEmpty(HttpContext.User.Identity.Name))
                         {
                             // creating user using the asp membership utility
-                            MembershipUser newUser = Membership.CreateUser(landlord.CELL, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
+                            MembershipUser newUser = Membership.CreateUser(landlord.USERNAME, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
                             
                             //ensures that the user was created before adding the additional information
                             if (newUser != null)
                             {
                                 //inserts landlord into the appropriate table
-                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "");
+                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "", landlord.USERNAME);
                                 //retrieving landlord id to support stored procedure
-                                landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == landlord.CELL).Select(i => i.ID).Single();
+                                landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == landlord.USERNAME).Select(i => i.ID).Single();
                                 //puts user in landlord role
                                 Roles.AddUserToRole(landlord.CELL, "Landlords");
 
@@ -440,7 +440,7 @@ namespace SS.Controllers
                         {
                             Session["isAdditionalProperty"] = true;
                             //retrieving landlord id to support stored procedure
-                            landlord_id = dbCtx.LANDLORDS.Where(i => i.CELL == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
+                            landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
 
                             //inserts land into the appropriate table
                             dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA.ToString(), land.DESCRIPTION, propertyPicName, landlord_id);
@@ -550,50 +550,50 @@ namespace SS.Controllers
         public PartialViewResult getHousePartialView()
         {
             HOUSE house = new HOUSE();
+            
+                        house.Parishes = new[]
+                        {
+                            new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
+                            new SelectListItem {Value = "hanover",Text = "Hanover"},
+                            new SelectListItem {Value = "stjames",Text = "St. James"},
+                            new SelectListItem {Value = "trelawny",Text = "Trelawny"},
+                            new SelectListItem {Value = "stann",Text = "St. Ann"},
+                            new SelectListItem {Value = "stmary",Text = "St. Mary"},
+                            new SelectListItem {Value = "portland",Text = "Portland"},
+                            new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
+                            new SelectListItem {Value = "kingston",Text = "Kingston"},
+                            new SelectListItem {Value = "standrew",Text = "St. Andrew"},
+                            new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
+                            new SelectListItem {Value = "clarendon",Text = "Clarendon"},
+                            new SelectListItem {Value = "manchester",Text = "Manchester"},
+                            new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
+                        };
+                        
+                        return PartialView("_HouseInformationRegistration",house);
+                    }
+                    //return _room partial view
+                    [HttpGet]
+                    public PartialViewResult getRoomPartialView()
+                    {
+                        ACCOMMODATIONS accommodations = new ACCOMMODATIONS();
 
-            house.Parishes = new[]
-            {
-                new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
-                new SelectListItem {Value = "hanover",Text = "Hanover"},
-                new SelectListItem {Value = "stjames",Text = "St. James"},
-                new SelectListItem {Value = "trelawny",Text = "Trelawny"},
-                new SelectListItem {Value = "stann",Text = "St. Ann"},
-                new SelectListItem {Value = "stmary",Text = "St. Mary"},
-                new SelectListItem {Value = "portland",Text = "Portland"},
-                new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
-                new SelectListItem {Value = "kingston",Text = "Kingston"},
-                new SelectListItem {Value = "standrew",Text = "St. Andrew"},
-                new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
-                new SelectListItem {Value = "clarendon",Text = "Clarendon"},
-                new SelectListItem {Value = "manchester",Text = "Manchester"},
-                new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
-            };
-
-            return PartialView("_HouseInformationRegistration",house);
-        }
-        //return _room partial view
-        [HttpGet]
-        public PartialViewResult getRoomPartialView()
-        {
-            ACCOMMODATIONS accommodations = new ACCOMMODATIONS();
-
-          /*  accommodations.Parishes = new[]
-            {
-                new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
-                new SelectListItem {Value = "hanover",Text = "Hanover"},
-                new SelectListItem {Value = "stjames",Text = "St. James"},
-                new SelectListItem {Value = "trelawny",Text = "Trelawny"},
-                new SelectListItem {Value = "stann",Text = "St. Ann"},
-                new SelectListItem {Value = "stmary",Text = "St. Mary"},
-                new SelectListItem {Value = "portland",Text = "Portland"},
-                new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
-                new SelectListItem {Value = "kingston",Text = "Kingston"},
-                new SelectListItem {Value = "standrew",Text = "St. Andrew"},
-                new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
-                new SelectListItem {Value = "clarendon",Text = "Clarendon"},
-                new SelectListItem {Value = "manchester",Text = "Manchester"},
-                new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
-            };*/
+                        accommodations.Parishes = new[]
+                        {
+                            new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
+                            new SelectListItem {Value = "hanover",Text = "Hanover"},
+                            new SelectListItem {Value = "stjames",Text = "St. James"},
+                            new SelectListItem {Value = "trelawny",Text = "Trelawny"},
+                            new SelectListItem {Value = "stann",Text = "St. Ann"},
+                            new SelectListItem {Value = "stmary",Text = "St. Mary"},
+                            new SelectListItem {Value = "portland",Text = "Portland"},
+                            new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
+                            new SelectListItem {Value = "kingston",Text = "Kingston"},
+                            new SelectListItem {Value = "standrew",Text = "St. Andrew"},
+                            new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
+                            new SelectListItem {Value = "clarendon",Text = "Clarendon"},
+                            new SelectListItem {Value = "manchester",Text = "Manchester"},
+                            new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
+                        };
 
             return PartialView("_RoomInformationRegistration",accommodations);
         }
@@ -602,7 +602,7 @@ namespace SS.Controllers
         public PartialViewResult getLandPartialView()
         {
             LAND land = new LAND();
-
+            
             land.Parishes = new[]
             {
                 new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
@@ -620,7 +620,7 @@ namespace SS.Controllers
                 new SelectListItem {Value = "manchester",Text = "Manchester"},
                 new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
             };
-
+            
             return PartialView("_LandInformationRegistration",land);
         }
         //return _land partial view

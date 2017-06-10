@@ -36,7 +36,7 @@ namespace SS.Controllers
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
                          * so that it may be used if a new property is being added
                          */
-                        var landlordID = dbCtx.LANDLORDS.Where(l => l.CELL == HttpContext.User.Identity.Name)
+                        var landlordID = dbCtx.LANDLORDS.Where(l => l.USERNAME == HttpContext.User.Identity.Name)
                                                         .Select(l => l.ID).Single();
                         Session["landlord_id"] = landlordID;
                         //isAdditionalProperty is a session variable that is used to detect whenever an additional property is being added
@@ -478,9 +478,9 @@ namespace SS.Controllers
             {
                 //retrieving requisitions made by users
                 var requisitions = dbCtx.REQUISITION_PROPERTY_MAPPINGS
-                    .Where(x => x.HOUSE.LANDLORDS.CELL == HttpContext.User.Identity.Name
-                    || x.LAND.LANDLORDS.CELL == HttpContext.User.Identity.Name
-                    || x.ACCOMMODATIONS.LANDLORDS.CELL == HttpContext.User.Identity.Name)
+                    .Where(x => x.HOUSE.LANDLORDS.USERNAME == HttpContext.User.Identity.Name
+                    || x.LAND.LANDLORDS.USERNAME == HttpContext.User.Identity.Name
+                    || x.ACCOMMODATIONS.LANDLORDS.USERNAME == HttpContext.User.Identity.Name)
                     .Select(x => x.REQUISITIONS);
 
                 foreach (var r in requisitions)

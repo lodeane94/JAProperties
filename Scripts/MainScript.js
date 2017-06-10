@@ -278,8 +278,10 @@ $(document).ready(function () {
                                 + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Monthly Rent: ' + value.Price + '</td><td>Occupancy: ' + value.Occupancy + '</td></tr>'
                                 + '<tr><td>City: ' + value.City + '</td><td>Security Deposit: ' + value.SecurityDeposit + '</td><td>Gender Preference: ' + value.GenderPreference + '</td></tr>'
                                 + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td>'
-                                + '<td><table width="100%"><tr><th style="border-bottom:1px solid #FFFFFF" colspan="7">Inclusives Of The Room</th></tr><tr><th>Availability</th><th>Bathrooms</th><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
-                                + '<tr><td>' + value.Availability + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Water + '</td><td>' + value.Electricity + '</td><td>' + value.Internet + '</td><td>' + value.Cable + '</td><td>' + value.Gas + '</td></tr></table></td></tr>'
+                                + '<td>Person Bathroom Amount: ' + value.BathroomAmount + '</td></tr>'
+                                + '<tr><td colspan="3"><table width="100%"><tr><th style="border-bottom:1px solid #FFFFFF" colspan="7">Inclusives Of The Rent</th></tr><tr><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
+                                + '<tr><td>' + value.Water + '</td><td>' + value.Electricity + '</td><td>' + value.Internet + '</td><td>' + value.Cable + '</td><td>' + value.Gas + '</td></tr></table></td></tr>'
+                                + '<tr><th colspan="3">Property Description  </th><tr>'
                                 + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
                         } else if (value.BedroomAmount != null && value.BedroomAmount != undefined) {
                             //dynamically adding the data for the property
@@ -288,6 +290,7 @@ $(document).ready(function () {
                                 + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Price: ' + value.Price + '</td><td><table width="100%"><tr><th>Bedroom Amount</th><th>Bathroom Amount</th><th>Purpose</th><th>Is Furnished</th></td></tr><tr><td>' + value.BedroomAmount + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Purpose + '</td><td>' + value.isFurnished + '</td></tr></table></tr>'
                                 + '<tr><td>City: ' + value.City + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
                                 + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td><td>&nbsp;</td>'
+                                + '<tr><th colspan="3">Property Description  </th><tr>'
                                 + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
                         } else {
                             //dynamically adding the data for the property
@@ -296,6 +299,7 @@ $(document).ready(function () {
                                 + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Price: ' + value.Price + '</td><td><table width="100%"><tr><th>Purpose</th><th>Area</th></td></tr><tr><td>' + value.Purpose + '</td><td>' + value.Area + '</td></tr></table></tr>'
                                 + '<tr><td>City: ' + value.City + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
                                 + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td><td>&nbsp;</td>'
+                                + '<tr><th colspan="3">Property Description  </th><tr>'
                                 + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
                         }
                     });
@@ -635,7 +639,7 @@ $(document).ready(function () {
         var tagName = '';
 
         asideLinkID = $(this).attr('id');
-        parishFilterValue = $(this).text();//value that will be used to filter by parish
+        parishFilterValue = $(this).attr('id');//value that will be used to filter by parish
         //if link is already active, remove the active class from it then clear that filter
         if ($(this).attr('class') == 'active' && $(this).attr('id') != 'all-parishes') {
             //removes active link
@@ -643,6 +647,7 @@ $(document).ready(function () {
             $('#all-parishes').attr('class', 'active');
 
             isFiltered = false;
+            asideLinkID = null;
             //gets all properties//not filtered
             getProperties();
         } else {
@@ -653,6 +658,7 @@ $(document).ready(function () {
                 houseOffset = 0;
                 landOffset = 0;
 
+                asideLinkID = null;
                 //gets all properties//not filtered
                 getProperties();
 

@@ -17,6 +17,8 @@
                 <td>@Html.TextBoxFor(model => model.CELL, new { @type = "number"}) @Html.ValidationMessageFor(model => model.CELL)</td>
                 <td>Email</td>
                 <td>@Html.TextBoxFor(model => model.EMAIL) @Html.ValidationMessageFor(model => model.EMAIL)</td>
+                <td>Username</td>
+                <td>@Html.TextBoxFor(model => model.USERNAME) @Html.ValidationMessageFor(model => model.USERNAME)</td>
             </tr>
             <tr>
                 <td>Password</td>
@@ -24,7 +26,7 @@
                 <td>Confirm Password</td>
                 <td>@Html.PasswordFor(model => model.PASSWORD_CONFIRMED) @Html.ValidationMessageFor(model => model.PASSWORD_CONFIRMED)</td>
                 <td>
-                    <button type="button" data-toggle="popover" title="Password and Confirm Password" data-content="The password and confirm password fields must be the same. Must be 4 characters long">
+                    <button type="button" data-toggle="popover" title="Password and Confirm Password" data-content="The password and confirm password fields must be the same.">
                         <span class="glyphicon glyphicon-question-sign"></span>
                     </button>
                 </td>

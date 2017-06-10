@@ -106,7 +106,7 @@
           <Property Name="PARISH" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="PURPOSE" Type="varchar" MaxLength="13" Nullable="false" />
           <Property Name="PRICE" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="AREA" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="AREA" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="IMAGE_URL" Type="varchar(max)" />
           <Property Name="OWNER" Type="uniqueidentifier" Nullable="false" />
           <Property Name="DATE_ADDED" Type="datetime" />
@@ -124,6 +124,7 @@
           <Property Name="CELL" Type="varchar" MaxLength="12" Nullable="false" />
           <Property Name="EMAIL" Type="varchar" MaxLength="40" Nullable="false" />
           <Property Name="PICTURE_URL" Type="varchar" MaxLength="80" />
+          <Property Name="USERNAME" Type="varchar" MaxLength="7" />
         </EntityType>
         <EntityType Name="MEETINGS">
           <Key>
@@ -746,6 +747,7 @@
           <Parameter Name="cell" Type="varchar" Mode="In" />
           <Parameter Name="email" Type="varchar" Mode="In" />
           <Parameter Name="picture_url" Type="varchar" Mode="In" />
+          <Parameter Name="username" Type="varchar" Mode="In" />
         </Function>
         <Function Name="sp_insert_tennants" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="accommodation_id" Type="varchar(max)" Mode="In" />
@@ -928,6 +930,7 @@
             <Parameter Name="cell" Mode="In" Type="String" />
             <Parameter Name="email" Mode="In" Type="String" />
             <Parameter Name="picture_url" Mode="In" Type="String" />
+            <Parameter Name="username" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_insert_tennants">
             <Parameter Name="accommodation_id" Mode="In" Type="String" />
@@ -1377,17 +1380,12 @@
           <EntitySet Name="BILLS" EntityType="JAHomesModel.BILLS" />
           <EntitySet Name="COMPLAINTS" EntityType="JAHomesModel.COMPLAINTS" />
           <EntitySet Name="HOUSE" EntityType="JAHomesModel.HOUSE" />
-          <EntitySet Name="LANDLORDS" EntityType="JAHomesModel.LANDLORDS" />
           <EntitySet Name="MEETINGS" EntityType="JAHomesModel.MEETINGS" />
           <EntitySet Name="MESSAGES" EntityType="JAHomesModel.MESSAGES" />
           <EntitySet Name="REQUISITION_PROPERTY_MAPPINGS" EntityType="JAHomesModel.REQUISITION_PROPERTY_MAPPINGS" />
           <EntitySet Name="REQUISITIONS" EntityType="JAHomesModel.REQUISITIONS" />
           <EntitySet Name="SUBSCRIPTIONS" EntityType="JAHomesModel.SUBSCRIPTIONS" />
           <EntitySet Name="TENNANTS" EntityType="JAHomesModel.TENNANTS" />
-          <AssociationSet Name="accommodation_owner" Association="JAHomesModel.accommodation_owner">
-            <End Role="LANDLORDS" EntitySet="LANDLORDS" />
-            <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
-          </AssociationSet>
           <AssociationSet Name="fk_accommodation_id" Association="JAHomesModel.fk_accommodation_id">
             <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
             <End Role="TENNANTS" EntitySet="TENNANTS" />
@@ -1404,13 +1402,31 @@
             <End Role="aspnet_Users" EntitySet="aspnet_Users" />
             <End Role="aspnet_UsersInRoles" EntitySet="aspnet_UsersInRoles" />
           </AssociationSet>
+          <AssociationSet Name="fk_requisition_house_id" Association="JAHomesModel.fk_requisition_house_id">
+            <End Role="HOUSE" EntitySet="HOUSE" />
+            <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+          </AssociationSet>
+          <AssociationSet Name="fk_requisition_id" Association="JAHomesModel.fk_requisition_id">
+            <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+            <End Role="REQUISITIONS" EntitySet="REQUISITIONS" />
+          </AssociationSet>
+          <EntitySet Name="LAND" EntityType="JAHomesModel.LAND" />
+          <AssociationSet Name="fk_requisition_land_id" Association="JAHomesModel.fk_requisition_land_id">
+            <End Role="LAND" EntitySet="LAND" />
+            <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+          </AssociationSet>
+          <EntitySet Name="LANDLORDS" EntityType="JAHomesModel.LANDLORDS" />
+          <AssociationSet Name="accommodation_owner" Association="JAHomesModel.accommodation_owner">
+            <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+            <End Role="ACCOMMODATIONS" EntitySet="ACCOMMODATIONS" />
+          </AssociationSet>
           <AssociationSet Name="FK_HOUSE_OWNER" Association="JAHomesModel.FK_HOUSE_OWNER">
             <End Role="LANDLORDS" EntitySet="LANDLORDS" />
             <End Role="HOUSE" EntitySet="HOUSE" />
           </AssociationSet>
-          <AssociationSet Name="fk_requisition_house_id" Association="JAHomesModel.fk_requisition_house_id">
-            <End Role="HOUSE" EntitySet="HOUSE" />
-            <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
+          <AssociationSet Name="FK_LAND_OWNER" Association="JAHomesModel.FK_LAND_OWNER">
+            <End Role="LANDLORDS" EntitySet="LANDLORDS" />
+            <End Role="LAND" EntitySet="LAND" />
           </AssociationSet>
           <AssociationSet Name="fk_landlord_id" Association="JAHomesModel.fk_landlord_id">
             <End Role="LANDLORDS" EntitySet="LANDLORDS" />
@@ -1419,19 +1435,6 @@
           <AssociationSet Name="fk_subscriptions_landlord_id" Association="JAHomesModel.fk_subscriptions_landlord_id">
             <End Role="LANDLORDS" EntitySet="LANDLORDS" />
             <End Role="SUBSCRIPTIONS" EntitySet="SUBSCRIPTIONS" />
-          </AssociationSet>
-          <AssociationSet Name="fk_requisition_id" Association="JAHomesModel.fk_requisition_id">
-            <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
-            <End Role="REQUISITIONS" EntitySet="REQUISITIONS" />
-          </AssociationSet>
-          <EntitySet Name="LAND" EntityType="JAHomesModel.LAND" />
-          <AssociationSet Name="FK_LAND_OWNER" Association="JAHomesModel.FK_LAND_OWNER">
-            <End Role="LANDLORDS" EntitySet="LANDLORDS" />
-            <End Role="LAND" EntitySet="LAND" />
-          </AssociationSet>
-          <AssociationSet Name="fk_requisition_land_id" Association="JAHomesModel.fk_requisition_land_id">
-            <End Role="LAND" EntitySet="LAND" />
-            <End Role="REQUISITION_PROPERTY_MAPPINGS" EntitySet="REQUISITION_PROPERTY_MAPPINGS" />
           </AssociationSet>
           </EntityContainer>
         <ComplexType Name="sp_get_requisitions_Result">
@@ -1553,10 +1556,10 @@
           <Property Name="HOUSE_BATHROOM_AMOUNT" Type="Int16" Nullable="false" />
           <Property Name="DATE_ADDED" Type="DateTime" Precision="3" />
           <Property Name="IMAGE_URL" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="LANDLORDS" Relationship="JAHomesModel.accommodation_owner" FromRole="ACCOMMODATIONS" ToRole="LANDLORDS" />
           <NavigationProperty Name="TENNANTS" Relationship="JAHomesModel.fk_accommodation_id" FromRole="ACCOMMODATIONS" ToRole="TENNANTS" />
           <NavigationProperty Name="BILLS" Relationship="JAHomesModel.FK_ACCOMMODATION_ID_BILLS_ID" FromRole="ACCOMMODATIONS" ToRole="BILLS" />
           <NavigationProperty Name="REQUISITION_PROPERTY_MAPPINGS" Relationship="JAHomesModel.fk_requisition_accommodation_id" FromRole="ACCOMMODATIONS" ToRole="REQUISITION_PROPERTY_MAPPINGS" />
+          <NavigationProperty Name="LANDLORDS" Relationship="JAHomesModel.accommodation_owner" FromRole="ACCOMMODATIONS" ToRole="LANDLORDS" />
         </EntityType>
         <EntityType Name="aspnet_Users">
           <Key>
@@ -1622,26 +1625,8 @@
           <Property Name="IMAGE_URL" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="OWNER" Type="Guid" Nullable="false" />
           <Property Name="DATE_ADDED" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="LANDLORDS" Relationship="JAHomesModel.FK_HOUSE_OWNER" FromRole="HOUSE" ToRole="LANDLORDS" />
           <NavigationProperty Name="REQUISITION_PROPERTY_MAPPINGS" Relationship="JAHomesModel.fk_requisition_house_id" FromRole="HOUSE" ToRole="REQUISITION_PROPERTY_MAPPINGS" />
-        </EntityType>
-        <EntityType Name="LANDLORDS">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="FIRST_NAME" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="MIDDLE_NAME" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="LAST_NAME" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="GENDER" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="CELL" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
-          <Property Name="EMAIL" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="PICTURE_URL" Type="String" MaxLength="80" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="ACCOMMODATIONS" Relationship="JAHomesModel.accommodation_owner" FromRole="LANDLORDS" ToRole="ACCOMMODATIONS" />
-          <NavigationProperty Name="HOUSE" Relationship="JAHomesModel.FK_HOUSE_OWNER" FromRole="LANDLORDS" ToRole="HOUSE" />
-          <NavigationProperty Name="MEETINGS" Relationship="JAHomesModel.fk_landlord_id" FromRole="LANDLORDS" ToRole="MEETINGS" />
-          <NavigationProperty Name="SUBSCRIPTIONS" Relationship="JAHomesModel.fk_subscriptions_landlord_id" FromRole="LANDLORDS" ToRole="SUBSCRIPTIONS" />
-          <NavigationProperty Name="LAND" Relationship="JAHomesModel.FK_LAND_OWNER" FromRole="LANDLORDS" ToRole="LAND" />
+          <NavigationProperty Name="LANDLORDS" Relationship="JAHomesModel.FK_HOUSE_OWNER" FromRole="HOUSE" ToRole="LANDLORDS" />
         </EntityType>
         <EntityType Name="MEETINGS">
           <Key>
@@ -1726,18 +1711,6 @@
           <Property Name="ACCOMMODATION_ID" Type="Guid" Nullable="false" />
           <NavigationProperty Name="ACCOMMODATIONS" Relationship="JAHomesModel.fk_accommodation_id" FromRole="TENNANTS" ToRole="ACCOMMODATIONS" />
         </EntityType>
-        <Association Name="accommodation_owner">
-          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
-          <End Type="JAHomesModel.ACCOMMODATIONS" Role="ACCOMMODATIONS" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LANDLORDS">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="ACCOMMODATIONS">
-              <PropertyRef Name="OWNER" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_accommodation_id">
           <End Type="JAHomesModel.ACCOMMODATIONS" Role="ACCOMMODATIONS" Multiplicity="1" />
           <End Type="JAHomesModel.TENNANTS" Role="TENNANTS" Multiplicity="*" />
@@ -1786,18 +1759,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_HOUSE_OWNER">
-          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
-          <End Type="JAHomesModel.HOUSE" Role="HOUSE" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LANDLORDS">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="HOUSE">
-              <PropertyRef Name="OWNER" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_requisition_house_id">
           <End Type="JAHomesModel.HOUSE" Role="HOUSE" Multiplicity="0..1" />
           <End Type="JAHomesModel.REQUISITION_PROPERTY_MAPPINGS" Role="REQUISITION_PROPERTY_MAPPINGS" Multiplicity="*" />
@@ -1807,30 +1768,6 @@
             </Principal>
             <Dependent Role="REQUISITION_PROPERTY_MAPPINGS">
               <PropertyRef Name="HOUSE_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_landlord_id">
-          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
-          <End Type="JAHomesModel.MEETINGS" Role="MEETINGS" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LANDLORDS">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="MEETINGS">
-              <PropertyRef Name="LANDLORD_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_subscriptions_landlord_id">
-          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
-          <End Type="JAHomesModel.SUBSCRIPTIONS" Role="SUBSCRIPTIONS" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LANDLORDS">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="SUBSCRIPTIONS">
-              <PropertyRef Name="LANDLORD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1856,14 +1793,69 @@
           <Property Name="PARISH" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="PURPOSE" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
           <Property Name="PRICE" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="AREA" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="AREA" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="IMAGE_URL" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="OWNER" Type="Guid" Nullable="false" />
           <Property Name="DATE_ADDED" Type="DateTime" Precision="3" />
           <Property Name="DESCRIPTION" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="LANDLORDS" Relationship="JAHomesModel.FK_LAND_OWNER" FromRole="LAND" ToRole="LANDLORDS" />
           <NavigationProperty Name="REQUISITION_PROPERTY_MAPPINGS" Relationship="JAHomesModel.fk_requisition_land_id" FromRole="LAND" ToRole="REQUISITION_PROPERTY_MAPPINGS" />
+          <NavigationProperty Name="LANDLORDS" Relationship="JAHomesModel.FK_LAND_OWNER" FromRole="LAND" ToRole="LANDLORDS" />
         </EntityType>
+        <Association Name="fk_requisition_land_id">
+          <End Type="JAHomesModel.LAND" Role="LAND" Multiplicity="0..1" />
+          <End Type="JAHomesModel.REQUISITION_PROPERTY_MAPPINGS" Role="REQUISITION_PROPERTY_MAPPINGS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LAND">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="REQUISITION_PROPERTY_MAPPINGS">
+              <PropertyRef Name="LAND_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="LANDLORDS">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="FIRST_NAME" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="MIDDLE_NAME" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="LAST_NAME" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="GENDER" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="CELL" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
+          <Property Name="EMAIL" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="PICTURE_URL" Type="String" MaxLength="80" FixedLength="false" Unicode="false" />
+          <Property Name="USERNAME" Type="String" MaxLength="7" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ACCOMMODATIONS" Relationship="JAHomesModel.accommodation_owner" FromRole="LANDLORDS" ToRole="ACCOMMODATIONS" />
+          <NavigationProperty Name="HOUSE" Relationship="JAHomesModel.FK_HOUSE_OWNER" FromRole="LANDLORDS" ToRole="HOUSE" />
+          <NavigationProperty Name="LAND" Relationship="JAHomesModel.FK_LAND_OWNER" FromRole="LANDLORDS" ToRole="LAND" />
+          <NavigationProperty Name="MEETINGS" Relationship="JAHomesModel.fk_landlord_id" FromRole="LANDLORDS" ToRole="MEETINGS" />
+          <NavigationProperty Name="SUBSCRIPTIONS" Relationship="JAHomesModel.fk_subscriptions_landlord_id" FromRole="LANDLORDS" ToRole="SUBSCRIPTIONS" />
+        </EntityType>
+        <Association Name="accommodation_owner">
+          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
+          <End Type="JAHomesModel.ACCOMMODATIONS" Role="ACCOMMODATIONS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LANDLORDS">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ACCOMMODATIONS">
+              <PropertyRef Name="OWNER" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HOUSE_OWNER">
+          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
+          <End Type="JAHomesModel.HOUSE" Role="HOUSE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LANDLORDS">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="HOUSE">
+              <PropertyRef Name="OWNER" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_LAND_OWNER">
           <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
           <End Type="JAHomesModel.LAND" Role="LAND" Multiplicity="*" />
@@ -1876,15 +1868,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_requisition_land_id">
-          <End Type="JAHomesModel.LAND" Role="LAND" Multiplicity="0..1" />
-          <End Type="JAHomesModel.REQUISITION_PROPERTY_MAPPINGS" Role="REQUISITION_PROPERTY_MAPPINGS" Multiplicity="*" />
+        <Association Name="fk_landlord_id">
+          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
+          <End Type="JAHomesModel.MEETINGS" Role="MEETINGS" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="LAND">
+            <Principal Role="LANDLORDS">
               <PropertyRef Name="ID" />
             </Principal>
-            <Dependent Role="REQUISITION_PROPERTY_MAPPINGS">
-              <PropertyRef Name="LAND_ID" />
+            <Dependent Role="MEETINGS">
+              <PropertyRef Name="LANDLORD_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_subscriptions_landlord_id">
+          <End Type="JAHomesModel.LANDLORDS" Role="LANDLORDS" Multiplicity="1" />
+          <End Type="JAHomesModel.SUBSCRIPTIONS" Role="SUBSCRIPTIONS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LANDLORDS">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SUBSCRIPTIONS">
+              <PropertyRef Name="LANDLORD_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2146,20 +2150,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="LANDLORDS">
-            <EntityTypeMapping TypeName="JAHomesModel.LANDLORDS">
-              <MappingFragment StoreEntitySet="LANDLORDS">
-                <ScalarProperty Name="PICTURE_URL" ColumnName="PICTURE_URL" />
-                <ScalarProperty Name="EMAIL" ColumnName="EMAIL" />
-                <ScalarProperty Name="CELL" ColumnName="CELL" />
-                <ScalarProperty Name="GENDER" ColumnName="GENDER" />
-                <ScalarProperty Name="LAST_NAME" ColumnName="LAST_NAME" />
-                <ScalarProperty Name="MIDDLE_NAME" ColumnName="MIDDLE_NAME" />
-                <ScalarProperty Name="FIRST_NAME" ColumnName="FIRST_NAME" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="MEETINGS">
             <EntityTypeMapping TypeName="JAHomesModel.MEETINGS">
               <MappingFragment StoreEntitySet="MEETINGS">
@@ -2254,6 +2244,21 @@
                 <ScalarProperty Name="PARISH" ColumnName="PARISH" />
                 <ScalarProperty Name="CITY" ColumnName="CITY" />
                 <ScalarProperty Name="STREET_ADDRESS" ColumnName="STREET_ADDRESS" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LANDLORDS">
+            <EntityTypeMapping TypeName="JAHomesModel.LANDLORDS">
+              <MappingFragment StoreEntitySet="LANDLORDS">
+                <ScalarProperty Name="USERNAME" ColumnName="USERNAME" />
+                <ScalarProperty Name="PICTURE_URL" ColumnName="PICTURE_URL" />
+                <ScalarProperty Name="EMAIL" ColumnName="EMAIL" />
+                <ScalarProperty Name="CELL" ColumnName="CELL" />
+                <ScalarProperty Name="GENDER" ColumnName="GENDER" />
+                <ScalarProperty Name="LAST_NAME" ColumnName="LAST_NAME" />
+                <ScalarProperty Name="MIDDLE_NAME" ColumnName="MIDDLE_NAME" />
+                <ScalarProperty Name="FIRST_NAME" ColumnName="FIRST_NAME" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

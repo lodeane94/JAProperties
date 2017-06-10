@@ -22,7 +22,7 @@ namespace SS.Controllers
             string hasGas, string hasInternet, int? pg = 0)
         {
             //the amount of properties that should be returned
-            short fetchAmount = 2;
+            short fetchAmount = 12;
 
             using (JAHomesEntities dbCtx = new JAHomesEntities())
             {
@@ -246,7 +246,7 @@ namespace SS.Controllers
         public ActionResult Houses(string parish, string cr1, string cr2,
             string bedrooms, string purpose, string bathrooms, string isFurnished, int? pg = 0)
         {
-            short fetchAmount = 2;
+            short fetchAmount = 12;
 
             using (JAHomesEntities dbCtx = new JAHomesEntities())
             {
@@ -397,7 +397,7 @@ namespace SS.Controllers
         public ActionResult Lands(string parish, string cr1, string cr2,
             string ar1, string ar2, string purpose, string direction, int? pg = 0)
         {
-            short fetchAmount = 2;
+            short fetchAmount = 12;
 
             using (JAHomesEntities dbCtx = new JAHomesEntities())
             {

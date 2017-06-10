@@ -25,11 +25,11 @@ namespace SS.Models
 
             this.HOUSE = new HashSet<HOUSE>();
 
+            this.LAND = new HashSet<LAND>();
+
             this.MEETINGS = new HashSet<MEETINGS>();
 
             this.SUBSCRIPTIONS = new HashSet<SUBSCRIPTIONS>();
-
-            this.LAND = new HashSet<LAND>();
 
         }
 
@@ -50,6 +50,8 @@ namespace SS.Models
 
         public string PICTURE_URL { get; set; }
 
+        public string USERNAME { get; set; }
+
         public string PASSWORD { get; set; }
 
         public string PASSWORD_CONFIRMED { get; set; }
@@ -60,11 +62,11 @@ namespace SS.Models
 
         public virtual ICollection<HOUSE> HOUSE { get; set; }
 
+        public virtual ICollection<LAND> LAND { get; set; }
+
         public virtual ICollection<MEETINGS> MEETINGS { get; set; }
 
         public virtual ICollection<SUBSCRIPTIONS> SUBSCRIPTIONS { get; set; }
-
-        public virtual ICollection<LAND> LAND { get; set; }
 
     }
 

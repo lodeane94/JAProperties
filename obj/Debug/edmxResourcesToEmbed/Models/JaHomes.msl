@@ -253,20 +253,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="LANDLORDS">
-      <EntityTypeMapping TypeName="JAHomesModel.LANDLORDS">
-        <MappingFragment StoreEntitySet="LANDLORDS">
-          <ScalarProperty Name="PICTURE_URL" ColumnName="PICTURE_URL" />
-          <ScalarProperty Name="EMAIL" ColumnName="EMAIL" />
-          <ScalarProperty Name="CELL" ColumnName="CELL" />
-          <ScalarProperty Name="GENDER" ColumnName="GENDER" />
-          <ScalarProperty Name="LAST_NAME" ColumnName="LAST_NAME" />
-          <ScalarProperty Name="MIDDLE_NAME" ColumnName="MIDDLE_NAME" />
-          <ScalarProperty Name="FIRST_NAME" ColumnName="FIRST_NAME" />
-          <ScalarProperty Name="ID" ColumnName="ID" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="MEETINGS">
       <EntityTypeMapping TypeName="JAHomesModel.MEETINGS">
         <MappingFragment StoreEntitySet="MEETINGS">
@@ -361,6 +347,21 @@
           <ScalarProperty Name="PARISH" ColumnName="PARISH" />
           <ScalarProperty Name="CITY" ColumnName="CITY" />
           <ScalarProperty Name="STREET_ADDRESS" ColumnName="STREET_ADDRESS" />
+          <ScalarProperty Name="ID" ColumnName="ID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="LANDLORDS">
+      <EntityTypeMapping TypeName="JAHomesModel.LANDLORDS">
+        <MappingFragment StoreEntitySet="LANDLORDS">
+          <ScalarProperty Name="USERNAME" ColumnName="USERNAME" />
+          <ScalarProperty Name="PICTURE_URL" ColumnName="PICTURE_URL" />
+          <ScalarProperty Name="EMAIL" ColumnName="EMAIL" />
+          <ScalarProperty Name="CELL" ColumnName="CELL" />
+          <ScalarProperty Name="GENDER" ColumnName="GENDER" />
+          <ScalarProperty Name="LAST_NAME" ColumnName="LAST_NAME" />
+          <ScalarProperty Name="MIDDLE_NAME" ColumnName="MIDDLE_NAME" />
+          <ScalarProperty Name="FIRST_NAME" ColumnName="FIRST_NAME" />
           <ScalarProperty Name="ID" ColumnName="ID" />
         </MappingFragment>
       </EntityTypeMapping>
