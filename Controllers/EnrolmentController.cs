@@ -10,13 +10,13 @@ using System.Web.Security;
 namespace SS.Controllers
 {
     public class EnrolmentController : Controller
-    {
+    {/*
         [HttpPost]
         public ActionResult Enroll(TENNANTS tennants, string password, string confirmedPassword, string enrolmentKey,bool university_student)
-        {/*
+        {
             RequisitionInformation rinfo = (RequisitionInformation) Session["requesteeInfo"];
             //checking if the permission was given by the landlord for the user to enroll into room
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             string eK = dbCtx.ACCOMMODATIONS.Where(ek => ek.ID.ToString() == rinfo.ID)
                                     .Select(ek => ek.ENROLMENT_KEY).Single();
@@ -51,9 +51,9 @@ namespace SS.Controllers
                         }
                     }
                 }
-            }*/
+            }
             return RedirectToAction("Home","Home");
-        }
+        }*/
 
         [HttpGet]
         public ActionResult Requisition(string accID, string fname, string lname, string gender, string email, string cell)

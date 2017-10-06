@@ -9,11 +9,15 @@ using System.Web.Security;
 using SS.Code;
 using System.Globalization;
 using System.Text;
+using SS.Core;
+using SS.ViewModels;
 
 namespace SS.Controllers
 {
     public class AccountsController : Controller
     {
+        private List<String> uploadedImageNames = new List<string>();//used to store names of uploaded images. Needed in the case of removing uploaded images during rollback
+
         //action that signout users of the system
         public ActionResult SignOut()
         {
@@ -53,7 +57,7 @@ namespace SS.Controllers
             return View();
         }
         //loads registration view
-        public ActionResult Registration()
+        public ActionResult AdvertiseProperty()
         {
             if (!String.IsNullOrEmpty(HttpContext.User.Identity.Name))
             {
@@ -62,214 +66,246 @@ namespace SS.Controllers
                 return RedirectToAction("Dashboard", "LandlordManagement");
             }
 
-            return View();
-        }
-        //loads the premium feature view
-        public ActionResult PremiumFeature()
-        {
-            return View();
-        }
-        /*
-         * used to register the property owner. If this call fails it will prevent all other calls for registration to halt.
-         * If this call succeeds,  another request will be made to either register
-         * a land, house or a room property. 
-         */
-        [HttpPost]
-        public ActionResult RegistrationLandlord(LANDLORDS landlord, string chkProperty)
-        {
-            try
+            AdvertisePropertyViewModel Newmodel = new AdvertisePropertyViewModel()
             {
-                if (ModelState.IsValid)
+                FirstName = "Lodeane",
+                LastName = "Kelly",
+                CellNum = "3912600",
+                Email = "dean@g.com",
+                StreetAddress = "12 Coolshade Drive",
+                Country = "Jamaica",
+                Division = "Kingston 19",
+                Community = "Havendale",
+                Price = 4000,
+                SecurityDeposit = 4000,
+                TermsAgreement = "Terms",
+                TotRooms = 1,
+                IsReviewable = true,
+                Description = "Very good property"
+            };
+
+            return View(Newmodel);
+        }
+
+        [HttpPost]
+        public JsonResult AdvertiseProperty(AdvertisePropertyViewModel model)
+        {
+            ErrorModel errorModel = new ErrorModel();
+
+            if (ModelState.IsValid)
+            {
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    //initializing the database context 
-                    using (JAHomesEntities dbCtx = new JAHomesEntities())
+                    using (var dbCtxTran = dbCtx.Database.BeginTransaction())
                     {
-                        //variable used to detect whether a user exists in the database: if value > 0 user exists
-                        int userExistCount = 0;
-
-                        /*
-                            * checking if user exists before create one 
-                            * if user exists, redirect to a page that will give the user futher instructions
-                        */
-                        userExistCount = dbCtx.LANDLORDS.Where(e => e.USERNAME == landlord.USERNAME).Count();
-
-                        if (userExistCount > 0)
-                            throw new Exception("This user already exists.\nIf your already have a registered propert\nplease signin into your account then add your property from the portal");
-
-                        if (landlord.PASSWORD.Equals(landlord.PASSWORD_CONFIRMED, StringComparison.InvariantCultureIgnoreCase))
+                        try
                         {
-                            /*
-                             * create roles if they dont exists
-                             * landlords role is only for landlords and tennats roles is only for tennants
-                             */
+                            createRolesIfNotExist();
 
-                            if (!Roles.RoleExists("Landlords") || !Roles.RoleExists("Tennants"))
+                            var unitOfWork = new UnitOfWork(dbCtx);
+
+                            bool ownerExist = doesOwnerExist(unitOfWork, model.CellNum);
+                            insertProperty(model, unitOfWork, ownerExist);
+
+                            if(!ownerExist)
+                                createUserAccount(model);
+
+                            dbCtxTran.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            dbCtxTran.Rollback();
+
+                            if (uploadedImageNames != null && uploadedImageNames.Count > 0)
                             {
-                                Roles.CreateRole("Landlords");
-                                Roles.CreateRole("Tennants");
+                                PropertyHelper.removeUploadedImages(uploadedImageNames);
                             }
 
-                            /*
-                             * Saving the landlord's object in a session variable to be used once the property
-                             * information is fully validated
-                             */
-                            Session["landlord"] = landlord;
+                            errorModel.hasErrors = true;
+                            errorModel.ErrorMessages = new List<string>();
+                            errorModel.ErrorMessages.Add(ex.Message);
+
+                            return Json(errorModel);
                         }
-                        else
-                            throw new Exception("Sorry there has been an unexpected error during the registration process \nEnsure that the passwords match");
                     }
                 }
-                else
-                {
-                    throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                }
             }
-            catch (Exception ex)
+            else
             {
-                var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
-                       .Select(x => new { x.Key, x.Value.Errors })
-                       .ToArray();
+                var errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
 
-
-                return Content(ex.Message);
+                errorModel.hasErrors = true;
+                errorModel.ErrorMessages = new List<string>();
+                errorModel.ErrorMessages.AddRange(errors);
             }
 
-            return Content("");
+            return Json(errorModel);
         }
 
-        [HttpPost]
-        public ActionResult RegistrationAccommodation(ACCOMMODATIONS accommodation, HttpPostedFileBase flPropertyPic)
+        /// <summary>
+        /// Creates a membership account for the property owner
+        /// </summary>
+        /// <param name="model"></param>
+        private void createUserAccount(AdvertisePropertyViewModel model)
         {
             MembershipCreateStatus status = new MembershipCreateStatus();
-            try
+            //create account for non-basic subscriptions
+            if (!model.SubscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
             {
-                if (ModelState.IsValid)
+                MembershipUser newUser = Membership.CreateUser(model.Email, model.Password, model.Email, "null", "null", true, out status);
+                if (newUser != null)
                 {
-                    using (JAHomesEntities dbCtx = new JAHomesEntities())
-                    {
-                        Guid landlord_id = new Guid();
-                        LANDLORDS landlord = null;
-
-                        if (Session["landlord"] != null)
-                        {
-                            //landlord coming from the landlordregistration method that was called first 
-                            landlord = (LANDLORDS)Session["landlord"];
-                        }
-                        /*
-                         * checking whether the generated key matches any key that is already in the database
-                         * if it does regenerate a key then check again
-                         */
-                        bool isKeyFound = false;
-                        string generated_key = string.Empty;
-
-                        do
-                        {
-                            generated_key = getRandomKey(7);
-
-                            var keys = dbCtx.ACCOMMODATIONS.Where(a => a.ENROLMENT_KEY == generated_key)
-                                       .Select(a => a.ENROLMENT_KEY);
-
-                            foreach (var key in keys)
-                            {
-                                if (key.ToString() == generated_key)
-                                {
-                                    isKeyFound = true;
-                                }
-                            }
-                        } while (isKeyFound);
-                        /*
-                         * getting the name of the picture that was uploaded
-                         * if no picture was uploaded then use a default picture
-                         */
-                        string propertyPicName;
-
-                        if (flPropertyPic != null)
-                        {
-                            propertyPicName = getPropertyPicName(flPropertyPic);
-                        }
-                        else
-                            propertyPicName = "Nopic.png";
-
-                        if (String.IsNullOrEmpty(HttpContext.User.Identity.Name))
-                        {
-                            // creating user using the asp membership utility
-                            MembershipUser newUser = Membership.CreateUser(landlord.USERNAME, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
-
-                            //ensures that the user was created before adding the additional information
-                            if (newUser != null)
-                            {
-                                //inserts landlord into the appropriate table
-                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "", landlord.USERNAME);
-                                //retrieving landlord id to support stored procedure
-                                landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == landlord.USERNAME).Select(i => i.ID).Single();
-                                //puts user in landlord role
-                                Roles.AddUserToRole(landlord.CELL, "Landlords");
-
-                                //inserts accommodation into the appropriate table
-                                dbCtx.sp_insert_accommodation(accommodation.STREET_ADDRESS, accommodation.CITY, accommodation.PARISH, "", "", accommodation.PRICE
-                                                             , accommodation.SECURITY_DEPOSIT, accommodation.OCCUPANCY, accommodation.GENDER_PREFERENCE, accommodation.DESCRIPTION,
-                                                             accommodation.WATER, accommodation.ELECTRICITY, accommodation.CABLE, accommodation.GAS, accommodation.INTERNET,
-                                                             true, generated_key, propertyPicName, "", landlord_id, accommodation.IS_STUDENT_ACC, accommodation.HOUSE_BATHROOM_AMOUNT);
-
-                                Session["isRegistrationComplete"] = true;
-
-                                return RedirectToAction("Home", "Home");
-                            }
-                            else
-                                throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                        }
-                        else
-                        {
-                            Session["isAdditionalProperty"] = true;
-                            //retrieving landlord id to support stored procedure
-                            landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
-
-                            //inserts accommodation into the appropriate table
-                            dbCtx.sp_insert_accommodation(accommodation.STREET_ADDRESS, accommodation.CITY, accommodation.PARISH, "", "", accommodation.PRICE
-                                                         , accommodation.SECURITY_DEPOSIT, accommodation.OCCUPANCY, accommodation.GENDER_PREFERENCE, accommodation.DESCRIPTION,
-                                                         accommodation.WATER, accommodation.ELECTRICITY, accommodation.CABLE, accommodation.GAS, accommodation.INTERNET,
-                                                         true, generated_key, propertyPicName, "", landlord_id, accommodation.IS_STUDENT_ACC, accommodation.HOUSE_BATHROOM_AMOUNT);
-
-                            Session["isRegistrationComplete"] = true;
-                        }
-                    }
+                    addUserToRespectedRole(model.Email, model.SubscriptionType);
                 }
                 else
-                {
-                    throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                }
+                    throw new Exception(GetMembershipErrorMessage(status));
             }
-            catch (Exception ex)
-            {
-                string errorListCombine = string.Empty;
-
-                var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
-                       .Select(x => new { x.Value.Errors })
-                       .ToArray();
-
-                foreach (var error in errors)
-                {
-                    errorListCombine += errors + "\n";
-                }
-
-                Session["registrationErrorMessage"] = ex.Message + " \n" + errorListCombine;
-                //gets membership error
-                if (status.ToString() != "") 
-                   Session["registrationErrorMessage"] += "\n" + GetErrorMessage(status);
-            }
-            //redirects to the dashboard page instead of homepage
-            if (Session["isAdditionalProperty"] != null)
-            {
-                if ((bool)Session["isAdditionalProperty"])
-                    return RedirectToAction("Dashboard", "LandlordManagement");
-            }
-
-            return View("Registration");
         }
-        /*
-         * used to produce a random key for the enrolment key 
-         * the size of this key is 7 alphanumerical characters 
-         */
+
+        /// <summary>
+        /// Inserts the property along with it's owner, subscription period and also the property images
+        /// </summary>
+        /// <param name="model"></param>
+        private void insertProperty(AdvertisePropertyViewModel model, UnitOfWork unitOfWork, bool ownerExist)
+        {
+            Guid ownerID = ownerExist ? unitOfWork.Owner.GetOwnerIDByCellNum(model.CellNum) : Guid.NewGuid();
+            Guid propertyID = Guid.NewGuid();
+
+            //generate enrolment key for users with Landlord subscription
+            if (model.SubscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
+            {
+                model.EnrolmentKey = getRandomKey(6);
+            }
+
+            Property property = new Property()
+            {
+                ID = propertyID,
+                OwnerID = ownerID,
+                PurposeCode = PropertyHelper.mapPropertyPurposeNameToCode(model.PropertyPurpose),
+                TypeID = unitOfWork.PropertyType.GetPropertyTypeIDByName(model.PropertyType),
+                AdTypeCode = PropertyHelper.mapPropertyAdTypeNameToCode(model.AdvertismentType),
+                AdPriorityCode = PropertyHelper.mapPropertyAdpriorityNameToCode(model.AdvertismentPriority),
+                ConditionCode = EFPConstants.PropertyCondition.NotSurveyed,
+                StreetAddress = model.StreetAddress,
+                Division = model.Division,
+                Community = model.Community,
+                Country = model.Country,
+                Price = model.Price,
+                SecurityDeposit = model.SecurityDeposit,
+                Occupancy = model.Occupancy,
+                GenderPreferenceCode = model.GenderPreferenceCode,
+                Description = model.Description,
+                Availability = true,
+                EnrolmentKey = model.EnrolmentKey,
+                TermsAgreement = model.TermsAgreement,
+                TotAvailableBathroom = model.TotAvailableBathroom,
+                TotRooms = model.TotRooms,
+                Area = model.Area,
+                IsReviewable = model.IsReviewable,
+                DateTCreated = DateTime.Now
+            };
+
+            Subscription subscription = new Subscription()
+            {
+                ID = Guid.NewGuid(),
+                OwnerID = ownerID,
+                TypeCode = PropertyHelper.mapPropertySubscriptionTypeToCode(model.SubscriptionType),
+                Period = model.SubscriptionPeriod,
+                DateTCreated = DateTime.Now
+            };
+
+            if (!ownerExist)
+            {
+                Owner owner = new Owner()
+                {
+                    ID = ownerID,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    CellNum = model.CellNum,
+                    Email = model.Email,
+                    DateTCreated = DateTime.Now
+                };
+
+                unitOfWork.Owner.Add(owner);
+            }
+            unitOfWork.Property.Add(property);
+            unitOfWork.Subscription.Add(subscription);
+
+            associateTagsWithProperty(unitOfWork, propertyID, model.selectedTags);
+            associateImagesWithProperty(unitOfWork, model.flPropertyPics, propertyID);
+
+            unitOfWork.save();
+        }
+
+        /// <summary>
+        /// Associates a property with the selected tags
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="propertyID"></param>
+        /// <param name="selectedTags"></param>
+        private void associateTagsWithProperty(UnitOfWork unitOfWork, Guid propertyID, string[] selectedTags)
+        {
+            if (selectedTags != null)
+            {
+                foreach (var tag in selectedTags)
+                {
+                    Tags tags = new Tags
+                    {
+                        ID = Guid.NewGuid(),
+                        PropertyID = propertyID,
+                        TypeID = unitOfWork.TagType.GetTagTypeIDByTagName(tag),
+                        DateTCreated = DateTime.Now
+                    };
+
+                    unitOfWork.Tags.Add(tags);
+                }
+            }
+        }
+
+        /// <summary>
+        /// adds user to it's respected role and generate enrolment key if necessary
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="subscriptionType"></param>
+        private void addUserToRespectedRole(string email, string subscriptionType)
+        {
+            if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Landlord.ToString());
+            }
+            else if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Realtor)))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Realtor.ToString());
+            }
+        }
+
+        /// <summary>
+        ///  checks if a property owner exists before creating a new one
+        /// </summary>
+        /// <returns></returns>
+        private bool doesOwnerExist(UnitOfWork unitOfWork, String cellNum)
+        {
+            return unitOfWork.Owner.DoesOwnerExist(cellNum);
+        }
+
+        /// <summary>
+        /// creates lanlord,tennant and realtor roles if they dont exist
+        /// </summary>
+        private void createRolesIfNotExist()
+        {
+            if (!Roles.RoleExists("Landlord")
+                    || !Roles.RoleExists("Tennant")
+                    || !Roles.RoleExists("Realtor"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Landlord.ToString());
+                Roles.CreateRole(EFPConstants.RoleNames.Tennant.ToString());
+                Roles.CreateRole(EFPConstants.RoleNames.Realtor.ToString());
+            }
+        }
+
+        /// <summary>
+        /// used to produce a random key for the enrolment key 
+        /// </summary>
         private string getRandomKey(int size)
         {
             string input = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -282,240 +318,117 @@ namespace SS.Controllers
             return new string(chars.ToArray());
         }
 
-        [HttpPost]
-        public ActionResult RegistrationHouse(HOUSE house, HttpPostedFileBase flPropertyPic)
+        //loads the premium feature view
+        public ActionResult PremiumFeature()
         {
-            MembershipCreateStatus status = new MembershipCreateStatus();
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    using (JAHomesEntities dbCtx = new JAHomesEntities())
-                    {
-                        Guid landlord_id = new Guid();
-                        LANDLORDS landlord = null;
-
-                        if (Session["landlord"] != null)
-                        {
-                            //landlord coming from the landlordregistration method that was called first 
-                            landlord = (LANDLORDS)Session["landlord"];
-                        }
-
-                        string propertyPicName;
-
-                        if (flPropertyPic != null)
-                        {
-                            propertyPicName = getPropertyPicName(flPropertyPic);
-                        }
-                        else
-                            propertyPicName = "Nopic.jpg";
-
-                        if (String.IsNullOrEmpty(HttpContext.User.Identity.Name))
-                        {
-                            // creating user using the asp membership utility
-                            MembershipUser newUser = Membership.CreateUser(landlord.USERNAME, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
-
-                            //ensures that the user was created before adding the additional information
-                            if (newUser != null)
-                            {
-                                //inserts landlord into the appropriate table
-                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "", landlord.USERNAME);
-                                //retrieving landlord id to support stored procedure
-                                landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == landlord.USERNAME).Select(i => i.ID).Single();
-                                //puts user in landlord role
-                                Roles.AddUserToRole(landlord.CELL, "Landlords");
-                                //inserts house into the appropriate table
-                                dbCtx.sp_insert_house(house.STREET_ADDRESS, house.CITY, house.PARISH, house.PRICE, house.BED_ROOM_AMOUNT, house.LIVING_ROOM_AMOUNT,
-                                    house.BATH_ROOM_AMOUNT, house.PURPOSE, house.ISFURNISHED, house.DESCRIPTION, propertyPicName, landlord_id);
-
-                                Session["isRegistrationComplete"] = true;
-
-                                return RedirectToAction("Home", "Home");
-                            }
-                            else
-                                throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                        }
-                        else
-                        {
-                            Session["isAdditionalProperty"] = true;
-                            //retrieving landlord id to support stored procedure
-                            landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
-
-                            //inserts house into the appropriate table
-                            dbCtx.sp_insert_house(house.STREET_ADDRESS, house.CITY, house.PARISH, house.PRICE, house.BED_ROOM_AMOUNT, house.LIVING_ROOM_AMOUNT,
-                                house.BATH_ROOM_AMOUNT, house.PURPOSE, house.ISFURNISHED, house.DESCRIPTION, propertyPicName, landlord_id);
-
-                            Session["isRegistrationComplete"] = true;
-                        }
-                        
-                    }
-                }
-                else
-                {
-                    throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                }
-            }
-            catch (Exception ex)
-            {
-                string errorListCombine = string.Empty;
-
-                var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
-                       .Select(x => new { x.Value.Errors })
-                       .ToArray();
-
-                foreach (var error in errors)
-                {
-                    errorListCombine += errors + "\n";
-                }
-
-                Session["registrationErrorMessage"] = ex.Message + " \n" + errorListCombine;
-                //gets membership error
-                if (status.ToString() != "")
-                    Session["registrationErrorMessage"] += "\n" + GetErrorMessage(status);
-            }
-            //redirects to the dashboard page instead of homepage
-            if (Session["isAdditionalProperty"] != null)
-            {
-                if ((bool)Session["isAdditionalProperty"])
-                    return RedirectToAction("Dashboard", "LandlordManagement");
-            }
-
-            return View("Registration");
+            return View();
         }
 
-        [HttpPost]
-        public ActionResult RegistrationLand(LAND land, HttpPostedFileBase flPropertyPic)
+        /// <summary>
+        /// Function gets property type name by it's category code
+        /// </summary>
+        /// <param name="propertyCategoryName"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetPropertyTypesByCategoryName(String propertyCategoryName)
         {
-            MembershipCreateStatus status = new MembershipCreateStatus();
-            try
+            IEnumerable<String> results = null;
+            /*mapping property category name to property code*/
+            String propertyCategoryCode = PropertyHelper.mapPropertyCategoryNameToCode(propertyCategoryName);
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                if (ModelState.IsValid)
-                {
-                    Guid landlord_id = new Guid();
-                    LANDLORDS landlord = null;
-
-                    if (Session["landlord"] != null)
-                    {
-                        //landlord coming from the landlordregistration method that was called first 
-                        landlord = (LANDLORDS)Session["landlord"];
-                    }
-
-                    using (JAHomesEntities dbCtx = new JAHomesEntities())
-                    {
-                        string propertyPicName;
-
-                        if (flPropertyPic != null)
-                        {
-                            propertyPicName = getPropertyPicName(flPropertyPic);
-                        }
-                        else
-                            propertyPicName = "Nopic.jpg";
-
-                        if (String.IsNullOrEmpty(HttpContext.User.Identity.Name))
-                        {
-                            // creating user using the asp membership utility
-                            MembershipUser newUser = Membership.CreateUser(landlord.USERNAME, landlord.PASSWORD, landlord.EMAIL, "null", "null", true, out status);
-                            
-                            //ensures that the user was created before adding the additional information
-                            if (newUser != null)
-                            {
-                                //inserts landlord into the appropriate table
-                                dbCtx.sp_insert_landlord(landlord.FIRST_NAME, landlord.MIDDLE_NAME, landlord.LAST_NAME, landlord.GENDER, landlord.CELL, landlord.EMAIL, "", landlord.USERNAME);
-                                //retrieving landlord id to support stored procedure
-                                landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == landlord.USERNAME).Select(i => i.ID).Single();
-                                //puts user in landlord role
-                                Roles.AddUserToRole(landlord.CELL, "Landlords");
-
-                                //inserts land into the appropriate table
-                                dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA.ToString(), land.DESCRIPTION, propertyPicName, landlord_id);
-
-                                Session["isRegistrationComplete"] = true;
-
-                                return RedirectToAction("Home", "Home");
-                            }
-                            else
-                                throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                        }
-                        else
-                        {
-                            Session["isAdditionalProperty"] = true;
-                            //retrieving landlord id to support stored procedure
-                            landlord_id = dbCtx.LANDLORDS.Where(i => i.USERNAME == HttpContext.User.Identity.Name).Select(i => i.ID).Single();
-
-                            //inserts land into the appropriate table
-                            dbCtx.sp_insert_land(land.STREET_ADDRESS, land.CITY, land.PARISH, land.PURPOSE, land.PRICE, land.AREA.ToString(), land.DESCRIPTION, propertyPicName, landlord_id);
-
-                            Session["isRegistrationComplete"] = true;
-                        } 
-                    }
-                }
-                else
-                {
-                    throw new Exception("Sorry there has been an unexpected error during the registration process \n A field is empty/not selected");
-                }
-            }
-            catch (Exception ex)
-            {
-                string errorListCombine = string.Empty;
-
-                var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
-                       .Select(x => new { x.Value.Errors })
-                       .ToArray();
-
-                foreach (var error in errors)
-                {
-                    errorListCombine += errors + "\n";
-                }
-
-                Session["registrationErrorMessage"] = ex.Message + " \n" + errorListCombine;
-                //gets membership error
-                if (status.ToString() != "")
-                    Session["registrationErrorMessage"] += "\n" + GetErrorMessage(status);
-            }
-            //redirects to the dashboard page instead of homepage
-            if (Session["isAdditionalProperty"] != null)
-            {
-                if ((bool)Session["isAdditionalProperty"])
-                    return RedirectToAction("Dashboard", "LandlordManagement");
+                var unitOfWork = new UnitOfWork(dbCtx);
+                results = unitOfWork.PropertyType.GetPropertyTypesByCategoryCode(propertyCategoryCode);
             }
 
-            return View("Registration");
+            return Json(results, JsonRequestBehavior.AllowGet);
         }
 
-        //return name of picture uploaded
-        private string getPropertyPicName(HttpPostedFileBase file)
+        /// <summary>
+        /// Gets tag names by the property category code
+        /// </summary>
+        /// <param name="propertyCategoryName"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetTagNamesByPropertyCategoryCode(String propertyCategoryName)
         {
-            string fileName = string.Empty;
+            IEnumerable<String> results = null;
+            /*mapping property category name to property code*/
+            String propertyCategoryCode = PropertyHelper.mapPropertyCategoryNameToCode(propertyCategoryName);
 
-            try
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var guid = Guid.NewGuid();
-
-                //ensures file is not empty and is a valid image
-                if (file.ContentLength > 0 && file.ContentType.Contains("image"))
-                {
-                    fileName = guid.ToString() + Path.GetExtension(file.FileName);
-                    string path = Path.Combine(Server.MapPath("~/Uploads"), fileName);
-
-                    file.SaveAs(path);
-                }
-                else
-                    throw new Exception("Sorry there has been an unexpected error during the registration process");
-            }
-            catch (Exception ex)
-            {
-                Session["registrationErrorMessage"] = ex.Message;
+                var unitOfWork = new UnitOfWork(dbCtx);
+                results = unitOfWork.TagType.GetTagNamesByPropertyCategoryCode(propertyCategoryCode);
             }
 
-            return fileName;
+            return Json(results, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// associates the image with the property that was uploaded
+        /// </summary>
+        /// <param name="file"></param>
+        private void associateImagesWithProperty(UnitOfWork unitOfWork, HttpPostedFileBase[] files, Guid propertyID)
+        {
+            bool isPrimaryDisplay = true;//the first uploaded will be selected as the primary display
+
+            foreach (var file in files)
+            {
+
+                string fileName = string.Empty;
+
+                Guid guid = Guid.NewGuid();
+
+                fileName = guid.ToString() + Path.GetExtension(file.FileName);
+
+                PropertyImage propertyImage = new PropertyImage()
+                {
+                    ID = guid,
+                    PropertyID = propertyID,
+                    ImageURL = fileName,
+                    IsPrimaryDisplay = isPrimaryDisplay,
+                    DateTCreated = DateTime.Now
+                };
+
+                if (isPrimaryDisplay == true)
+                    isPrimaryDisplay = false;
+
+                unitOfWork.PropertyImage.Add(propertyImage);
+
+                uploadPropertyImages(file, fileName);
+
+                uploadedImageNames.Add(fileName);
+            }
+        }
+
+        /// <summary>
+        /// uploads the property image to the server 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="fileName"></param>
+        private void uploadPropertyImages(HttpPostedFileBase file, String fileName)
+        {
+            //ensures file is not empty and is a valid image
+            if (file.ContentLength > 0 && file.ContentType.Contains("image"))
+            {
+                string path = Path.Combine(Server.MapPath("~/Uploads"), fileName);
+                file.SaveAs(path);
+
+                PropertyHelper.resizeFile(fileName);
+            }
+            else
+                throw new Exception("Upload an image file");
+        }
+
         //used for membership error message
-        public string GetErrorMessage(MembershipCreateStatus status)
+        public string GetMembershipErrorMessage(MembershipCreateStatus status)
         {
             switch (status)
             {
                 case MembershipCreateStatus.DuplicateUserName:
-                    return "Username already exists. Please enter a different user name.";
+                    return "Email address already exists. Please sign into your portal to add more properties";
 
                 case MembershipCreateStatus.DuplicateEmail:
                     return "A username for that e-mail address already exists. Please enter a different e-mail address.";
@@ -545,90 +458,5 @@ namespace SS.Controllers
                     return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
             }
         }
-        //return _house partial view
-        [HttpGet]
-        public PartialViewResult getHousePartialView()
-        {
-            HOUSE house = new HOUSE();
-            
-                        house.Parishes = new[]
-                        {
-                            new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
-                            new SelectListItem {Value = "hanover",Text = "Hanover"},
-                            new SelectListItem {Value = "stjames",Text = "St. James"},
-                            new SelectListItem {Value = "trelawny",Text = "Trelawny"},
-                            new SelectListItem {Value = "stann",Text = "St. Ann"},
-                            new SelectListItem {Value = "stmary",Text = "St. Mary"},
-                            new SelectListItem {Value = "portland",Text = "Portland"},
-                            new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
-                            new SelectListItem {Value = "kingston",Text = "Kingston"},
-                            new SelectListItem {Value = "standrew",Text = "St. Andrew"},
-                            new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
-                            new SelectListItem {Value = "clarendon",Text = "Clarendon"},
-                            new SelectListItem {Value = "manchester",Text = "Manchester"},
-                            new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
-                        };
-                        
-                        return PartialView("_HouseInformationRegistration",house);
-                    }
-                    //return _room partial view
-                    [HttpGet]
-                    public PartialViewResult getRoomPartialView()
-                    {
-                        ACCOMMODATIONS accommodations = new ACCOMMODATIONS();
-
-                        accommodations.Parishes = new[]
-                        {
-                            new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
-                            new SelectListItem {Value = "hanover",Text = "Hanover"},
-                            new SelectListItem {Value = "stjames",Text = "St. James"},
-                            new SelectListItem {Value = "trelawny",Text = "Trelawny"},
-                            new SelectListItem {Value = "stann",Text = "St. Ann"},
-                            new SelectListItem {Value = "stmary",Text = "St. Mary"},
-                            new SelectListItem {Value = "portland",Text = "Portland"},
-                            new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
-                            new SelectListItem {Value = "kingston",Text = "Kingston"},
-                            new SelectListItem {Value = "standrew",Text = "St. Andrew"},
-                            new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
-                            new SelectListItem {Value = "clarendon",Text = "Clarendon"},
-                            new SelectListItem {Value = "manchester",Text = "Manchester"},
-                            new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
-                        };
-
-            return PartialView("_RoomInformationRegistration",accommodations);
-        }
-        //return _land partial view
-        [HttpGet]
-        public PartialViewResult getLandPartialView()
-        {
-            LAND land = new LAND();
-            
-            land.Parishes = new[]
-            {
-                new SelectListItem {Value = "westmoreland",Text = "Westmoreland"},
-                new SelectListItem {Value = "hanover",Text = "Hanover"},
-                new SelectListItem {Value = "stjames",Text = "St. James"},
-                new SelectListItem {Value = "trelawny",Text = "Trelawny"},
-                new SelectListItem {Value = "stann",Text = "St. Ann"},
-                new SelectListItem {Value = "stmary",Text = "St. Mary"},
-                new SelectListItem {Value = "portland",Text = "Portland"},
-                new SelectListItem {Value = "stthomas",Text = "St. Thomas"},
-                new SelectListItem {Value = "kingston",Text = "Kingston"},
-                new SelectListItem {Value = "standrew",Text = "St. Andrew"},
-                new SelectListItem {Value = "stcatherine",Text = "St. Catherine"},
-                new SelectListItem {Value = "clarendon",Text = "Clarendon"},
-                new SelectListItem {Value = "manchester",Text = "Manchester"},
-                new SelectListItem {Value = "stelizabeth",Text = "St. Elizabeth"}
-            };
-            
-            return PartialView("_LandInformationRegistration",land);
-        }
-        //return _land partial view
-        [HttpGet]
-        public PartialViewResult getLandlordPartialView()
-        {
-            return PartialView("_OwnerInformationRegistration");
-        }
-
     }
 }

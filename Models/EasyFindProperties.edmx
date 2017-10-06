@@ -1,0 +1,1802 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="EasyFindPropertiesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AdPriority">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Cost" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Value" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
+          <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AdType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Bill">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TennantID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TypeCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="AmtDue" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="IsPaid" Type="bit" Nullable="false" />
+          <Property Name="BillURL" Type="varchar" MaxLength="255" />
+          <Property Name="DateDue" Type="date" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BillType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Complaint">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TennantID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Issue" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsResolved" Type="bit" />
+          <Property Name="DateResolved" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Meeting">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RequesteeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Location" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="MeetingDate" Type="date" Nullable="false" />
+          <Property Name="MeetingTime" Type="time" Precision="7" Nullable="false" />
+          <Property Name="Purpose" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MeetingRequisition">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="75" />
+          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="To" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="From" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Msg" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Owner">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Property">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PurposeCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="TypeID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AdTypeCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="AdPriorityCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="ConditionCode" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="StreetAddress" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Division" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Community" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Country" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Longitude" Type="varchar" MaxLength="25" />
+          <Property Name="Latitude" Type="varchar" MaxLength="25" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="SecurityDeposit" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Occupancy" Type="int" />
+          <Property Name="GenderPreferenceCode" Type="char" MaxLength="1" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Availability" Type="bit" Nullable="false" />
+          <Property Name="EnrolmentKey" Type="varchar" MaxLength="6" />
+          <Property Name="TermsAgreement" Type="varchar(max)" />
+          <Property Name="TotAvailableBathroom" Type="int" />
+          <Property Name="TotRooms" Type="int" />
+          <Property Name="Area" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="IsReviewable" Type="bit" />
+          <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
+          <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyCategory">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyCondition">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyImage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ImageURL" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="IsPrimaryDisplay" Type="bit" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyPurpose">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyRating">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Ratings" Type="int" Nullable="false" />
+          <Property Name="Comments" Type="varchar" MaxLength="255" />
+          <Property Name="CritqueBy" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyRequisition">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="75" />
+          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="IsAccepted" Type="bit" />
+          <Property Name="ExpiryDate" Type="date" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PropertyType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CategoryCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subscription">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TypeCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Period" Type="int" Nullable="false" />
+          <Property Name="StartDate" Type="date" />
+          <Property Name="ExpiryDate" Type="date" />
+          <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
+          <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubscriptionType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="MonthlyCost" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tags">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TypeID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TagType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="PropertyCategoryCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tennant">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="75" />
+          <Property Name="DOB" Type="date" />
+          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="RentAmt" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="SettlementPeriod" Type="int" Nullable="false" />
+          <Property Name="InstitutionName" Type="varchar" MaxLength="255" />
+          <Property Name="ProgrammeName" Type="varchar" MaxLength="255" />
+          <Property Name="ProgrammeStartDate" Type="date" />
+          <Property Name="ProgrammeEndDate" Type="date" />
+          <Property Name="PhotoUrl" Type="varchar" MaxLength="255" />
+          <Property Name="ReferencedLetterURL" Type="varchar" MaxLength="255" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="fk_bill_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_tennant_id">
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tennant">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="TennantID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_type_code">
+          <End Role="BillType" Type="Self.BillType" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BillType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="TypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_complaint_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_complaint_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_complaint_tennant_id">
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="1" />
+          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tennant">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="TennantID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_requestee_id">
+          <End Role="MeetingRequisition" Type="Self.MeetingRequisition" Multiplicity="1" />
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MeetingRequisition">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="RequesteeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_ad_priority_code">
+          <End Role="AdPriority" Type="Self.AdPriority" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AdPriority">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="AdPriorityCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_ad_type_code">
+          <End Role="AdType" Type="Self.AdType" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AdType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="AdTypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_condition_code">
+          <End Role="PropertyCondition" Type="Self.PropertyCondition" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCondition">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="ConditionCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_image_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="PropertyImage" Type="Self.PropertyImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyImage">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_purpose_code">
+          <End Role="PropertyPurpose" Type="Self.PropertyPurpose" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyPurpose">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="PurposeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_rating_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="PropertyRating" Type="Self.PropertyRating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyRating">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_requisition_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="PropertyRequisition" Type="Self.PropertyRequisition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyRequisition">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_type_category_code">
+          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
+          <End Role="PropertyType" Type="Self.PropertyType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCategory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyType">
+              <PropertyRef Name="CategoryCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_type_id">
+          <End Role="PropertyType" Type="Self.PropertyType" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="TypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_subscription_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Subscription">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_subscription_type_code">
+          <End Role="SubscriptionType" Type="Self.SubscriptionType" Multiplicity="1" />
+          <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SubscriptionType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Subscription">
+              <PropertyRef Name="TypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tag_type_property_category_id">
+          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
+          <End Role="TagType" Type="Self.TagType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCategory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TagType">
+              <PropertyRef Name="PropertyCategoryCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tags_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tags">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tags_type_id">
+          <End Role="TagType" Type="Self.TagType" Multiplicity="1" />
+          <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TagType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tags">
+              <PropertyRef Name="TypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tennant_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tennant">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="aspnet_Membership_CreateUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationName" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Password" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordSalt" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordQuestion" Type="nvarchar" Mode="In" />
+          <Parameter Name="PasswordAnswer" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsApproved" Type="bit" Mode="In" />
+          <Parameter Name="CurrentTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="CreateDate" Type="datetime" Mode="In" />
+          <Parameter Name="UniqueEmail" Type="int" Mode="In" />
+          <Parameter Name="PasswordFormat" Type="int" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="InOut" />
+        </Function>
+        <EntityContainer Name="EasyFindPropertiesModelStoreContainer">
+          <EntitySet Name="AdPriority" EntityType="Self.AdPriority" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AdType" EntityType="Self.AdType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bill" EntityType="Self.Bill" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BillType" EntityType="Self.BillType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Complaint" EntityType="Self.Complaint" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Meeting" EntityType="Self.Meeting" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MeetingRequisition" EntityType="Self.MeetingRequisition" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Owner" EntityType="Self.Owner" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Property" EntityType="Self.Property" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyCategory" EntityType="Self.PropertyCategory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyCondition" EntityType="Self.PropertyCondition" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyImage" EntityType="Self.PropertyImage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyPurpose" EntityType="Self.PropertyPurpose" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyRating" EntityType="Self.PropertyRating" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyRequisition" EntityType="Self.PropertyRequisition" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PropertyType" EntityType="Self.PropertyType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subscription" EntityType="Self.Subscription" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubscriptionType" EntityType="Self.SubscriptionType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tags" EntityType="Self.Tags" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TagType" EntityType="Self.TagType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tennant" EntityType="Self.Tennant" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="fk_bill_owner_id" Association="Self.fk_bill_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_property_id" Association="Self.fk_bill_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_tennant_id" Association="Self.fk_bill_tennant_id">
+            <End Role="Tennant" EntitySet="Tennant" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_type_code" Association="Self.fk_bill_type_code">
+            <End Role="BillType" EntitySet="BillType" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_owner_id" Association="Self.fk_complaint_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_property_id" Association="Self.fk_complaint_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_tennant_id" Association="Self.fk_complaint_tennant_id">
+            <End Role="Tennant" EntitySet="Tennant" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_owner_id" Association="Self.fk_meeting_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Meeting" EntitySet="Meeting" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_requestee_id" Association="Self.fk_meeting_requestee_id">
+            <End Role="MeetingRequisition" EntitySet="MeetingRequisition" />
+            <End Role="Meeting" EntitySet="Meeting" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_ad_priority_code" Association="Self.fk_property_ad_priority_code">
+            <End Role="AdPriority" EntitySet="AdPriority" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_ad_type_code" Association="Self.fk_property_ad_type_code">
+            <End Role="AdType" EntitySet="AdType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_condition_code" Association="Self.fk_property_condition_code">
+            <End Role="PropertyCondition" EntitySet="PropertyCondition" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_image_property_id" Association="Self.fk_property_image_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyImage" EntitySet="PropertyImage" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_owner_id" Association="Self.fk_property_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_purpose_code" Association="Self.fk_property_purpose_code">
+            <End Role="PropertyPurpose" EntitySet="PropertyPurpose" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_rating_property_id" Association="Self.fk_property_rating_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyRating" EntitySet="PropertyRating" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_requisition_property_id" Association="Self.fk_property_requisition_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_type_category_code" Association="Self.fk_property_type_category_code">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="PropertyType" EntitySet="PropertyType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_type_id" Association="Self.fk_property_type_id">
+            <End Role="PropertyType" EntitySet="PropertyType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscription_owner_id" Association="Self.fk_subscription_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscription_type_code" Association="Self.fk_subscription_type_code">
+            <End Role="SubscriptionType" EntitySet="SubscriptionType" />
+            <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tag_type_property_category_id" Association="Self.fk_tag_type_property_category_id">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="TagType" EntitySet="TagType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tags_property_id" Association="Self.fk_tags_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tags_type_id" Association="Self.fk_tags_type_id">
+            <End Role="TagType" EntitySet="TagType" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tennant_property_id" Association="Self.fk_tennant_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Tennant" EntitySet="Tennant" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="EasyFindPropertiesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AdPriority">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Cost" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="DateTModified" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_ad_priority_code" FromRole="AdPriority" ToRole="Property" />
+          <Property Name="Value" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AdType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_ad_type_code" FromRole="AdType" ToRole="Property" />
+        </EntityType>
+        <EntityType Name="Bill">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="OwnerID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="TennantID" Type="Guid" Nullable="false" />
+          <Property Name="TypeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="AmtDue" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="IsPaid" Type="Boolean" Nullable="false" />
+          <Property Name="BillURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateDue" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Owner" Relationship="Self.fk_bill_owner_id" FromRole="Bill" ToRole="Owner" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_bill_property_id" FromRole="Bill" ToRole="Property" />
+          <NavigationProperty Name="Tennant" Relationship="Self.fk_bill_tennant_id" FromRole="Bill" ToRole="Tennant" />
+          <NavigationProperty Name="BillType" Relationship="Self.fk_bill_type_code" FromRole="Bill" ToRole="BillType" />
+        </EntityType>
+        <EntityType Name="BillType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_type_code" FromRole="BillType" ToRole="Bill" />
+        </EntityType>
+        <EntityType Name="Complaint">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="OwnerID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="TennantID" Type="Guid" Nullable="false" />
+          <Property Name="Issue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsResolved" Type="Boolean" />
+          <Property Name="DateResolved" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Owner" Relationship="Self.fk_complaint_owner_id" FromRole="Complaint" ToRole="Owner" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_complaint_property_id" FromRole="Complaint" ToRole="Property" />
+          <NavigationProperty Name="Tennant" Relationship="Self.fk_complaint_tennant_id" FromRole="Complaint" ToRole="Tennant" />
+        </EntityType>
+        <EntityType Name="Meeting">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="OwnerID" Type="Guid" Nullable="false" />
+          <Property Name="RequesteeId" Type="Guid" Nullable="false" />
+          <Property Name="Location" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="MeetingTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="Purpose" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Owner" Relationship="Self.fk_meeting_owner_id" FromRole="Meeting" ToRole="Owner" />
+          <NavigationProperty Name="MeetingRequisition" Relationship="Self.fk_meeting_requestee_id" FromRole="Meeting" ToRole="MeetingRequisition" />
+        </EntityType>
+        <EntityType Name="MeetingRequisition">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
+          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Meeting" Relationship="Self.fk_meeting_requestee_id" FromRole="MeetingRequisition" ToRole="Meeting" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="To" Type="Guid" Nullable="false" />
+          <Property Name="From" Type="Guid" Nullable="false" />
+          <Property Name="Msg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Owner">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_owner_id" FromRole="Owner" ToRole="Bill" />
+          <NavigationProperty Name="Complaint" Relationship="Self.fk_complaint_owner_id" FromRole="Owner" ToRole="Complaint" />
+          <NavigationProperty Name="Meeting" Relationship="Self.fk_meeting_owner_id" FromRole="Owner" ToRole="Meeting" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_owner_id" FromRole="Owner" ToRole="Property" />
+          <NavigationProperty Name="Subscription" Relationship="Self.fk_subscription_owner_id" FromRole="Owner" ToRole="Subscription" />
+          <Property Name="Email" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Property">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="OwnerID" Type="Guid" Nullable="false" />
+          <Property Name="PurposeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="TypeID" Type="Guid" Nullable="false" />
+          <Property Name="AdTypeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="AdPriorityCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="ConditionCode" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="StreetAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Division" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Community" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Longitude" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Latitude" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="SecurityDeposit" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Occupancy" Type="Int32" />
+          <Property Name="GenderPreferenceCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Availability" Type="Boolean" Nullable="false" />
+          <Property Name="EnrolmentKey" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="TermsAgreement" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TotAvailableBathroom" Type="Int32" />
+          <Property Name="TotRooms" Type="Int32" />
+          <Property Name="Area" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="IsReviewable" Type="Boolean" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="DateTModified" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="AdPriority" Relationship="Self.fk_property_ad_priority_code" FromRole="Property" ToRole="AdPriority" />
+          <NavigationProperty Name="AdType" Relationship="Self.fk_property_ad_type_code" FromRole="Property" ToRole="AdType" />
+          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_property_id" FromRole="Property" ToRole="Bill" />
+          <NavigationProperty Name="Complaint" Relationship="Self.fk_complaint_property_id" FromRole="Property" ToRole="Complaint" />
+          <NavigationProperty Name="Owner" Relationship="Self.fk_property_owner_id" FromRole="Property" ToRole="Owner" />
+          <NavigationProperty Name="PropertyCondition" Relationship="Self.fk_property_condition_code" FromRole="Property" ToRole="PropertyCondition" />
+          <NavigationProperty Name="PropertyImage" Relationship="Self.fk_property_image_property_id" FromRole="Property" ToRole="PropertyImage" />
+          <NavigationProperty Name="PropertyPurpose" Relationship="Self.fk_property_purpose_code" FromRole="Property" ToRole="PropertyPurpose" />
+          <NavigationProperty Name="PropertyRating" Relationship="Self.fk_property_rating_property_id" FromRole="Property" ToRole="PropertyRating" />
+          <NavigationProperty Name="PropertyType" Relationship="Self.fk_property_type_id" FromRole="Property" ToRole="PropertyType" />
+          <NavigationProperty Name="Tags" Relationship="Self.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
+          <NavigationProperty Name="Tennant" Relationship="Self.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
+          <NavigationProperty Name="PropertyRequisition" Relationship="EasyFindPropertiesModel.fk_property_requisition_property_id" FromRole="Property" ToRole="PropertyRequisition" />
+        </EntityType>
+        <EntityType Name="PropertyCategory">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PropertyType" Relationship="Self.fk_property_type_category_code" FromRole="PropertyCategory" ToRole="PropertyType" />
+          <NavigationProperty Name="TagType" Relationship="Self.fk_tag_type_property_category_id" FromRole="PropertyCategory" ToRole="TagType" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="PropertyCondition">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_condition_code" FromRole="PropertyCondition" ToRole="Property" />
+        </EntityType>
+        <EntityType Name="PropertyImage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="ImageURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="IsPrimaryDisplay" Type="Boolean" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_image_property_id" FromRole="PropertyImage" ToRole="Property" />
+        </EntityType>
+        <EntityType Name="PropertyPurpose">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_purpose_code" FromRole="PropertyPurpose" ToRole="Property" />
+        </EntityType>
+        <EntityType Name="PropertyRating">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="Ratings" Type="Int32" Nullable="false" />
+          <Property Name="Comments" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CritqueBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_rating_property_id" FromRole="PropertyRating" ToRole="Property" />
+        </EntityType>
+        <EntityType Name="PropertyRequisition">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
+          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="IsAccepted" Type="Boolean" />
+          <Property Name="ExpiryDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_requisition_property_id" FromRole="PropertyRequisition" ToRole="Property" />
+        </EntityType>
+        <EntityType Name="PropertyType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CategoryCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_property_type_id" FromRole="PropertyType" ToRole="Property" />
+          <NavigationProperty Name="PropertyCategory" Relationship="Self.fk_property_type_category_code" FromRole="PropertyType" ToRole="PropertyCategory" />
+        </EntityType>
+        <EntityType Name="Subscription">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="OwnerID" Type="Guid" Nullable="false" />
+          <Property Name="TypeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Period" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Precision="0" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="DateTModified" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Owner" Relationship="Self.fk_subscription_owner_id" FromRole="Subscription" ToRole="Owner" />
+          <NavigationProperty Name="SubscriptionType" Relationship="Self.fk_subscription_type_code" FromRole="Subscription" ToRole="SubscriptionType" />
+        </EntityType>
+        <EntityType Name="SubscriptionType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MonthlyCost" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Subscription" Relationship="Self.fk_subscription_type_code" FromRole="SubscriptionType" ToRole="Subscription" />
+        </EntityType>
+        <EntityType Name="Tags">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="TypeID" Type="Guid" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_tags_property_id" FromRole="Tags" ToRole="Property" />
+          <NavigationProperty Name="TagType" Relationship="Self.fk_tags_type_id" FromRole="Tags" ToRole="TagType" />
+        </EntityType>
+        <EntityType Name="TagType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PropertyCategoryCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PropertyCategory" Relationship="Self.fk_tag_type_property_category_id" FromRole="TagType" ToRole="PropertyCategory" />
+          <NavigationProperty Name="Tags" Relationship="Self.fk_tags_type_id" FromRole="TagType" ToRole="Tags" />
+        </EntityType>
+        <EntityType Name="Tennant">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
+          <Property Name="DOB" Type="DateTime" Precision="0" />
+          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="RentAmt" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="SettlementPeriod" Type="Int32" Nullable="false" />
+          <Property Name="InstitutionName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ProgrammeName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ProgrammeStartDate" Type="DateTime" Precision="0" />
+          <Property Name="ProgrammeEndDate" Type="DateTime" Precision="0" />
+          <Property Name="PhotoUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ReferencedLetterURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_tennant_id" FromRole="Tennant" ToRole="Bill" />
+          <NavigationProperty Name="Complaint" Relationship="Self.fk_complaint_tennant_id" FromRole="Tennant" ToRole="Complaint" />
+          <NavigationProperty Name="Property" Relationship="Self.fk_tennant_property_id" FromRole="Tennant" ToRole="Property" />
+        </EntityType>
+        <Association Name="fk_property_ad_priority_code">
+          <End Role="AdPriority" Type="Self.AdPriority" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AdPriority">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="AdPriorityCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_ad_type_code">
+          <End Role="AdType" Type="Self.AdType" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AdType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="AdTypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_tennant_id">
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tennant">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="TennantID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_bill_type_code">
+          <End Role="BillType" Type="Self.BillType" Multiplicity="1" />
+          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BillType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bill">
+              <PropertyRef Name="TypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_complaint_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_complaint_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_complaint_tennant_id">
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="1" />
+          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tennant">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="TennantID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_requestee_id">
+          <End Role="MeetingRequisition" Type="Self.MeetingRequisition" Multiplicity="1" />
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MeetingRequisition">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="RequesteeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_subscription_owner_id">
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Subscription">
+              <PropertyRef Name="OwnerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_condition_code">
+          <End Role="PropertyCondition" Type="Self.PropertyCondition" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCondition">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="ConditionCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_image_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="PropertyImage" Type="Self.PropertyImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyImage">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_purpose_code">
+          <End Role="PropertyPurpose" Type="Self.PropertyPurpose" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyPurpose">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="PurposeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_rating_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="PropertyRating" Type="Self.PropertyRating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyRating">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_type_id">
+          <End Role="PropertyType" Type="Self.PropertyType" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="TypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tags_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tags">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tennant_property_id">
+          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tennant">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_type_category_code">
+          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
+          <End Role="PropertyType" Type="Self.PropertyType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCategory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyType">
+              <PropertyRef Name="CategoryCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tag_type_property_category_id">
+          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
+          <End Role="TagType" Type="Self.TagType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCategory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TagType">
+              <PropertyRef Name="PropertyCategoryCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_subscription_type_code">
+          <End Role="SubscriptionType" Type="Self.SubscriptionType" Multiplicity="1" />
+          <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SubscriptionType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Subscription">
+              <PropertyRef Name="TypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tags_type_id">
+          <End Role="TagType" Type="Self.TagType" Multiplicity="1" />
+          <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TagType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tags">
+              <PropertyRef Name="TypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EasyFindPropertiesEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AdPriority" EntityType="Self.AdPriority" />
+          <EntitySet Name="AdType" EntityType="Self.AdType" />
+          <EntitySet Name="Bill" EntityType="Self.Bill" />
+          <EntitySet Name="BillType" EntityType="Self.BillType" />
+          <EntitySet Name="Complaint" EntityType="Self.Complaint" />
+          <EntitySet Name="Meeting" EntityType="Self.Meeting" />
+          <EntitySet Name="MeetingRequisition" EntityType="Self.MeetingRequisition" />
+          <EntitySet Name="Message" EntityType="Self.Message" />
+          <EntitySet Name="Owner" EntityType="Self.Owner" />
+          <EntitySet Name="Property" EntityType="Self.Property" />
+          <EntitySet Name="PropertyCategory" EntityType="Self.PropertyCategory" />
+          <EntitySet Name="PropertyCondition" EntityType="Self.PropertyCondition" />
+          <EntitySet Name="PropertyImage" EntityType="Self.PropertyImage" />
+          <EntitySet Name="PropertyPurpose" EntityType="Self.PropertyPurpose" />
+          <EntitySet Name="PropertyRating" EntityType="Self.PropertyRating" />
+          <EntitySet Name="PropertyRequisition" EntityType="Self.PropertyRequisition" />
+          <EntitySet Name="PropertyType" EntityType="Self.PropertyType" />
+          <EntitySet Name="Subscription" EntityType="Self.Subscription" />
+          <EntitySet Name="SubscriptionType" EntityType="Self.SubscriptionType" />
+          <EntitySet Name="Tags" EntityType="Self.Tags" />
+          <EntitySet Name="TagType" EntityType="Self.TagType" />
+          <EntitySet Name="Tennant" EntityType="Self.Tennant" />
+          <AssociationSet Name="fk_property_ad_priority_code" Association="Self.fk_property_ad_priority_code">
+            <End Role="AdPriority" EntitySet="AdPriority" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_ad_type_code" Association="Self.fk_property_ad_type_code">
+            <End Role="AdType" EntitySet="AdType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_owner_id" Association="Self.fk_bill_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_property_id" Association="Self.fk_bill_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_tennant_id" Association="Self.fk_bill_tennant_id">
+            <End Role="Tennant" EntitySet="Tennant" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_type_code" Association="Self.fk_bill_type_code">
+            <End Role="BillType" EntitySet="BillType" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_owner_id" Association="Self.fk_complaint_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_property_id" Association="Self.fk_complaint_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_tennant_id" Association="Self.fk_complaint_tennant_id">
+            <End Role="Tennant" EntitySet="Tennant" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_owner_id" Association="Self.fk_meeting_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Meeting" EntitySet="Meeting" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_requestee_id" Association="Self.fk_meeting_requestee_id">
+            <End Role="MeetingRequisition" EntitySet="MeetingRequisition" />
+            <End Role="Meeting" EntitySet="Meeting" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_owner_id" Association="Self.fk_property_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscription_owner_id" Association="Self.fk_subscription_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_condition_code" Association="Self.fk_property_condition_code">
+            <End Role="PropertyCondition" EntitySet="PropertyCondition" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_image_property_id" Association="Self.fk_property_image_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyImage" EntitySet="PropertyImage" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_purpose_code" Association="Self.fk_property_purpose_code">
+            <End Role="PropertyPurpose" EntitySet="PropertyPurpose" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_rating_property_id" Association="Self.fk_property_rating_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyRating" EntitySet="PropertyRating" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_type_id" Association="Self.fk_property_type_id">
+            <End Role="PropertyType" EntitySet="PropertyType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tags_property_id" Association="Self.fk_tags_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tennant_property_id" Association="Self.fk_tennant_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Tennant" EntitySet="Tennant" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_type_category_code" Association="Self.fk_property_type_category_code">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="PropertyType" EntitySet="PropertyType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tag_type_property_category_id" Association="Self.fk_tag_type_property_category_id">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="TagType" EntitySet="TagType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscription_type_code" Association="Self.fk_subscription_type_code">
+            <End Role="SubscriptionType" EntitySet="SubscriptionType" />
+            <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tags_type_id" Association="Self.fk_tags_type_id">
+            <End Role="TagType" EntitySet="TagType" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_requisition_property_id" Association="EasyFindPropertiesModel.fk_property_requisition_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
+          </AssociationSet>
+          <FunctionImport Name="aspnet_Membership_CreateUser">
+            <Parameter Name="ApplicationName" Mode="In" Type="String" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Password" Mode="In" Type="String" />
+            <Parameter Name="PasswordSalt" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="PasswordQuestion" Mode="In" Type="String" />
+            <Parameter Name="PasswordAnswer" Mode="In" Type="String" />
+            <Parameter Name="IsApproved" Mode="In" Type="Boolean" />
+            <Parameter Name="CurrentTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="CreateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="UniqueEmail" Mode="In" Type="Int32" />
+            <Parameter Name="PasswordFormat" Mode="In" Type="Int32" />
+            <Parameter Name="UserId" Mode="InOut" Type="Guid" />
+          </FunctionImport>
+        </EntityContainer>
+        <Association Name="fk_property_requisition_property_id">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.PropertyRequisition" Role="PropertyRequisition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyRequisition">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EasyFindPropertiesModelStoreContainer" CdmEntityContainer="EasyFindPropertiesEntities">
+          <EntitySetMapping Name="AdPriority">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.AdPriority">
+              <MappingFragment StoreEntitySet="AdPriority">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AdType">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.AdType">
+              <MappingFragment StoreEntitySet="AdType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bill">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Bill">
+              <MappingFragment StoreEntitySet="Bill">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="TennantID" ColumnName="TennantID" />
+                <ScalarProperty Name="TypeCode" ColumnName="TypeCode" />
+                <ScalarProperty Name="AmtDue" ColumnName="AmtDue" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="BillURL" ColumnName="BillURL" />
+                <ScalarProperty Name="DateDue" ColumnName="DateDue" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BillType">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.BillType">
+              <MappingFragment StoreEntitySet="BillType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Complaint">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Complaint">
+              <MappingFragment StoreEntitySet="Complaint">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="TennantID" ColumnName="TennantID" />
+                <ScalarProperty Name="Issue" ColumnName="Issue" />
+                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+                <ScalarProperty Name="DateResolved" ColumnName="DateResolved" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Meeting">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Meeting">
+              <MappingFragment StoreEntitySet="Meeting">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="RequesteeId" ColumnName="RequesteeId" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="MeetingDate" ColumnName="MeetingDate" />
+                <ScalarProperty Name="MeetingTime" ColumnName="MeetingTime" />
+                <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MeetingRequisition">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.MeetingRequisition">
+              <MappingFragment StoreEntitySet="MeetingRequisition">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Message">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Message">
+              <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="To" ColumnName="To" />
+                <ScalarProperty Name="From" ColumnName="From" />
+                <ScalarProperty Name="Msg" ColumnName="Msg" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Owner">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Owner">
+              <MappingFragment StoreEntitySet="Owner">
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Property">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Property">
+              <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="PurposeCode" ColumnName="PurposeCode" />
+                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+                <ScalarProperty Name="AdTypeCode" ColumnName="AdTypeCode" />
+                <ScalarProperty Name="AdPriorityCode" ColumnName="AdPriorityCode" />
+                <ScalarProperty Name="ConditionCode" ColumnName="ConditionCode" />
+                <ScalarProperty Name="StreetAddress" ColumnName="StreetAddress" />
+                <ScalarProperty Name="Division" ColumnName="Division" />
+                <ScalarProperty Name="Community" ColumnName="Community" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="SecurityDeposit" ColumnName="SecurityDeposit" />
+                <ScalarProperty Name="Occupancy" ColumnName="Occupancy" />
+                <ScalarProperty Name="GenderPreferenceCode" ColumnName="GenderPreferenceCode" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Availability" ColumnName="Availability" />
+                <ScalarProperty Name="EnrolmentKey" ColumnName="EnrolmentKey" />
+                <ScalarProperty Name="TermsAgreement" ColumnName="TermsAgreement" />
+                <ScalarProperty Name="TotAvailableBathroom" ColumnName="TotAvailableBathroom" />
+                <ScalarProperty Name="TotRooms" ColumnName="TotRooms" />
+                <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="IsReviewable" ColumnName="IsReviewable" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyCategory">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyCategory">
+              <MappingFragment StoreEntitySet="PropertyCategory">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyCondition">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyCondition">
+              <MappingFragment StoreEntitySet="PropertyCondition">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyImage">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyImage">
+              <MappingFragment StoreEntitySet="PropertyImage">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="ImageURL" ColumnName="ImageURL" />
+                <ScalarProperty Name="IsPrimaryDisplay" ColumnName="IsPrimaryDisplay" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyPurpose">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyPurpose">
+              <MappingFragment StoreEntitySet="PropertyPurpose">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyRating">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyRating">
+              <MappingFragment StoreEntitySet="PropertyRating">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="Ratings" ColumnName="Ratings" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="CritqueBy" ColumnName="CritqueBy" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyRequisition">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyRequisition">
+              <MappingFragment StoreEntitySet="PropertyRequisition">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
+                <ScalarProperty Name="IsAccepted" ColumnName="IsAccepted" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PropertyType">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyType">
+              <MappingFragment StoreEntitySet="PropertyType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subscription">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Subscription">
+              <MappingFragment StoreEntitySet="Subscription">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="TypeCode" ColumnName="TypeCode" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubscriptionType">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.SubscriptionType">
+              <MappingFragment StoreEntitySet="SubscriptionType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="MonthlyCost" ColumnName="MonthlyCost" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tags">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Tags">
+              <MappingFragment StoreEntitySet="Tags">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TagType">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.TagType">
+              <MappingFragment StoreEntitySet="TagType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="PropertyCategoryCode" ColumnName="PropertyCategoryCode" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tennant">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Tennant">
+              <MappingFragment StoreEntitySet="Tennant">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="DOB" ColumnName="DOB" />
+                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
+                <ScalarProperty Name="RentAmt" ColumnName="RentAmt" />
+                <ScalarProperty Name="SettlementPeriod" ColumnName="SettlementPeriod" />
+                <ScalarProperty Name="InstitutionName" ColumnName="InstitutionName" />
+                <ScalarProperty Name="ProgrammeName" ColumnName="ProgrammeName" />
+                <ScalarProperty Name="ProgrammeStartDate" ColumnName="ProgrammeStartDate" />
+                <ScalarProperty Name="ProgrammeEndDate" ColumnName="ProgrammeEndDate" />
+                <ScalarProperty Name="PhotoUrl" ColumnName="PhotoUrl" />
+                <ScalarProperty Name="ReferencedLetterURL" ColumnName="ReferencedLetterURL" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="aspnet_Membership_CreateUser" FunctionName="EasyFindPropertiesModel.Store.aspnet_Membership_CreateUser" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

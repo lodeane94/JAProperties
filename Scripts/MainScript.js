@@ -1,851 +1,659 @@
-﻿
-var asideLinkID = null;
-var isFiltered = false;
-var parishFilterValue = '';
-var accommodationPg = 0;
-var housePg = 0;
-var landPg = 0;
+﻿//Defining Global Variables
+var isCollapsable = false;
+var lastSelectedClickablePropertyCategory = null;
+var lastSelectedClickablePropertyPurpose = null;
+var lastSelectedClickableAdvertismentType = null;
+var lastSelectedClickableSubscriptionType = null;
+var lastSelectedClickableAdvertismentPriority = null;
+var propertyTagsSelected = [];
+var loadingGifLocation = null;//element at which the loading gif will be displayed
+var errMessages = [];//array of error messages related to the submission of a property 
 
-//sets the current page that the user is on
-$(function () {
-    var currentPageNumber = $('#currentPageNumber').val();
+//used to display a loading element
+var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
+                     + '<img src="/Content/ajax-loader-dark.gif" />'
+                     + '</div>';
 
-    $('.pageNumber').each(function (index, val) {
-        if ($(this).text() == currentPageNumber) {
-            $(this).parent().attr('class', 'active');
-        }
-    });
-});
-//displays previous and next signs depending on the number of properties returned
-$(function () {
-    var noOfPages = $('#noOfPages').val();
-    var currentPageNumber = $('#currentPageNumber').val();
-
-    if (currentPageNumber == 0 && noOfPages - 1 > 0) {
-        $('.next-page').show();
-    }
-
-    if (currentPageNumber == noOfPages - 1 && noOfPages - 1 > 0) {
-        $('.previous-page').show();
-    }
-
-    if (currentPageNumber != 0 && currentPageNumber != noOfPages - 1 && noOfPages - 1 > 0) {
-        $('.next-page').show();
-        $('.previous-page').show();
-    }
-
-});
-//loads new dynamic information for all properties
-function loadPropertiesHTML(data, propertyPagination) {
-    var tagName = "";
-    if (propertyPagination == null) {
-        //clears anything that were in tags if the request is not for pagination 
-        $('.rooms-load').empty();
-        $('.house-load').empty();
-        $('.land-load').empty();
-    } else {//TODO remove hard coding to check if the returned data is null
-        switch (propertyPagination) {
-            case 'accommodations':
-                if (data[0].length > 0)
-                    $('.rooms-load').empty();
-                break;
-            case 'house':
-                if (data[1].length > 0)
-                    $('.house-load').empty();
-                break;
-            case 'land':
-                if (data[2].length > 0)
-                    $('.land-load').empty();
-                break;
-        }
-    }
-    //used to display location that was selected
-    if ($.isEmptyObject(asideLinkID)) {
-        $('.property-location').html('ALL-PARISHES');
-    } else {
-        $('.property-location').html(asideLinkID.toUpperCase());
-    }
-
-    for (var count = 0; count < data.length; count++) {
-        for (var count2 = 0; count2 < data[count].length; count2++) {
-            //using variables tied to each property to determine if their values are set
-            if ((data[count][count2].Occupancy != "" && data[count][count2].Occupancy != undefined) || propertyPagination == 'accommodations') {
-                tagName = 'rooms-load';
-            } else if ((data[count][count2].BedroomAmount != "" && data[count][count2].BedroomAmount != undefined) || propertyPagination == 'houses') {
-                tagName = 'house-load';
-            } else if ((data[count][count2].Area != "" && data[count][count2].Area != undefined) || propertyPagination == 'lands') {
-                tagName = 'land-load';
-            }
-            //TODO show message if no property is found 
-            /*
-            if (data.length < 1) {
-                $('.' + tagName).append('<div class="col-md-12"><div class="label-warning">NO PROPERTY WAS FOUND IN THIS PARISH</div></div>');
-            }*/
-            // if ((data[count][count2].Occupancy != "" && data[count][count2].Occupancy != undefined) || propertyPagination == 'accommodations') {
-            //alert('room not null');
-            $('.' + tagName).append('<div class="col-md-3">'
-                        + '<a class="image-link" data-toggle="popover" data-content="No Content" title="Click to view more information" href="' + data[count][count2].ID + '">'
-                            + '<div class="image-container">'
-                             + '<img id="' + data[count][count2].ID + '" class="room-images" src="/Uploads/' + data[count][count2].ImageURL + '">'
-                             + '</div>'
-                             + '</a>'
-                            + '<div class="image-information-container">'
-                                + '<ul>'
-                                    + '<li><label> Address: ' + data[count][count2].StreetAddress + '</label></li>'
-                                    + '<li><label> Parish: ' + data[count][count2].Parish + '</label></li>'
-                                    + '<li><label> Cost: $' + data[count][count2].Price + ' JMD </label></li>'
-                                + '<ul>'
-                            + '</div>'
-                             + '<a href="' + data[count][count2].ID + '" class="btn btn-warning btn-block prop-details-btn">Show Details <span class="caret"></span></a>'
-                     + '</div>'
-                     );
-        }
-    }
+/***GENERAL FUNCTIONS*/
+//highlights navigation link curRently active
+function setActiveNavigation(id) {
+    $('#' + id).attr('class', 'active');
 }
-/*
-//loads new dynamic information for filtered properties
-function loadFilteredPropertiesHTML(data, tagName) {
-    //clears anything that were in tags
-    $(tagName).empty();
 
-    for (var count = 0; count < data.length; count++) {
-        //checking if object is empty
-        if ($.isEmptyObject(data)) {
-            $(tagName).append('<div class="col-md-12"><div class="label-warning">NO ITEM WAS FOUND</div></div>');
-        }
-
-        $(tagName).append('<a class="image-link" href="' + data[count].id + '">'
-                    + '<div class="col-md-3">'
-                        + '<div class="image-container">'
-                         + '<img id="' + data[count].id + '" class="room-images" src="/Uploads/' + data[count].image_url + '">'
-                        + '</div>'
-                        + '<div class="image-information-container">'
-                            + '<table width="100%" class="table-condensed table-striped">'
-                                + '<tbody>'
-                                    + '<tr>'
-                                        + '<td>Address</td>'
-                                        + '<td>' + data[count].street_address + '</td>'
-                                    + '</tr>'
-                                    + '<tr>'
-                                        + '<td>Parish</td>'
-                                        + '<td>' + data[count].parish + '</td>'
-                                    + '</tr>'
-                                    + '<tr>'
-                                        + '<td>Price</td>'
-                                        + '<td>' + data[count].price + '</td>'
-                                    + '</tr>'
-                                + '</tbody>'
-                            + '</table>'
-                        + '</div>'
-                 + '</div>'
-                 + '</a>');
-    }
-}*/
-//loads the properties for the rooms,houses and lands
-function getProperties(parish) {
-    var data = null;
-    //clears all other filters if selected
-    if (parish == null) {
-        $('.aside-property a').removeAttr('class', 'active');
-        $('#all-parishes').attr('class', 'active')
-        data = { 'fetchAmount': 4, 'parish': "", 'isPagination': false, 'propertyType': "", 'pgNo': 0 };
-    } else {
-        data = { 'fetchAmount': 4, 'parish': parish.trim(), 'isPagination': false, 'propertyType': "", 'pgNo': 0 };
-    }
-
-    $.ajax({
-        url: '/home/getProperties',
-        type: 'Get',
-        data: data,
-        beforeSend: function () {
-            $('#modal-loading').fadeIn();
-        },
-        complete: function () {
-            $('#modal-loading').fadeOut();
-        },
-        error: function () {
-            alert('An error occurred');
-        }
-
-    }).success(function (data) {
-        loadPropertiesHTML(data);
-    });
+//sets the text that should be written on the jumbotrun button
+function setJumbotrunActionBtnText(value) {
+    $('#jumbotron-button').text(value);
 }
-/*
-//loads filters properties
-function getFilteredProperties(parish) {
 
-    $.ajax({
-        url: '/home/getFilteredProperties',
-        type: 'Get',
-        data: { 'fetchAmount': 4, 'parish': parish.trim() },
-        beforeSend: function () {
-            $('#modal-loading').fadeIn();
-        },
-        complete: function () {
-            $('#modal-loading').fadeOut();
-        },
-        error: function () {
-            alert('An error occurred');
-        }
-    }).success(function (data) {
-        loadPropertiesHTML(data);
-    });
-}*/
+//sets the isCollapsable action flag for the jumbotrun button; this decides whether or not
+//the jumbotrun container should be hidden whenever it's button has been click
+function setIsCollapsable(value) {
+    isCollapsable = value;
+}
 
-//storing files on change of the input
-var files;
-$(document).ready(function () {
-    //sets configuration for the modal display
-    var system = function () {
-
-        this.modalIndex = 2000;
-
-        this.showModal = function (selector) {
-            this.modalIndex++;
-
-            $(selector).modal({
-                backdrop: 'static',
-                keyboard: true
-            });
-            $(selector).modal('show');
-            $(selector).css('z-index', this.modalIndex);
-        }
-
-    }
-
-    var sys = new system();
-    //sets checked attribute on isStudent true once student rooms for rent link is clicked
-    $(function () {
-        var url = window.location.protocol + '//' + window.location.host + '/properties/rooms?isStudent=true';
-
-        if (window.location.href == url && !$('#isStudent').prop('checked')) {
-            $('#isStudent').prop('checked', true);
-            filterProperties('isStudent', 'filterIsStudent', true, /isStudent=[a-z]+&*/g, /isStudent=[a-z]+/g);
-        }
-    });
-
-    $(function () {
-        var url = window.location.protocol + '//' + window.location.host + '/properties/rooms?isStudent=true';
-        //TODO::check url to see if it matches the path in the varaible above, if it does then keep the student link active
-        if (window.location.href == url && $('#isStudent').prop('checked')) {
-            if ($('#rooms').prop('class') == 'active') {
-                $('#rooms').removeClass('active');
-                $('#student_rooms').attr('class', 'active');
-            }else
-                $('#student_rooms').attr('class', 'active');
-        }
-    });
-
-    //sets the menu to fixed after scrolling pass a certain amount of pixels
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 50) {
-            $('.header-content').addClass('fixed');
+//loads the subscription period select element with it;s values
+//load subscription period values
+function loadAdvertisePropertySubscriptionPeriod() {
+    var monthVar = '';
+    for (var i = 1; i <= 12; i++) {
+        if (i > 1) {
+            monthVar = 'Months';
         } else {
-            $('.header-content').removeClass('fixed');
+            monthVar = 'Month';
         }
-    });
 
-    function loadSelectedModalProperty(url, imageSelectedID) {
-        $.ajax({
-            url: url,
-            type: 'get',
-            data: { 'property_id': imageSelectedID },
-            beforeSend: function () {
-                $('.ajax-load').show();
-            },
-            success: function (data) {
-                if (!$.isEmptyObject(data)) {
-                    $.each(data, function (index, value) {
-                        //setting the modal image with this same id
-                        $('.modal-image').attr('id', imageSelectedID);
-                        //setting modal image source with the returned image location
-                        $('.modal-image').attr('src', '/Uploads/' + value.ImageURL);
-                        //setting accommodation id for form to be sent
-                        $('#propertyID').attr('value', imageSelectedID);
+        $('#subscription-period').append($('<option></option>').attr('value', i).text(i + ' ' + monthVar));
+    }
+}
 
-                        $('#property-owner-det-details').html('<table class="properties-table-style"><tr><th colspan="2">Property Owner Information</th></tr><tr><td>First Name</td><td>' + value.ownerModel.FirstName + '</td></tr>'
-                                    + '<tr><td>Last Name</td><td>' + value.ownerModel.LastName + '</td></tr>'
-                                    + '<tr><td>Gender</td><td>' + value.ownerModel.Gender + '</td></tr>'
-                                    + '<tr><td>Email</td><td>' + value.ownerModel.Email + '</td></tr>'
-                                    + '<tr><td>Cell</td><td>' + value.ownerModel.Cell + '</td></tr>'
-                                    + '</table>');
+//decides the action to be taken when the jumbotrun button is clicked
+$('#jumbotron-button').click(function () {
+    if (isCollapsable) {
+        $('#jumbotron-container').slideUp(500);
+    }
+});
 
-                        if (value.Occupancy != null && value.Occupancy != undefined) {
-                            //dynamically adding the data for the property
-                            $('#image-details').html('<table width="100%" class="properties-table-style">' //+ '<tr style="border-bottom:1px solid #FFFFFF;"><th colspan="3" style="text-align:center;">Property Information<th></tr>'
-                                + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
-                                + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Monthly Rent: ' + value.Price + '</td><td>Occupancy: ' + value.Occupancy + '</td></tr>'
-                                + '<tr><td>City: ' + value.City + '</td><td>Security Deposit: ' + value.SecurityDeposit + '</td><td>Gender Preference: ' + value.GenderPreference + '</td></tr>'
-                                + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td>'
-                                + '<td>Person Bathroom Amount: ' + value.BathroomAmount + '</td></tr>'
-                                + '<tr><td colspan="3"><table width="100%"><tr><th style="border-bottom:1px solid #FFFFFF" colspan="7">Inclusives Of The Rent</th></tr><tr><th>Water</th><th>Electricity</th><th>Internet</th><th>Cable</th><th>Gas</th></tr>'
-                                + '<tr><td>' + value.Water + '</td><td>' + value.Electricity + '</td><td>' + value.Internet + '</td><td>' + value.Cable + '</td><td>' + value.Gas + '</td></tr></table></td></tr>'
-                                + '<tr><th colspan="3">Property Description  </th><tr>'
-                                + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
-                        } else if (value.BedroomAmount != null && value.BedroomAmount != undefined) {
-                            //dynamically adding the data for the property
-                            $('#image-details').html('<table width="100%" class="properties-table-style">'
-                                + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
-                                + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Price: ' + value.Price + '</td><td><table width="100%"><tr><th>Bedroom Amount</th><th>Bathroom Amount</th><th>Purpose</th><th>Is Furnished</th></td></tr><tr><td>' + value.BedroomAmount + '</td><td>' + value.BathroomAmount + '</td><td>' + value.Purpose + '</td><td>' + value.isFurnished + '</td></tr></table></tr>'
-                                + '<tr><td>City: ' + value.City + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
-                                + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td><td>&nbsp;</td>'
-                                + '<tr><th colspan="3">Property Description  </th><tr>'
-                                + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
-                        } else {
-                            //dynamically adding the data for the property
-                            $('#image-details').html('<table width="100%" class="properties-table-style">'
-                                + '<tr><th>Location</th><th>Pricing</th><th>Other Details</th></tr>'
-                                + '<tr><td>Address: ' + value.StreetAddress + '</td><td>Price: ' + value.Price + '</td><td><table width="100%"><tr><th>Purpose</th><th>Area</th></td></tr><tr><td>' + value.Purpose + '</td><td>' + value.Area + '</td></tr></table></tr>'
-                                + '<tr><td>City: ' + value.City + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
-                                + '<tr><td>Parish: ' + value.Parish + '</td><td>&nbsp;</td><td>&nbsp;</td>'
-                                + '<tr><th colspan="3">Property Description  </th><tr>'
-                                + '<tr><td colspan="3"> <textarea class="txt-area-desc" disabled>' + value.Description + '</textarea> </td><tr></table> ');
-                        }
-                    });
-                }
-            },
-            complete: function () {
-                $('.ajax-load').hide();
-            },
-            error: function () {
-                alert('An error occurred');
+//updates the shopping cart with the selected items
+function updateShoppingCart() {
+    if (lastSelectedClickableAdvertismentPriority != null
+        && lastSelectedClickableSubscriptionType != null
+        && $('#subscription-period').val()) {
+        var advertismentPriorityItemCost = { Regular: 0, AdPro: 1000, AdPremium: 4000 };
+        var subscriptionItemCost = { Basic: 1000, Realtor: 3000, Landlord: 5000 };
+        var period = $('#subscription-period').val();
+        var totalCost = 0.00;
+
+        $('.shopping-cart-container').empty();
+
+        $('.shopping-cart-container').append('<div class="row">'
+                                + '<div class="col-xs-4 cart-headings"><span class="ctnr-info"><b>Product</b></span></div>'
+                                + '<div class="col-xs-4 cart-headings"><span class="ctnr-info"><b>Period</b></span></div>'
+                                + '<div class="col-xs-4 cart-headings"><span class="ctnr-info"><b>Price</b></span></div>'
+                                + '</div>');
+
+        $.each(advertismentPriorityItemCost, function (index, value) {
+            switch (index) {
+                case lastSelectedClickableAdvertismentPriority.attr('id'):
+                    $('.shopping-cart-container')
+                        .append('<div class="row">&nbsp;</div><div class="row">'
+                                + '<div class="col-xs-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
+                                + '<div class="col-xs-4"><span class="ctnr-info">' + period + '</span></div>'
+                                + '<div class="col-xs-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                                + '</div>');
+                    totalCost += value;
+                    break;
             }
+        });
+
+        $.each(subscriptionItemCost, function (index, value) {
+            switch (index) {
+                case lastSelectedClickableSubscriptionType.attr('id'):
+                    $('.shopping-cart-container')
+                        .append('<div class="row">&nbsp;</div><div class="row">'
+                                + '<div class="col-xs-4"><span class="ctnr-info">' + 'Subscription : ' + index + '</span></div>'
+                                + '<div class="col-xs-4"><span class="ctnr-info">' + period + '</span></div>'
+                                + '<div class="col-xs-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                                + '</div>');
+                    totalCost += value;
+                    break;
+            }
+        });
+
+        $('.shopping-cart-container').append('<div class="row">'
+                                + '<hr/>'
+                                + '<div class="col-sm-offset-8 col-xs-2 cart-headings"><span class="ctnr-info"><b>Total</b></span></div>'
+                                + '<div class="col-xs-2">' + '$' + (totalCost * period) + '.00 JMD' + '</div></div>');
+    }
+}
+
+//adds the clickable items to a hidden form input to be submitted
+function addHiddenInputToForm(name, value) {
+    var input = $('<input>').attr('type', 'hidden').attr('name', name).val(value);
+    $('#ad-submission').append(input);
+}
+
+//highlights the field that was not successfully validated
+function highlightErrorField(field) {
+    field.addClass('error');
+}
+
+//removes the field that was successfully validated
+function removeErrorField(field) {
+    field.removeClass('error');
+}
+
+//displays error messages from property upload
+function displayErrorMessages() {
+    if (errMessages != null && errMessages.length > 0) {
+        $('.error-container').empty();
+
+        $.each(errMessages, function (index, value) {
+            $('.error-container').append(value + '<br>').show();
+        });
+    }
+}
+
+//adds error messages to the errMessages Array
+function addErrorMessage(msg) {
+    
+    //insert error message if it is not already in the array
+    if (errMessages.indexOf(msg) == -1) {
+        errMessages.push(msg);
+    }
+
+  
+}
+
+//navigates browser to the homepage of the application
+function returnToHome() {
+    window.location.href = window.location.protocol + '//' + window.location.host + '/';
+}
+
+//sets configuration for the modal display
+var system = function () {
+
+    this.modalIndex = 2000;
+
+    this.showModal = function (selector) {
+        this.modalIndex++;
+
+        $(selector).modal({
+            backdrop: 'static',
+            keyboard: true
+        });
+        $(selector).modal('show');
+        $(selector).css('z-index', this.modalIndex);
+    }
+
+}
+
+var sys = new system();
+
+//sets the menu to fixed after scrolling pass a certain amount of pixels
+$(window).scroll(function () {
+    if ($(this).scrollTop() > 280) {
+        $('.header-content').addClass('fixed');
+        $('.search-bar-container').addClass('fixed-search');
+    } else {
+        $('.header-content').removeClass('fixed');
+        $('.search-bar-container').removeClass('fixed-search');
+    }
+});
+
+/***GENERAL FUNCTIONS*/
+/***DATA RETRIEVAL FUNCTIONS*/
+function loadPropertyTypes(selectedItem) {
+    /*loading property type drop down list with the appropriate names*/
+    loadingGifLocation = $('#property-type').parent();
+
+    $.ajax({
+        url: '/accounts/GetPropertyTypesByCategoryName',
+        type: 'get',
+        data: { propertyCategoryName: selectedItem },
+        beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+        success: function (data) {
+            $('#property-type').prop('disabled', false);
+            $('#property-type').empty();
+            $.each(data, function (index, value) {
+                $('#property-type').append($('<option></option>').attr('value', value).text(value));
+            });
+        },
+        error: function () {
+            alert('An error occurred while retrieving property types');
+        },
+        complete: function () { $('#loading-gif').remove(); }
+    });
+}
+
+function loadPropertyTags(selectedItem) {
+    loadingGifLocation = $('#property-tags');
+
+    $.ajax({
+        url: '/accounts/GetTagNamesByPropertyCategoryCode',
+        type: 'get',
+        data: { propertyCategoryName: selectedItem },
+        beforeSend: function () { $(loadingGifHTML).appendTo(loadingGifLocation); },
+        success: function (data) {
+            $('#property-tags').empty();
+            $.each(data, function (index, value) {
+                $('#property-tags').append(
+                    '<div class="col-xs-2">'
+                    + '  <a href="#" class="clickable-box-link">'
+                    + '  <div id="' + value + '" class="clickable-box">' + value + '</div>'
+                    + '  </a></div> '
+                );
+                if (index % 5 == 0 && index != 0) {
+                    $('#property-tags').append('<div class="row">&nbsp;</div><div class="row">&nbsp;</div>');
+                }
+            });
+
+            if ($.isEmptyObject(data)) {
+                $('#property-tags').append(
+                    '<div class="col-xs-12"><em>No Tags Found For Selected Property Category</em></div>'
+                );
+            }
+        },
+        error: function () {
+            alert('An error occurred while retrieving property tags');
+        },
+        complete: function () { $('#loading-gif').remove(); }
+    });
+}
+
+/***DATA RETRIEVAL FUNCTIONS*/
+
+/***ADVERTISEPROPERTY FUNCTIONS*/
+(function () {
+    //enables disabled elements
+    function enableElements(elements) {
+        $.each(elements, function (index, value) {
+            $(value).prop('disabled', false);
         });
     }
 
-    //modal display for selected property
-    $(document.body).on('click', '.image-link, .prop-details-btn', function (event) {
+    //disables enabled elements
+    function disableElements(elements) {
+        $.each(elements, function (index, value) {
+            $(value).prop('disabled', true);
+        });
+    }
+
+    //displays animated tool tip when a clickable box is hovered
+    /* $('.clickable-box-link a').hover(function () {
+         var html = '<div class="tooltip-container">'
+                     + '<div class="arrow-top"></div></div>';
+ 
+         $(html).insertAfter(this).hide().slideDown('fast');
+     }, function () {
+         $('.tooltip-container').slideUp('fast', function () {
+             $(this).remove();
+         });
+     });*/
+
+    //makes the clickable box active when clicked and handles the shift and loads the tags for the appropriate property categories
+    //property type category
+    $('#property-category .clickable-box').click(function (event) {
         event.preventDefault();
-        //getting id selected
-        var imageSelectedID = $(this).attr('href');
-        //getting the name of the property's parent in order to programmatically decide the layout that should be used
-        var propertyParentClass = $(this).parent().parent().attr('class');//.split(' ');
-        var url = '';
-        //setting URL that should be called
-        if (propertyParentClass == 'rooms-load') {
-            url = '/Properties/RetrieveSelectedAccommodation';
-        } else if (propertyParentClass == 'house-load') {
-            url = '/Properties/RetrieveSelectedHouse';
+
+        var selectedItem = $(this).attr('id');
+
+        if (lastSelectedClickablePropertyCategory == null) {
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickablePropertyCategory = $(this);
+        } else {
+            lastSelectedClickablePropertyCategory.removeClass('clickable-box-active');
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickablePropertyCategory = $(this);
+        }
+
+        //enabling the area element if realestate or lot is selected
+        var elements = ['#area'];
+
+        if (selectedItem == 'RealEstate' || selectedItem == 'Lot')
+            enableElements(elements);
+        else
+            disableElements(elements);
+
+        //enabling the gendepreference,TotAvailableBathroom,TotRooms,occupancy element if realestate and (Rent or Lease) is selected
+        var elements = ['#GenderPreferenceCode', '#TotAvailableBathroom', '#TotRooms', '#occupancy'];
+        if (lastSelectedClickableAdvertismentType != null && selectedItem == 'RealEstate'
+            && (lastSelectedClickableAdvertismentType.attr('id') == 'Rent'
+            || lastSelectedClickableAdvertismentType.attr('id') == 'Lease'))
+            enableElements(elements);
+        else if (lastSelectedClickableAdvertismentType != null && selectedItem == 'RealEstate'
+            && lastSelectedClickableAdvertismentType.attr('id') == 'Sale') {
+            var elements = ['#TotAvailableBathroom', '#TotRooms'];
+            enableElements(elements);
+            var elements = ['#GenderPreferenceCode', '#occupancy'];
+            disableElements(elements);
         } else
-            url = '/Properties/RetrieveSelectedLand';
-        //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
-        //calling function to load modal view
-        loadSelectedModalProperty(url, imageSelectedID);
+            disableElements(elements);
+        //loads the property type drop down list
+        loadPropertyTypes(selectedItem);
+
+        //loads the appropriate property tags for the selected category
+        loadPropertyTags(selectedItem);
+
+        var field = $('#property-category');
+        removeErrorField(field);
+
     });
 
-    //function to filter rooms
-    function filterProperties(filterName, filterCookieName, filterValue, filterOffRegex, filterOnRegex) {
-        var queryString = $.cookie('queryString');
-        //if filtername is gender or occupancy or bathrooms, use this method
-        if (filterName == 'bedrooms' || filterName == 'purpose' || filterName == 'gender' || filterName == 'occupancy' || filterName == 'bathrooms') {
-            if (filterValue == 'no_filter') {
-                queryString = queryString.replace(filterOffRegex, '');
-                $.cookie(filterCookieName, null);
-                $.cookie('queryString', queryString);
-            }
-            else {
-                $.cookie(filterCookieName, filterValue);
-
-                if (queryString != 'null' && queryString.indexOf(filterName) == -1) {
-                    $.cookie('queryString', queryString + '&' + filterName + '=' + filterValue);
-                }
-                else {
-                    if (queryString == 'null' || queryString === undefined) {
-                        $.cookie('queryString', window.location.pathname + '?' + filterName + '=' + filterValue);
-                    } else {
-                        $.cookie('queryString', queryString.replace(filterOnRegex, filterName + '=' + filterValue));
-                    }
-                }
-            }
-        } else if (filterName == 'isFurnished' || filterName == 'isStudent' || filterName == 'hasWater' || filterName == 'hasCable' || filterName == 'hasElectricity' || filterName == 'hasGas' || filterName == 'hasInternet') {
-            //if filtername is any of the checked filter values
-            if (!filterValue) {
-                queryString = queryString.replace(filterOffRegex, '');
-                $.cookie(filterCookieName, null);
-                $.cookie('queryString', queryString);
-            }
-            else {
-                $.cookie(filterCookieName, filterValue);
-
-                if (queryString != 'null' && queryString.indexOf(filterName) == -1) {
-                    $.cookie('queryString', queryString + '&' + filterName + '=' + filterValue);
-                }
-                else {
-                    if (queryString == 'null' || queryString === undefined) {
-                        $.cookie('queryString', window.location.pathname + '?' + filterName + '=' + filterValue);
-                    } else {
-                        $.cookie('queryString', queryString.replace(filterOnRegex, filterName + '=' + filterValue));
-                    }
-                }
-            }
-        }
-
-        var qSRefinement = $.cookie('queryString');
-        $.cookie('queryString', qSRefinement.replace(/&$/g, ''));
-
-        queryString = $.cookie('queryString');
-        var pathToMatch = window.location.pathname + '?';
-
-        if (queryString.toUpperCase() == pathToMatch.toUpperCase()) {
-            $.cookie('queryString', null);
-            window.location = window.location.pathname;
-        }
-        else
-            window.location = $.cookie('queryString');
-    }
-    //filter rooms by gender
-    $('#genderPreference').change(function () {
-        filterProperties('gender', 'filterGender', $(this).val(), /gender=[a-zA-Z]+&*/g, /gender=[a-zA-Z]+/g);
-    });
-    //filter houses and lands by purpose
-    $('#purpose').change(function () {
-        filterProperties('purpose', 'filterPurpose', $(this).val(), /purpose=[a-zA-Z]+&*/g, /purpose=[a-zA-Z]+/g);
-    });
-    //filter rooms by occupancy
-    $('#occupancy').change(function () {
-        filterProperties('occupancy', 'filterOccupancy', $(this).val(), /occupancy=[0-9]+&*/g, /occupancy=[0-9]+/g);
-    });
-    //filter rooms by number of bathrooms
-    $('#bathroomAmount').change(function () {
-        filterProperties('bathrooms', 'filterBathrooms', $(this).val(), /bathrooms=[0-9]+&*/g, /bathrooms=[0-9]+/g);
-    });
-    //filter houses by number of bedrooms
-    $('#bedroomAmount').change(function () {
-        filterProperties('bedrooms', 'filterBedrooms', $(this).val(), /bedrooms=[0-9]+&*/g, /bedrooms=[0-9]+/g);
-    });
-    //filter rooms by is student
-    $('#isStudent').change(function () {
-        filterProperties('isStudent', 'filterIsStudent', $(this).is(':checked'), /isStudent=[a-z]+&*/g, /isStudent=[a-z]+/g);
-    });
-    //filter rooms by has water
-    $('#hasWater').change(function () {
-        filterProperties('hasWater', 'filterHasWater', $(this).is(':checked'), /hasWater=[a-z]+&*/g, /hasWater=[a-z]+/g);
-    });
-    //filter rooms by has cable
-    $('#hasCable').change(function () {
-        filterProperties('hasCable', 'filterHasCable', $(this).is(':checked'), /hasCable=[a-z]+&*/g, /hasCable=[a-z]+/g);
-    });
-    //filter rooms by has electricity
-    $('#hasElectricity').change(function () {
-        filterProperties('hasElectricity', 'filterHasElectricity', $(this).is(':checked'), /hasElectricity=[a-z]+&*/g, /hasElectricity=[a-z]+/g);
-    });
-    //filter rooms by has gas
-    $('#hasGas').change(function () {
-        filterProperties('hasGas', 'filterHasGas', $(this).is(':checked'), /hasGas=[a-z]+&*/g, /hasGas=[a-z]+/g);
-    });
-    //filter rooms by has internet
-    $('#hasInternet').change(function () {
-        filterProperties('hasInternet', 'filterHasInternet', $(this).is(':checked'), /hasInternet=[a-z]+&*/g, /hasInternet=[a-z]+/g);
-    });
-    //filter houses by isfurnished
-    $('#isFurnished').change(function () {
-        filterProperties('isFurnished', 'filterIsFurnished', $(this).is(':checked'), /isFurnished=[a-z]+&*/g, /isFurnished=[a-z]+/g);
-    });
-    //filter lands by area
-    $('#area').change(function () {
-
-        var rangeSelected = $(this).val();
-        var rangeSelectedSplit = rangeSelected.split('-');
-
-        var area1 = rangeSelectedSplit[0];
-        var area2 = rangeSelectedSplit[1];
-
-        var queryString = $.cookie('queryString');
-
-        if ($(this).val() == 'no_filter') {
-            $.cookie('filterArea', null);
-            $.cookie('queryString', queryString.replace(/ar1=[0-9a-z]+&ar2=[0-9]+&*/g, ''));
-        }
-        else {
-            $.cookie('areaRangeSelection', rangeSelected);
-
-            $.cookie('filterArea', 'ar1=' + area1 + '&' + 'ar2=' + area2);
-
-            if (queryString != 'null' && queryString.indexOf('ar1') == -1) {
-                $.cookie('queryString', queryString + '&' + $.cookie('filterArea'));
-            }
-            else {
-                if (queryString == 'null' || queryString === undefined) {
-                    $.cookie('queryString', window.location.pathname + '?' + $.cookie('filterArea'));
-                } else {
-                    $.cookie('queryString', queryString.replace(/ar1=[0-9]+&ar2=[0-9]+/g, $.cookie('filterArea')));
-                }
-            }
-        }
-
-        var qSRefinement = $.cookie('queryString');
-        $.cookie('queryString', qSRefinement.replace(/&$/g, ''));
-
-        queryString = $.cookie('queryString');
-        var pathToMatch = window.location.pathname + '?';
-
-        if (queryString.toUpperCase() == pathToMatch.toUpperCase()) {
-            $.cookie('queryString', null);
-            window.location = window.location.pathname;
-        }
-        else
-            window.location = $.cookie('queryString');
-    });
-    //filter rooms by price range
-    $('.aside-property#range-cost a').click(function (event) {
+    //makes the clickable box active when clicked and handles the shift 
+    //property purpose category
+    $('#property-purpose .clickable-box').click(function (event) {
         event.preventDefault();
 
-        var rangeSelected = $(this).attr('id');
-        var rangeSelectedSplit = rangeSelected.split('-');
+        var selectedItem = $(this).attr('id');
 
-        var price1 = rangeSelectedSplit[0];
-        var price2 = rangeSelectedSplit[1];
-
-        var queryString = $.cookie('queryString');
-
-        if ($(this).attr('class') == 'active') {
-            $.cookie('costRangeSelection', null);
-            $.cookie('filterCostRange', null);
-
-            $.cookie('queryString', queryString.replace(/cr1=[0-9a-z]+&cr2=[0-9]+&*/g, ''));
-        }
-        else {
-            $.cookie('costRangeSelection', $(this).attr('id'));
-
-            $.cookie('filterCostRange', 'cr1=' + price1 + '&' + 'cr2=' + price2);
-
-            if (queryString != 'null' && queryString.indexOf('cr1') == -1) {
-                $.cookie('queryString', queryString + '&' + $.cookie('filterCostRange'));
-            }
-            else {
-                if (queryString == 'null' || queryString === undefined) {
-                    $.cookie('queryString', window.location.pathname + '?' + $.cookie('filterCostRange'));
-                } else {
-                    $.cookie('queryString', queryString.replace(/cr1=[0-9]+&cr2=[0-9]+/g, $.cookie('filterCostRange')));
-                }
-            }
-        }
-
-        var qSRefinement = $.cookie('queryString');
-        $.cookie('queryString', qSRefinement.replace(/&$/g, ''));
-
-        queryString = $.cookie('queryString');
-        var pathToMatch = window.location.pathname + '?';
-
-        if (queryString.toUpperCase() == pathToMatch.toUpperCase()) {
-            $.cookie('queryString', null);
-            window.location = window.location.pathname;
-        }
-        else
-            window.location = $.cookie('queryString');
-    });
-    //filter rooms by parishes
-    $('.aside-property#filter-room-parish a').click(function (event) {
-        event.preventDefault();
-
-        var queryString = $.cookie('queryString');
-
-        if ($(this).attr('class') == 'active') {
-            $.cookie('parishSelection', null);
-            $.cookie('filterParish', null);
-            $.cookie('queryString', queryString.replace(/parish=[a-z-]+&*/g, ''));
-        }
-        else {
-            $.cookie('parishSelection', $(this).attr('id'));
-
-            $.cookie('filterParish', 'parish=' + $(this).attr('id'));
-
-            if (queryString != 'null' && queryString.indexOf('parish') == -1) {
-                $.cookie('queryString', queryString + '&' + $.cookie('filterParish'));
-            }
-            else {
-                if (queryString == 'null' || queryString === undefined) {
-                    $.cookie('queryString', window.location.pathname + '?' + $.cookie('filterParish'));
-                } else {
-                    $.cookie('queryString', queryString.replace(/parish=[a-z]+/g, $.cookie('filterParish')));
-                }
-            }
-        }
-
-        var qSRefinement = $.cookie('queryString');
-        $.cookie('queryString', qSRefinement.replace(/&$/g, ''));
-
-        queryString = $.cookie('queryString');
-        var pathToMatch = window.location.pathname + '?';
-
-        if (queryString.toUpperCase() == pathToMatch.toUpperCase()) {
-            $.cookie('queryString', null);
-            window.location = window.location.pathname;
-        }
-        else
-            window.location = $.cookie('queryString');
-
-    });
-    //properties pagination next 
-    $('.next-page').click(function (event) {
-        event.preventDefault();
-
-        var currentPageNumber = parseInt($('#currentPageNumber').val());
-        var redirectionURL = '';
-
-        if ($.cookie('queryString') != 'null' && $.cookie('queryString') !== undefined) {
-            var queryString = $.cookie('queryString');
-
-            redirectionURL = queryString + '&' + 'pg=' + (currentPageNumber + 1);
-        }
-        else
-            redirectionURL = window.location.pathname + '?' + 'pg=' + (currentPageNumber + 1);
-
-        window.location = redirectionURL;
-
-    });
-    //properties pagination next 
-    $('.previous-page').click(function (event) {
-        event.preventDefault();
-
-        var currentPageNumber = parseInt($('#currentPageNumber').val());
-        var redirectionURL = '';
-
-        if ($.cookie('queryString') != 'null' && $.cookie('queryString') !== undefined) {
-            var queryString = $.cookie('queryString');
-
-            redirectionURL = queryString + '&' + 'pg=' + (currentPageNumber - 1);
-        }
-        else
-            redirectionURL = window.location.pathname + '?' + 'pg=' + (currentPageNumber - 1);
-
-        window.location = redirectionURL;
-
-    });
-    //properties pagination jump to
-    $('.pageNumber').click(function (event) {
-        event.preventDefault();
-
-        var redirectionURL = '';
-
-        if ($.cookie('queryString') != 'null' && $.cookie('queryString') !== undefined) {
-            var queryString = $.cookie('queryString');
-
-            redirectionURL = queryString + '&' + 'pg=' + $(this).text();
-        }
-        else
-            redirectionURL = window.location.pathname + '?' + 'pg=' + $(this).text();
-
-        window.location = redirectionURL;
-    });
-    //filters properties by parishes
-    $('.aside-property#filter-parish a').click(function (event) {
-
-        event.preventDefault();
-
-        var tableName = '';
-        var tagName = '';
-
-        asideLinkID = $(this).attr('id');
-        parishFilterValue = $(this).attr('id');//value that will be used to filter by parish
-        //if link is already active, remove the active class from it then clear that filter
-        if ($(this).attr('class') == 'active' && $(this).attr('id') != 'all-parishes') {
-            //removes active link
-            $('#' + asideLinkID).removeAttr('class', 'active');
-            $('#all-parishes').attr('class', 'active');
-
-            isFiltered = false;
-            asideLinkID = null;
-            //gets all properties//not filtered
-            getProperties();
+        if (lastSelectedClickablePropertyPurpose == null) {
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickablePropertyPurpose = $(this);
         } else {
-            if (asideLinkID == 'all-parishes') {
-                isFiltered = false;
-                //resets all offset values
-                accommodationsOffset = 0;
-                houseOffset = 0;
-                landOffset = 0;
+            lastSelectedClickablePropertyPurpose.removeClass('clickable-box-active');
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickablePropertyPurpose = $(this);
+        }
 
-                asideLinkID = null;
-                //gets all properties//not filtered
-                getProperties();
+        var field = $('#property-purpose');
+        removeErrorField(field);
+    });
 
+    //makes the clickable box active when clicked and handles the shift 
+    //advertisment type category
+    $('#advertisment-type .clickable-box').click(function (event) {
+        event.preventDefault();
+
+        if (lastSelectedClickablePropertyCategory != null) {
+            var selectedItem = $(this).attr('id');
+
+            if (lastSelectedClickableAdvertismentType == null) {
+                $(this).addClass('clickable-box-active');
+                lastSelectedClickableAdvertismentType = $(this);
             } else {
-                //removes all-parishes filter highlight
-                $('#filter-parish a').removeAttr('class', 'active');
-                $('#' + asideLinkID).attr('class', 'active');
-
-                isFiltered = true;//used to ensure that the pagination uses the filter
-
-                getProperties(parishFilterValue);
+                lastSelectedClickableAdvertismentType.removeClass('clickable-box-active');
+                $(this).addClass('clickable-box-active');
+                lastSelectedClickableAdvertismentType = $(this);
             }
-        }
-    });
-    //loads the appropriate page in the registration field
-    $(document.body).on('change', 'input[name="chkProperty"]', function () {
-        var clickVal = $(this).prop('value');
-        if (clickVal == 'House') {
-            $('#property-type').load('getHousePartialView', function () {
-                $('form').removeData('validator');
-                $.validator.unobtrusive.parse($('form'));
-            });
-        } else if (clickVal == 'Room') {
-            $('#property-type').load('getRoomPartialView', function () {
-                $('form').removeData('validator');
-                $.validator.unobtrusive.parse($('form'));
-            });
+
+            //enabling the gendepreference,TotAvailableBathroom,TotRooms,occupancy element if realestate and (Rent or Lease) is selected
+            var elements = ['#GenderPreferenceCode', '#TotAvailableBathroom', '#TotRooms', '#occupancy'];
+
+            if ((selectedItem == 'Rent' || selectedItem == 'Lease')
+                && lastSelectedClickablePropertyCategory.attr('id') == 'RealEstate')
+                enableElements(elements);
+            else if (selectedItem == 'Sale' && lastSelectedClickablePropertyCategory.attr('id') == 'RealEstate') {
+                var elements = ['#TotAvailableBathroom', '#TotRooms'];
+                enableElements(elements);
+                var elements = ['#GenderPreferenceCode', '#occupancy'];
+                disableElements(elements);
+            } else
+                disableElements(elements);
+
+            var field = $('#advertisment-type');
+            removeErrorField(field);
         } else {
-            $('#property-type').load('getLandPartialView', function () {
-                $('form').removeData('validator');
-                $.validator.unobtrusive.parse($('form'));
-            });
+            alert('Select property type first');
+        }
+
+    });
+
+    //makes the clickable box active when clicked and handles the shift 
+    //subscription type category
+    $('#subscription-type .clickable-box').click(function (event) {
+        event.preventDefault();
+        var selectedItem = $(this).attr('id');
+
+        if (lastSelectedClickableSubscriptionType == null) {
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickableSubscriptionType = $(this);
+        } else {
+            lastSelectedClickableSubscriptionType.removeClass('clickable-box-active');
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickableSubscriptionType = $(this);
+        }
+
+        $('#subscription-period').prop('disabled', false);
+
+        //accounts should only be created for the subscription type of a realtor/landlord
+        var elements = ['#password', '#ConfirmPassword'];
+
+        if (selectedItem == 'Landlord' || selectedItem == 'Realtor')
+            enableElements(elements);
+        else
+            disableElements(elements);
+
+        updateShoppingCart();
+
+        var field = $('#subscription-type');
+        removeErrorField(field);
+    });
+
+    //makes the clickable box active when clicked and handles the shift 
+    //subscription type category
+    $('#advertisment-priority .clickable-box').click(function (event) {
+        event.preventDefault();
+        if (lastSelectedClickableAdvertismentPriority == null) {
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickableAdvertismentPriority = $(this);
+        } else {
+            lastSelectedClickableAdvertismentPriority.removeClass('clickable-box-active');
+            $(this).addClass('clickable-box-active');
+            lastSelectedClickableAdvertismentPriority = $(this);
+        }
+
+        updateShoppingCart();
+
+        var field = $('#advertisment-priority');
+        removeErrorField(field);
+    });
+
+    //makes the clickable box active or inactive when clicked and stores the variable clicked
+    //property-tags
+    $(document.body).on('click', '#property-tags .clickable-box', function (event) {
+        event.preventDefault();
+
+        var isActive = $(this).hasClass('clickable-box-active');
+        var tagSelected = $(this).attr('id');
+
+        if (!isActive) {
+            $(this).addClass('clickable-box-active');
+            propertyTagsSelected.push(tagSelected);
+        } else {
+            //find index of item to remove
+            var tagIndex = propertyTagsSelected.indexOf(tagSelected);
+            propertyTagsSelected.splice(tagIndex, 1);
+            $(this).removeClass('clickable-box-active');
         }
     });
-    //displays registration confirmation message for 10s
-    $('#registration-success').fadeIn('slow', function () {
-        $(this).fadeOut(20000);
-    })
-    //submits all registration forms at the same time
-    $('#btnRegister').click(function (event) {
-        event.preventDefault();
-        //validates form that will submit by ajax
-        $('#fm_owner').validate().form();
 
-        /*
-        * The request first attempts to submit the landlord's information
-        * If it was submitted successfully then it submits the property information:land/house/room
-        * If it is not successful then the error message is alerted to the user
-        */
-        $.ajax({
-            url: 'RegistrationLandlord',
-            type: 'Post',
-            data: $('#fm_owner').serialize(),
-            success: function (data) {
-                if (data == '') {
-                    if ($('#chkProperty:checked').prop('value') == 'House') {
-                        $('#fm_house').submit();
-                    } else if ($('#chkProperty:checked').prop('value') == 'Room') {
-                        $('#fm_room').submit();
-                    } else if ($('#chkProperty:checked').prop('value') == 'Land') {
-                        $('#fm_land').submit();
-                    }
-                } else {
-                    alert(data);
-                }
-            }
+    //validates populates subscription period drop down list element with the appropriate options
+    $('#subscription-period').click(function () {
+        if (lastSelectedClickablePropertyCategory != null
+           || lastSelectedClickableAdvertismentType != null
+           || lastSelectedClickableSubscriptionType != null) {
 
-        });
+            updateShoppingCart();
+
+        } else {
+            alert('Select a subscription type first');
+        }
     });
-    function propertiesPagination(propertyName, parish, pgCount) {
-        $.ajax({
-            url: '/home/getProperties',
-            type: 'Get',
-            data: { 'fetchAmount': 4, 'parish': parish, 'isPagination': true, 'propertyType': propertyName, 'pgNo': pgCount },
-            success: function (data) {
-                if (!$.isEmptyObject(data)) {//TODO use intuitive method to determine when specific object is empty
-                    loadPropertiesHTML(data, propertyName);
-                } else {
-                    //returning 1 to indicate that no results came back from the request
-                    alert("An error occurred while processing request.");
-                    return 1;
+
+    //outputs the selected images that were selected
+    $('#flPropertyPics').change(function () {
+        var files = $(this)[0].files;
+        var filenameOutput = '';
+
+        //clearing any image from the image output
+        $('.flPropertyPics').remove();
+
+        $.each(files, function (index, value) {
+            filenameOutput += value.name;
+
+            //prevents comma from being at the end  of the list
+            if (index < files.length - 1)
+                filenameOutput += ', ';
+
+            //outputing images
+            $('.flPropertyPicsImageOutput').append(''
+              + '<div class="col-xs-3 flPropertyPics">'
+              + '<a href="#"><img id="' + value.name + '"/></a>'
+              + '</div>').hide().fadeIn('slow');
+
+            var img = document.getElementById(value.name);//$('#' + value.name)[0];
+            img.file = value;
+
+            var reader = new FileReader();
+
+            reader.onload = (function (aimg) {
+                return function (e) {
+                    aimg.src = e.target.result;
+                };
+            })(img);
+
+            reader.readAsDataURL(value);
+        });
+
+        $('#flPropertyPicsFileNameOutput').val(filenameOutput);//outputing to the textbox
+
+        var field = $('#flPropertyPicsFileNameOutput');
+        removeErrorField(field);
+    });
+
+    $('#AdvertisePropertyBtn').click(function (event) {
+        event.preventDefault();
+        //TODO create better error handlers for clickable contents
+        var isClickableContentValid = true;
+        var genderPreferenceCode = $('#GenderPreferenceCode');
+        var isReviewable = $('#isReviewable');
+        var uploadedFiles = $('#flPropertyPics')[0].files;
+
+        if (lastSelectedClickablePropertyCategory != null) {
+            addHiddenInputToForm('propertycategory', lastSelectedClickablePropertyCategory.attr('id'));
+        } else {
+         //   alert('Select property category');
+            isClickableContentValid = false;
+
+            var field = $('#property-category');
+            highlightErrorField(field);
+        }
+
+        if (lastSelectedClickablePropertyPurpose != null) {
+            addHiddenInputToForm('propertypurpose', lastSelectedClickablePropertyPurpose.attr('id'));
+        } else {
+         //   alert('Select property purpose');
+            isClickableContentValid = false;
+
+            var field = $('#property-purpose');
+            highlightErrorField(field);
+        }
+
+        if (lastSelectedClickableAdvertismentType != null) {
+            addHiddenInputToForm('advertismenttype', lastSelectedClickableAdvertismentType.attr('id'));
+        } else {
+       //     alert('Select advertisment type');
+            isClickableContentValid = false;
+
+            var field = $('#advertisment-type');
+            highlightErrorField(field);
+        }
+
+        if (lastSelectedClickableSubscriptionType != null) {
+            addHiddenInputToForm('subscriptiontype', lastSelectedClickableSubscriptionType.attr('id'));
+        } else {
+       //     alert('Select subscription type');
+            isClickableContentValid = false;
+
+            var field = $('#subscription-type');
+            highlightErrorField(field);
+        }
+
+        if (lastSelectedClickableAdvertismentPriority != null) {
+            addHiddenInputToForm('advertismentpriority', lastSelectedClickableAdvertismentPriority.attr('id'));
+        } else {
+     //       alert('Select advertisment priority');
+            isClickableContentValid = false;
+
+            var field = $('#advertisment-priority');
+            highlightErrorField(field);
+        }
+
+        //adds hidden fields containing the selected tags
+        if (propertyTagsSelected != null) {
+            $.each(propertyTagsSelected, function (index, value) {
+                addHiddenInputToForm('selectedTags', value);
+            });
+        }
+
+        if (uploadedFiles.length == 0) {
+            alert('Upload at least one property image');
+            isClickableContentValid = false;
+
+            var field = $('#flPropertyPicsFileNameOutput');
+            highlightErrorField(field);
+        }
+        //TODO write rule messages
+        var validator = $('#ad-submission').validate({
+            rules: {
+                password: {
+                    minlength: 5
+                },
+                ConfirmPassword: {
+                    minlength: 5,
+                    equalTo: password
                 }
             },
-            error: function () {
-                //returning 1 to indicate that an error occurred
-                alert("An error occurred while processing request.");
-                return 1;
+
+            messages: {
+                password: {
+                    minlength: 'Password should be at least 5 characters long'
+                },
+                ConfirmPassword: {
+                    minlength: 'Password should be at least 5 characters long',
+                    equalTo: 'Password and Confirm Password values must be the same value'
+                }
+            },
+
+            errorPlacement: function (error, element) { },
+
+            showErrors: function (errorMap, errorList) {
+                $.each(errorList, function () {
+                    addErrorMessage(this.message);
+                });
+
+                displayErrorMessages();
+
+                this.defaultShowErrors();
             }
         });
-    }
-    //pagination function for home
-    $('.home-property-category a').click(function (event) {
-        event.preventDefault();
 
-        var pageClicked = $(this).attr('id');
-        var pageClickedArray = pageClicked.split("-");
+        var isValid = validator.form();
 
-        var tableName = pageClickedArray[0];
-        var pageDirection = pageClickedArray[1];
-        var parish = parishFilterValue == '' ? '' : parishFilterValue;
-        //TODO find a way to know if the object is null
-        switch (tableName) {
-            case 'accommodations':
-                //get next set of result
-                if (pageDirection == 'next') {
-                    accommodationPg += 1;
-                } else {
-                    accommodationPg -= 1;
-                }
-                //preventing paging from having a negative value
-                accommodationPg < 0 ? 0 : accommodationPg;
-                var success = propertiesPagination(tableName, parish, accommodationPg);
-                //go back if object is empty or an error had occurred
-                if (success == 1) {
-                    if (pageDirection == 'next') {
-                        accommodationPg -= 1;
-                    } else {
-                        accommodationPg += 1;
-                    }
-                }
-                break;
-            case 'house':
-                //get next set of result
-                if (pageDirection == 'next') {
-                    housePg += 1;
-                } else {
-                    housePg -= 1;
-                }
-                //preventing paging from having a negative value
-                housePg < 0 ? housePg = 0 : housePg = housePg;
-                var success = propertiesPagination(tableName, parish, housePg);
-                //go back if object is empty or an error had occurred
-                if (success == 1) {
-                    if (pageDirection == 'next') {
-                        housePg -= 1;
-                    } else {
-                        housePg += 1;
-                    }
-                }
-                break;
-            case 'land':
-                //get next set of result
-                if (pageDirection == 'next') {
-                    landPg += 1;
-                } else {
-                    landPg -= 1;
-                }
-                //preventing paging from having a negative value
-                landPg < 0 ? landPg = 0 : landPg = landPg;
-                var success = propertiesPagination(tableName, parish, landPg);
-                //go back if object is empty or an error had occurred
-                if (success == 1) {
-                    if (pageDirection == 'next') {
-                        landPg += 1;
-                    } else {
-                        landPg -= 1;
-                    }
-                }
-                break;
-        }
-    });
+        if (isClickableContentValid) {
+            if (isValid) {
+                loadingGifLocation = $('.AdvertisePropertyBtn');
+                var formData = new FormData($('#ad-submission')[0]);
 
-    //hides university information if the false option is selected
-    var universityStudentCheck = function () {
-        var student = $('#university_student');
-        if (student.val() == "False") {
-            $("#university_info").hide();
-            $(".end_date").hide();
-        }
-    }
+                $.ajax({
+                    url: '/accounts/advertiseproperty',
+                    type: 'Post',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+                    success: function (data) {
+                        if (data.hasErrors) {
+                            alert('Error encountered while uploading property. Contact Website Administrator');
+                            $.each(data.ErrorMessages, function (index, value) {
+                                addErrorMessage(value);
+                            });
 
-    universityStudentCheck();
+                            displayErrorMessages();
 
-    $('input[name=university_student]').change(function () {
-        if ($(this).val() == "False") {
-            $("#university_info").hide();
-            $(".end_date").hide();
+                            $('html, body').animate({
+                                scrollTop: $('.error-container').offset().top
+                            }, 'fast');
+                        } else {
+                            sys.showModal('#propertyModal');
+                        }
+                    },
+                    error: function (data) { alert('Error encountered while uploading property. Contact Website Administrator'); },
+                    complete: function () { $('#loading-gif').remove(); },
+                });
+            }
         } else {
-            $("#university_info").show();
-            $(".end_date").show();
+            var errMessage = 'Select an option from the highlighted items' + '<br>';
+            addErrorMessage(errMessage);
+            displayErrorMessages();
+
+            $('html, body').animate({
+                scrollTop: $('.error-container').offset().top
+            }, 'fast');
         }
     });
 
-    $(document.body).on('change', 'input[type=file]', function (event) {
-        //adding any file to the global file variable to be later used
-        files = event.target.files;
-    });
 
-});
-
+})();
+/***ADVERTISEPROPERTY FUNCTIONS*/

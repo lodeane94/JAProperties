@@ -9,13 +9,14 @@ namespace SS.Models
 {
     public static class HomeDAO
     {
-        private static JAHomesEntities dbCtx = new JAHomesEntities();
+        private static EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
         /// <summary>
         /// get property information for the home page
         /// </summary>
         /// <param name="fetchAmount"></param>
         /// <param name="parish"></param>
         /// <returns></returns>
+       /*
         public static PropertiesInformation getHomeProperties(short fetchAmount, string parish)
         {
             PropertiesInformation propertiesInformation = new PropertiesInformation();
@@ -294,6 +295,6 @@ namespace SS.Models
                 }
 
             return propertiesInformation;
-        }
+        }*/
     }
 }

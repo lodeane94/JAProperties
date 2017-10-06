@@ -55,6 +55,10 @@
     <Reference Include="FluentValidationNA">
       <HintPath>..\packages\FluentValidationNA.1.2.16\lib\net40\FluentValidationNA.dll</HintPath>
     </Reference>
+    <Reference Include="ImageProcessor, Version=2.5.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ImageProcessor.2.5.5\lib\net45\ImageProcessor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -135,6 +139,7 @@
     <Content Include="Content\Home-Interior-Garden-Room.jpg" />
     <Content Include="Content\instagram.svg" />
     <Content Include="Content\interior_design_style_home_house_living_space_baden_75554_3840x2160.jpg" />
+    <Content Include="Content\normalize.css" />
     <Content Include="Content\redbg_test.jpg" />
     <Content Include="Content\safe-state.png" />
     <Content Include="Content\Site.css" />
@@ -143,6 +148,16 @@
     <Content Include="Content\x_spa_03_copy.jpg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Models\EasyFindProperties.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>EasyFindProperties.edmx</DependentUpon>
+      <LastGenOutput>EasyFindProperties.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\EasyFindProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>EasyFindProperties.edmx</DependentUpon>
+      <LastGenOutput>EasyFindProperties.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-resource.js" />
     <Content Include="Scripts\angular-resource.min.js" />
@@ -158,23 +173,14 @@
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-resource.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
-    <EntityDeploy Include="Models\JAHomes.edmx">
+    <EntityDeploy Include="Models\EasyFindProperties.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>JAHomes.Designer.cs</LastGenOutput>
+      <LastGenOutput>EasyFindProperties.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\JAHomes.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>JAHomes.edmx</DependentUpon>
-      <LastGenOutput>JAHomes.Context.cs</LastGenOutput>
+    <Content Include="Models\EasyFindProperties.edmx.diagram">
+      <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Content>
-    <Content Include="Models\JAHomes.edmx.diagram">
-      <DependentUpon>JAHomes.edmx</DependentUpon>
-    </Content>
-    <Content Include="Models\JAHomes.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>JAHomes.edmx</DependentUpon>
-      <LastGenOutput>JAHomes.cs</LastGenOutput>
-    </Content>
+    <Content Include="App_Data\EasyFindProperties-2017-06-10.bak" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
@@ -188,8 +194,10 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\MainScript.js" />
+    <Content Include="Scripts\MainScript_discard.js" />
     <Content Include="Scripts\ManagementScript.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\PropertiesScript.js" />
     <Content Include="Scripts\propertyController.js" />
     <Content Include="Uploads\IMAG0373.jpg" />
     <Content Include="Uploads\IMAG0378.jpg" />
@@ -201,127 +209,149 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\AccommodationModel.cs" />
-    <Compile Include="Code\BillsModel.cs" />
-    <Compile Include="Code\Complaints.cs" />
-    <Compile Include="Code\FilterHelper.cs" />
-    <Compile Include="Code\HouseModel.cs" />
-    <Compile Include="Code\IPropertiesModel.cs" />
-    <Compile Include="Code\LandModel.cs" />
-    <Compile Include="Code\MailModel.cs" />
-    <Compile Include="Code\Messages.cs" />
-    <Compile Include="Code\OwnerModel.cs" />
-    <Compile Include="Code\PropertiesInformation.cs" />
-    <Compile Include="Code\PropertyConstants.cs" />
-    <Compile Include="Code\RequisitionInformation.cs" />
+    <Compile Include="Core\AccommodationModel.cs" />
+    <Compile Include="Core\BillsModel.cs" />
+    <Compile Include="Core\Complaints.cs" />
+    <Compile Include="Core\EFPConstants.cs" />
+    <Compile Include="Core\ErrorModel.cs" />
+    <Compile Include="Core\FilterHelper.cs" />
+    <Compile Include="Core\HouseModel.cs" />
+    <Compile Include="Core\IPropertiesModel.cs" />
+    <Compile Include="Core\LandModel.cs" />
+    <Compile Include="Core\MailModel.cs" />
+    <Compile Include="Core\Messages.cs" />
+    <Compile Include="Core\OwnerModel.cs" />
+    <Compile Include="Core\PropertiesInformation.cs" />
+    <Compile Include="Core\PropertyConstants.cs" />
+    <Compile Include="Core\PropertyHelper.cs" />
+    <Compile Include="Core\RequisitionInformation.cs" />
     <Compile Include="Controllers\AdvertismentsController.cs" />
-    <Compile Include="Code\ExpressionBuilder.cs" />
-    <Compile Include="Code\Filter.cs" />
+    <Compile Include="Core\ExpressionBuilder.cs" />
+    <Compile Include="Core\Filter.cs" />
     <Compile Include="Controllers\WebInfoController.cs" />
-    <Compile Include="Models\AccommodationMetadata.cs" />
-    <Compile Include="Models\ACCOMMODATIONS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\AdPriority.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Membership_GetPasswordWithFormat_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\AdType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Membership_GetPassword_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\Bill.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Membership_GetUserByName_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\BillType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Membership_GetUserByUserId_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\Complaint.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Profile_GetProperties_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\EasyFindProperties.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EasyFindProperties.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Users.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\EasyFindProperties.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_UsersInRoles.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_UsersInRoles_RemoveUsersFromRoles_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\BILLS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\COMPLAINTS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\EasyFindProperties.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\HomeDAO.cs" />
-    <Compile Include="Models\HOUSE.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\IUnitOfWork.cs" />
+    <Compile Include="Models\Meeting.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\HouseMetadata.cs" />
-    <Compile Include="Models\JAHomes.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>JAHomes.Context.tt</DependentUpon>
+    <Compile Include="Models\MeetingRequisition.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\JAHomes.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\Message.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\JAHomes.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>JAHomes.edmx</DependentUpon>
+    <Compile Include="Models\Owner.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\LAND.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LANDLORDS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LandMetadata.cs" />
-    <Compile Include="Models\LandlordMetadata.cs" />
-    <Compile Include="Models\MEETINGS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MESSAGES.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\PartialClasses.cs" />
+    <Compile Include="Models\OwnerMetadata.cs" />
     <Compile Include="Models\PropertiesDAO.cs" />
-    <Compile Include="Models\RequisitionMetadata.cs" />
-    <Compile Include="Models\REQUISITIONS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\Property.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\REQUISITION_PROPERTY_MAPPINGS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyCategory.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_get_properties_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyCondition.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_get_requisitions_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyImage.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_get_tennants_partial_info_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyPurpose.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyRating.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_helpdiagrams_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyRequisition.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_pagination_Result.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\PropertyType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\SUBSCRIPTIONS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\Repositories\AdPriorityRepository.cs" />
+    <Compile Include="Models\Repositories\AdTypeRepository.cs" />
+    <Compile Include="Models\Repositories\IAdPriorityRepository.cs" />
+    <Compile Include="Models\Repositories\IAdTypeRepository.cs" />
+    <Compile Include="Models\Repositories\IOwnerRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyCategoryRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyConditionRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyImageRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyPurposeRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyRatingRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyRequisitionRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
+    <Compile Include="Models\Repositories\IPropertyTypeRepository.cs" />
+    <Compile Include="Models\Repositories\ISubscriptionRepository.cs" />
+    <Compile Include="Models\Repositories\ISubscriptionTypeRepository.cs" />
+    <Compile Include="Models\Repositories\ITagsRepository.cs" />
+    <Compile Include="Models\Repositories\ITagTypeRepository.cs" />
+    <Compile Include="Models\Repositories\ITennantRepository.cs" />
+    <Compile Include="Models\Repositories\OwnerRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyCategoryRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyConditionRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyImageRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyPurposeRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyRatingRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyRepository.cs" />
+    <Compile Include="Models\Repositories\PropertyRequisitionRepository.cs" />
+    <Compile Include="Models\Repositories\Repository.cs" />
+    <Compile Include="Models\Repositories\PropertyTypeRepository.cs" />
+    <Compile Include="Models\Repositories\SubscriptionRepository.cs" />
+    <Compile Include="Models\Repositories\SubscriptionTypeRepository.cs" />
+    <Compile Include="Models\Repositories\TagsRepository.cs" />
+    <Compile Include="Models\Repositories\TagTypeRepository.cs" />
+    <Compile Include="Models\Repositories\TennantRepository.cs" />
+    <Compile Include="Models\Subscription.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\TENNANTS.cs">
-      <DependentUpon>JAHomes.tt</DependentUpon>
+    <Compile Include="Models\SubscriptionType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Tags.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TagType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Tennant.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UnitOfWork.cs" />
     <Compile Include="PropertiesMerge.cs" />
     <Compile Include="UtilityHelper.cs" />
-    <Compile Include="Code\TennantModel.cs" />
+    <Compile Include="Core\TennantModel.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
@@ -335,6 +365,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomHelper.cs" />
+    <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
+    <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -345,7 +377,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Views\Home\Home.cshtml" />
-    <Content Include="Views\Accounts\Registration.cshtml" />
+    <Content Include="Views\Accounts\Registration_discard.cshtml" />
     <Content Include="Views\Shared\_OwnerInformationRegistration.cshtml" />
     <Content Include="Views\Shared\_RoomInformationRegistration.cshtml" />
     <Content Include="Views\Shared\_ModelPropertyInformation.cshtml" />
@@ -372,6 +404,8 @@
     <Content Include="Views\WebInfo\HowTo.cshtml" />
     <Content Include="Views\WebInfo\Privacy.cshtml" />
     <Content Include="Views\Advertisments\Adspace.cshtml" />
+    <Content Include="Views\Accounts\AdvertiseProperty.cshtml" />
+    <Content Include="Views\Shared\_ModalPropertyAdvertised.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -380,7 +414,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Uploads\UtilityBills\" />
     <Folder Include="Views\Image\" />
     <Folder Include="Views\Mail\" />

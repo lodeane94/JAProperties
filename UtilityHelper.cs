@@ -14,7 +14,7 @@ namespace SS.Code
         public static List<TennantModel> loadTennants(string username)
         {
             /*
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<TennantModel> tennantModelList = new List<TennantModel>();
 

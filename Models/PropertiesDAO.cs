@@ -9,14 +9,15 @@ namespace SS.Models
 {
     public static class PropertiesDAO
     {
-        private static JAHomesEntities dbCtx = new JAHomesEntities();
-
+        private static EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
+        /*
         public static PropertyType getPropertyType(Guid propertyID)
         {
+            Property property = new Property();
             /*
                      * checking the ID of the property that is being returned. 
                      * depending on the property, the appropriate image will be loaded
-                     */
+                     
             var allAccommodationOwnedCount = dbCtx.ACCOMMODATIONS.Where(x => x.ID == propertyID).Count();
             var allHouseOwnedCount = dbCtx.HOUSE.Where(x => x.ID == propertyID).Count();
             var allLandOwnedCount = dbCtx.LAND.Where(x => x.ID == propertyID).Count();
@@ -27,6 +28,6 @@ namespace SS.Models
                 return PropertyType.house;
             else
                 return PropertyType.land;
+        }*/
         }
     }
-}

@@ -7,8 +7,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SS.Models
 {
-    [MetadataType(typeof(LandlordMetadata))]
-    public partial class LANDLORDS
+    [MetadataType(typeof(OwnerMetadata))]
+    public partial class Owner
     {
     }
 

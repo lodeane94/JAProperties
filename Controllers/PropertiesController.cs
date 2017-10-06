@@ -15,7 +15,7 @@ namespace SS.Controllers
     {
         private string filterString = string.Empty;
         private string conditionToBeRemoved = string.Empty;
-
+        /*
         public ActionResult Rooms(string parish, string cr1, string cr2,
             string gender, string occupancy, string bathrooms, string isStudent,
             string hasWater, string hasCable, string hasElectricity,
@@ -24,7 +24,7 @@ namespace SS.Controllers
             //the amount of properties that should be returned
             short fetchAmount = 12;
 
-            using (JAHomesEntities dbCtx = new JAHomesEntities())
+            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
             {
                 PropertiesInformation accommodationProperties = new PropertiesInformation();
                 List<Filter> filters = new List<Filter>();
@@ -248,7 +248,7 @@ namespace SS.Controllers
         {
             short fetchAmount = 12;
 
-            using (JAHomesEntities dbCtx = new JAHomesEntities())
+            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
             {
                 PropertiesInformation houseProperties = new PropertiesInformation();
                 List<Filter> filters = new List<Filter>();
@@ -399,7 +399,7 @@ namespace SS.Controllers
         {
             short fetchAmount = 12;
 
-            using (JAHomesEntities dbCtx = new JAHomesEntities())
+            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
             {
                 PropertiesInformation landProperties = new PropertiesInformation();
                 List<Filter> filters = new List<Filter>();
@@ -540,16 +540,16 @@ namespace SS.Controllers
             }
 
             return View();
-        }
+        }*/
         /*
          * makes requisition for the property that the user selected if they wanted to use the system
-         */
+        
         [HttpPost]
         public ActionResult RequestProperty(REQUISITIONS requisitionRequest, Guid propertyID)
         {
             if (ModelState.IsValid)
             {
-                JAHomesEntities dbCtx = new JAHomesEntities();
+                JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
                 REQUISITION_PROPERTY_MAPPINGS requisitionMapping = new REQUISITION_PROPERTY_MAPPINGS();
                 //setting requisition mapping information
                 switch (PropertiesDAO.getPropertyType(propertyID))
@@ -631,10 +631,10 @@ namespace SS.Controllers
         }
         /*
          * retrieves the information for the property that the user selected 
-         */
+         
         public JsonResult RetrieveSelectedAccommodation(Guid property_id)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<AccommodationModel> AInfo = new List<AccommodationModel>();
 
@@ -694,12 +694,12 @@ namespace SS.Controllers
         }
         /*
          * retrieves the information for the property that the user selected 
-         */
+         
         public JsonResult RetrieveSelectedHouse(Guid property_id)
         {
             List<HouseModel> HInfo = new List<HouseModel>();
 
-            using (JAHomesEntities dbCtx = new JAHomesEntities())
+            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
             {
                 try
                 {
@@ -744,10 +744,10 @@ namespace SS.Controllers
         }
         /*
          * retrieves the information for the property that the user selected 
-         */
+         
         public JsonResult RetrieveSelectedLand(Guid property_id)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<LandModel> LInfo = new List<LandModel>();
 
@@ -783,7 +783,7 @@ namespace SS.Controllers
             LInfo.Add(landModel);
 
             return Json(LInfo, JsonRequestBehavior.AllowGet);
-        }
+        }*/
     }
 
 }

@@ -1,4 +1,4 @@
-﻿@model SS.Models.LANDLORDS
+﻿@model SS.Models.Owner
 @using (Html.BeginForm("RegistrationLandlord", "Accounts", FormMethod.Post, new { id = "fm_owner" }))
 {
     <fieldset>
@@ -6,17 +6,15 @@
         <table class="table-condensed registration-form ">
             <tr>
                 <td>First Name</td>
-                <td>@Html.TextBoxFor(model => model.FIRST_NAME) @Html.ValidationMessageFor(model => model.FIRST_NAME)</td>
-                <td>Middle Name</td>
-                <td>@Html.TextBoxFor(model => model.MIDDLE_NAME) @Html.ValidationMessageFor(model => model.MIDDLE_NAME)</td>
+                <td>@Html.TextBoxFor(model => model.FirstName) @Html.ValidationMessageFor(model => model.FirstName)</td>
                 <td>Last Name</td>
-                <td>@Html.TextBoxFor(model => model.LAST_NAME) @Html.ValidationMessageFor(model => model.LAST_NAME)</td>
+                <td>@Html.TextBoxFor(model => model.LastName) @Html.ValidationMessageFor(model => model.LastName)</td>
             </tr>
             <tr>
                 <td>Cell Number</td>
-                <td>@Html.TextBoxFor(model => model.CELL, new { @type = "number"}) @Html.ValidationMessageFor(model => model.CELL)</td>
+                <td>@Html.TextBoxFor(model => model.CellNum, new { @type = "number"}) @Html.ValidationMessageFor(model => model.CellNum)</td>
                 <td>Email</td>
-                <td>@Html.TextBoxFor(model => model.EMAIL) @Html.ValidationMessageFor(model => model.EMAIL)</td>
+                <td><input type="email" /></td>
                 <td>Username</td>
                 <td>@Html.TextBoxFor(model => model.USERNAME) @Html.ValidationMessageFor(model => model.USERNAME)</td>
             </tr>
@@ -37,12 +35,6 @@
                     <input id="chkProperty" name="chkProperty" type="radio" value="Room" checked>Room
                     <input id="chkProperty" name="chkProperty" type="radio" value="House">House
                     <input id="chkProperty" name="chkProperty" type="radio" value="Land">Land
-                </td>
-                <td>Gender</td>
-                <td>
-                    @Html.RadioButtonFor(model => model.GENDER, "M") M
-                    @Html.RadioButtonFor(model => model.GENDER, "F") F
-                    @Html.ValidationMessageFor(model => model.GENDER)
                 </td>
             </tr>
         </table>

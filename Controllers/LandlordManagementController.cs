@@ -23,19 +23,19 @@ namespace SS.Controllers
             return View();
         }
         //loads dashboard page
-        [Authorize]
+        /*[Authorize]
         public ActionResult Dashboard()
         {
             try
             {
-                using (JAHomesEntities dbCtx = new JAHomesEntities())
+                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
                 {
                     if (HttpContext.User.Identity.Name != null)
                     {
                         /*
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
                          * so that it may be used if a new property is being added
-                         */
+                         
                         var landlordID = dbCtx.LANDLORDS.Where(l => l.USERNAME == HttpContext.User.Identity.Name)
                                                         .Select(l => l.ID).Single();
                         Session["landlord_id"] = landlordID;
@@ -44,7 +44,7 @@ namespace SS.Controllers
                         /*
                          * setting the viewbags in order to load contents specific to users based on the different properties
                          * they have
-                         */
+                         
                         ViewBag.hasAccommodation = 0;
                         ViewBag.hasHouse = 0;
                         ViewBag.hasLand = 0;
@@ -68,12 +68,12 @@ namespace SS.Controllers
             try
             {
                 //retrieving enrolment key that is associated with an accommodation
-                using (JAHomesEntities dbCtx = new JAHomesEntities())
+                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
                 {
                     /*
                      * used to check whether the property is a room or otherwise
                      * a different email message will be generated depending on the property requested
-                     */
+                     
                     //bool isRoomRequest = dbCtx.ACCOMMODATIONS.All(r => r.ID == propertyID);
                     //email address which acceptance letter should be sent to
                     string emailTo = requestInfo.Email;
@@ -92,7 +92,7 @@ namespace SS.Controllers
                                   " localhost:5829/enrolment/requisition/?accID=" + propertyID + "&fname=" + requestInfo.FirstName +
                                   "&lname=" + requestInfo.LastName + "&gender=" + requestInfo.Gender + "&email=" + requestInfo.Email + "&cell=" + requestInfo.Cell;
                     }
-                    else*/
+                    else
                     body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
                             + " is further negotiations or concerns.";
                     //getting information about the owner of the property to give back to the requestee
@@ -152,7 +152,7 @@ namespace SS.Controllers
 
             return Content("RequestSuccess");
         }
-        /*denies user's requisition*/
+        /*denies user's requisition
         [HttpPost]
         [Authorize]
         public ActionResult cancelRequest(Guid reqID, string cell, string email)
@@ -165,7 +165,7 @@ namespace SS.Controllers
 
             try
             {
-                using (JAHomesEntities dbCtx = new JAHomesEntities())
+                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
                 {
                     //if (sendMail(email, body, subject))
                     //{
@@ -193,7 +193,7 @@ namespace SS.Controllers
         [Authorize]
         public ActionResult removeProperty(Guid id)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
             ACCOMMODATIONS accommodation;
             HOUSE house;
             LAND land;
@@ -262,7 +262,7 @@ namespace SS.Controllers
             List<IEnumerable> pInfo = new List<IEnumerable>();
             try
             {
-                using (JAHomesEntities dbCtx = new JAHomesEntities())
+                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
                 {
                     //checking if the landlord id was saved in the session
                     if ((Guid)Session["landlord_id"] != null)
@@ -271,7 +271,7 @@ namespace SS.Controllers
                         /*
                          * using the property counts to detect the particular properties
                          * owned by the current user that is signed in
-                         */
+                         
                         var allAccommodationOwnedCount = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
                                                 .Select(a => a.ACCOMMODATIONS.Select(x => x.ID).Count());
 
@@ -288,7 +288,7 @@ namespace SS.Controllers
 
                             foreach (var property in allAccommodationOwned)
                             {
-                                /*adding properties to dictionary to display image to the user*/
+                                /*adding properties to dictionary to display image to the user
                                 Dictionary<String, String> properties = new Dictionary<string, string>();
                                 properties.Add("ID", property.ID.ToString());
                                 properties.Add("ImageURL", property.IMAGE_URL);
@@ -304,7 +304,7 @@ namespace SS.Controllers
 
                             foreach (var property in allHouseOwned)
                             {
-                                /*adding properties to dictionary to display image to the user*/
+                                /*adding properties to dictionary to display image to the user
                                 Dictionary<String, String> properties = new Dictionary<string, string>();
                                 properties.Add("ID", property.ID.ToString());
                                 properties.Add("ImageURL", property.IMAGE_URL);
@@ -320,7 +320,7 @@ namespace SS.Controllers
 
                             foreach (var property in allLandOwned)
                             {
-                                /*adding properties to dictionary to display image to the user*/
+                                /*adding properties to dictionary to display image to the user
                                 Dictionary<String, String> properties = new Dictionary<string, string>();
                                 properties.Add("ID", property.ID.ToString());
                                 properties.Add("ImageURL", property.IMAGE_URL);
@@ -344,7 +344,7 @@ namespace SS.Controllers
         {
             int count = 1;
 
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<Messages> messagesList = new List<Messages>();
 
@@ -376,7 +376,7 @@ namespace SS.Controllers
         [Authorize]
         public JsonResult getMessagesHeaders()
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<Messages> messagesList = new List<Messages>();
 
@@ -405,7 +405,7 @@ namespace SS.Controllers
         [Authorize]
         public JsonResult getAllBills()
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<BillsModel> billsList = new List<BillsModel>();
 
@@ -434,7 +434,7 @@ namespace SS.Controllers
         public ActionResult BillSubmission(string bill_type, DateTime date_issued, DateTime date_due, decimal bill_amount,
                                             string tennats_message, HttpPostedFileBase bill_image, Guid[] room_selection)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             for (int count = 0; count < room_selection.Length; count++)
             {
@@ -452,7 +452,7 @@ namespace SS.Controllers
         [Authorize]
         public void uploadBillPicture(HttpPostedFileBase file, Guid room_selection)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             string fileName = string.Empty;
             //ensures file is not empty and is a valid image
@@ -471,7 +471,7 @@ namespace SS.Controllers
         [Authorize]
         public JsonResult getRequisitions()
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
             List<RequisitionInformation> rInfo = new List<RequisitionInformation>();
 
             try
@@ -526,11 +526,11 @@ namespace SS.Controllers
         /*
          * gets the information for the property that was selected in order to
          * update information about this property
-         */
+         
         [Authorize]
         public JsonResult getProperty(Guid property_id)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<AccommodationModel> AInfo = new List<AccommodationModel>();
             List<HouseModel> HInfo = new List<HouseModel>();
@@ -619,7 +619,7 @@ namespace SS.Controllers
         public ActionResult updateAccommodation(Guid id, bool availability, bool cable, bool electricity, bool gas, bool internet, bool water, decimal security_deposit,
                                             string terms_agreement, decimal price, short occupancy, string gender_preference, string description)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<ACCOMMODATIONS> accommodation = (from x in dbCtx.ACCOMMODATIONS
                                                   where x.ID == id
@@ -659,7 +659,7 @@ namespace SS.Controllers
         [Authorize]
         public ActionResult updateHouse(Guid id, decimal price, string description, string purpose, bool isFurnished)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<HOUSE> house = (from x in dbCtx.HOUSE
                                  where x.ID == id
@@ -693,7 +693,7 @@ namespace SS.Controllers
         [Authorize]
         public ActionResult updateLand(Guid id, decimal price, string purpose, string area, string description)
         {
-            JAHomesEntities dbCtx = new JAHomesEntities();
+            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
             List<LAND> land = (from x in dbCtx.LAND
                                where x.ID == id
@@ -722,7 +722,8 @@ namespace SS.Controllers
 
             return RedirectToAction("Dashboard");
 
-        }
+        }*/
+
     }
 
 }

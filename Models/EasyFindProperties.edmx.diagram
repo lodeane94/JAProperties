@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e7cb496db9eb48b3852ec8a43c1f7073" Name="Diagram1" ZoomLevel="71">
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.AdPriority" Width="1.5" PointX="6.75" PointY="8.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.AdType" Width="1.5" PointX="6.75" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Bill" Width="1.5" PointX="3" PointY="15.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.BillType" Width="1.5" PointX="0.75" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Complaint" Width="1.5" PointX="6" PointY="15.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Meeting" Width="1.5" PointX="6" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.MeetingRequisition" Width="1.5" PointX="3.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Message" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Owner" Width="1.5" PointX="0.75" PointY="15.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Property" Width="1.5" PointX="9" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyCategory" Width="1.5" PointX="4.5" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyCondition" Width="1.5" PointX="6.75" PointY="24.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyImage" Width="1.5" PointX="11.25" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyPurpose" Width="1.5" PointX="6.75" PointY="27" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyRating" Width="1.5" PointX="11.25" PointY="14.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyRequisition" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyType" Width="1.5" PointX="6.75" PointY="29.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Subscription" Width="1.5" PointX="6" PointY="19.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.SubscriptionType" Width="1.5" PointX="3.75" PointY="20" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Tags" Width="1.5" PointX="14.25" PointY="16" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.TagType" Width="1.5" PointX="12" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Tennant" Width="1.5" PointX="11.25" PointY="20.625" IsExpanded="true" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_ad_priority_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_ad_type_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_bill_owner_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_bill_property_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_bill_tennant_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_bill_type_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_complaint_owner_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_complaint_property_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_complaint_tennant_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_owner_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_requestee_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_owner_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_subscription_owner_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_condition_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_image_property_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_purpose_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_rating_property_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_type_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_tags_property_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_tennant_property_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_type_category_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_tag_type_property_category_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_subscription_type_code" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_tags_type_id" ManuallyRouted="false" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_requisition_property_id" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,162 +1,273 @@
-﻿@{
-    ViewBag.Title = "JamProps";
+﻿@using SS.ViewModels
+@using SS.Core
+@model List<FeaturedPropertiesSlideViewModel>
+
+@{
+    ViewBag.Title = "EasyFindProperties - Find and Advertise properties within your country";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section pageScript
 {
     (function(){
-    getProperties();
+    $.getScript('/Scripts/MainScript.js', function()
+    {
+    setActiveNavigation('home');
+   // setJumbotrunActionBtnText('Search');
+    setIsCollapsable(false);
+
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+    trigger : 'hover click',
+    container: 'body'
+    });
+
+    });
+
+    $.getScript('/Scripts/PropertiesScript.js',function(){
+
+    });
     })();
 
-    (function(){
-    $('#home').attr('class','active');
-    })();
-
-
-}
-
-@{
-    //displays registration success flass
-    if (Session["isRegistrationComplete"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>Your property has been uploaded successfully</strong> <span class="glyphicon glyphicon-check"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["isRegistrationComplete"] = null;
-    }
-    if (Session["isRequisitionSent"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>Your property requisition was successful</strong> <span class="glyphicon glyphicon-check"></span>
-                        <br /><em>The owner will be notified immediately and you will recieve a SMS text or an email shortly, regarding the status</em>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["isRequisitionSent"] = null;
-    }
-}
+}<!--
 <br />
 <div class="row">
-    <div class="col-md-2">
-        <aside class="ctnr-aside">
-            <div class="ctnr-info"><label>View By Parish</label></div>
-            <ul class="aside-property" id="filter-parish">
-                <li><a id="kingston" href="">Kingston <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="standrew" href="">St. Andrew <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="clarendon" href="">Clarendon <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="portland" href="">Portland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="westmoreland" href="">Westmoreland <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="hanover" href="">Hanover <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="trelawny" href="">Trelawny <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="manchester" href="">Manchester <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="stthomas" href="">St. Thomas <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="stelizabeth" href="">St. Elizabeth <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="stcatherine" href="">St. Catherine <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="stmary" href="">St. Mary <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="stjames" href="">St. James <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-                <li><a id="stann" href="">St. Ann <span class="glyphicon glyphicon-chevron-right glyph-aside-links"></span></a></li>
-            </ul>
-        </aside>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="row">&nbsp;</div>
+            <div class="col-md-xs">
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        @{
+                            int count = 0;
+                            string activeStr = string.Empty;
+
+                            foreach (var property in Model)
+                            {
+                                int countSub = 0;//used to determine the total sub loops
+                                int maxImgs = 5;//used to display the total times the slide should be split
+                                count++;
+                                activeStr = count == 1 ? "active" : string.Empty;
+                                <div class="item @activeStr">
+                                    <div class="row">
+                                        @foreach (var imageUrl in property.propertyImageURLs)
+                                        {
+                                            int totImgForProp = property.propertyImageURLs.Count();
+                                            maxImgs--;
+                                            countSub++;
+                                            if (countSub == 1)
+                                            {
+                                                String rowStr = totImgForProp == 1 ? "col-xs-12" : "col-xs-8";
+
+                                                <div class="@rowStr">
+                                                    <a href="#" id="@property.property.ID"><div class="featured-properties-lg"><img src="~/Uploads/@property.propertyPrimaryImageURL"></div></a>
+                                                    <div class="carousel-caption">
+                                                        <p>@property.property.Description</p>
+                                                        <p>&#36; @property.property.Price</p>
+                                                    </div>
+                                                </div>
+                                                continue;
+                                            }
+
+                                            if (!imageUrl.Equals(property.propertyPrimaryImageURL))
+                                            {
+                                                <div class="col-xs-2">
+                                                    <a href="#" id="@property.property.ID"><div class="featured-properties-sm"><img src="~/Uploads/@imageUrl"></div></a>
+                                                </div>
+                                            }
+
+                                            //if there is more than one images for the property and the slide is not split into the total 5 images
+                                            //then fill the remaining spots with small ads
+                                            if (maxImgs != 0 && countSub == totImgForProp)
+                                            {
+                                                for (int i = 1; i <= maxImgs; i++)
+                                                {
+                                                    <div class="col-xs-2">
+                                                        <div class="featured-properties-sm">Easy Find Properties</div>
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-8">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="ctnr-info">
-                    <label>SHOWING RENTAL ROOMS IN <span class="property-location"></span></label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="row">&nbsp;</div>
-            <div class="col-md-12">
-                <div class="ctnr">
-                    <div class="rooms-load" id="rooms-load"><!--ajax content--></div>
-                    <div class="home-property-category">
-                        <span class="left">
-                            <a href="" id="accommodations-previous"><span class="glyphicon glyphicon-chevron-left to-left"></span></a>
-                        </span>
-                        <span class="right">
-                            <a href="" id="accommodations-next"><span class="glyphicon glyphicon-chevron-right to-right"></span></a>
-                        </span>
-                    </div>
-                </div>
-                <div class="properties-view-all-container">
-                    <div style="padding-left:90%;"><a href="~/properties/rooms">View All <span class="glyphicon glyphicon-eye-open"></span></a></div>
-                </div>
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-md-12">
-                <div class="ctnr-info">
-                    <label>SHOWING RENTAL OR SELLING HOUSES IN <span class="property-location"></span></label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="row">&nbsp;</div>
-            <div class="col-md-12">
-                <div class="ctnr">
-                    <div class="house-load" id="house-load"><!--ajax content--></div>
-                    <div class="home-property-category">
-                        <span class="left">
-                            <a href="" id="house-previous"><span class="glyphicon glyphicon-chevron-left to-left"></span></a>
-                        </span>
-                        <span class="right">
-                            <a href="" id="house-next"><span class="glyphicon glyphicon-chevron-right to-right"></span></a>
-                        </span>
-                    </div>
-                </div>
-                <div class="properties-view-all-container">
-                    <div style="padding-left:90%;"><a href="~/properties/houses">View All <span class="glyphicon glyphicon-eye-open"></span></a></div>
-                </div>
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-md-12">
-                <div class="ctnr-info">
-                    <label>SHOWING RENTAL OR SELLING OR LEASED LANDS IN <span class="property-location"></span></label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="row">&nbsp;</div>
-            <div class="col-md-12">
-                <div class="ctnr">
-                    <div class="land-load"><!--ajax content--></div>
-                    <div class="home-property-category">
-                        <span class="left">
-                            <a href="" id="land-previous"><span class="glyphicon glyphicon-chevron-left to-left"></span></a>
-                        </span>
-                        <span class="right">
-                            <a href="" id="land-next"><span class="glyphicon glyphicon-chevron-right to-right"></span></a>
-                        </span>
-                    </div>
-                </div>
-                <div class="properties-view-all-container">
-                    <div style="padding-left:90%;"><a href="~/properties/lands">View All <span class="glyphicon glyphicon-eye-open"></span></a></div>
-                </div>
-            </div>
+</div>-->
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="ctnr-headers">
+            <label><strong>Featured Properties Being Rented</strong></label>
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    $(function () {
-        //initialization of bootstrap popover
-        $('[data-toggle="popover"]').popover({ trigger: 'hover' });
-    });
-</script>
+@{int featuredPropTotImg = 8; }
+<div class="row" id="featured-rental">
+    @{
+        int rentalCount = 0;
+        foreach (var property in Model)
+        {
+            if (rentalCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+            {
+                for (int i = 1; i <= 10; i++)
+                {
+                    <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+                        <a href="~/properties/propertydetails/@property.property.ID">
+                            <div class="image-container">
+                                <ul>
+                                    <li>
+                                        <div class="image">
+                                            <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="image-information-container">
+                                            <p class="content-heading"><strong>$ @property.property.Price</strong></p>
+                                            <p>@property.property.StreetAddress</p>
+                                            <p>@property.property.Division</p>
+                                            <p>@property.property.Country</p>
+                                            <p>@property.property.Description</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </a>
+                        <ul class="property-ratings">
+                            @if (property.averageRating > 0)
+                            {
+                                for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
+                                {
+                                    <li><span class="glyphicon glyphicon-star"></span></li>
+                                }
+                            }
+                            else
+                            {
+                                int maxRating = 5;
+                                for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                                {
+                                    <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                                }
+                            }
+                            <br/><br />
+                            <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                            <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                            <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+                        </ul>
+                    </div>}
+                rentalCount++;
+            }
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-offset-8 col-xs-4">
+        <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
+    </div>
+</div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="ctnr-headers">
+            <label><strong>Featured Properties Being Sold</strong></label>
+        </div>
+    </div>
+</div>
+<div class="row" id="featured-sale">
+    @{
+        int saleCount = 0;
+        foreach (var property in Model)
+        {
+            if (saleCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+            {
+                <div class="col-xs-6 col-md-3 image-link" data-toggle="popover" data-content="Click to view details">
+                    <a href="~/properties/propertydetails/@property.property.ID">
+                        <div class="image-container">
+                            <ul>
+                                <li>
+                                    <div class="image">
+                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="image-information-container">
+                                        <p><strong>$ @property.property.Price</strong></p>
+                                        <p>@property.property.Division</p>
+                                        <p>@property.property.Country</p>
+                                        <p>@property.property.Description</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </a>
+                </div>
+                rentalCount++;
+            }
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-offset-8 col-xs-4">
+        <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
+    </div>
+</div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="ctnr-headers">
+            <label><strong>Featured Properties Being Leased</strong></label>
+        </div>
+    </div>
+</div>
+<div class="row" id="featured-lease">
+    @{
+        int leaseCount = 0;
+        foreach (var property in Model)
+        {
+            if (leaseCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Lease))
+            {
+                <div class="col-xs-6 col-md-3 image-link" data-toggle="popover" data-content="Click to view details">
+                    <a href="~/properties/propertydetails/@property.property.ID">
+                        <div class="image-container">
+                            <ul>
+                                <li>
+                                    <div class="image">
+                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="image-information-container">
+                                        <p><strong>$ @property.property.Price</strong></p>
+                                        <p>@property.property.Division</p>
+                                        <p>@property.property.Country</p>
+                                        <p>@property.property.Description</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </a>
+                </div>
+                rentalCount++;
+            }
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-offset-8 col-xs-4">
+        <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
+    </div>
+</div>
+
