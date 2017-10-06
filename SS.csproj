@@ -209,6 +209,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ServicerController.cs" />
     <Compile Include="Core\AccommodationModel.cs" />
     <Compile Include="Core\BillsModel.cs" />
     <Compile Include="Core\Complaints.cs" />
@@ -417,6 +418,7 @@
     <Folder Include="Uploads\UtilityBills\" />
     <Folder Include="Views\Image\" />
     <Folder Include="Views\Mail\" />
+    <Folder Include="Views\Service\" />
     <Folder Include="WebAPI\" />
   </ItemGroup>
   <ItemGroup>

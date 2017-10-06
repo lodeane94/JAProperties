@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 
 namespace SS.Core
@@ -141,6 +142,25 @@ namespace SS.Core
                         }
                     }
                 }
+            }
+        }
+
+        public static String MakeHttpRequest(String Url)
+        {
+            StreamReader sre = null;
+            try
+            {
+                HttpWebRequest r = (HttpWebRequest)WebRequest.Create(Url);
+                r.Method = "Get";
+                HttpWebResponse res = (HttpWebResponse)r.GetResponse();
+                Stream sr = res.GetResponseStream();
+                sre = new StreamReader(sr);
+                return sre.ReadToEnd();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                return null;
             }
         }
     }

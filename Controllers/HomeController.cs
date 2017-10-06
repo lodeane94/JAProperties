@@ -13,6 +13,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using SS.ViewModels;
 using System.Net;
 using System.IO;
+using SS.Core;
 
 namespace SS.Controllers
 {
@@ -53,20 +54,7 @@ namespace SS.Controllers
                 }
 
             };
-            /*
-            // string userIP = "104.244.227.181";///Request.ServerVariables["REMOTE_ADDR"];
-            string localeAPIURL = "http://westclicks.com/webservices/?f=json";
 
-            HttpWebRequest r = (HttpWebRequest)WebRequest.Create(localeAPIURL);
-            r.Method = "Get";
-            HttpWebResponse res = (HttpWebResponse)r.GetResponse();
-            Stream sr = res.GetResponseStream();
-            StreamReader sre = new StreamReader(sr);
-
-            // check response for FRANCE
-            string s = sre.ReadToEnd();
-            
-            */
             return View(featuredPropertiesSlideViewModelList);
         }
         /// <summary>
@@ -104,4 +92,5 @@ namespace SS.Controllers
             return Json(propertiesList, JsonRequestBehavior.AllowGet);
         }*/
     }
+
 }
