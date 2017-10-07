@@ -325,48 +325,6 @@ namespace SS.Controllers
         }
 
         /// <summary>
-        /// Function gets property type name by it's category code
-        /// </summary>
-        /// <param name="propertyCategoryName"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public JsonResult GetPropertyTypesByCategoryName(String propertyCategoryName)
-        {
-            IEnumerable<String> results = null;
-            /*mapping property category name to property code*/
-            String propertyCategoryCode = PropertyHelper.mapPropertyCategoryNameToCode(propertyCategoryName);
-
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            {
-                var unitOfWork = new UnitOfWork(dbCtx);
-                results = unitOfWork.PropertyType.GetPropertyTypesByCategoryCode(propertyCategoryCode);
-            }
-
-            return Json(results, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Gets tag names by the property category code
-        /// </summary>
-        /// <param name="propertyCategoryName"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public JsonResult GetTagNamesByPropertyCategoryCode(String propertyCategoryName)
-        {
-            IEnumerable<String> results = null;
-            /*mapping property category name to property code*/
-            String propertyCategoryCode = PropertyHelper.mapPropertyCategoryNameToCode(propertyCategoryName);
-
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            {
-                var unitOfWork = new UnitOfWork(dbCtx);
-                results = unitOfWork.TagType.GetTagNamesByPropertyCategoryCode(propertyCategoryCode);
-            }
-
-            return Json(results, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
         /// associates the image with the property that was uploaded
         /// </summary>
         /// <param name="file"></param>

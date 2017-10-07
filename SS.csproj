@@ -368,6 +368,7 @@
     <Compile Include="RoomHelper.cs" />
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
+    <Compile Include="ViewModels\PropertySearchViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -395,8 +396,6 @@
     <Content Include="Views\Shared\_HouseInformationRegistration.cshtml" />
     <Content Include="Views\Shared\_LandInformationRegistration.cshtml" />
     <Content Include="Views\Properties\Rooms.cshtml" />
-    <Content Include="Views\Properties\Houses.cshtml" />
-    <Content Include="Views\Properties\Lands.cshtml" />
     <Content Include="Views\Shared\_ModelManagement.cshtml" />
     <Content Include="Views\Accounts\PremiumFeature.cshtml" />
     <Content Include="Views\LandlordManagement\Help.cshtml" />
@@ -407,6 +406,7 @@
     <Content Include="Views\Advertisments\Adspace.cshtml" />
     <Content Include="Views\Accounts\AdvertiseProperty.cshtml" />
     <Content Include="Views\Shared\_ModalPropertyAdvertised.cshtml" />
+    <Content Include="Views\Properties\GetProperties.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

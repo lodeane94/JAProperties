@@ -23,11 +23,8 @@ namespace SS.Controllers
 
         public ActionResult Home()
         {
-            int take = 4;//amount of featured properties to be retieved per category
-            int slideTake = 5;
-            int slideTakeCount = 0;//used to determine whether to get retrieve multiple images or one
-            FeaturedPropertiesSlideViewModel featuredPropertiesSlideViewModel;
-            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+            int take = 8;//amount of featured properties to be retieved per category
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
             IEnumerable<Property> properties;
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
@@ -36,23 +33,7 @@ namespace SS.Controllers
 
                 properties = unitOfWork.Property.GetFeaturedProperties(take);
 
-                foreach (var property in properties)
-                {
-                    slideTakeCount++;
-
-                    IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(property.ID);
-
-                    featuredPropertiesSlideViewModel = new FeaturedPropertiesSlideViewModel()
-                    {
-                        property = property,
-                        propertyImageURLs = slideTakeCount <= slideTake ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
-                        propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
-                        averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
-                    };
-
-                    featuredPropertiesSlideViewModelList.Add(featuredPropertiesSlideViewModel);
-                }
-
+                featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(properties, unitOfWork, "Home");
             };
 
             return View(featuredPropertiesSlideViewModelList);

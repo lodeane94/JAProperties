@@ -226,6 +226,10 @@ a.clickable-box-link{
         display: inline-block;
     }
 
+.col-width-4.col-xs-1 {
+    width:4%;
+}
+
 .dashboard {
     z-index: 0;
 }
@@ -415,6 +419,7 @@ a.clickable-box-link{
     
 }
 
+
 .glyph-aside-links {
     font-size: 10px;
     float: right;
@@ -423,6 +428,10 @@ a.clickable-box-link{
 
 .glyphicon-color {
     color:#60b516;
+}
+
+.group-form-fields {
+    
 }
 
 #home-img {
@@ -478,6 +487,7 @@ a.clickable-box-link{
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 13px;
     color:#6B6B6B;
+    display:none;
 }
 
 .jumbotron-container select option{

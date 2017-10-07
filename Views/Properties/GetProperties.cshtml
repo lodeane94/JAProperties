@@ -1,0 +1,86 @@
+﻿@using SS.ViewModels
+@model List<FeaturedPropertiesSlideViewModel>
+@{
+    ViewBag.Title = "EasyFindProperties - Get Properties ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pageScript
+{
+    (function(){
+    $.getScript('/Scripts/MainScript.js', function()
+    {
+    setActiveNavigation('@ViewBag.activeNavigation');
+    showJumbotrun();
+    // setJumbotrunActionBtnText('Search');
+    setIsCollapsable(false);
+
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+    trigger : 'hover click',
+    container: 'body'
+    });
+
+    });
+
+    $.getScript('/Scripts/PropertiesScript.js',function(){
+
+    });
+    })();
+
+}
+
+<div class="row" id="properties-container">
+    @{
+        foreach (var property in Model)
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+                    <a href="~/properties/propertydetails/@property.property.ID">
+                        <div class="image-container">
+                            <ul>
+                                <li>
+                                    <div class="image">
+                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="image-information-container">
+                                        <p class="content-heading"><strong>$ @property.property.Price</strong></p>
+                                        <p>@property.property.StreetAddress</p>
+                                        <p>@property.property.Division</p>
+                                        <p>@property.property.Country</p>
+                                        <p>@property.property.Description</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </a>
+                    <ul class="property-ratings">
+                        @if (property.averageRating > 0)
+                        {
+                            for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
+                            {
+                                <li><span class="glyphicon glyphicon-star"></span></li>
+                            }
+                        }
+                        else
+                        {
+                            int maxRating = 5;
+                            for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                            {
+                                <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                            }
+                        }
+                        <br />
+                        <br />
+                        <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                        <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                        <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+                    </ul>
+                </div>}
+            }
+    }
+</div>
+

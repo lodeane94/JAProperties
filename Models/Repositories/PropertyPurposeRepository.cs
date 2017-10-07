@@ -26,5 +26,10 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.PropertyPurpose.Select(x => x.Name).ToList();
         }
+
+        public string GetPurposeCodeByName(string name)
+        {
+            return EasyFindPropertiesEntities.PropertyPurpose.Where(x => x.Name.Equals(name)).Select(x => x.ID).Single();
+        }
     }
 }

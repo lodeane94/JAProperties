@@ -25,12 +25,17 @@ namespace SS.Models.Repositories
 
         public IEnumerable<string> GetAllPropertyTypeNames()
         {
-            throw new NotImplementedException();
+            return EasyFindPropertiesEntities.PropertyType.Select(s => s.Name).ToList();
         }
 
         public Guid GetPropertyTypeIDByName(string name)
         {
             return EasyFindPropertiesEntities.PropertyType.Where(s => s.Name.Equals(name)).Select(s => s.ID).Single();
+        }
+
+        public string GetPopertyTypeCategoryCodeByName(string name)
+        {
+            return EasyFindPropertiesEntities.PropertyType.Where(s => s.Name.Equals(name)).Select(s => s.CategoryCode).Single();
         }
     }
 }

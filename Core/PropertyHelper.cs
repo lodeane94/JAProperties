@@ -1,5 +1,7 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
+using SS.Models;
+using SS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -28,6 +30,24 @@ namespace SS.Core
             }
 
             return EFPConstants.PropertyCategory.Machinery;
+        }
+
+        /// <summary>
+        /// Function maps property category code to property category name
+        /// </summary>
+        /// <param name="code"></param>
+        public static String mapPropertyCategoryCodeToName(String code)
+        {
+            if (code.Equals(EFPConstants.PropertyCategory.RealEstate))
+            {
+                return nameof(EFPConstants.PropertyCategory.RealEstate);
+            }
+            else if (code.Equals(EFPConstants.PropertyCategory.Lot))
+            {
+                return nameof(EFPConstants.PropertyCategory.Lot);
+            }
+
+            return nameof(EFPConstants.PropertyCategory.Machinery);
         }
 
         public static String mapPropertyPurposeNameToCode(String propertyPurposeName)
@@ -143,6 +163,34 @@ namespace SS.Core
                     }
                 }
             }
+        }
+
+        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(IEnumerable<Property> properties, UnitOfWork unitOfWork, String calledBy)
+        {
+            int slideTake = 5;
+            int slideTakeCount = 0;//used to determine whether to get retrieve multiple images or one
+
+            FeaturedPropertiesSlideViewModel featuredPropertiesSlideViewModel;
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+
+            foreach (var property in properties)
+            {
+                slideTakeCount++;
+
+                IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(property.ID);
+
+                featuredPropertiesSlideViewModel = new FeaturedPropertiesSlideViewModel()
+                {
+                    property = property,
+                    propertyImageURLs = ( calledBy.Equals("Home")  && slideTakeCount <= slideTake ) ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
+                    propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
+                    averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
+                };
+
+                featuredPropertiesSlideViewModelList.Add(featuredPropertiesSlideViewModel);
+            }
+
+            return featuredPropertiesSlideViewModelList;
         }
 
         public static String MakeHttpRequest(String Url)

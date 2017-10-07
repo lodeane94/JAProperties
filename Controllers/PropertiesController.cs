@@ -1,5 +1,7 @@
 ﻿using SS.Code;
+using SS.Core;
 using SS.Models;
+using SS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,532 +17,651 @@ namespace SS.Controllers
     {
         private string filterString = string.Empty;
         private string conditionToBeRemoved = string.Empty;
+
+        public ActionResult GetProperties(PropertySearchViewModel model)
+        {
+            short take = 16;
+
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
+            IEnumerable<Property> properties = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                //if property type is null and property category is not
+                //null then  load properties by  the category selected otherwise
+                //load properties by the selected filters
+                if (String.IsNullOrEmpty(model.PropertyType) && !String.IsNullOrEmpty(model.PropertyCategory))
+                {
+                    properties = unitOfWork.Property.FindPropertiesByCategoryCode(model.PropertyCategory, take, model.pgNo);
+                }
+                else
+                {
+                    List<Core.Filter> filters = createFilterList(model, unitOfWork);
+                    var deleg = ExpressionBuilder.GetExpression<Property>(filters);
+
+                    properties = unitOfWork.Property.FindProperties(deleg, take, model.pgNo);
+                }
+
+                featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(properties, unitOfWork, "Properties");
+            }
+
+            ViewBag.activeNavigation = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
+
+            return View(featuredPropertiesSlideViewModelList);
+        }
+
+        /// <summary>
+        /// Create a filter list to be used for property searching purposes
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="unitOfWork"></param>
+        /// <returns></returns>
+        private List<Core.Filter> createFilterList(PropertySearchViewModel model, UnitOfWork unitOfWork)
+        {
+            List<Core.Filter> filters = new List<Core.Filter>();
+
+            //country
+            if (!string.IsNullOrEmpty(model.Country))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "Country",
+                    Operation = Op.Equals,
+                    Value = model.Country
+                };
+
+                filters.Add(filter);
+            }
+
+            //division
+            if (!string.IsNullOrEmpty(model.Division))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "Division",
+                    Operation = Op.Equals,
+                    Value = model.Division
+                };
+
+                filters.Add(filter);
+            }
+
+            //property type
+            if (!string.IsNullOrEmpty(model.PropertyType))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "TypeID",
+                    Operation = Op.Equals,
+                    Value = unitOfWork.PropertyType.GetPropertyTypeIDByName(model.PropertyType)
+                };
+
+                filters.Add(filter);
+            }
+
+            //property purpose
+            if (!string.IsNullOrEmpty(model.PropertyPurpose))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "PurposeCode",
+                    Operation = Op.Equals,
+                    Value = unitOfWork.PropertyPurpose.GetPurposeCodeByName(model.PropertyPurpose)
+                };
+
+                filters.Add(filter);
+            }
+
+            //price range
+            if (model.MinPrice != null && model.MaxPrice != null)
+            {
+                Core.Filter filter1 = new Core.Filter()
+                {
+                    PropertyName = "Price",
+                    Operation = Op.GreaterThanOrEqual,
+                    Value = model.MinPrice
+                };
+
+                Core.Filter filter2 = new Core.Filter()
+                {
+                    PropertyName = "price",
+                    Operation = Op.LessThanOrEqual,
+                    Value = model.MaxPrice
+                };
+                filters.Add(filter1);
+                filters.Add(filter2);
+            }
+
+            return filters;
+        }
         /*
-        public ActionResult Rooms(string parish, string cr1, string cr2,
-            string gender, string occupancy, string bathrooms, string isStudent,
-            string hasWater, string hasCable, string hasElectricity,
-            string hasGas, string hasInternet, int? pg = 0)
-        {
-            //the amount of properties that should be returned
-            short fetchAmount = 12;
+public ActionResult Rooms(string parish, string cr1, string cr2,
+   string gender, string occupancy, string bathrooms, string isStudent,
+   string hasWater, string hasCable, string hasElectricity,
+   string hasGas, string hasInternet, int? pg = 0)
+{
+   //the amount of properties that should be returned
+   short fetchAmount = 12;
 
-            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
-            {
-                PropertiesInformation accommodationProperties = new PropertiesInformation();
-                List<Filter> filters = new List<Filter>();
-                int resultCount = 0;
-                #region FilterCreation
-                //initializing the filterstring for the where clause
-                //parish
-                if (!string.IsNullOrEmpty(parish))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "parish",
-                        Operation = Op.Equals,
-                        Value = parish
-                    };
+   using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+   {
+       PropertiesInformation accommodationProperties = new PropertiesInformation();
+       List<Filter> filters = new List<Filter>();
+       int resultCount = 0;
+       #region FilterCreation
+       //initializing the filterstring for the where clause
+       //parish
+       if (!string.IsNullOrEmpty(parish))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "parish",
+               Operation = Op.Equals,
+               Value = parish
+           };
 
-                    filters.Add(filter);
-                }
-                //cr1 and cr2
-                if (!string.IsNullOrEmpty(cr1))
-                {
-                    if (cr1.Equals("gt"))
-                    {
-                        Filter filter = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.GreaterThan,
-                            Value = Decimal.Parse(cr2)
-                        };
+           filters.Add(filter);
+       }
+       //cr1 and cr2
+       if (!string.IsNullOrEmpty(cr1))
+       {
+           if (cr1.Equals("gt"))
+           {
+               Filter filter = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.GreaterThan,
+                   Value = Decimal.Parse(cr2)
+               };
 
-                        filters.Add(filter);
-                    }
-                    else
-                    {
+               filters.Add(filter);
+           }
+           else
+           {
 
-                        Filter filter1 = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.GreaterThanOrEqual,
-                            Value = Decimal.Parse(cr1)
-                        };
+               Filter filter1 = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.GreaterThanOrEqual,
+                   Value = Decimal.Parse(cr1)
+               };
 
-                        Filter filter2 = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.LessThanOrEqual,
-                            Value = Decimal.Parse(cr2)
-                        };
-                        filters.Add(filter1);
-                        filters.Add(filter2);
-                    }
-                }
-                //gender
-                if (!string.IsNullOrEmpty(gender))
-                {
-                    switch (gender)
-                    {
-                        case "males":
-                            gender = "M";
-                            break;
-                        case "females":
-                            gender = "F";
-                            break;
-                        case "both":
-                            gender = "B";
-                            break;
-                    }
+               Filter filter2 = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.LessThanOrEqual,
+                   Value = Decimal.Parse(cr2)
+               };
+               filters.Add(filter1);
+               filters.Add(filter2);
+           }
+       }
+       //gender
+       if (!string.IsNullOrEmpty(gender))
+       {
+           switch (gender)
+           {
+               case "males":
+                   gender = "M";
+                   break;
+               case "females":
+                   gender = "F";
+                   break;
+               case "both":
+                   gender = "B";
+                   break;
+           }
 
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "gender_preference",
-                        Operation = Op.Equals,
-                        Value = gender
-                    };
+           Filter filter = new Filter()
+           {
+               PropertyName = "gender_preference",
+               Operation = Op.Equals,
+               Value = gender
+           };
 
-                    filters.Add(filter);
-                }
-                //occupancy
-                if (!string.IsNullOrEmpty(occupancy))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "occupancy",
-                        Operation = Op.Equals,
-                        Value = Int16.Parse(occupancy)
-                    };
+           filters.Add(filter);
+       }
+       //occupancy
+       if (!string.IsNullOrEmpty(occupancy))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "occupancy",
+               Operation = Op.Equals,
+               Value = Int16.Parse(occupancy)
+           };
 
-                    filters.Add(filter);
-                }
-                //bathrooms
-                if (!string.IsNullOrEmpty(bathrooms))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "house_bathroom_amount",
-                        Operation = Op.Equals,
-                        Value = Int16.Parse(bathrooms)
-                    };
+           filters.Add(filter);
+       }
+       //bathrooms
+       if (!string.IsNullOrEmpty(bathrooms))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "house_bathroom_amount",
+               Operation = Op.Equals,
+               Value = Int16.Parse(bathrooms)
+           };
 
-                    filters.Add(filter);
-                }
-                //is student
-                if (!string.IsNullOrEmpty(isStudent))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "is_student_acc",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(isStudent)
-                    };
+           filters.Add(filter);
+       }
+       //is student
+       if (!string.IsNullOrEmpty(isStudent))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "is_student_acc",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(isStudent)
+           };
 
-                    filters.Add(filter);
-                }
-                //has water
-                if (!string.IsNullOrEmpty(hasWater))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "water",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(hasWater)
-                    };
+           filters.Add(filter);
+       }
+       //has water
+       if (!string.IsNullOrEmpty(hasWater))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "water",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(hasWater)
+           };
 
-                    filters.Add(filter);
-                }
-                //hasCable
-                if (!string.IsNullOrEmpty(hasCable))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "cable",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(hasCable)
-                    };
+           filters.Add(filter);
+       }
+       //hasCable
+       if (!string.IsNullOrEmpty(hasCable))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "cable",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(hasCable)
+           };
 
-                    filters.Add(filter);
-                }
-                //hasElectricity
-                if (!string.IsNullOrEmpty(hasElectricity))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "electricity",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(hasElectricity)
-                    };
+           filters.Add(filter);
+       }
+       //hasElectricity
+       if (!string.IsNullOrEmpty(hasElectricity))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "electricity",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(hasElectricity)
+           };
 
-                    filters.Add(filter);
-                }
-                //hasGas
-                if (!string.IsNullOrEmpty(hasGas))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "gas",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(hasGas)
-                    };
+           filters.Add(filter);
+       }
+       //hasGas
+       if (!string.IsNullOrEmpty(hasGas))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "gas",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(hasGas)
+           };
 
-                    filters.Add(filter);
-                }
-                //hasInternet
-                if (!string.IsNullOrEmpty(hasInternet))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "internet",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(hasInternet)
-                    };
+           filters.Add(filter);
+       }
+       //hasInternet
+       if (!string.IsNullOrEmpty(hasInternet))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "internet",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(hasInternet)
+           };
 
-                    filters.Add(filter);
-                }
-                #endregion
+           filters.Add(filter);
+       }
+       #endregion
 
-                var propertiesInformation = (dynamic)null;
-                //project condition selected else project property information needed if no condition is selected 
-                if (filters.Count != 0)
-                {
-                    var deleg = ExpressionBuilder.GetExpression<ACCOMMODATIONS>(filters).Compile();
-                    propertiesInformation = dbCtx.ACCOMMODATIONS.Where(deleg)
-                        .OrderByDescending(x => x.DATE_ADDED)
-                        .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+       var propertiesInformation = (dynamic)null;
+       //project condition selected else project property information needed if no condition is selected 
+       if (filters.Count != 0)
+       {
+           var deleg = ExpressionBuilder.GetExpression<ACCOMMODATIONS>(filters).Compile();
+           propertiesInformation = dbCtx.ACCOMMODATIONS.Where(deleg)
+               .OrderByDescending(x => x.DATE_ADDED)
+               .Skip(pg.Value * fetchAmount).Take(fetchAmount);
 
-                    resultCount = dbCtx.ACCOMMODATIONS.Where(deleg).Count();
-                }
-                else
-                {
-                    propertiesInformation = dbCtx.ACCOMMODATIONS.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
-                        .OrderByDescending(x => x.DATE_ADDED)
-                        .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+           resultCount = dbCtx.ACCOMMODATIONS.Where(deleg).Count();
+       }
+       else
+       {
+           propertiesInformation = dbCtx.ACCOMMODATIONS.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
+               .OrderByDescending(x => x.DATE_ADDED)
+               .Skip(pg.Value * fetchAmount).Take(fetchAmount);
 
-                    resultCount = dbCtx.ACCOMMODATIONS.Count();
-                }
+           resultCount = dbCtx.ACCOMMODATIONS.Count();
+       }
 
-                //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
-                foreach (var r in propertiesInformation)
-                {
-                    AccommodationModel accommodations = new AccommodationModel();
+       //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
+       foreach (var r in propertiesInformation)
+       {
+           AccommodationModel accommodations = new AccommodationModel();
 
-                    accommodations.ID = r.ID.ToString();
-                    accommodations.Parish = r.PARISH;
-                    accommodations.Price = r.PRICE.ToString();
-                    accommodations.StreetAddress = r.STREET_ADDRESS;
-                    accommodations.ImageURL = r.IMAGE_URL;
+           accommodations.ID = r.ID.ToString();
+           accommodations.Parish = r.PARISH;
+           accommodations.Price = r.PRICE.ToString();
+           accommodations.StreetAddress = r.STREET_ADDRESS;
+           accommodations.ImageURL = r.IMAGE_URL;
 
-                    accommodationProperties.accommodationList.Add(accommodations);
-                }
+           accommodationProperties.accommodationList.Add(accommodations);
+       }
 
-                ViewBag.totalItemsFound = resultCount;
-                ViewBag.pageNumber = pg;
-                ViewBag.fetchAmount = fetchAmount;
-                ViewBag.properties = accommodationProperties.accommodationList;
-            }
+       ViewBag.totalItemsFound = resultCount;
+       ViewBag.pageNumber = pg;
+       ViewBag.fetchAmount = fetchAmount;
+       ViewBag.properties = accommodationProperties.accommodationList;
+   }
 
-            return View();
-        }
+   return View();
+}
 
-        public ActionResult Houses(string parish, string cr1, string cr2,
-            string bedrooms, string purpose, string bathrooms, string isFurnished, int? pg = 0)
-        {
-            short fetchAmount = 12;
+public ActionResult Houses(string parish, string cr1, string cr2,
+   string bedrooms, string purpose, string bathrooms, string isFurnished, int? pg = 0)
+{
+   short fetchAmount = 12;
 
-            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
-            {
-                PropertiesInformation houseProperties = new PropertiesInformation();
-                List<Filter> filters = new List<Filter>();
-                int resultCount = 0;
-                #region
-                //initializing the filterstring for the where clause
-                //parish
-                if (!string.IsNullOrEmpty(parish))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "parish",
-                        Operation = Op.Equals,
-                        Value = parish
-                    };
+   using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+   {
+       PropertiesInformation houseProperties = new PropertiesInformation();
+       List<Filter> filters = new List<Filter>();
+       int resultCount = 0;
+       #region
+       //initializing the filterstring for the where clause
+       //parish
+       if (!string.IsNullOrEmpty(parish))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "parish",
+               Operation = Op.Equals,
+               Value = parish
+           };
 
-                    filters.Add(filter);
-                }
-                //cr1 and cr2
-                if (!string.IsNullOrEmpty(cr1))
-                {
-                    if (cr1.Equals("gt"))
-                    {
-                        Filter filter = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.GreaterThan,
-                            Value = Decimal.Parse(cr2)
-                        };
+           filters.Add(filter);
+       }
+       //cr1 and cr2
+       if (!string.IsNullOrEmpty(cr1))
+       {
+           if (cr1.Equals("gt"))
+           {
+               Filter filter = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.GreaterThan,
+                   Value = Decimal.Parse(cr2)
+               };
 
-                        filters.Add(filter);
-                    }
-                    else
-                    {
+               filters.Add(filter);
+           }
+           else
+           {
 
-                        Filter filter1 = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.GreaterThanOrEqual,
-                            Value = Decimal.Parse(cr1)
-                        };
+               Filter filter1 = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.GreaterThanOrEqual,
+                   Value = Decimal.Parse(cr1)
+               };
 
-                        Filter filter2 = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.LessThanOrEqual,
-                            Value = Decimal.Parse(cr2)
-                        };
-                        filters.Add(filter1);
-                        filters.Add(filter2);
-                    }
-                }
-                //purpose
-                if (!string.IsNullOrEmpty(purpose))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "purpose",
-                        Operation = Op.Equals,
-                        Value = purpose
-                    };
+               Filter filter2 = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.LessThanOrEqual,
+                   Value = Decimal.Parse(cr2)
+               };
+               filters.Add(filter1);
+               filters.Add(filter2);
+           }
+       }
+       //purpose
+       if (!string.IsNullOrEmpty(purpose))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "purpose",
+               Operation = Op.Equals,
+               Value = purpose
+           };
 
-                    filters.Add(filter);
-                }
-                //bathrooms
-                if (!string.IsNullOrEmpty(bathrooms))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "bath_room_amount",
-                        Operation = Op.Equals,
-                        Value = Int16.Parse(bathrooms)
-                    };
+           filters.Add(filter);
+       }
+       //bathrooms
+       if (!string.IsNullOrEmpty(bathrooms))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "bath_room_amount",
+               Operation = Op.Equals,
+               Value = Int16.Parse(bathrooms)
+           };
 
-                    filters.Add(filter);
-                }
-                //bedrooms
-                if (!string.IsNullOrEmpty(bedrooms))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "bed_room_amount",
-                        Operation = Op.Equals,
-                        Value = Int16.Parse(bedrooms)
-                    };
+           filters.Add(filter);
+       }
+       //bedrooms
+       if (!string.IsNullOrEmpty(bedrooms))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "bed_room_amount",
+               Operation = Op.Equals,
+               Value = Int16.Parse(bedrooms)
+           };
 
-                    filters.Add(filter);
-                }
-                //isFurnished
-                if (!string.IsNullOrEmpty(isFurnished))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "isfurnished",
-                        Operation = Op.Equals,
-                        Value = Boolean.Parse(isFurnished)
-                    };
+           filters.Add(filter);
+       }
+       //isFurnished
+       if (!string.IsNullOrEmpty(isFurnished))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "isfurnished",
+               Operation = Op.Equals,
+               Value = Boolean.Parse(isFurnished)
+           };
 
-                    filters.Add(filter);
-                }
-                #endregion
+           filters.Add(filter);
+       }
+       #endregion
 
-                var propertiesInformation = (dynamic)null;
-                //project condition selected else project property information needed if no condition is selected 
-                if (filters.Count != 0)
-                {
-                    var deleg = ExpressionBuilder.GetExpression<HOUSE>(filters).Compile();
-                    propertiesInformation = dbCtx.HOUSE.Where(deleg)
-                        .OrderByDescending(x => x.DATE_ADDED)
-                        .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+       var propertiesInformation = (dynamic)null;
+       //project condition selected else project property information needed if no condition is selected 
+       if (filters.Count != 0)
+       {
+           var deleg = ExpressionBuilder.GetExpression<HOUSE>(filters).Compile();
+           propertiesInformation = dbCtx.HOUSE.Where(deleg)
+               .OrderByDescending(x => x.DATE_ADDED)
+               .Skip(pg.Value * fetchAmount).Take(fetchAmount);
 
-                    resultCount = dbCtx.HOUSE.Where(deleg).Count();
-                }
-                else
-                {
-                    propertiesInformation = dbCtx.HOUSE.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
-                        .OrderByDescending(x => x.DATE_ADDED)
-                        .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+           resultCount = dbCtx.HOUSE.Where(deleg).Count();
+       }
+       else
+       {
+           propertiesInformation = dbCtx.HOUSE.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
+               .OrderByDescending(x => x.DATE_ADDED)
+               .Skip(pg.Value * fetchAmount).Take(fetchAmount);
 
-                    resultCount = dbCtx.HOUSE.Count();
-                }
+           resultCount = dbCtx.HOUSE.Count();
+       }
 
-                //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
-                foreach (var r in propertiesInformation)
-                {
-                    HouseModel house = new HouseModel();
+       //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
+       foreach (var r in propertiesInformation)
+       {
+           HouseModel house = new HouseModel();
 
-                    house.ID = r.ID.ToString();
-                    house.Parish = r.PARISH;
-                    house.Price = r.PRICE.ToString();
-                    house.StreetAddress = r.STREET_ADDRESS;
-                    house.ImageURL = r.IMAGE_URL;
+           house.ID = r.ID.ToString();
+           house.Parish = r.PARISH;
+           house.Price = r.PRICE.ToString();
+           house.StreetAddress = r.STREET_ADDRESS;
+           house.ImageURL = r.IMAGE_URL;
 
-                    houseProperties.houseList.Add(house);
-                }
+           houseProperties.houseList.Add(house);
+       }
 
-                ViewBag.totalItemsFound = resultCount;
-                ViewBag.pageNumber = pg;
-                ViewBag.fetchAmount = fetchAmount;
-                ViewBag.properties = houseProperties.houseList;
-            }
+       ViewBag.totalItemsFound = resultCount;
+       ViewBag.pageNumber = pg;
+       ViewBag.fetchAmount = fetchAmount;
+       ViewBag.properties = houseProperties.houseList;
+   }
 
-            return View();
-        }
+   return View();
+}
 
-        public ActionResult Lands(string parish, string cr1, string cr2,
-            string ar1, string ar2, string purpose, string direction, int? pg = 0)
-        {
-            short fetchAmount = 12;
+public ActionResult Lands(string parish, string cr1, string cr2,
+   string ar1, string ar2, string purpose, string direction, int? pg = 0)
+{
+   short fetchAmount = 12;
 
-            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
-            {
-                PropertiesInformation landProperties = new PropertiesInformation();
-                List<Filter> filters = new List<Filter>();
-                int resultCount = 0;
-                #region
-                //initializing the filterstring for the where clause
-                //parish
-                if (!string.IsNullOrEmpty(parish))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "parish",
-                        Operation = Op.Equals,
-                        Value = parish
-                    };
+   using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+   {
+       PropertiesInformation landProperties = new PropertiesInformation();
+       List<Filter> filters = new List<Filter>();
+       int resultCount = 0;
+       #region
+       //initializing the filterstring for the where clause
+       //parish
+       if (!string.IsNullOrEmpty(parish))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "parish",
+               Operation = Op.Equals,
+               Value = parish
+           };
 
-                    filters.Add(filter);
-                }
-                if (!string.IsNullOrEmpty(cr1))
-                {
-                    if (cr1.Equals("gt"))
-                    {
-                        Filter filter = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.GreaterThan,
-                            Value = Decimal.Parse(cr2)
-                        };
+           filters.Add(filter);
+       }
+       if (!string.IsNullOrEmpty(cr1))
+       {
+           if (cr1.Equals("gt"))
+           {
+               Filter filter = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.GreaterThan,
+                   Value = Decimal.Parse(cr2)
+               };
 
-                        filters.Add(filter);
-                    }
-                    else
-                    {
+               filters.Add(filter);
+           }
+           else
+           {
 
-                        Filter filter1 = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.GreaterThanOrEqual,
-                            Value = Decimal.Parse(cr1)
-                        };
+               Filter filter1 = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.GreaterThanOrEqual,
+                   Value = Decimal.Parse(cr1)
+               };
 
-                        Filter filter2 = new Filter()
-                        {
-                            PropertyName = "price",
-                            Operation = Op.LessThanOrEqual,
-                            Value = Decimal.Parse(cr2)
-                        };
-                        filters.Add(filter1);
-                        filters.Add(filter2);
-                    }
-                }
-                //purpose
-                if (!string.IsNullOrEmpty(purpose))
-                {
-                    Filter filter = new Filter()
-                    {
-                        PropertyName = "purpose",
-                        Operation = Op.Equals,
-                        Value = purpose
-                    };
+               Filter filter2 = new Filter()
+               {
+                   PropertyName = "price",
+                   Operation = Op.LessThanOrEqual,
+                   Value = Decimal.Parse(cr2)
+               };
+               filters.Add(filter1);
+               filters.Add(filter2);
+           }
+       }
+       //purpose
+       if (!string.IsNullOrEmpty(purpose))
+       {
+           Filter filter = new Filter()
+           {
+               PropertyName = "purpose",
+               Operation = Op.Equals,
+               Value = purpose
+           };
 
-                    filters.Add(filter);
-                }
-                //area
-                if (!string.IsNullOrEmpty(ar1))
-                {
-                        if (ar1.Equals("gt"))
-                        {
-                            Filter filter = new Filter()
-                            {
-                                PropertyName = "area",
-                                Operation = Op.GreaterThan,
-                                Value = Decimal.Parse(ar2)
-                            };
+           filters.Add(filter);
+       }
+       //area
+       if (!string.IsNullOrEmpty(ar1))
+       {
+               if (ar1.Equals("gt"))
+               {
+                   Filter filter = new Filter()
+                   {
+                       PropertyName = "area",
+                       Operation = Op.GreaterThan,
+                       Value = Decimal.Parse(ar2)
+                   };
 
-                            filters.Add(filter);
-                        }
-                        else
-                        {
+                   filters.Add(filter);
+               }
+               else
+               {
 
-                            Filter filter1 = new Filter()
-                            {
-                                PropertyName = "area",
-                                Operation = Op.GreaterThanOrEqual,
-                                Value = Decimal.Parse(ar1)
-                            };
+                   Filter filter1 = new Filter()
+                   {
+                       PropertyName = "area",
+                       Operation = Op.GreaterThanOrEqual,
+                       Value = Decimal.Parse(ar1)
+                   };
 
-                            Filter filter2 = new Filter()
-                            {
-                                PropertyName = "area",
-                                Operation = Op.LessThanOrEqual,
-                                Value = Decimal.Parse(ar2)
-                            };
-                            filters.Add(filter1);
-                            filters.Add(filter2);
-                        }
-                }
-                #endregion
+                   Filter filter2 = new Filter()
+                   {
+                       PropertyName = "area",
+                       Operation = Op.LessThanOrEqual,
+                       Value = Decimal.Parse(ar2)
+                   };
+                   filters.Add(filter1);
+                   filters.Add(filter2);
+               }
+       }
+       #endregion
 
-                var propertiesInformation = (dynamic)null;
-                //project condition selected else project property information needed if no condition is selected 
-                if (filters.Count != 0)
-                {
-                    var deleg = ExpressionBuilder.GetExpression<LAND>(filters).Compile();
-                    propertiesInformation = dbCtx.LAND.Where(deleg)
-                        .OrderByDescending(x => x.DATE_ADDED)
-                        .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+       var propertiesInformation = (dynamic)null;
+       //project condition selected else project property information needed if no condition is selected 
+       if (filters.Count != 0)
+       {
+           var deleg = ExpressionBuilder.GetExpression<LAND>(filters).Compile();
+           propertiesInformation = dbCtx.LAND.Where(deleg)
+               .OrderByDescending(x => x.DATE_ADDED)
+               .Skip(pg.Value * fetchAmount).Take(fetchAmount);
 
-                    resultCount = dbCtx.LAND.Where(deleg).Count();
-                }
-                else
-                {
-                    propertiesInformation = dbCtx.LAND.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
-                        .OrderByDescending(x => x.DATE_ADDED)
-                        .Skip(pg.Value * fetchAmount).Take(fetchAmount);
+           resultCount = dbCtx.LAND.Where(deleg).Count();
+       }
+       else
+       {
+           propertiesInformation = dbCtx.LAND.Select(x => new { x.ID, x.PARISH, x.PRICE, x.STREET_ADDRESS, x.IMAGE_URL, x.DATE_ADDED })
+               .OrderByDescending(x => x.DATE_ADDED)
+               .Skip(pg.Value * fetchAmount).Take(fetchAmount);
 
-                    resultCount = dbCtx.LAND.Count();
-                }
+           resultCount = dbCtx.LAND.Count();
+       }
 
-                //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
-                foreach (var r in propertiesInformation)
-                {
-                    LandModel land = new LandModel();
+       //not returning anonymous object to viewbag because razor does not support the loading of anonymous objects
+       foreach (var r in propertiesInformation)
+       {
+           LandModel land = new LandModel();
 
-                    land.ID = r.ID.ToString();
-                    land.Parish = r.PARISH;
-                    land.Price = r.PRICE.ToString();
-                    land.StreetAddress = r.STREET_ADDRESS;
-                    land.ImageURL = r.IMAGE_URL;
+           land.ID = r.ID.ToString();
+           land.Parish = r.PARISH;
+           land.Price = r.PRICE.ToString();
+           land.StreetAddress = r.STREET_ADDRESS;
+           land.ImageURL = r.IMAGE_URL;
 
-                    landProperties.landList.Add(land);
-                }
+           landProperties.landList.Add(land);
+       }
 
-                ViewBag.totalItemsFound = resultCount;
-                ViewBag.pageNumber = pg;
-                ViewBag.fetchAmount = fetchAmount;
-                ViewBag.properties = landProperties.landList;
-            }
+       ViewBag.totalItemsFound = resultCount;
+       ViewBag.pageNumber = pg;
+       ViewBag.fetchAmount = fetchAmount;
+       ViewBag.properties = landProperties.landList;
+   }
 
-            return View();
-        }*/
+   return View();
+}*/
         /*
          * makes requisition for the property that the user selected if they wanted to use the system
         

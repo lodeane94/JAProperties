@@ -20,6 +20,17 @@ function setActiveNavigation(id) {
     $('#' + id).attr('class', 'active');
 }
 
+//displays jumbotrun container
+function showJumbotrun() {    
+    $('#jumbotron-container').fadeIn('fast');
+}
+
+//dynamically change the content that will be presented in the jumbotrun
+//it accepts in html format
+function setJumbotRunContent(content) {
+    $('#jumbotron-container').html(content);
+}
+
 //sets the text that should be written on the jumbotrun button
 function setJumbotrunActionBtnText(value) {
     $('#jumbotron-button').text(value);
@@ -169,17 +180,6 @@ var system = function () {
 
 var sys = new system();
 
-//sets the menu to fixed after scrolling pass a certain amount of pixels
-$(window).scroll(function () {
-    if ($(this).scrollTop() > 280) {
-        $('.header-content').addClass('fixed');
-        $('.search-bar-container').addClass('fixed-search');
-    } else {
-        $('.header-content').removeClass('fixed');
-        $('.search-bar-container').removeClass('fixed-search');
-    }
-});
-
 /***GENERAL FUNCTIONS*/
 /***DATA RETRIEVAL FUNCTIONS*/
 function loadPropertyTypes(selectedItem) {
@@ -187,7 +187,7 @@ function loadPropertyTypes(selectedItem) {
     loadingGifLocation = $('#property-type').parent();
 
     $.ajax({
-        url: '/accounts/GetPropertyTypesByCategoryName',
+        url: '/servicer/GetPropertyTypesByCategoryName',
         type: 'get',
         data: { propertyCategoryName: selectedItem },
         beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
@@ -209,7 +209,7 @@ function loadPropertyTags(selectedItem) {
     loadingGifLocation = $('#property-tags');
 
     $.ajax({
-        url: '/accounts/GetTagNamesByPropertyCategoryCode',
+        url: '/servicer/GetTagNamesByPropertyCategoryCode',
         type: 'get',
         data: { propertyCategoryName: selectedItem },
         beforeSend: function () { $(loadingGifHTML).appendTo(loadingGifLocation); },

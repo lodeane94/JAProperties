@@ -10,5 +10,6 @@ namespace SS.Models.Repositories
     {
         String GetPurposeNameById(String Id);
         IEnumerable<String> GetAllPurposeNames();
+        String GetPurposeCodeByName(String name);
     }
 }

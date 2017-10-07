@@ -10,5 +10,6 @@ namespace SS.Models.Repositories
         IEnumerable<String> GetPropertyTypesByCategoryCode(String code);
         IEnumerable<String> GetAllPropertyTypeNames();
         Guid GetPropertyTypeIDByName(String name);
+        String GetPopertyTypeCategoryCodeByName(String name);
     }
 }
