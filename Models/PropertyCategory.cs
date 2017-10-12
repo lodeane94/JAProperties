@@ -19,6 +19,7 @@ namespace SS.Models
         {
             this.PropertyType = new HashSet<PropertyType>();
             this.TagType = new HashSet<TagType>();
+            this.Property = new HashSet<Property>();
         }
     
         public string ID { get; set; }
@@ -30,5 +31,7 @@ namespace SS.Models
         public virtual ICollection<PropertyType> PropertyType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TagType> TagType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Property> Property { get; set; }
     }
 }

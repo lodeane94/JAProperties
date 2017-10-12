@@ -105,8 +105,8 @@
           <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
-          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="255" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Property">
           <Key>
@@ -140,6 +140,7 @@
           <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="CategoryCode" Type="char" MaxLength="1" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -276,7 +277,9 @@
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
         <Association Name="fk_bill_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
@@ -324,7 +327,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_complaint_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
@@ -360,7 +365,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_meeting_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
@@ -407,6 +414,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_property_category_code">
+          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="0..1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCategory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="CategoryCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_property_condition_code">
           <End Role="PropertyCondition" Type="Self.PropertyCondition" Multiplicity="1" />
           <End Role="Property" Type="Self.Property" Multiplicity="*" />
@@ -420,7 +439,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_image_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="PropertyImage" Type="Self.PropertyImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
@@ -432,7 +453,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Property" Type="Self.Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
@@ -456,7 +479,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_rating_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="PropertyRating" Type="Self.PropertyRating" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
@@ -468,7 +493,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_requisition_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="PropertyRequisition" Type="Self.PropertyRequisition" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
@@ -504,7 +531,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_subscription_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1" />
+          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
@@ -540,7 +569,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_tags_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
@@ -564,7 +595,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_tennant_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Tennant" Type="Self.Tennant" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
@@ -655,6 +688,10 @@
           </AssociationSet>
           <AssociationSet Name="fk_property_ad_type_code" Association="Self.fk_property_ad_type_code">
             <End Role="AdType" EntitySet="AdType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_category_code" Association="Self.fk_property_category_code">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
             <End Role="Property" EntitySet="Property" />
           </AssociationSet>
           <AssociationSet Name="fk_property_condition_code" Association="Self.fk_property_condition_code">
@@ -884,6 +921,8 @@
           <NavigationProperty Name="Tags" Relationship="Self.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
           <NavigationProperty Name="Tennant" Relationship="Self.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
           <NavigationProperty Name="PropertyRequisition" Relationship="EasyFindPropertiesModel.fk_property_requisition_property_id" FromRole="Property" ToRole="PropertyRequisition" />
+          <Property Name="CategoryCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="PropertyCategory" Relationship="EasyFindPropertiesModel.fk_property_category_code" FromRole="Property" ToRole="PropertyCategory" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -895,6 +934,7 @@
           <NavigationProperty Name="PropertyType" Relationship="Self.fk_property_type_category_code" FromRole="PropertyCategory" ToRole="PropertyType" />
           <NavigationProperty Name="TagType" Relationship="Self.fk_tag_type_property_category_id" FromRole="PropertyCategory" ToRole="TagType" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_category_code" FromRole="PropertyCategory" ToRole="Property" />
         </EntityType>
         <EntityType Name="PropertyCondition">
           <Key>
@@ -1464,6 +1504,10 @@
             <Parameter Name="PasswordFormat" Mode="In" Type="Int32" />
             <Parameter Name="UserId" Mode="InOut" Type="Guid" />
           </FunctionImport>
+          <AssociationSet Name="fk_property_category_code" Association="EasyFindPropertiesModel.fk_property_category_code">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
         </EntityContainer>
         <Association Name="fk_property_requisition_property_id">
           <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1" />
@@ -1474,6 +1518,18 @@
             </Principal>
             <Dependent Role="PropertyRequisition">
               <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_category_code">
+          <End Type="EasyFindPropertiesModel.PropertyCategory" Role="PropertyCategory" Multiplicity="0..1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PropertyCategory">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="CategoryCode" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1598,6 +1654,7 @@
           <EntitySetMapping Name="Property">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Property">
               <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
                 <ScalarProperty Name="PurposeCode" ColumnName="PurposeCode" />

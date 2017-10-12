@@ -17,7 +17,10 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
 /***GENERAL FUNCTIONS*/
 //highlights navigation link curRently active
 function setActiveNavigation(id) {
-    $('#' + id).attr('class', 'active');
+    if(id != null && id != '' )
+        $('#' + id).attr('class', 'active');
+    else
+        $('#home').attr('class', 'active');
 }
 
 //displays jumbotrun container

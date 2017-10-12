@@ -54,6 +54,7 @@ namespace SS.Models
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> DateTModified { get; set; }
         public System.DateTime DateTCreated { get; set; }
+        public string CategoryCode { get; set; }
     
         public virtual AdPriority AdPriority { get; set; }
         public virtual AdType AdType { get; set; }
@@ -75,5 +76,6 @@ namespace SS.Models
         public virtual ICollection<Tennant> Tennant { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PropertyRequisition> PropertyRequisition { get; set; }
+        public virtual PropertyCategory PropertyCategory { get; set; }
     }
 }

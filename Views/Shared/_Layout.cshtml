@@ -61,19 +61,19 @@
                         <div class="main-menu">
                             <ul>
                                 <li>
-                                    <a href="~/" id="home">Home</a>
+                                    <a href="~/" id="home">Properties</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=R" id="RealEstate">Student Accommodations</a>
+                                    <a href="~/properties/getproperties?propertycategory=" id="Student">Student Accommodations</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=R" id="RealEstate">Real Estates</a>
+                                    <a href="~/properties/getproperties?propertycategory=RealEstate" id="RealEstate">Real Estates</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=L" id="Lot">Lots</a>
+                                    <a href="~/properties/getproperties?propertycategory=Lot" id="Lot">Lots</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=M" id="Machinery">Machineries</a>
+                                    <a href="~/properties/getproperties?propertycategory=Machinery" id="Machinery">Machineries</a>
                                 </li>
                                 <!--<li>
                                     <form class="navbar-form" role="search">
@@ -106,82 +106,84 @@
                 </div>
             </div>
         </div>
-        <div id="jumbotron-container" class="jumbotron-container">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <!--Dynamic Content Goes Here-->
-                        <div class="filter-container">
+        <form action="~/Properties/GetProperties" method="get" id="search-properties-form">
+            <div id="jumbotron-container" class="jumbotron-container">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!--Dynamic Content Goes Here-->
+                            <div class="filter-container">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <select class="form-control" id="division" name="division"><option disabled selected value="na">Parish/State/Division</option></select>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <select class="form-control" id="PropertyType" name="PropertyType"><option disabled selected value="na">Property Type</option></select>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <select class="form-control" id="PropertyPurpose" name="PropertyPurpose"><option disabled selected value="na">Property Purpose</option></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">&nbsp;</div>
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
-                                </div>
-                                <div class="col-xs-3">
-                                    <select class="form-control" id="division" name="division"><option disabled selected value="na">Parish/State/Division</option></select>
-                                </div>
-                                <div class="col-xs-3">
-                                    <select class="form-control" id="PropertyType" name="PropertyType"><option disabled selected value="na">Property Type</option></select>
-                                </div>
-                                <div class="col-xs-3">
-                                    <select class="form-control" id="PropertyPurpose" name="PropertyPurpose"><option disabled selected value="na">Property Purpose</option></select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">&nbsp;</div>
-                        <div class="row">
-                            <div class="group-form-price-range">
-                                <div class="col-xs-2">
-                                    <div class="input-group">
-                                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
-                                        <input id="MinPrice" type="text" class="form-control" name="MinPrice" placeholder="Minimum Price">
+                                <div class="group-form-price-range">
+                                    <div class="col-xs-2">
+                                        <div class="input-group">
+                                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                            <input id="MinPrice" type="text" class="form-control" name="MinPrice" placeholder="Minimum Price">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-1 col-width-4" style="line-height:35px;">TO</div>
+                                    <div class="col-xs-2">
+                                        <div class="input-group">
+                                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                            <input id="MaxPrice" type="text" class="form-control" name="MaxPrice" placeholder="Maximum Price">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-1 col-width-4" style="line-height:35px;">TO</div>
-                                <div class="col-xs-2">
-                                    <div class="input-group">
-                                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
-                                        <input id="MaxPrice" type="text" class="form-control" name="MaxPrice" placeholder="Maximum Price">
+                                <div class="col-xs-1">
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBox("chkBuyProperty") Buy</label>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-1">
-                                <div class="checkbox">
-                                    <label><input type="checkbox" value="chkBuyProperty">Buy</label>
+                                <div class="col-xs-1">
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBox("chkRentProperty") Rent</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-1">
-                                <div class="checkbox">
-                                    <label><input type="checkbox" value="chkRentProperty">Rent</label>
-                                </div>
-                            </div>
-                            <div class="col-xs-1">
-                                <div class="checkbox">
-                                    <label><input type="checkbox" value="chkLeasedProperty">Leased</label>
+                                <div class="col-xs-1">
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBox("chkLeasedProperty") Leased</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="container-fluid search-bar-container">
-                <div class="row">
-                    <div class="col-xs-9">
-                        <div class="input-group">
-                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-search"></i></span>
-                            <input id="SearchTerm" type="text" class="form-control" name="SearchTerm" placeholder="Search Term">
+                <div class="row">&nbsp;</div>
+                <div class="container-fluid search-bar-container">
+                    <div class="row">
+                        <div class="col-xs-9">
+                            <div class="input-group">
+                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-search"></i></span>
+                                <input id="SearchTerm" type="text" class="form-control" name="SearchTerm" placeholder="Search Term">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="input-group-btn">
-                            <button id="jumbotron-button" class="btn btn-block btn-search jumbotron-button">
-                                Search <i class="glyphicon glyphicon-search"></i>
-                            </button>
+                        <div class="col-xs-3">
+                            <div class="input-group-btn">
+                                <button id="jumbotron-button" class="btn btn-block btn-search jumbotron-button">
+                                    Search <i class="glyphicon glyphicon-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
         <!--------------Body Content------------------------>
         <div id="body">
             <div class="container-fluid">
@@ -243,7 +245,7 @@
         </div>
     </div>
     <!-------------------------------------------------->
-
+    <input type="hidden" id="_postBackInformation" value="@Json.Encode(ViewBag.searchViewModel)" />
 
     <script src="~/Scripts/bootstrap.min.js"></script>
     <!--main script removed and is now placed in each page <script src="~/Scripts/MainScript.js"></script>-->

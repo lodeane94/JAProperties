@@ -20,7 +20,7 @@ namespace SS.Controllers
         }
 
         /// <summary>
-        /// Function gets property type name by it's category code
+        /// Function gets property type name by it's category code name
         /// </summary>
         /// <param name="propertyCategoryName"></param>
         /// <returns></returns>
@@ -30,6 +30,25 @@ namespace SS.Controllers
             IEnumerable<String> results = null;
             /*mapping property category name to property code*/
             String propertyCategoryCode = PropertyHelper.mapPropertyCategoryNameToCode(propertyCategoryName);
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                var unitOfWork = new UnitOfWork(dbCtx);
+                results = unitOfWork.PropertyType.GetPropertyTypesByCategoryCode(propertyCategoryCode);
+            }
+
+            return Json(results, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Function gets property type name by it's category code
+        /// </summary>
+        /// <param name="propertyCategoryCode"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetPropertyTypesByCategoryCode(String propertyCategoryCode)
+        {
+            IEnumerable<String> results = null;
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {

@@ -52,6 +52,7 @@
         <AssociationConnector Association="EasyFindPropertiesModel.fk_subscription_type_code" ManuallyRouted="false" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_tags_type_id" ManuallyRouted="false" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_property_requisition_property_id" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_property_category_code" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

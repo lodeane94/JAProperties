@@ -107,7 +107,7 @@ namespace SS.Controllers
                             bool ownerExist = doesOwnerExist(unitOfWork, model.CellNum);
                             insertProperty(model, unitOfWork, ownerExist);
 
-                            if(!ownerExist)
+                            if (!ownerExist)
                                 createUserAccount(model);
 
                             dbCtxTran.Commit();
@@ -186,6 +186,7 @@ namespace SS.Controllers
                 AdTypeCode = PropertyHelper.mapPropertyAdTypeNameToCode(model.AdvertismentType),
                 AdPriorityCode = PropertyHelper.mapPropertyAdpriorityNameToCode(model.AdvertismentPriority),
                 ConditionCode = EFPConstants.PropertyCondition.NotSurveyed,
+                CategoryCode = unitOfWork.PropertyType.GetPopertyTypeCategoryCodeByName(model.PropertyType),
                 StreetAddress = model.StreetAddress,
                 Division = model.Division,
                 Community = model.Community,

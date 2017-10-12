@@ -67,8 +67,36 @@ namespace SS.Models.Repositories
                 .Where(x => x.Availability.Equals(true) && x.PropertyType.CategoryCode.Equals(categoryCode))
                 .OrderBy(x => x.AdPriority.Value)
                 .ThenBy(x => x.DateTCreated)
+                .Skip(pgNo * take)
                 .Take(take)
                 .ToList();
+        }
+
+        public IEnumerable<Property> FindPropertiesBySearchTerm(string searchTerm, int take = 16, int pgNo = 0)
+        {
+            var properties = (from p in EasyFindPropertiesEntities.Property
+                              join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
+                              from t in g.DefaultIfEmpty()
+                              where p.Availability.Equals(true)
+                                  && (p.PropertyPurpose.Name.Contains(searchTerm)
+                                      || p.AdType.Name.Contains(searchTerm)
+                                      || p.PropertyType.Name.Contains(searchTerm)
+                                      || p.PropertyCategory.Name.Contains(searchTerm)
+                                      || p.StreetAddress.Contains(searchTerm)
+                                      || p.Division.Contains(searchTerm)
+                                      || p.Community.Contains(searchTerm)
+                                      || p.Country.Contains(searchTerm)
+                                      || p.Description.Contains(searchTerm)
+                                      || t.TagType.Name.Contains(searchTerm))
+                              orderby p.AdPriority.Value, p.DateTCreated
+                              select p
+                              )
+                              .Skip(pgNo * take)
+                              .Take(take)
+                              .Distinct()
+                              .ToList();
+
+            return properties;
         }
     }
 }

@@ -23,31 +23,26 @@ namespace SS.Controllers
             short take = 16;
 
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
+            IEnumerable<Property> filteredProperties = null;
+            IEnumerable<Property> searchTermProperties = null;
             IEnumerable<Property> properties = null;
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                //if property type is null and property category is not
-                //null then  load properties by  the category selected otherwise
-                //load properties by the selected filters
-                if (String.IsNullOrEmpty(model.PropertyType) && !String.IsNullOrEmpty(model.PropertyCategory))
-                {
-                    properties = unitOfWork.Property.FindPropertiesByCategoryCode(model.PropertyCategory, take, model.pgNo);
-                }
-                else
-                {
-                    List<Core.Filter> filters = createFilterList(model, unitOfWork);
-                    var deleg = ExpressionBuilder.GetExpression<Property>(filters);
+                List<Core.Filter> filters = createFilterList(model, unitOfWork);
+                var deleg = ExpressionBuilder.GetExpression<Property>(filters);
 
-                    properties = unitOfWork.Property.FindProperties(deleg, take, model.pgNo);
-                }
+                filteredProperties = unitOfWork.Property.FindProperties(deleg, take, model.PgNo);
+                searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, take, model.PgNo);
+                properties = filteredProperties.Concat(searchTermProperties).Distinct();
 
                 featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(properties, unitOfWork, "Properties");
             }
 
             ViewBag.activeNavigation = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
+            ViewBag.searchViewModel = model;
 
             return View(featuredPropertiesSlideViewModelList);
         }
@@ -88,6 +83,19 @@ namespace SS.Controllers
                 filters.Add(filter);
             }
 
+            //property category
+            if (!string.IsNullOrEmpty(model.PropertyCategory))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "CategoryCode",
+                    Operation = Op.Equals,
+                    Value = model.PropertyCategory
+                };
+
+                filters.Add(filter);
+            }
+
             //property type
             if (!string.IsNullOrEmpty(model.PropertyType))
             {
@@ -108,14 +116,14 @@ namespace SS.Controllers
                 {
                     PropertyName = "PurposeCode",
                     Operation = Op.Equals,
-                    Value = unitOfWork.PropertyPurpose.GetPurposeCodeByName(model.PropertyPurpose)
+                    Value = PropertyHelper.mapPropertyPurposeNameToCode(model.PropertyPurpose)
                 };
 
                 filters.Add(filter);
             }
 
             //price range
-            if (model.MinPrice != null && model.MaxPrice != null)
+            if (model.MinPrice >= 0 && model.MaxPrice > 0)
             {
                 Core.Filter filter1 = new Core.Filter()
                 {

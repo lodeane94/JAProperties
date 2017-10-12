@@ -20,16 +20,21 @@ namespace SS.Core
         /// <param name="propertyCategoryName"></param>
         public static String mapPropertyCategoryNameToCode(String propertyCategoryName)
         {
-            if (propertyCategoryName.Equals(nameof(EFPConstants.PropertyCategory.RealEstate)))
+            if (!String.IsNullOrEmpty(propertyCategoryName))
             {
-                return EFPConstants.PropertyCategory.RealEstate;
-            }
-            else if (propertyCategoryName.Equals(nameof(EFPConstants.PropertyCategory.Lot)))
-            {
-                return EFPConstants.PropertyCategory.Lot;
+                if (propertyCategoryName.Equals(nameof(EFPConstants.PropertyCategory.RealEstate)))
+                {
+                    return EFPConstants.PropertyCategory.RealEstate;
+                }
+                else if (propertyCategoryName.Equals(nameof(EFPConstants.PropertyCategory.Lot)))
+                {
+                    return EFPConstants.PropertyCategory.Lot;
+                }
+
+                return EFPConstants.PropertyCategory.Machinery;
             }
 
-            return EFPConstants.PropertyCategory.Machinery;
+            return null;
         }
 
         /// <summary>
@@ -38,72 +43,96 @@ namespace SS.Core
         /// <param name="code"></param>
         public static String mapPropertyCategoryCodeToName(String code)
         {
-            if (code.Equals(EFPConstants.PropertyCategory.RealEstate))
+            if (!String.IsNullOrEmpty(code))
             {
-                return nameof(EFPConstants.PropertyCategory.RealEstate);
-            }
-            else if (code.Equals(EFPConstants.PropertyCategory.Lot))
-            {
-                return nameof(EFPConstants.PropertyCategory.Lot);
-            }
+                if (code.Equals(EFPConstants.PropertyCategory.RealEstate))
+                {
+                    return nameof(EFPConstants.PropertyCategory.RealEstate);
+                }
+                else if (code.Equals(EFPConstants.PropertyCategory.Lot))
+                {
+                    return nameof(EFPConstants.PropertyCategory.Lot);
+                }
 
-            return nameof(EFPConstants.PropertyCategory.Machinery);
+                return nameof(EFPConstants.PropertyCategory.Machinery);
+            }
+            return null;
         }
 
         public static String mapPropertyPurposeNameToCode(String propertyPurposeName)
         {
-            if (propertyPurposeName.Equals(nameof(EFPConstants.PropertyPurpose.Residential)))
+            if (!String.IsNullOrEmpty(propertyPurposeName))
             {
-                return EFPConstants.PropertyPurpose.Residential;
-            }
-            else if (propertyPurposeName.Equals(nameof(EFPConstants.PropertyPurpose.Commercial)))
-            {
-                return EFPConstants.PropertyPurpose.Commercial;
+                if (propertyPurposeName.Equals(nameof(EFPConstants.PropertyPurpose.Residential)))
+                {
+                    return EFPConstants.PropertyPurpose.Residential;
+                }
+                else if (propertyPurposeName.Equals(nameof(EFPConstants.PropertyPurpose.Commercial)))
+                {
+                    return EFPConstants.PropertyPurpose.Commercial;
+                }
+
+                return EFPConstants.PropertyPurpose.Industrial;
             }
 
-            return EFPConstants.PropertyPurpose.Industrial;
+            return null;
         }
 
         public static String mapPropertyAdTypeNameToCode(String propertyAdTypeName)
         {
-            if (propertyAdTypeName.Equals(nameof(EFPConstants.PropertyAdType.Rent)))
+            if (!String.IsNullOrEmpty(propertyAdTypeName))
             {
-                return EFPConstants.PropertyAdType.Rent;
-            }
-            else if (propertyAdTypeName.Equals(nameof(EFPConstants.PropertyAdType.Sale)))
-            {
-                return EFPConstants.PropertyAdType.Sale;
+                if (propertyAdTypeName.Equals(nameof(EFPConstants.PropertyAdType.Rent)))
+                {
+                    return EFPConstants.PropertyAdType.Rent;
+                }
+                else if (propertyAdTypeName.Equals(nameof(EFPConstants.PropertyAdType.Sale)))
+                {
+                    return EFPConstants.PropertyAdType.Sale;
+                }
+
+                return EFPConstants.PropertyAdType.Lease;
             }
 
-            return EFPConstants.PropertyAdType.Lease;
+            return null;
         }
 
         public static String mapPropertyAdpriorityNameToCode(String adpriorityName)
         {
-            if (adpriorityName.Equals(nameof(EFPConstants.PropertyAdPriority.AdPremium)))
+            if (!String.IsNullOrEmpty(adpriorityName))
             {
-                return EFPConstants.PropertyAdPriority.AdPremium;
-            }
-            else if (adpriorityName.Equals(nameof(EFPConstants.PropertyAdPriority.AdPro)))
-            {
-                return EFPConstants.PropertyAdPriority.AdPro;
+                if (adpriorityName.Equals(nameof(EFPConstants.PropertyAdPriority.AdPremium)))
+                {
+                    return EFPConstants.PropertyAdPriority.AdPremium;
+                }
+                else if (adpriorityName.Equals(nameof(EFPConstants.PropertyAdPriority.AdPro)))
+                {
+                    return EFPConstants.PropertyAdPriority.AdPro;
+                }
+
+                return EFPConstants.PropertyAdPriority.Regular;
             }
 
-            return EFPConstants.PropertyAdPriority.Regular;
+            return null;
         }
 
         public static String mapPropertySubscriptionTypeToCode(String subscriptionTypeName)
         {
-            if (subscriptionTypeName.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
+            if (!String.IsNullOrEmpty(subscriptionTypeName))
             {
-                return EFPConstants.PropertySubscriptionType.Basic;
-            }
-            else if (subscriptionTypeName.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
-            {
-                return EFPConstants.PropertySubscriptionType.Landlord;
+                if (subscriptionTypeName.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
+                {
+                    return EFPConstants.PropertySubscriptionType.Basic;
+                }
+                else if (subscriptionTypeName.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
+                {
+                    return EFPConstants.PropertySubscriptionType.Landlord;
+                }
+
+                return EFPConstants.PropertySubscriptionType.Realtor;
             }
 
-            return EFPConstants.PropertySubscriptionType.Realtor;
+            return null;
         }
 
         /// <summary>
