@@ -36,6 +36,8 @@ namespace SS.ViewModels
         public String EnrolmentKey { get; set; }
         public String TermsAgreement { get; set; }
         public String[] selectedTags { get; set; }
+        public String coordinateLat { get; set; }
+        public String coordinateLng { get; set; }
         public HttpPostedFileBase[] flPropertyPics { get; set; }
     }
 }

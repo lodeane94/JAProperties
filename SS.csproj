@@ -182,6 +182,7 @@
     </Content>
     <Content Include="App_Data\EasyFindProperties-2017-06-10.bak" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\GoogleMapJsScript.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery.cookie.js" />

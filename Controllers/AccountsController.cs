@@ -191,6 +191,8 @@ namespace SS.Controllers
                 Division = model.Division,
                 Community = model.Community,
                 Country = model.Country,
+                Latitude = model.coordinateLat,
+                Longitude = model.coordinateLng,
                 Price = model.Price,
                 SecurityDeposit = model.SecurityDeposit,
                 Occupancy = model.Occupancy,

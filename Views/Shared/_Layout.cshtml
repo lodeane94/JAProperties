@@ -167,13 +167,18 @@
                 <div class="row">&nbsp;</div>
                 <div class="container-fluid search-bar-container">
                     <div class="row">
-                        <div class="col-xs-9">
+                        <div class="col-xs-7">
                             <div class="input-group">
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-search"></i></span>
-                                <input id="SearchTerm" type="text" class="form-control" name="SearchTerm" placeholder="Search Term">
+                                <input id="SearchTerm" onFocus="geolocate()" type="text" class="form-control" name="SearchTerm" placeholder="Search Term">
                             </div>
                         </div>
                         <div class="col-xs-3">
+                            <label>Search Type</label> &nbsp;
+                            <label class="radio-inline">@Html.RadioButton("searchType","all",true) All</label>
+                            <label class="radio-inline">@Html.RadioButton("searchType", "nearByPlaces") Near by places</label>
+                        </div>
+                        <div class="col-xs-2">
                             <div class="input-group-btn">
                                 <button id="jumbotron-button" class="btn btn-block btn-search jumbotron-button">
                                     Search <i class="glyphicon glyphicon-search"></i>
@@ -202,6 +207,7 @@
                         <a href="~/advertisments/adspace"><div id="ad-placement"><center>AD PLACEMENT</center></div></a>
                     </div>
                 </div>
+                <br />
                 <div class="row">
                     <div class="col-md-2">
                         <div id="body-content">
@@ -250,9 +256,10 @@
     <script src="~/Scripts/bootstrap.min.js"></script>
     <!--main script removed and is now placed in each page <script src="~/Scripts/MainScript.js"></script>-->
     <script src="~/Scripts/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places"></script>
+    <script src="~/Scripts/GoogleMapJsScript.js"></script>
     <script type="text/javascript">
         @RenderSection("pageScript",false)
     </script>
-
 </body>
 </html>

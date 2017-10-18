@@ -30,6 +30,7 @@
     $.getScript('/Scripts/PropertiesScript.js',function(){
 
     });
+    initializeGeoCoder();
     })();
 }
 
@@ -232,7 +233,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="input-group">
-                                <input id="streetaddress" value="@Model.StreetAddress" type="text" class="form-control" name="streetaddress" placeholder="Street Address" required>
+                                <input id="streetaddress" value="@Model.StreetAddress" onfocusout="codeAddress(document.getElementById('community').value)" type="text" class="form-control" name="streetaddress" placeholder="Street Address" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
                             </div>
                         </div>
@@ -250,7 +251,7 @@
                         </div>
                         <div class="col-xs-6">
                             <div class="input-group">
-                                <input id="community" value="@Model.Community" type="text" class="form-control" name="community" placeholder="Community" required>
+                                <input id="community" onfocusout="codeAddress(document.getElementById('community').value)" value="@Model.Community" type="text" class="form-control" name="community" placeholder="Community" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
                             </div>
                         </div>
@@ -357,6 +358,8 @@
                     <button class="btn btn-accent" type="submit" id="AdvertisePropertyBtn">Advertise Property</button>
                 </div>
             </div>
+            <input id="coordinateLat" type="hidden" name="coordinateLat" />
+            <input id="coordinateLng" type="hidden" name="coordinateLng" />
         </form>
     </div>
 </div>

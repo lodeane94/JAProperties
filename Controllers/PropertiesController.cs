@@ -141,6 +141,45 @@ namespace SS.Controllers
                 filters.Add(filter1);
                 filters.Add(filter2);
             }
+            ///////////////TODO implement Or conditions for these///////////////////////
+            //ad type sale
+            if (model.ChkBuyProperty)
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "AdTypeCode",
+                    Operation = Op.Equals,
+                    Value = EFPConstants.PropertyAdType.Sale
+                };
+
+                filters.Add(filter);
+            }
+
+            //ad type rent
+            if (model.ChkRentProperty)
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "AdTypeCode",
+                    Operation = Op.Equals,
+                    Value = EFPConstants.PropertyAdType.Rent
+                };
+
+                filters.Add(filter);
+            }
+
+            //ad type lease
+            if (model.ChkLeasedProperty)
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "AdTypeCode",
+                    Operation = Op.Equals,
+                    Value = EFPConstants.PropertyAdType.Lease
+                };
+
+                filters.Add(filter);
+            }
 
             return filters;
         }

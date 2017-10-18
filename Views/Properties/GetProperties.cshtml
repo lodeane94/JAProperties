@@ -24,7 +24,13 @@
     });
 
     $.getScript('/Scripts/PropertiesScript.js',function(){
-        populatePropertyTypeByCategoryName('@ViewBag.activeNavigation');
+
+    if('@ViewBag.activeNavigation' == null || '@ViewBag.activeNavigation' == ''){
+    populatePropertyType();
+    }
+    else{
+    populatePropertyTypeByCategoryName('@ViewBag.activeNavigation');
+    }
     });
     })();
 
@@ -32,55 +38,65 @@
 
 <div class="row" id="properties-container">
     @{
-        foreach (var property in Model)
+        if (Model != null && Model.Count > 0)
         {
-            for (int i = 1; i <= 10; i++)
+            foreach (var property in Model)
             {
-                <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
-                    <a href="~/properties/propertydetails/@property.property.ID">
-                        <div class="image-container">
-                            <ul>
-                                <li>
-                                    <div class="image">
-                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="image-information-container">
-                                        <p class="content-heading"><strong>$ @property.property.Price</strong></p>
-                                        <p>@property.property.StreetAddress</p>
-                                        <p>@property.property.Division</p>
-                                        <p>@property.property.Country</p>
-                                        <p>@property.property.Description</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </a>
-                    <ul class="property-ratings">
-                        @if (property.averageRating > 0)
+                for (int i = 1; i <= 10; i++)
+                {
+                    <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+                        <a href="~/properties/propertydetails/@property.property.ID">
+                            <div class="image-container">
+                                <ul>
+                                    <li>
+                                        <div class="image">
+                                            <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="image-information-container">
+                                            <p class="content-heading"><strong>$ @property.property.Price</strong></p>
+                                            <p>@property.property.StreetAddress</p>
+                                            <p>@property.property.Division</p>
+                                            <p>@property.property.Country</p>
+                                            <p>@property.property.Description</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </a>
+                        <ul class="property-ratings">
+                            @if (property.averageRating > 0)
                         {
                             for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
                             {
-                                <li><span class="glyphicon glyphicon-star"></span></li>
+                                    <li><span class="glyphicon glyphicon-star"></span></li>
+                                }
                             }
-                        }
-                        else
-                        {
-                            int maxRating = 5;
-                            for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                            else
                             {
-                                <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                                int maxRating = 5;
+                                for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                                {
+                                    <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                                }
                             }
-                        }
-                        <br />
-                        <br />
-                        <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
-                        <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
-                        <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
-                    </ul>
-                </div>}
+                            <br />
+                            <br />
+                            <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                            <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                            <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+                        </ul>
+                    </div>}
             }
+        }
+        else
+        {
+            <center>
+                <div class="ctnr-headers">
+                    <label><strong>No Results Found</strong></label>
+                </div>
+            </center>
+        }
     }
 </div>
-

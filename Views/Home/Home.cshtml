@@ -32,101 +32,171 @@
 
 }
 <br />
-<div class="row">
-    <div class="col-xs-12">
-        <div class="row">
-            <div class="row">&nbsp;</div>
-            <div class="col-md-xs">
-                <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        @{
-                            int count = 0;
-                            string activeStr = string.Empty;
+    <!--
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="row">&nbsp;</div>
+                <div class="col-md-xs">
+                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            @{
+                                int count = 0;
+                                string activeStr = string.Empty;
 
-                            foreach (var property in Model)
-                            {
-                                int countSub = 0;//used to determine the total sub loops
-                                int maxImgs = 5;//used to display the total times the slide should be split
-                                count++;
-                                activeStr = count == 1 ? "active" : string.Empty;
-                                <div class="item @activeStr">
-                                    <div class="row">
-                                        @foreach (var imageUrl in property.propertyImageURLs)
-                                        {
-                                            int totImgForProp = property.propertyImageURLs.Count();
-                                            maxImgs--;
-                                            countSub++;
-                                            if (countSub == 1)
+                                foreach (var property in Model)
+                                {
+                                    int countSub = 0;//used to determine the total sub loops
+                                    int maxImgs = 5;//used to display the total times the slide should be split
+                                    count++;
+                                    activeStr = count == 1 ? "active" : string.Empty;
+                                    <div class="item @activeStr">
+                                        <div class="row">
+                                            @foreach (var imageUrl in property.propertyImageURLs)
                                             {
-                                                String rowStr = totImgForProp == 1 ? "col-xs-12" : "col-xs-8";
+                                                int totImgForProp = property.propertyImageURLs.Count();
+                                                maxImgs--;
+                                                countSub++;
+                                                if (countSub == 1)
+                                                {
+                                                    String rowStr = totImgForProp == 1 ? "col-xs-12" : "col-xs-8";
 
-                                                <div class="@rowStr">
-                                                    <a href="#" id="@property.property.ID"><div class="featured-properties-lg"><img src="~/Uploads/@property.propertyPrimaryImageURL"></div></a>
-                                                    <div class="carousel-caption">
-                                                        <p>@property.property.Description</p>
-                                                        <p>&#36; @property.property.Price</p>
+                                                    <div class="@rowStr">
+                                                        <a href="#" id="@property.property.ID"><div class="featured-properties-lg"><img src="~/Uploads/@property.propertyPrimaryImageURL"></div></a>
+                                                        <div class="carousel-caption">
+                                                            <p>@property.property.Description</p>
+                                                            <p>&#36; @property.property.Price</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                continue;
-                                            }
+                                                    continue;
+                                                }
 
-                                            if (!imageUrl.Equals(property.propertyPrimaryImageURL))
-                                            {
-                                                <div class="col-xs-2">
-                                                    <a href="#" id="@property.property.ID"><div class="featured-properties-sm"><img src="~/Uploads/@imageUrl"></div></a>
-                                                </div>
-                                            }
-
-                                            //if there is more than one images for the property and the slide is not split into the total 5 images
-                                            //then fill the remaining spots with small ads
-                                            if (maxImgs != 0 && countSub == totImgForProp)
-                                            {
-                                                for (int i = 1; i <= maxImgs; i++)
+                                                if (!imageUrl.Equals(property.propertyPrimaryImageURL))
                                                 {
                                                     <div class="col-xs-2">
-                                                        <div class="featured-properties-sm">Easy Find Properties</div>
+                                                        <a href="#" id="@property.property.ID"><div class="featured-properties-sm"><img src="~/Uploads/@imageUrl"></div></a>
                                                     </div>
                                                 }
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        }
-                    </div>
 
-                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+                                                //if there is more than one images for the property and the slide is not split into the total 5 images
+                                                //then fill the remaining spots with small ads
+                                                if (maxImgs != 0 && countSub == totImgForProp)
+                                                {
+                                                    for (int i = 1; i <= maxImgs; i++)
+                                                    {
+                                                        <div class="col-xs-2">
+                                                            <div class="featured-properties-sm">Easy Find Properties</div>
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="row">&nbsp;</div>
-<div class="row">
-    <div class="col-xs-12">
-        <div class="ctnr-headers">
-            <label><strong>Featured Properties Being Rented</strong></label>
+    </div>-->
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="ctnr-headers">
+                <label><strong>Featured Properties Being Rented</strong></label>
+            </div>
         </div>
     </div>
-</div>
-@{int featuredPropTotImg = 8; }
-<div class="row" id="featured-rental">
-    @{
-        int rentalCount = 0;
-        foreach (var property in Model)
-        {
-            if (rentalCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+    @{int featuredPropTotImg = 8; }
+    <div class="row" id="featured-rental">
+        @{
+            int rentalCount = 0;
+            foreach (var property in Model)
             {
-                for (int i = 1; i <= 10; i++)
+                if (rentalCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
                 {
-                    <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+                            <a href="~/properties/propertydetails/@property.property.ID">
+                                <div class="image-container">
+                                    <ul>
+                                        <li>
+                                            <div class="image">
+                                                <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="image-information-container">
+                                                <p class="content-heading"><strong>$ @property.property.Price</strong></p>
+                                                <p>@property.property.StreetAddress</p>
+                                                <p>@property.property.Division</p>
+                                                <p>@property.property.Country</p>
+                                                <p>@property.property.Description</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </a>
+                            <ul class="property-ratings">
+                                @if (property.averageRating > 0)
+                                {
+                                    for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
+                                    {
+                                        <li><span class="glyphicon glyphicon-star"></span></li>
+                                    }
+                                }
+                                else
+                                {
+                                    int maxRating = 5;
+                                    for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                                    {
+                                        <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                                    }
+                                }
+                                <br />
+                                <br />
+                                <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                                <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                                <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+                            </ul>
+                        </div>}
+                    rentalCount++;
+                }
+            }
+        }
+    </div>
+    <div class="row">
+        <div class="col-md-offset-8 col-xs-4">
+            <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
+        </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="ctnr-headers">
+                <label><strong>Featured Properties Being Sold</strong></label>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="featured-sale">
+        @{
+            int saleCount = 0;
+            foreach (var property in Model)
+            {
+                if (saleCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+                {
+                    <div class="col-xs-6 col-md-3 image-link" data-toggle="popover" data-content="Click to view details">
                         <a href="~/properties/propertydetails/@property.property.ID">
                             <div class="image-container">
                                 <ul>
@@ -137,8 +207,7 @@
                                     </li>
                                     <li>
                                         <div class="image-information-container">
-                                            <p class="content-heading"><strong>$ @property.property.Price</strong></p>
-                                            <p>@property.property.StreetAddress</p>
+                                            <p><strong>$ @property.property.Price</strong></p>
                                             <p>@property.property.Division</p>
                                             <p>@property.property.Country</p>
                                             <p>@property.property.Description</p>
@@ -147,128 +216,62 @@
                                 </ul>
                             </div>
                         </a>
-                        <ul class="property-ratings">
-                            @if (property.averageRating > 0)
-                            {
-                                for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
-                                {
-                                    <li><span class="glyphicon glyphicon-star"></span></li>
-                                }
-                            }
-                            else
-                            {
-                                int maxRating = 5;
-                                for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
-                                {
-                                    <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
-                                }
-                            }
-                            <br/><br />
-                            <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
-                            <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
-                            <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
-                        </ul>
-                    </div>}
-                rentalCount++;
+                    </div>
+                    rentalCount++;
+                }
             }
         }
-    }
-</div>
-<div class="row">
-    <div class="col-md-offset-8 col-xs-4">
-        <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
     </div>
-</div>
-<div class="row">&nbsp;</div>
-<div class="row">
-    <div class="col-xs-12">
-        <div class="ctnr-headers">
-            <label><strong>Featured Properties Being Sold</strong></label>
+    <div class="row">
+        <div class="col-md-offset-8 col-xs-4">
+            <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
         </div>
     </div>
-</div>
-<div class="row" id="featured-sale">
-    @{
-        int saleCount = 0;
-        foreach (var property in Model)
-        {
-            if (saleCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
-            {
-                <div class="col-xs-6 col-md-3 image-link" data-toggle="popover" data-content="Click to view details">
-                    <a href="~/properties/propertydetails/@property.property.ID">
-                        <div class="image-container">
-                            <ul>
-                                <li>
-                                    <div class="image">
-                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="image-information-container">
-                                        <p><strong>$ @property.property.Price</strong></p>
-                                        <p>@property.property.Division</p>
-                                        <p>@property.property.Country</p>
-                                        <p>@property.property.Description</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </a>
-                </div>
-                rentalCount++;
-            }
-        }
-    }
-</div>
-<div class="row">
-    <div class="col-md-offset-8 col-xs-4">
-        <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
-    </div>
-</div>
-<div class="row">&nbsp;</div>
-<div class="row">
-    <div class="col-xs-12">
-        <div class="ctnr-headers">
-            <label><strong>Featured Properties Being Leased</strong></label>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="ctnr-headers">
+                <label><strong>Featured Properties Being Leased</strong></label>
+            </div>
         </div>
     </div>
-</div>
-<div class="row" id="featured-lease">
-    @{
-        int leaseCount = 0;
-        foreach (var property in Model)
-        {
-            if (leaseCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Lease))
+    <div class="row" id="featured-lease">
+        @{
+            int leaseCount = 0;
+            foreach (var property in Model)
             {
-                <div class="col-xs-6 col-md-3 image-link" data-toggle="popover" data-content="Click to view details">
-                    <a href="~/properties/propertydetails/@property.property.ID">
-                        <div class="image-container">
-                            <ul>
-                                <li>
-                                    <div class="image">
-                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="image-information-container">
-                                        <p><strong>$ @property.property.Price</strong></p>
-                                        <p>@property.property.Division</p>
-                                        <p>@property.property.Country</p>
-                                        <p>@property.property.Description</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </a>
-                </div>
-                rentalCount++;
+                if (leaseCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Lease))
+                {
+                    <div class="col-xs-6 col-md-3 image-link" data-toggle="popover" data-content="Click to view details">
+                        <a href="~/properties/propertydetails/@property.property.ID">
+                            <div class="image-container">
+                                <ul>
+                                    <li>
+                                        <div class="image">
+                                            <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="image-information-container">
+                                            <p><strong>$ @property.property.Price</strong></p>
+                                            <p>@property.property.Division</p>
+                                            <p>@property.property.Country</p>
+                                            <p>@property.property.Description</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </a>
+                    </div>
+                    rentalCount++;
+                }
             }
         }
-    }
-</div>
-<div class="row">
-    <div class="col-md-offset-8 col-xs-4">
-        <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
     </div>
-</div>
+    <div class="row">
+        <div class="col-md-offset-8 col-xs-4">
+            <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
+        </div>
+    </div>
+
 
