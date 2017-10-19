@@ -9,6 +9,8 @@ namespace SS.ViewModels
     public class FeaturedPropertiesSlideViewModel
     {
         public Property property { get; set; }
+        public Owner owner { get; set; }
+        public IEnumerable<String> tags { get; set; }
         public IEnumerable<String> propertyImageURLs { get; set; }
         public String propertyPrimaryImageURL { get; set; }
         public int averageRating { get; set; }

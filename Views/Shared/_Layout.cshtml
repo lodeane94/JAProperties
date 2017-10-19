@@ -167,17 +167,17 @@
                 <div class="row">&nbsp;</div>
                 <div class="container-fluid search-bar-container">
                     <div class="row">
-                        <div class="col-xs-7">
+                        <div class="col-xs-3">
+                            <label>Search Type</label> &nbsp;
+                            <label class="radio-inline">@Html.RadioButton("searchType", "all", true) All</label>
+                            <label class="radio-inline">@Html.RadioButton("searchType", "nearByPlaces") Near by places</label>
+                        </div>
+                        <div class="col-xs-6">
                             <div class="input-group">
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-search"></i></span>
                                 <input id="SearchTerm" onFocus="geolocate()" type="text" class="form-control" name="SearchTerm" placeholder="Search Term">
                             </div>
-                        </div>
-                        <div class="col-xs-3">
-                            <label>Search Type</label> &nbsp;
-                            <label class="radio-inline">@Html.RadioButton("searchType","all",true) All</label>
-                            <label class="radio-inline">@Html.RadioButton("searchType", "nearByPlaces") Near by places</label>
-                        </div>
+                        </div>                        
                         <div class="col-xs-2">
                             <div class="input-group-btn">
                                 <button id="jumbotron-button" class="btn btn-block btn-search jumbotron-button">

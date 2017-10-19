@@ -408,6 +408,7 @@
     <Content Include="Views\Accounts\AdvertiseProperty.cshtml" />
     <Content Include="Views\Shared\_ModalPropertyAdvertised.cshtml" />
     <Content Include="Views\Properties\GetProperties.cshtml" />
+    <Content Include="Views\Properties\getProperty.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

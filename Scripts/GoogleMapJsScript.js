@@ -70,7 +70,7 @@ function geolocate() {
                     center: countrybounds,
                     radius: countrybounds
                 });
-                autocomplete.setBounds(circle.getBounds());
+                autocomplete.setBounds(countrybounds);
            // });
       //  }
     }
@@ -80,17 +80,22 @@ var geocoder;
 var countrybounds;
 
 function setCountryBounds() {
-    var country = $('#country:selected').val();
+    var country = $('#country').find("option:selected").text();
 
     geocoder.geocode({ address: country }, function (locations, status) {
         if (status == 'OK') {
-            var north = locations.Placemark[0].ExtendedData.LatLonBox.north;
-            var south = locations.Placemark[0].ExtendedData.LatLonBox.south;
-            var east = locations.Placemark[0].ExtendedData.LatLonBox.east;
-            var west = locations.Placemark[0].ExtendedData.LatLonBox.west;
+          /*  var north = locations[0].geometry.location.lat() + 0.0003;
+            var south = locations[0].geometry.location.lat() - 0.0003;
+            var east =  locations[0].geometry.location.lng() + 0.0003;
+            var west =  locations[0].geometry.location.lng() - 0.0003;*/
+          ///  alert(north);
 
-            countrybounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west),
-                                              new google.maps.LatLng(north, east));
+            //countrybounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west),
+            //                                new google.maps.LatLng(north, east));
+
+            countrybounds = new google.maps.LatLngBounds({ lat: locations[0].geometry.location.lat(), lng: locations[0].geometry.location.lng()});
+        } else {
+            alert('Geocode was not successful for the following reason: ' + status);
         }
     });
 }

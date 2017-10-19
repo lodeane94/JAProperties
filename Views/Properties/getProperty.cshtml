@@ -1,0 +1,73 @@
+﻿@model SS.ViewModels.FeaturedPropertiesSlideViewModel
+@using SS.Core 
+@{
+    ViewBag.Title = "EasyFindProperties - "+  "Properties being "+ Model.property.AdType.Name + " in " + Model.property.Community + ", " + Model.property.Division + ", " + Model.property.Country;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="ctnr-headers">
+            <label><strong>Properties being @Model.property.AdType.Name in @Model.property.Community, @Model.property.Division, @Model.property.Country</strong></label>
+        </div>
+    </div>
+</div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="ctnr-info">
+            <label>Located at: @Model.property.StreetAddress, @Model.property.Community, @Model.property.Division, @Model.property.Country</label>
+        </div>
+    </div>
+</div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-xs-6">
+        <div class="image-viewer">
+            
+        </div>
+    </div>
+    <div class="col-xs-2">
+        <div class="image-viewer">
+            <ul>
+                <li>Price: @Model.property.Price</li>
+                <li>Security Deposit: @Model.property.SecurityDeposit == 0 ? None : @Model.property.SecurityDeposit</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-4">
+        <ul>
+            <li>Name: @Model.owner.FirstName &nbsp; @Model.owner.LastName</li>
+            <li>Contact Number: @Model.owner.CellNum
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-8">
+        <ul class="property-ratings">
+            @if (Model.averageRating > 0)
+            {
+                for (int ratingCount = 1; ratingCount <= Model.averageRating; ratingCount++)
+                {
+                    <li><span class="glyphicon glyphicon-star"></span></li>
+                }
+            }
+            else
+            {
+                int maxRating = 5;
+                for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                {
+                    <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                }
+            }
+            <br />
+            <br />
+            <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+            <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+            <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+        </ul>
+
+    </div>
+</div>
+

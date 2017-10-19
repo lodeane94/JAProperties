@@ -15,5 +15,10 @@ namespace SS.Models.Repositories
         public TagsRepository(EasyFindPropertiesEntities dbctx)
             : base(dbctx)
         { }
+
+        public IEnumerable<string> GetTagNamesByPropertyId(Guid id)
+        {
+            return EasyFindPropertiesEntities.Tags.Where(x => x.PropertyID.Equals(id)).Select(x => x.TagType.Name).ToList();
+        }
     }
 }

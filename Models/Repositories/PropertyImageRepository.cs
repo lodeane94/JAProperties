@@ -16,9 +16,16 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public IEnumerable<string> GetImageURLsByPropertyId(Guid Id,int take)
+        public IEnumerable<string> GetImageURLsByPropertyId(Guid Id,int take = 0)
         {
-            return EasyFindPropertiesEntities.PropertyImage.Where(x => x.PropertyID.Equals(Id)).Select(x => x.ImageURL).Take(take).ToList();
+            if (take.Equals(0))
+            {
+                return EasyFindPropertiesEntities.PropertyImage.Where(x => x.PropertyID.Equals(Id)).Select(x => x.ImageURL).Take(take).ToList();
+            }
+            else
+            {
+                return EasyFindPropertiesEntities.PropertyImage.Where(x => x.PropertyID.Equals(Id)).Select(x => x.ImageURL).ToList();
+            }
         }
 
         public string GetPrimaryImageURLByPropertyId(Guid Id)
