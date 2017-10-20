@@ -126,7 +126,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\20131218-2019-Punta-Cana-0233.jpg" />
     <Content Include="Content\ajax-loader-dark.gif" />
     <Content Include="Content\ajax-loader.gif" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -134,18 +133,12 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\facebook.svg" />
     <Content Include="Content\google-plus.svg" />
-    <Content Include="Content\grey-bg.jpg" />
-    <Content Include="Content\home-backgrounds_015621879_147.jpg" />
-    <Content Include="Content\Home-Interior-Garden-Room.jpg" />
     <Content Include="Content\instagram.svg" />
-    <Content Include="Content\interior_design_style_home_house_living_space_baden_75554_3840x2160.jpg" />
     <Content Include="Content\normalize.css" />
-    <Content Include="Content\redbg_test.jpg" />
     <Content Include="Content\safe-state.png" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\twitter.svg" />
     <Content Include="Content\user.svg" />
-    <Content Include="Content\x_spa_03_copy.jpg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Models\EasyFindProperties.Context.tt">
@@ -173,6 +166,7 @@
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-resource.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
+    <Content Include="App_Data\EasyFindProperties-2017-06-10.bak" />
     <EntityDeploy Include="Models\EasyFindProperties.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>EasyFindProperties.Designer.cs</LastGenOutput>
@@ -180,7 +174,6 @@
     <Content Include="Models\EasyFindProperties.edmx.diagram">
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Content>
-    <Content Include="App_Data\EasyFindProperties-2017-06-10.bak" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\GoogleMapJsScript.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
@@ -200,11 +193,11 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\PropertiesScript.js" />
     <Content Include="Scripts\propertyController.js" />
-    <Content Include="Uploads\IMAG0373.jpg" />
-    <Content Include="Uploads\IMAG0378.jpg" />
-    <Content Include="Uploads\IMAG0380.jpg" />
-    <Content Include="Uploads\IMAG0384.jpg" />
     <Content Include="AngularApp\Views\home.html" />
+    <Content Include="Uploads\01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg" />
+    <Content Include="Uploads\0e61817b-b70f-4361-b828-41c81dba700b.jpg" />
+    <Content Include="Uploads\5282d459-7492-431d-9eeb-4e7f6d622b9f.jpg" />
+    <Content Include="Uploads\eb75fc5d-9c87-42c8-96b4-f081f932caee.jpg" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -237,6 +230,36 @@
     <Compile Include="Models\AdType.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\aspnet_Applications.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_Membership.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_Paths.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_PersonalizationAllUsers.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_PersonalizationPerUser.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_Profile.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_Roles.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_SchemaVersions.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_Users.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\aspnet_WebEvent_Events.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Bill.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -261,7 +284,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Models\HomeDAO.cs" />
     <Compile Include="Models\IUnitOfWork.cs" />
     <Compile Include="Models\Meeting.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
@@ -275,8 +297,6 @@
     <Compile Include="Models\Owner.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\OwnerMetadata.cs" />
-    <Compile Include="Models\PropertiesDAO.cs" />
     <Compile Include="Models\Property.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -313,8 +333,8 @@
     <Compile Include="Models\Repositories\IPropertyRatingRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyRequisitionRepository.cs" />
-    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyTypeRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Repositories\ISubscriptionRepository.cs" />
     <Compile Include="Models\Repositories\ISubscriptionTypeRepository.cs" />
     <Compile Include="Models\Repositories\ITagsRepository.cs" />
@@ -328,8 +348,8 @@
     <Compile Include="Models\Repositories\PropertyRatingRepository.cs" />
     <Compile Include="Models\Repositories\PropertyRepository.cs" />
     <Compile Include="Models\Repositories\PropertyRequisitionRepository.cs" />
-    <Compile Include="Models\Repositories\Repository.cs" />
     <Compile Include="Models\Repositories\PropertyTypeRepository.cs" />
+    <Compile Include="Models\Repositories\Repository.cs" />
     <Compile Include="Models\Repositories\SubscriptionRepository.cs" />
     <Compile Include="Models\Repositories\SubscriptionTypeRepository.cs" />
     <Compile Include="Models\Repositories\TagsRepository.cs" />
@@ -339,6 +359,9 @@
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubscriptionType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Tags.cs">

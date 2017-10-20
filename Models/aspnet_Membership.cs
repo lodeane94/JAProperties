@@ -14,12 +14,6 @@ namespace SS.Models
     
     public partial class aspnet_Membership
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public aspnet_Membership()
-        {
-            this.COMPLAINTS = new HashSet<COMPLAINTS>();
-        }
-    
         public System.Guid ApplicationId { get; set; }
         public System.Guid UserId { get; set; }
         public string Password { get; set; }
@@ -44,7 +38,5 @@ namespace SS.Models
     
         public virtual aspnet_Applications aspnet_Applications { get; set; }
         public virtual aspnet_Users aspnet_Users { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMPLAINTS> COMPLAINTS { get; set; }
     }
 }

@@ -28,8 +28,8 @@ namespace SS.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string CellNum { get; set; }
-        public System.DateTime DateTCreated { get; set; }
         public string Email { get; set; }
+        public System.DateTime DateTCreated { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Bill> Bill { get; set; }

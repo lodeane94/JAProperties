@@ -13,6 +13,7 @@
     <script src="~/Scripts/jquery-2.1.4.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    @RenderSection("pageCss", false)
 </head>
 <body>
     <div id="modal-loading">
@@ -258,8 +259,10 @@
     <script src="~/Scripts/jquery.cookie.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places"></script>
     <script src="~/Scripts/GoogleMapJsScript.js"></script>
+    @RenderSection("pageScriptSrc", false)
     <script type="text/javascript">
         @RenderSection("pageScript",false)
     </script>
+    
 </body>
 </html>

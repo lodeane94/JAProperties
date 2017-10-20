@@ -21,9 +21,9 @@ namespace SS.Models
             this.Complaint = new HashSet<Complaint>();
             this.PropertyImage = new HashSet<PropertyImage>();
             this.PropertyRating = new HashSet<PropertyRating>();
+            this.PropertyRequisition = new HashSet<PropertyRequisition>();
             this.Tags = new HashSet<Tags>();
             this.Tennant = new HashSet<Tennant>();
-            this.PropertyRequisition = new HashSet<PropertyRequisition>();
         }
     
         public System.Guid ID { get; set; }
@@ -63,19 +63,19 @@ namespace SS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Complaint> Complaint { get; set; }
         public virtual Owner Owner { get; set; }
+        public virtual PropertyCategory PropertyCategory { get; set; }
         public virtual PropertyCondition PropertyCondition { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PropertyImage> PropertyImage { get; set; }
         public virtual PropertyPurpose PropertyPurpose { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PropertyRating> PropertyRating { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PropertyRequisition> PropertyRequisition { get; set; }
         public virtual PropertyType PropertyType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Tags> Tags { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Tennant> Tennant { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PropertyRequisition> PropertyRequisition { get; set; }
-        public virtual PropertyCategory PropertyCategory { get; set; }
     }
 }

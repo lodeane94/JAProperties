@@ -51,8 +51,10 @@ namespace SS.Controllers
         {
             FeaturedPropertiesSlideViewModel propertyInformation = null;
 
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            {
+          //  using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+          //  {
+                EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
+
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
                 propertyInformation = new FeaturedPropertiesSlideViewModel();
@@ -64,8 +66,10 @@ namespace SS.Controllers
                 propertyInformation.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(id);
                 IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
                 propertyInformation.averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
-            }
+
                 return View(propertyInformation);
+          //  }
+                
         }
 
         /// <summary>

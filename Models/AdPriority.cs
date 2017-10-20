@@ -23,11 +23,11 @@ namespace SS.Models
         public string ID { get; set; }
         public string Name { get; set; }
         public decimal Cost { get; set; }
+        public int Value { get; set; }
         public string Description { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> DateTModified { get; set; }
         public System.DateTime DateTCreated { get; set; }
-        public int Value { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Property> Property { get; set; }
