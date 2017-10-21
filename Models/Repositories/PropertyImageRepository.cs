@@ -18,7 +18,7 @@ namespace SS.Models.Repositories
 
         public IEnumerable<string> GetImageURLsByPropertyId(Guid Id,int take = 0)
         {
-            if (take.Equals(0))
+            if (!take.Equals(0))
             {
                 return EasyFindPropertiesEntities.PropertyImage.Where(x => x.PropertyID.Equals(Id)).Select(x => x.ImageURL).Take(take).ToList();
             }

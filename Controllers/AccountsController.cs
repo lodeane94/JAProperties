@@ -123,7 +123,7 @@ namespace SS.Controllers
 
                             errorModel.hasErrors = true;
                             errorModel.ErrorMessages = new List<string>();
-                            errorModel.ErrorMessages.Add(ex.Message);
+                            errorModel.ErrorMessages.Add("A error occurred while adding your property \n Please contact the system administrator");
 
                             return Json(errorModel);
                         }

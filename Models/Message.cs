@@ -16,7 +16,7 @@ namespace SS.Models
     {
         public System.Guid ID { get; set; }
         public System.Guid To { get; set; }
-        public System.Guid From { get; set; }
+        public string From { get; set; }
         public string Msg { get; set; }
         public System.DateTime DateTCreated { get; set; }
     }

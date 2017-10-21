@@ -42,7 +42,6 @@ namespace SS.Models
         public virtual DbSet<Complaint> Complaint { get; set; }
         public virtual DbSet<Meeting> Meeting { get; set; }
         public virtual DbSet<MeetingRequisition> MeetingRequisition { get; set; }
-        public virtual DbSet<Message> Message { get; set; }
         public virtual DbSet<Owner> Owner { get; set; }
         public virtual DbSet<Property> Property { get; set; }
         public virtual DbSet<PropertyCategory> PropertyCategory { get; set; }
@@ -58,5 +57,6 @@ namespace SS.Models
         public virtual DbSet<Tags> Tags { get; set; }
         public virtual DbSet<TagType> TagType { get; set; }
         public virtual DbSet<Tennant> Tennant { get; set; }
+        public virtual DbSet<Message> Message { get; set; }
     }
 }

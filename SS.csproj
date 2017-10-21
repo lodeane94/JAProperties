@@ -44,6 +44,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BotDetect, Version=4.2.0.0, Culture=neutral, PublicKeyToken=74616036388b765f, processorArchitecture=MSIL">
+      <HintPath>packages\Captcha.4.2.0\lib\net45\BotDetect.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BotDetect.Web.Mvc, Version=4.2.0.0, Culture=neutral, PublicKeyToken=74616036388b765f, processorArchitecture=MSIL">
+      <HintPath>packages\Captcha.4.2.0\lib\net45\BotDetect.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -406,7 +414,6 @@
     <Content Include="Views\Accounts\Registration_discard.cshtml" />
     <Content Include="Views\Shared\_OwnerInformationRegistration.cshtml" />
     <Content Include="Views\Shared\_RoomInformationRegistration.cshtml" />
-    <Content Include="Views\Shared\_ModelPropertyInformation.cshtml" />
     <Content Include="Views\Accounts\SignIn.cshtml" />
     <Content Include="Views\Shared\_ManagementLayout.cshtml" />
     <Content Include="Views\LandlordManagement\Feed.cshtml" />

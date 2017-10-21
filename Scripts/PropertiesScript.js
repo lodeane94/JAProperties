@@ -159,4 +159,52 @@ $(document).ready(function () {
         selectedLocation.division = $(this).find("option:selected").text();
     });
 
+    //scrolls to the bottom of the getProperty page when button is clicked
+    $('#request-property-proxy').click(function (event) {
+        event.preventDefault();
+        
+        $('html, body').animate({
+            scrollTop: $('#property-requisition').offset().top
+        }, 'fast');
+    });
+
+    //submits form that will request a property or send a message to the property owner
+    $('#requestPropertyBtn').click(function (event) {
+        event.preventDefault();
+
+        var isValid = validator.form();
+
+        if (isValid) {
+            loadingGifLocation = $('#requestPropertyBtn');
+            var formData = new FormData($('#requestPropertyForm')[0]);
+            $.ajax({
+                url: '/properties/requestProperty',
+                type: 'Post',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+                success: function (data) {
+                    if (data.hasErrors) {
+                        $.each(data.ErrorMessages, function (index, value) {
+                            addErrorMessage(value);
+                        });
+
+                        displayErrorMessages();
+
+                        $('html, body').animate({
+                            scrollTop: $('.error-container').offset().top
+                        }, 'fast');
+                    } else {
+                        sys.showModal('#propertyModal');
+                    }
+                },
+                error: function (data) { alert('Error encountered while uploading property. Contact Website Administrator'); },
+                complete: function () { $('#loading-gif').remove(); },
+            });
+        }
+        }
+    });
+
 });

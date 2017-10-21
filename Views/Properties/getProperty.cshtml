@@ -1,5 +1,7 @@
 ﻿@model SS.ViewModels.FeaturedPropertiesSlideViewModel
 @using SS.Core
+@using SS.Models
+@using BotDetect.Web.Mvc
 @{
     ViewBag.Title = "EasyFindProperties - " + "Properties being " + Model.property.AdType.Name + " in " + Model.property.Community + ", " + Model.property.Division + ", " + Model.property.Country;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,6 +10,7 @@
 @section pageCss
 {
     <link href="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.css" rel="stylesheet">
+    <link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl" rel="stylesheet" type="text/css" />
 }
 
 @section pageScriptSrc
@@ -20,11 +23,10 @@
     (function(){
     $.getScript('/Scripts/MainScript.js', function()
     {
-    setActiveNavigation('home');
-    });
+        setActiveNavigation('home');
+        $.getScript('/Scripts/PropertiesScript.js',function(){
 
-    $.getScript('/Scripts/PropertiesScript.js',function(){
-
+        });
     });
     })();
 }
@@ -46,19 +48,26 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="ctnr-info">
-                <a href="/" title="Get Directions"><strong>Located at @Model.property.StreetAddress, @Model.property.Community, @Model.property.Division, @Model.property.Country 
-                    <span class="glyphicon glyphicon-map-marker"></span></strong></a>
+                <a href="/" title="Get Directions">
+                    <strong>
+                        Located at @Model.property.StreetAddress, @Model.property.Community, @Model.property.Division, @Model.property.Country
+                        <span class="glyphicon glyphicon-map-marker"></span>
+                    </strong>
+                </a>
             </div>
         </div>
     </div>
     <div class="col-xs-6 image-selected-container">
         <div class="fotorama" data-nav="thumbs" data-allowfullscreen="true" data-width="100%">
-            <a href="~/Uploads/01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg">
-                <img src="~/Uploads/01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg" />
-            </a>
-            <a href="~/Uploads/0e61817b-b70f-4361-b828-41c81dba700b.jpg">
-                <img src="~/Uploads/0e61817b-b70f-4361-b828-41c81dba700b.jpg" />
-            </a>
+            @{
+                foreach (var propImageUrl in Model.propertyImageURLs)
+                {
+                    <a href="~/Uploads/" +propImageUrl>
+                        <img src="~/Uploads/01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg" />
+                    </a>
+                }
+
+            }
         </div>
     </div>
     <div class="col-xs-6">
@@ -69,9 +78,9 @@
             </ul>
             <ul class="property-ratings">
                 @if (Model.averageRating > 0)
-            {
-                for (int ratingCount = 1; ratingCount <= Model.averageRating; ratingCount++)
                 {
+                    for (int ratingCount = 1; ratingCount <= Model.averageRating; ratingCount++)
+                    {
                         <li><span class="glyphicon glyphicon-star"></span></li>
                     }
                 }
@@ -96,7 +105,7 @@
                 <ul>
                     <li><span class="glyphicon glyphicon-user"></span> <span class="content-info float-right">@Model.owner.FirstName @Model.owner.LastName </span></li>
                     <li><span class="glyphicon glyphicon-phone-alt"></span> <span class="content-info float-right">@Model.owner.CellNum</span></li>
-                    <li><button class="btn btn-block btn-accent">Request Property</button></li>
+                    <li><button id="request-property-proxy" class="btn btn-block btn-accent">Request Property</button></li>
                 </ul>
             </div>
         </div>
@@ -114,12 +123,107 @@
 <div class="row">&nbsp;</div>
 <div class="row">
     <div class="col-xs-6">
+
+    </div>
+    <div class="col-xs-6">
         <div class="ctnr-aside"><strong>Property's Key Features</strong></div>
         <div class="contact-info-content">
-            <div><strong>Total Room Amount : <span class="float-right">@Model.property.TotRooms</span></strong></div>
-            <div><strong>Total Bathroom Amount : <span class="float-right">@Model.property.TotAvailableBathroom</span></strong></div>
-            <div><strong>Property Area : <span class="float-right">@Model.property.Area</span></strong></div>
-            <div><strong>Occupancy : <span class="float-right">@Model.property.Occupancy</span></strong></div>
+            @{
+                if (Model.property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
+                {
+                    <div><strong>Total Room Amount : <span class="float-right">@Model.property.TotRooms</span></strong></div>
+                    <div><strong>Total Bathroom Amount : <span class="float-right">@Model.property.TotAvailableBathroom</span></strong></div>
+                    <div><strong>Occupancy : <span class="float-right">@Model.property.Occupancy</span></strong></div>
+                    <div><strong>Property Area : <span class="float-right">@Model.property.Area</span></strong></div>
+                }
+                else if (Model.property.CategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
+                {
+                    <div><strong>Property Area : <span class="float-right">@Model.property.Area</span></strong></div>
+                }
+                else
+                {
+                    <div><strong>Condition : <span class="float-right">@Model.property.PropertyCondition.Name</span></strong></div>
+                }
+                foreach (var tag in Model.tags)
+                {
+                    <div><strong>@tag : <span class="float-right">Yes</span></strong></div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div id="property-requisition" class="col-xs-7">
+        <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
+        <div class="contact-info-content">
+            @using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
+            {
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <input id="firstName" type="text" class="form-control" name="firstName" placeholder="First Name" required>
+                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <input id="lastName" type="text" class="form-control" name="lastName" placeholder="Last Name" required>
+                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group">
+                            <input id="email" type="text" class="form-control" name="email" placeholder="Email" required>
+                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-envelope"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group">
+                            <input id="cellNum" type="text" class="form-control" name="cellNum" placeholder="Contact Number" required>
+                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-phone"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <textarea id="msg" rows="5" class="form-control" name="msg" placeholder="Message"></textarea>
+                    </div>
+                </div>
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label>Contact Purpose :</label> &nbsp;
+                        <label class="radio-inline">@Html.RadioButton("contactPurpose", "message", true) Question <i class="glyphicon glyphicon-question-sign glyphicon-color"></i></label>
+                        <label class="radio-inline">@Html.RadioButton("contactPurpose", "requisition") Property Requisition <i class="glyphicon glyphicon-registration-mark glyphicon-color"></i></label>
+                    </div>
+                </div>
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        @{
+                            MvcCaptcha captcha = new MvcCaptcha("captcha");
+                            @Html.Captcha(captcha)
+                            <br/>
+                            @Html.TextBox("captchaCode")
+                        }
+                    </div>
+                </div>
+                @Html.Hidden("PropertyID", Model.property.ID)
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-md-offset-6 col-xs-5">
+                        <button id="requestPropertyBtn" type="submit" class="btn btn-block btn-accent">Submit</button>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

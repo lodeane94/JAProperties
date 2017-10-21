@@ -23,6 +23,7 @@ namespace SS.Models
         public Nullable<bool> IsAccepted { get; set; }
         public System.DateTime ExpiryDate { get; set; }
         public System.DateTime DateTCreated { get; set; }
+        public string Msg { get; set; }
     
         public virtual Property Property { get; set; }
     }

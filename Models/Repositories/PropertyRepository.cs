@@ -98,5 +98,10 @@ namespace SS.Models.Repositories
 
             return properties;
         }
+
+        public Owner GetPropertyOwnerByPropID(Guid Id)
+        {
+            return EasyFindPropertiesEntities.Property.Where(x => x.ID.Equals(Id)).Select(x => x.Owner).Single();
+        }
     }
 }

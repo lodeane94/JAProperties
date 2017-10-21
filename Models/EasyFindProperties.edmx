@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="EasyFindPropertiesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="EasyFindPropertiesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AdPriority">
           <Key>
             <PropertyRef Name="ID" />
@@ -224,7 +224,7 @@
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="To" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="From" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="From" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Msg" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
@@ -334,6 +334,7 @@
           <Property Name="IsAccepted" Type="bit" />
           <Property Name="ExpiryDate" Type="date" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="Msg" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="PropertyType">
           <Key>
@@ -1065,8 +1066,7 @@
             <End Role="Tennant" EntitySet="Tennant" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EasyFindPropertiesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1308,16 +1308,6 @@
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Meeting" Relationship="Self.fk_meeting_requestee_id" FromRole="MeetingRequisition" ToRole="Meeting" />
         </EntityType>
-        <EntityType Name="Message">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="To" Type="Guid" Nullable="false" />
-          <Property Name="From" Type="Guid" Nullable="false" />
-          <Property Name="Msg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
         <EntityType Name="Owner">
           <Key>
             <PropertyRef Name="ID" />
@@ -1451,6 +1441,7 @@
           <Property Name="ExpiryDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Property" Relationship="Self.fk_property_requisition_property_id" FromRole="PropertyRequisition" ToRole="Property" />
+          <Property Name="Msg" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PropertyType">
           <Key>
@@ -2008,7 +1999,6 @@
           <EntitySet Name="Complaint" EntityType="Self.Complaint" />
           <EntitySet Name="Meeting" EntityType="Self.Meeting" />
           <EntitySet Name="MeetingRequisition" EntityType="Self.MeetingRequisition" />
-          <EntitySet Name="Message" EntityType="Self.Message" />
           <EntitySet Name="Owner" EntityType="Self.Owner" />
           <EntitySet Name="Property" EntityType="Self.Property" />
           <EntitySet Name="PropertyCategory" EntityType="Self.PropertyCategory" />
@@ -2168,7 +2158,18 @@
             <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
             <End Role="aspnet_Users" EntitySet="aspnet_Users" />
           </AssociationSet>
+          <EntitySet Name="Message" EntityType="EasyFindPropertiesModel.Message" />
         </EntityContainer>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="To" Type="Guid" Nullable="false" />
+          <Property Name="From" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Msg" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2396,17 +2397,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Message">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Message">
-              <MappingFragment StoreEntitySet="Message">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="To" ColumnName="To" />
-                <ScalarProperty Name="From" ColumnName="From" />
-                <ScalarProperty Name="Msg" ColumnName="Msg" />
-                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Owner">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Owner">
               <MappingFragment StoreEntitySet="Owner">
@@ -2510,6 +2500,7 @@
           <EntitySetMapping Name="PropertyRequisition">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyRequisition">
               <MappingFragment StoreEntitySet="PropertyRequisition">
+                <ScalarProperty Name="Msg" ColumnName="Msg" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -2619,6 +2610,17 @@
               <ScalarProperty Name="UserId" ColumnName="UserId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Message">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Message">
+              <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Msg" ColumnName="Msg" />
+                <ScalarProperty Name="From" ColumnName="From" />
+                <ScalarProperty Name="To" ColumnName="To" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

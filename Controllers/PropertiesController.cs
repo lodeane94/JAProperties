@@ -1,4 +1,5 @@
-﻿using SS.Code;
+﻿using BotDetect.Web.Mvc;
+using SS.Code;
 using SS.Core;
 using SS.Models;
 using SS.ViewModels;
@@ -210,64 +211,71 @@ namespace SS.Controllers
         }
 
         /*
-         * makes requisition for the property that the user selected if they wanted to use the system
+         * makes requisition for the property that the user selected if they wanted to use the system*/
         
         [HttpPost]
-        public ActionResult RequestProperty(REQUISITIONS requisitionRequest, Guid propertyID)
+        [AllowAnonymous]
+        [CaptchaValidation("captchaCode", "captcha", "CAPTCHA code is incorrect")]
+        public JsonResult RequestProperty(PropertyRequisition request, String contactPurpose)
         {
+            ErrorModel errorModel = new ErrorModel();
+
             if (ModelState.IsValid)
             {
-                JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-                REQUISITION_PROPERTY_MAPPINGS requisitionMapping = new REQUISITION_PROPERTY_MAPPINGS();
-                //setting requisition mapping information
-                switch (PropertiesDAO.getPropertyType(propertyID))
-                {
-                    case PropertyConstants.PropertyType.accommodation:
-                        requisitionMapping.ID = Guid.NewGuid();
-                        requisitionMapping.ACCOMMODATION_ID = propertyID;
-                        break;
-                    case PropertyConstants.PropertyType.house:
-                        requisitionMapping.ID = Guid.NewGuid();
-                        requisitionMapping.HOUSE_ID = propertyID;
-                        break;
-                    case PropertyConstants.PropertyType.land:
-                        requisitionMapping.ID = Guid.NewGuid();
-                        requisitionMapping.LAND_ID = propertyID;
-                        break;
-                }
-                //setting requisition information
-                REQUISITIONS requisition = new REQUISITIONS()
-                {
-                    REQUISITION_PROPERTY_MAPPINGS = requisitionMapping,
-                    REQUISITION_ID = Guid.NewGuid(),
-                    FIRST_NAME = requisitionRequest.FIRST_NAME,
-                    LAST_NAME = requisitionRequest.LAST_NAME,
-                    EMAIL = requisitionRequest.EMAIL,
-                    CELL = requisitionRequest.CELL,
-                    ACCEPTED = requisitionRequest.ACCEPTED,
-                    GENDER = requisitionRequest.GENDER,
-                    R_DATE = DateTime.Now
-                };
-
-                // dbCtx.REQUISITION_PROPERTY_MAPPINGS.Add(requisitionMapping);
-                dbCtx.REQUISITIONS.Add(requisition);
-                dbCtx.SaveChanges();
-
                 try
                 {
-                    //dbCtx.sp_make_requisition(propertyID, requisitions.FIRST_NAME, requisitions.LAST_NAME, requisitions.GENDER, requisitions.EMAIL, requisitions.CELL);
-                    // dbCtx.SaveChanges();
-                    //TODO: after requisition of property, send mail to property owner 
-                    //alerting them of the requisition
+                    using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                    {
+                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                        if (contactPurpose.Equals("requisition"))
+                        {
+                            PropertyRequisition requisition = new PropertyRequisition()
+                            {
+                                ID = Guid.NewGuid(),
+                                PropertyID = request.PropertyID,
+                                FirstName = request.FirstName,
+                                LastName = request.LastName,
+                                Email = request.Email,
+                                CellNum = request.CellNum,
+                                IsAccepted = false,
+                                DateTCreated = DateTime.Now
+                            };
+
+                            unitOfWork.PropertyRequisition.Add(requisition);
+                            unitOfWork.save();
+                        }
+                        else
+                        {
+                            String contact = "Email Address : " + request.Email + "\n" + "Contact Number : " + request.CellNum;
+                            Message message = new Message()
+                            {
+                                ID = Guid.NewGuid(),
+                                To = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).ID,
+                                From = request.FirstName + " " + request.LastName,
+                                Msg = contact + "\n" + request.Msg,
+                                DateTCreated = DateTime.Now
+                            };
+                        }
+                    }
                 }
-                catch (Exception ex) { Session["isRequisitionSent"] = false; }
-
-
-                Session["isRequisitionSent"] = true;
+                catch (Exception ex)
+                {
+                    errorModel.hasErrors = true;
+                    errorModel.ErrorMessages = new List<string>();
+                    errorModel.ErrorMessages.Add("A error occurred while adding your property \n Please contact the system administrator");
+                }
+            }
+            else
+            {
+                errorModel.hasErrors = true;
+                if(errorModel.ErrorMessages == null) errorModel.ErrorMessages = new List<string>();
+                errorModel.ErrorMessages.Add("A error occurred while adding your property \n Please contact the system administrator");
+                MvcCaptcha.ResetCaptcha("captcha");
             }
 
-            return RedirectToAction("Home", "Home");
-        }
+            return Json(errorModel);
+        }/*
         //sends mail
         public bool sendMail(string emailTo, string body, string subject)
         {

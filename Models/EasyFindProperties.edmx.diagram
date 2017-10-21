@@ -22,7 +22,6 @@
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Complaint" Width="1.5" PointX="6" PointY="17.5" IsExpanded="true" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Meeting" Width="1.5" PointX="6" PointY="13.625" IsExpanded="true" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.MeetingRequisition" Width="1.5" PointX="3.75" PointY="13.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="EasyFindPropertiesModel.Message" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Owner" Width="1.5" PointX="0.75" PointY="17.5" IsExpanded="true" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Property" Width="1.5" PointX="9" PointY="14.5" IsExpanded="true" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyCategory" Width="1.5" PointX="6.75" PointY="25.875" IsExpanded="true" />
@@ -74,6 +73,7 @@
         <AssociationConnector Association="EasyFindPropertiesModel.fk_subscription_type_code" ManuallyRouted="false" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_tags_type_id" ManuallyRouted="false" />
         <AssociationConnector Association="EasyFindPropertiesModel.aspnet_UsersInRoles" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Message" Width="1.5" PointX="5.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
