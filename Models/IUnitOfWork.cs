@@ -24,6 +24,7 @@ namespace SS.Models
         ITennantRepository Tennant { get; }
         IOwnerRepository Owner { get; }
         ITagsRepository Tags { get; }
+        IMessageRepository Message { get; }
         int save();
     }
 }

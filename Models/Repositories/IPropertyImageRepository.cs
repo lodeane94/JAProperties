@@ -11,5 +11,6 @@ namespace SS.Models.Repositories
         IEnumerable<String> GetImageURLsByPropertyId(Guid Id, int take);
         String GetPrimaryImageURLByPropertyId(Guid Id);
         String GetImageURLById(Guid Id);
+        IEnumerable<PropertyImage> GetAllPrimaryPropertyImageByOwnerId(Guid Id);
     }
 }

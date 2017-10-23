@@ -21,12 +21,17 @@ namespace SS.Controllers
 
         public ActionResult getProperties(PropertySearchViewModel model)
         {
-            short take = 16;
+            model.take = 1;
+            model.PgNo = model.PgNo > 0 ? model.PgNo - 1 : 0;//this is done to since page number should start at 0
 
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
             IEnumerable<Property> filteredProperties = null;
             IEnumerable<Property> searchTermProperties = null;
             IEnumerable<Property> properties = null;
+
+            IEnumerable<Property> filteredPropertiesCount = null;
+            IEnumerable<Property> searchTermPropertiesCount = null;
+            int propertiesCount = 0;
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
@@ -35,15 +40,22 @@ namespace SS.Controllers
                 List<Core.Filter> filters = createFilterList(model, unitOfWork);
                 var deleg = ExpressionBuilder.GetExpression<Property>(filters);
 
-                filteredProperties = unitOfWork.Property.FindProperties(deleg, take, model.PgNo);
-                searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, take, model.PgNo);
+                filteredProperties = unitOfWork.Property.FindProperties(deleg, model.take, model.PgNo);
+                searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.take, model.PgNo);
                 properties = filteredProperties.Concat(searchTermProperties).Distinct();
+                //TODO find a more efficient way to get count of total properties
+                filteredPropertiesCount = unitOfWork.Property.FindProperties(deleg);
+                searchTermPropertiesCount = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm);
+                propertiesCount = filteredPropertiesCount.Concat(searchTermPropertiesCount).Distinct().Count();
 
                 featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(properties, unitOfWork, "Properties");
             }
 
             ViewBag.activeNavigation = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
             ViewBag.searchViewModel = model;
+            ViewBag.totalItemsFound = propertiesCount;
+            ViewBag.fetchAmount = model.take;
+            ViewBag.pageNumber = model.PgNo + 1;
 
             return View(featuredPropertiesSlideViewModelList);
         }
@@ -52,25 +64,26 @@ namespace SS.Controllers
         {
             FeaturedPropertiesSlideViewModel propertyInformation = null;
 
-          //  using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-          //  {
-                EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
+            //  using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            //  {
+            EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
 
-                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                propertyInformation = new FeaturedPropertiesSlideViewModel();
+            propertyInformation = new FeaturedPropertiesSlideViewModel();
 
-                propertyInformation.property = unitOfWork.Property.Get(id);
-                propertyInformation.owner = unitOfWork.Owner.Get(propertyInformation.property.OwnerID);
-                propertyInformation.tags = unitOfWork.Tags.GetTagNamesByPropertyId(id);
-                propertyInformation.propertyImageURLs = unitOfWork.PropertyImage.GetImageURLsByPropertyId(id, 0);
-                propertyInformation.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(id);
-                IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
-                propertyInformation.averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
+            propertyInformation.property = unitOfWork.Property.Get(id);
+            propertyInformation.owner = unitOfWork.Owner.Get(propertyInformation.property.OwnerID);
+            propertyInformation.tags = unitOfWork.Tags.GetTagNamesByPropertyId(id);
+            propertyInformation.propertyImageURLs = unitOfWork.PropertyImage.GetImageURLsByPropertyId(id, 0);
+            propertyInformation.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(id);
 
-                return View(propertyInformation);
-          //  }
-                
+            propertyInformation.propRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
+            propertyInformation.averageRating = propertyInformation.propRatings.Count() > 0 ? (int)propertyInformation.propRatings.Select(x => x.Ratings).Average() : 0;
+
+            return View(propertyInformation);
+            //  }
+
         }
 
         /// <summary>
@@ -212,14 +225,19 @@ namespace SS.Controllers
 
         /*
          * makes requisition for the property that the user selected if they wanted to use the system*/
-        
+
+        /// <summary>
+        /// Allows viewers to request the property or ask a question about the property
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="contactPurpose"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [CaptchaValidation("captchaCode", "captcha", "CAPTCHA code is incorrect")]
         public JsonResult RequestProperty(PropertyRequisition request, String contactPurpose)
         {
             ErrorModel errorModel = new ErrorModel();
-
             if (ModelState.IsValid)
             {
                 try
@@ -238,12 +256,13 @@ namespace SS.Controllers
                                 LastName = request.LastName,
                                 Email = request.Email,
                                 CellNum = request.CellNum,
+                                Msg = request.Msg,
                                 IsAccepted = false,
+                                ExpiryDate = DateTime.Now.AddDays(7),//requisition should last for a week
                                 DateTCreated = DateTime.Now
                             };
 
                             unitOfWork.PropertyRequisition.Add(requisition);
-                            unitOfWork.save();
                         }
                         else
                         {
@@ -256,24 +275,24 @@ namespace SS.Controllers
                                 Msg = contact + "\n" + request.Msg,
                                 DateTCreated = DateTime.Now
                             };
+
+                            unitOfWork.Message.Add(message);
                         }
+
+                        unitOfWork.save();
                     }
                 }
                 catch (Exception ex)
                 {
-                    errorModel.hasErrors = true;
-                    errorModel.ErrorMessages = new List<string>();
-                    errorModel.ErrorMessages.Add("A error occurred while adding your property \n Please contact the system administrator");
+                    errorModel = MiscellaneousHelper.PopulateErrorModel(ModelState);
                 }
             }
             else
             {
-                errorModel.hasErrors = true;
-                if(errorModel.ErrorMessages == null) errorModel.ErrorMessages = new List<string>();
-                errorModel.ErrorMessages.Add("A error occurred while adding your property \n Please contact the system administrator");
-                MvcCaptcha.ResetCaptcha("captcha");
+                errorModel = MiscellaneousHelper.PopulateErrorModel(ModelState);
             }
 
+            MvcCaptcha.ResetCaptcha("captcha");//TODO find a way to reload captcha image after returning the response
             return Json(errorModel);
         }/*
         //sends mail

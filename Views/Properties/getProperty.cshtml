@@ -1,7 +1,6 @@
 ﻿@model SS.ViewModels.FeaturedPropertiesSlideViewModel
 @using SS.Core
 @using SS.Models
-@using BotDetect.Web.Mvc
 @{
     ViewBag.Title = "EasyFindProperties - " + "Properties being " + Model.property.AdType.Name + " in " + Model.property.Community + ", " + Model.property.Division + ", " + Model.property.Country;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -23,13 +22,14 @@
     (function(){
     $.getScript('/Scripts/MainScript.js', function()
     {
-        setActiveNavigation('home');
-        $.getScript('/Scripts/PropertiesScript.js',function(){
-
-        });
+    setActiveNavigation('home');
+    $.getScript('/Scripts/PropertiesScript.js',function(){
+    });
     });
     })();
 }
+
+@Html.Partial("_ModalPropertyRequisitionSuccess")
 
 <div class="row">
     <div class="col-xs-12">
@@ -58,12 +58,12 @@
         </div>
     </div>
     <div class="col-xs-6 image-selected-container">
-        <div class="fotorama" data-nav="thumbs" data-allowfullscreen="true" data-width="100%">
+        <div class="fotorama" data-nav="thumbs" data-allowfullscreen="true" data-width="100%" data-height="60%">
             @{
                 foreach (var propImageUrl in Model.propertyImageURLs)
                 {
-                    <a href="~/Uploads/" +propImageUrl>
-                        <img src="~/Uploads/01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg" />
+                    <a href="~/Uploads/@propImageUrl">
+                        <img src="~/Uploads/@propImageUrl" />
                     </a>
                 }
 
@@ -77,21 +77,23 @@
                 <li><strong>Security Deposit: <span class="content-heading float-right">$@Model.property.SecurityDeposit</span></strong></li>
             </ul>
             <ul class="property-ratings">
-                @if (Model.averageRating > 0)
-                {
-                    for (int ratingCount = 1; ratingCount <= Model.averageRating; ratingCount++)
+                <a href="#" title="property ratings">
+                    @if (Model.averageRating > 0)
                     {
-                        <li><span class="glyphicon glyphicon-star"></span></li>
+                        for (int ratingCount = 1; ratingCount <= Model.averageRating; ratingCount++)
+                        {
+                            <li><span class="glyphicon glyphicon-star"></span></li>
+                        }
                     }
-                }
-                else
-                {
-                    int maxRating = 5;
-                    for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                    else
                     {
-                        <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                        int maxRating = 5;
+                        for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                        {
+                            <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                        }
                     }
-                }
+                </a>
                 <br />
                 <br />
                 <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
@@ -105,7 +107,7 @@
                 <ul>
                     <li><span class="glyphicon glyphicon-user"></span> <span class="content-info float-right">@Model.owner.FirstName @Model.owner.LastName </span></li>
                     <li><span class="glyphicon glyphicon-phone-alt"></span> <span class="content-info float-right">@Model.owner.CellNum</span></li>
-                    <li><button id="request-property-proxy" class="btn btn-block btn-accent">Request Property</button></li>
+                    <li><button id="requestPropertyProxyBtn" class="btn btn-block btn-accent">Request Property</button></li>
                 </ul>
             </div>
         </div>
@@ -152,9 +154,55 @@
         </div>
     </div>
 </div>
+<hr />
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div id="property-reviews" class="col-xs-12">
+        <div class="ctnr-info"><strong>Property Reviews</strong></div>
+        @{
+            if (Model.propRatings != null && Model.propRatings.Count() > 0)
+            {
+                foreach (var review in Model.propRatings)
+                {
+                    <div class="row">&nbsp;</div>
+                    for (int i = 1; i < 5; i++)
+                    {
+                        <div class="row">&nbsp;</div>
+                        <ul class="property-ratings">
+                            <a href="#" title="@review.Ratings out of 5 stars">
+                                @for (int ratingCount = 1; ratingCount <= review.Ratings; ratingCount++)
+                                {
+                                    <li><span class="glyphicon glyphicon-star"></span></li>
+                                }
+                            </a>
+                            <li><span class="ctnr-info" style="font-size:13px;"><em>By @review.CritqueBy</em></span></li>
+                            <li><span class="ctnr-info" style="font-size:13px;"><em>On @review.DateTCreated.ToShortDateString()</em></span></li>
+                        </ul>
+                        <div class="row">&nbsp;</div>
+                        <div class="contact-info-container" style="width:100%">
+                            <div class="contact-info-content">@review.Comments property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere</div>
+                        </div>
+                        <div class="row">&nbsp;</div>
+                    }
+                    <div class="row">&nbsp;</div>
+                }
+            }
+            else
+            {
+                <div class="row">&nbsp;</div>
+                <div class="contact-info-container" style="width:100%">
+                    <center>
+                        <div class="contact-info-header ctnr-info">Property has not yet been reviewed</div>
+                    </center>
+                </div>
+            }
+        }
+    </div>
+</div>
 <div class="row">&nbsp;</div>
 <div class="row">
     <div id="property-requisition" class="col-xs-7">
+        <div class="row"><div style="display:none;" class="col-xs-12 error-container"></div></div>
         <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
         <div class="contact-info-content">
             @using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
@@ -207,19 +255,16 @@
                 </div>
                 <div class="row">&nbsp;</div>
                 <div class="row">
-                    <div class="col-xs-6">
-                        @{
-                            MvcCaptcha captcha = new MvcCaptcha("captcha");
-                            @Html.Captcha(captcha)
-                            <br/>
-                            @Html.TextBox("captchaCode")
-                        }
+                    <div class="col-xs-12">
+                        <div id="mvcCaptcha">
+                            @Html.Partial("_PartialMvcCaptcha")
+                        </div>
                     </div>
                 </div>
                 @Html.Hidden("PropertyID", Model.property.ID)
                 <div class="row">&nbsp;</div>
                 <div class="row">
-                    <div class="col-md-offset-6 col-xs-5">
+                    <div class="col-xs-4 requestPropertySec">
                         <button id="requestPropertyBtn" type="submit" class="btn btn-block btn-accent">Submit</button>
                     </div>
                 </div>

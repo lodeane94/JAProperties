@@ -56,5 +56,6 @@ namespace SS.ViewModels
             set { chkLeasedProperty = value; }
         }
         public int PgNo { get; set; }
+        public int take { get; set; }
     }
 }

@@ -206,7 +206,7 @@ namespace SS.Core
             {
                 slideTakeCount++;
 
-                IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(property.ID);
+                IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
 
                 featuredPropertiesSlideViewModel = new FeaturedPropertiesSlideViewModel()
                 {

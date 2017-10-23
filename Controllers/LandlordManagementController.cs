@@ -11,6 +11,7 @@ using System.Web.Script.Serialization;
 using System.Collections;
 using Newtonsoft.Json;
 using static SS.Code.PropertyConstants.PropertyType;
+using SS.Core;
 
 namespace SS.Controllers
 {
@@ -23,24 +24,24 @@ namespace SS.Controllers
             return View();
         }
         //loads dashboard page
-        /*[Authorize]
+        [Authorize]
         public ActionResult Dashboard()
         {
             try
             {
-                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
                     if (HttpContext.User.Identity.Name != null)
                     {
                         /*
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
-                         * so that it may be used if a new property is being added
+                         * so that it may be used if a new property is being added*/
                          
-                        var landlordID = dbCtx.LANDLORDS.Where(l => l.USERNAME == HttpContext.User.Identity.Name)
-                                                        .Select(l => l.ID).Single();
-                        Session["landlord_id"] = landlordID;
+                        var ownerId = dbCtx.Owner.Where(x => x.Email == HttpContext.User.Identity.Name)
+                                                        .Select(x => x.ID).Single();
+                        Session["ownerId"] = ownerId;
                         //isAdditionalProperty is a session variable that is used to detect whenever an additional property is being added
-                        Session["isAdditionalProperty"] = true;
+                        //Session["isAdditionalProperty"] = true;
                         /*
                          * setting the viewbags in order to load contents specific to users based on the different properties
                          * they have
@@ -51,7 +52,7 @@ namespace SS.Controllers
 
                         ViewBag.hasAccommodation = dbCtx.ACCOMMODATIONS.Where(a => a.OWNER == landlordID).Count();
                         ViewBag.hasHouse = dbCtx.HOUSE.Where(a => a.OWNER == landlordID).Count();
-                        ViewBag.hasLand = dbCtx.LAND.Where(a => a.OWNER == landlordID).Count();
+                        ViewBag.hasLand = dbCtx.LAND.Where(a => a.OWNER == landlordID).Count();*/
                     }
                 }
             }
@@ -60,7 +61,7 @@ namespace SS.Controllers
 
             return View();
         }
-
+        /*
         [HttpPost]
         [Authorize]
         public ActionResult AcceptRequest(Guid reqID, RequisitionInformation requestInfo)
@@ -254,90 +255,46 @@ namespace SS.Controllers
             smtp.Send(mail);
 
             return true;
-        }
+        }*/
         //returns all properties owned by the current user that is signed in in json format
         [Authorize]
         public JsonResult getAllPropertyImages()
         {
-            List<IEnumerable> pInfo = new List<IEnumerable>();
+            ErrorModel errorModel = new ErrorModel();
+
+            IEnumerable<PropertyImage> propertyImage;
+            List<IEnumerable> pImageInfo = new List<IEnumerable>();
             try
             {
-                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
                     //checking if the landlord id was saved in the session
-                    if ((Guid)Session["landlord_id"] != null)
+                    if ((Guid)Session["ownerId"] != null)
                     {
-                        var landlordID = (Guid)Session["landlord_id"];
-                        /*
-                         * using the property counts to detect the particular properties
-                         * owned by the current user that is signed in
-                         
-                        var allAccommodationOwnedCount = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
-                                                .Select(a => a.ACCOMMODATIONS.Select(x => x.ID).Count());
+                        var ownerId = (Guid)Session["ownerId"];
+                        propertyImage = unitOfWork.PropertyImage.GetAllPrimaryPropertyImageByOwnerId(ownerId);
 
-                        var allHouseOwnedCount = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
-                                                        .Select(a => a.HOUSE.Select(x => x.ID).Count());
-
-                        var allLandOwnedCount = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
-                                                        .Select(a => a.LAND.Select(x => x.ID).Count());
-
-                        if (allAccommodationOwnedCount.Select(x => x.ToString()).Single().ToString() != "0")
+                        foreach (var image in propertyImage)
                         {
-                            var allAccommodationOwned = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
-                                                        .Select(a => a.ACCOMMODATIONS.Select(i => new { i.ID, i.IMAGE_URL })).SelectMany(x => x);
-
-                            foreach (var property in allAccommodationOwned)
-                            {
-                                /*adding properties to dictionary to display image to the user
-                                Dictionary<String, String> properties = new Dictionary<string, string>();
-                                properties.Add("ID", property.ID.ToString());
-                                properties.Add("ImageURL", property.IMAGE_URL);
-                                //JsonConvert.SerializeObject(properties)
-                                pInfo.Add(properties);
-                            }
-                        }
-
-                        if (allHouseOwnedCount.Select(x => x.ToString()).Single().ToString() != "0")
-                        {
-                            var allHouseOwned = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
-                                                        .Select(a => a.HOUSE.Select(i => new { i.ID, i.IMAGE_URL })).SelectMany(x => x);
-
-                            foreach (var property in allHouseOwned)
-                            {
-                                /*adding properties to dictionary to display image to the user
-                                Dictionary<String, String> properties = new Dictionary<string, string>();
-                                properties.Add("ID", property.ID.ToString());
-                                properties.Add("ImageURL", property.IMAGE_URL);
-
-                                pInfo.Add(properties);
-                            }
-                        }
-
-                        if (allLandOwnedCount.Select(x => x.ToString()).Single().ToString() != "0")
-                        {
-                            var allLandOwned = dbCtx.LANDLORDS.Where(a => a.ID == landlordID)
-                                                        .Select(a => a.LAND.Select(i => new { i.ID, i.IMAGE_URL })).SelectMany(x => x);
-
-                            foreach (var property in allLandOwned)
-                            {
-                                /*adding properties to dictionary to display image to the user
-                                Dictionary<String, String> properties = new Dictionary<string, string>();
-                                properties.Add("ID", property.ID.ToString());
-                                properties.Add("ImageURL", property.IMAGE_URL);
-
-                                pInfo.Add(properties);
-                            }
-                        }
+                            //adding properties to dictionary to display image to the user
+                            Dictionary<String, String> imageInfo = new Dictionary<string, string>();
+                            imageInfo.Add("propertyID", image.PropertyID.ToString());
+                            imageInfo.Add("imageURL", image.ImageURL);
+                            pImageInfo.Add(imageInfo);
+                        }     
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.Write("There has been an error retrieving  property images" + ex.Message);
+                errorModel = MiscellaneousHelper.PopulateErrorModel(null);
+
+                return Json(errorModel, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(pInfo, JsonRequestBehavior.AllowGet);
-        }
+            return Json(pImageInfo, JsonRequestBehavior.AllowGet);
+        }/*
         //returns latest 5 messages for a specific user
         [Authorize]
         public JsonResult getLatestMessages()
@@ -726,6 +683,6 @@ namespace SS.Controllers
 
     }
 
-}
+                }
 
 

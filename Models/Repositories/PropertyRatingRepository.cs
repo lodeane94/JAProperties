@@ -16,7 +16,7 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public IEnumerable<int> GetPropertyRatingsByPropertyId(Guid Id)
+        public IEnumerable<int> GetPropertyRatingsCountByPropertyId(Guid Id)
         {
             return EasyFindPropertiesEntities.PropertyRating.Where(x => x.PropertyID.Equals(Id)).Select(x => x.Ratings).ToList();
         }
@@ -24,6 +24,11 @@ namespace SS.Models.Repositories
         public IEnumerable<String> GetPropertyCommentsByPropertyId(Guid Id)
         {
             return EasyFindPropertiesEntities.PropertyRating.Where(x => x.PropertyID.Equals(Id)).Select(x => x.Comments).ToList();
+        }
+
+        public IEnumerable<PropertyRating> GetPropertyRatingsByPropertyId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.PropertyRating.Where(x => x.PropertyID.Equals(Id)).ToList();
         }
     }
 }

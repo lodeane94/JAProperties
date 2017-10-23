@@ -72,6 +72,72 @@ function populatePropertyType() {
     });
 }
 
+//displays previous and next signs depending on the number of properties returned
+$(function () {
+    var noOfPages = $('#noOfPages').val();
+    var currentPageNumber = $('#pgNo').val();
+    //front of list show only forward button
+    if (currentPageNumber == 1 && noOfPages - 1 > 0) {
+        $('.next-page').show();
+    }
+    //end of list show only back button
+    if (currentPageNumber == noOfPages && noOfPages - 1 > 0) {
+        $('.previous-page').show();
+    }
+    //somewhere within the list show both back and forward button
+    if (currentPageNumber != 1 && currentPageNumber != noOfPages && noOfPages - 1 > 0) {
+        $('.next-page').show();
+        $('.previous-page').show();
+    }
+
+    //properties pagination next 
+    $('.next-page').click(function (event) {
+        event.preventDefault();
+
+        var redirectionURL = '';
+        var queryStr = $('#queryString').val();
+        queryStr = queryStr.replace(/&pgNo=[0-9]/g,'');
+        var currentPageNumber = parseInt($('#pgNo').val());        
+
+        redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber + 1);
+        window.location = redirectionURL;
+    });
+
+    //properties pagination previous 
+    $('.previous-page').click(function (event) {
+        event.preventDefault();
+
+        var redirectionURL = '';
+        var queryStr = $('#queryString').val();
+        queryStr = queryStr.replace(/&pgNo=[0-9]/g, '');
+        var currentPageNumber = parseInt($('#pgNo').val());
+
+        redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber - 1);
+        window.location = redirectionURL;
+    });
+
+    //properties pagination jump to
+    $('.pageNumber').click(function (event) {
+        event.preventDefault();
+
+        var redirectionURL = '';
+        var queryStr = $('#queryString').val();
+        queryStr = queryStr.replace(/&pgNo=[0-9]/g, '');
+        redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + $(this).text();
+        window.location = redirectionURL;
+    });
+
+    //sets the current page that the user is on
+    var currentPageNumber = $('#pgNo').val();
+
+    $('.pageNumber').each(function (index, val) {
+        if ($(this).text() == currentPageNumber) {
+            $(this).parent().attr('class', 'active');
+        }
+    });
+
+});
+
 $(document).ready(function () {
     postBackInfo = JSON.parse($('#_postBackInformation').val());//information posted to the server for search
     if (postBackInfo != null) {
@@ -160,28 +226,28 @@ $(document).ready(function () {
     });
 
     //scrolls to the bottom of the getProperty page when button is clicked
-    $('#request-property-proxy').click(function (event) {
+    $('#requestPropertyProxyBtn').click(function (event) {
         event.preventDefault();
         
         $('html, body').animate({
-            scrollTop: $('#property-requisition').offset().top
+            scrollTop: $('#property-reviews').offset().top
         }, 'fast');
     });
 
     //submits form that will request a property or send a message to the property owner
     $('#requestPropertyBtn').click(function (event) {
         event.preventDefault();
-
+        
+        var validator = $('#requestPropertyForm').validate({ errorPlacement: function (error, element) { } });
         var isValid = validator.form();
 
         if (isValid) {
-            loadingGifLocation = $('#requestPropertyBtn');
+            loadingGifLocation = $('.requestPropertySec');
             var formData = new FormData($('#requestPropertyForm')[0]);
             $.ajax({
                 url: '/properties/requestProperty',
                 type: 'Post',
                 data: formData,
-                cache: false,
                 contentType: false,
                 processData: false,
                 beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
@@ -190,21 +256,23 @@ $(document).ready(function () {
                         $.each(data.ErrorMessages, function (index, value) {
                             addErrorMessage(value);
                         });
-
                         displayErrorMessages();
 
-                        $('html, body').animate({
-                            scrollTop: $('.error-container').offset().top
-                        }, 'fast');
+                        $('#mvcCaptcha').load('/servicer/GetMvcCaptchaView');//reloads captcha image if error occurred
                     } else {
-                        sys.showModal('#propertyModal');
+                        sys.showModal('#propertyRequisitionModal');
+
+                        $('html, body').animate({
+                            scrollTop: $('#top-header').offset().top
+                        }, 'fast');
                     }
                 },
-                error: function (data) { alert('Error encountered while uploading property. Contact Website Administrator'); },
+                error: function (data) {
+                    $('#mvcCaptcha').load('/servicer/GetMvcCaptchaView');//reloads captcha image if error occurred
+                    alert('Error encountered while uploading property. Contact Website Administrator');
+                },
                 complete: function () { $('#loading-gif').remove(); },
             });
         }
-        }
     });
-
 });

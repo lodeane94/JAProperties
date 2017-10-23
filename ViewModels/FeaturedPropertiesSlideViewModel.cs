@@ -13,6 +13,7 @@ namespace SS.ViewModels
         public IEnumerable<String> tags { get; set; }
         public IEnumerable<String> propertyImageURLs { get; set; }
         public String propertyPrimaryImageURL { get; set; }
+        public IEnumerable<PropertyRating> propRatings { get; set; }
         public int averageRating { get; set; }
     }
 }

@@ -22,19 +22,17 @@ $(document).ready(function () {
     /*
     */
     (function () {
-        var hasAccommodation = $('#hasAccommodation').val();
-        var hasHouse = $('#hasHouse').val();
-        var hasLand = $('#hasLand').val();
-
         $.ajax({
             url: '/Landlordmanagement/getAllPropertyImages',
             type: 'GET',
             success: function (data) {
-                if (!$.isEmptyObject(data)) {
+                if (!$.isEmptyObject(data) && !data.hasErrors) {
                     $.each(data, function (index, value) {
-                        $('#rooms-collection')
-                            .append('<a class="property-image" href="' + value.ID + '"><img title="click to manage property" id="' + value.ID + '" src="/Uploads/' + value.ImageURL + '"/></a>');
+                       $('#rooms-collection')
+                            .append('<a class="property-image" href="' + value.propertyID + '"><img title="click to manage property" id="' + value.propertyID + '" src="/Uploads/' + value.imageURL + '"/></a>');
                     });
+                } else {
+                    alert('An unexpected error occurred!, Contact system administrator');
                 }
             },
             beforeSend: function () {
@@ -45,7 +43,7 @@ $(document).ready(function () {
             }
 
         });
-
+        /*
         if (hasAccommodation != 0) {
             $.ajax({
                 url: '/Landlordmanagement/getRequisitions',
@@ -123,7 +121,7 @@ $(document).ready(function () {
                 }
             });
         }
-
+        */
     })();
 
     //generates modal to compose a new message
@@ -372,7 +370,7 @@ $(document).ready(function () {
 
         $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
 
-        $('#action-body').html('<table id="properties"><tr><td>Select Property Type</td><td><select class="form-control" id="property-type"><option disabled selected>Property Type</option><option value="room">Room</option><option value="house">House</option><option value="land">Land</option></select></td><td><img id="loader" style="display:none;width:50px;height:50px" src="/content/ajax-loader-dark.gif"/></td></tr></table><div id="property-registration-container">');
+        $('#action-body').load('/servicer/GetAdvertisePropertyView');
     });
     //sends acceptance mail to requestee 
     $(document.body).on('click', '.btnAcceptRequest', function (event) {

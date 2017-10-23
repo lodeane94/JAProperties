@@ -149,13 +149,17 @@ function displayErrorMessages() {
 
 //adds error messages to the errMessages Array
 function addErrorMessage(msg) {
-    
     //insert error message if it is not already in the array
     if (errMessages.indexOf(msg) == -1) {
         errMessages.push(msg);
     }
+}
 
-  
+//displays registration confirmation message for 10s
+function displayFadedAnnouncment() {
+    $('#fadedAnnouncment').fadeIn('slow', function () {
+        $(this).fadeOut(20000);
+    })
 }
 
 //navigates browser to the homepage of the application

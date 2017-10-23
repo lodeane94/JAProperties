@@ -223,6 +223,7 @@
     <Compile Include="Core\LandModel.cs" />
     <Compile Include="Core\MailModel.cs" />
     <Compile Include="Core\Messages.cs" />
+    <Compile Include="Core\MiscellaneousHelper.cs" />
     <Compile Include="Core\OwnerModel.cs" />
     <Compile Include="Core\PropertiesInformation.cs" />
     <Compile Include="Core\PropertyConstants.cs" />
@@ -333,6 +334,7 @@
     <Compile Include="Models\Repositories\AdTypeRepository.cs" />
     <Compile Include="Models\Repositories\IAdPriorityRepository.cs" />
     <Compile Include="Models\Repositories\IAdTypeRepository.cs" />
+    <Compile Include="Models\Repositories\IMessageRepository.cs" />
     <Compile Include="Models\Repositories\IOwnerRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyCategoryRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyConditionRepository.cs" />
@@ -348,6 +350,7 @@
     <Compile Include="Models\Repositories\ITagsRepository.cs" />
     <Compile Include="Models\Repositories\ITagTypeRepository.cs" />
     <Compile Include="Models\Repositories\ITennantRepository.cs" />
+    <Compile Include="Models\Repositories\MessageRepository.cs" />
     <Compile Include="Models\Repositories\OwnerRepository.cs" />
     <Compile Include="Models\Repositories\PropertyCategoryRepository.cs" />
     <Compile Include="Models\Repositories\PropertyConditionRepository.cs" />
@@ -439,6 +442,9 @@
     <Content Include="Views\Shared\_ModalPropertyAdvertised.cshtml" />
     <Content Include="Views\Properties\GetProperties.cshtml" />
     <Content Include="Views\Properties\getProperty.cshtml" />
+    <Content Include="Views\Shared\_ModalPropertyRequisitionSuccess.cshtml" />
+    <Content Include="Views\Shared\_PartialMvcCaptcha.cshtml" />
+    <Content Include="Views\Shared\_partialAdvertiseProperty.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -25,6 +25,7 @@ namespace SS.Models
         public ITennantRepository Tennant { get; private set; }
         public IOwnerRepository Owner { get; private set; }
         public ITagsRepository Tags { get; private set; }
+        public IMessageRepository Message { get; private set; }
 
         public UnitOfWork(EasyFindPropertiesEntities dbCtx)
         {
@@ -45,6 +46,7 @@ namespace SS.Models
             Tennant = new TennantRepository(_dbCtx);
             Owner = new OwnerRepository(_dbCtx);
             Tags = new TagsRepository(_dbCtx);
+            Message = new MessageRepository(_dbCtx);
         }
 
         public int save()

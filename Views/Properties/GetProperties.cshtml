@@ -87,16 +87,38 @@
                             <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
                             <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
                         </ul>
-                    </div>}
+                    </div>
+                }
             }
-        }
-        else
-        {
-            <center>
-                <div class="ctnr-headers">
-                    <label><strong>No Results Found</strong></label>
-                </div>
-            </center>
-        }
+            <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
+            }
+            else
+            {
+                <center>
+                    <div class="ctnr-headers">
+                        <label><strong>No Results Found</strong></label>
+                    </div>
+                </center>
+            }
     }
 </div>
+<div class="row">&nbsp;</div>
+<div class="ctnr-options">
+    <center>
+        <ul class="pagination pagination-sm">
+            @{
+                double noOfPages = Math.Ceiling((Convert.ToDouble(ViewBag.totalItemsFound) / Convert.ToDouble(ViewBag.fetchAmount)));
+                for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
+                {
+                    <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
+                }
+            }
+        </ul>
+    </center>
+    <span class="previous-page" style="float: left; display:none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
+    <span class="next-page" style="float:right; display:none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
+    <input type="hidden" id="noOfPages" value="@noOfPages" />
+    <input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
+    <input type="hidden" id="queryString" value="@ViewContext.HttpContext.Request.QueryString;" />
+</div>
+

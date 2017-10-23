@@ -168,9 +168,10 @@ html, body {
     padding-bottom:10px;
     color: #6B6B6B;
     font-family: Raleway, sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight:600;
-    line-height:20px;
+    line-height:25px;
+    word-spacing:2px;
 }
 
 .container-fluid {
@@ -317,6 +318,23 @@ a.clickable-box-link{
     padding:10px;
     border-radius:2px;
 } 
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #FFFFFF;
+}
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+  color: #FFFFFF;
+}
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #FFFFFF;
+}
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #FFFFFF;
+}
 
 .error-container {
     border: 1px solid #d66f5c;

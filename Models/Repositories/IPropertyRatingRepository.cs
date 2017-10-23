@@ -8,7 +8,8 @@ namespace SS.Models.Repositories
 {
     public interface IPropertyRatingRepository : IRepository<PropertyRating>
     {
-        IEnumerable<int> GetPropertyRatingsByPropertyId(Guid Id);
+        IEnumerable<int> GetPropertyRatingsCountByPropertyId(Guid Id);
         IEnumerable<String> GetPropertyCommentsByPropertyId(Guid Id);
+        IEnumerable<PropertyRating> GetPropertyRatingsByPropertyId(Guid Id);
     }
 }

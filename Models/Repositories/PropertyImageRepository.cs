@@ -37,5 +37,10 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.PropertyImage.Find(Id).ImageURL;
         }
+
+        public IEnumerable<PropertyImage> GetAllPrimaryPropertyImageByOwnerId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.PropertyImage.Where(x => x.Property.OwnerID.Equals(Id) && x.IsPrimaryDisplay.Equals(true));
+        }
     }
 }
