@@ -7,12 +7,18 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-1">'
                      + '</div>';
 
 function populateDivisionByCountryCode() {
-    $('#division ').find("option:disabled").nextAll('option').remove();
+    var division = $('#division');
+
+    division.find("option:disabled").nextAll('option').remove();//removes all items from the division list
+
     $.ajax({
         url: '/servicer/RequestJsonDataFromUrl',
         type: 'get',
         dataType: "json",
         data: { Url: 'http://westclicks.com/webservices/?f=json&c=' + selectedLocation.countryCode },
+        beforeSend: function () {
+            $('#division').append($('<option></option>').attr('value', 'selectHolder').attr('selected', true).text('Loading Divisions ...'));
+        },
         success: function (data) {
             $.each(data, function (index, value) {
                 $('#division').append($('<option></option>').attr('value', value).text(value));
@@ -22,10 +28,15 @@ function populateDivisionByCountryCode() {
                 $('#division option[value="' + postBackInfo.Division + '"').prop('selected', true);
             }
         },
+        complete: function () {
+            $('#division option[value="selectHolder"]').remove();
+        },
         error: function () {
             alert('Error occurred while retrieving divisions, contact system administrator');
         }
     });
+
+    
 }
 
 //get all property types by the category name and loads select element with the values
@@ -139,9 +150,10 @@ $(function () {
 });
 
 $(document).ready(function () {
+
     var postBackInfoRaw = $('#_postBackInformation').val();
 
-    if (postBackInfoRaw != null || postBackInfoRaw != undefined) {
+    if (postBackInfoRaw != 'null') {
         postBackInfo = JSON.parse(postBackInfoRaw);//information posted to the server for search
 
         $('#MinPrice').attr('value', postBackInfo.MinPrice);
@@ -166,7 +178,7 @@ $(document).ready(function () {
         dataType: "json",
         data: { Url: 'http://westclicks.com/webservices/?f=json' },
         beforeSend: function () {
-            $('#country').append($('<option></option>').attr('value', 'selectHolder').attr('selected', true).text('Detecting Country ...'));
+           // $('#country').append($('<option></option>').attr('value', 'selectHolder').attr('selected', true).text('Detecting Country ...'));
         },
         success: function (countriesData) {
             //detect selectedLocation of user
@@ -174,15 +186,18 @@ $(document).ready(function () {
                 selectedLocation.country = data.country_name;
 
                 $.each(countriesData, function (index, value) {
-                    if (selectedLocation.country.toLowerCase() == value.toLowerCase()) {
-                        $('#country').append($('<option></option>').attr('value', value).attr('selected', true).text(value));
+                    if (selectedLocation.country.toLowerCase() == value.toLowerCase()
+                        && data.country_name != null
+                        && data.country_name != '') {//only current country if auto country detect is possible
+                        $('#country').append($('<option></option>').attr('id', index).attr('value', value).attr('selected', true).text(value));
                         selectedLocation.countryCode = index;
                     } else {
-                        $('#country').append($('<option></option>').attr('value', value).text(value));
+                        $('#country').append($('<option></option>').attr('id', index).attr('value', value).text(value));
                     }
                 });
 
-                populateDivisionByCountryCode();
+                if (data.country_name != null && data.country_name != '')
+                    populateDivisionByCountryCode();
 
                 if (postBackInfo != null) {
                     $('#country option[value="' + postBackInfo.Country + '"').prop('selected', true);
@@ -190,7 +205,7 @@ $(document).ready(function () {
             });
         },
         complete: function () {
-            $('#country option[value="selectHolder"]').remove();
+          //  $('#country option[value="selectHolder"]').remove();
         },
         error: function () {
             alert('Error occurred while retrieving countries, contact system administrator');
@@ -218,7 +233,7 @@ $(document).ready(function () {
     //updates the division select element whenever the country option is changed
     $('#country').change(function () {
         selectedLocation.country = $(this).find("option:selected").text();
-        selectedLocation.countryCode = $(this).val();
+        selectedLocation.countryCode = $(this).find("option:selected").attr('id');
 
         populateDivisionByCountryCode();
     });

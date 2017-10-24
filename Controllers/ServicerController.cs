@@ -14,10 +14,19 @@ namespace SS.Controllers
         [HttpGet]
         public JsonResult RequestJsonDataFromUrl(String Url)
         {
-            var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            var jsonObject = serializer.DeserializeObject(PropertyHelper.MakeHttpRequest(Url));
+            try
+            {
+                var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                var jsonObject = serializer.DeserializeObject(PropertyHelper.MakeHttpRequest(Url));
 
-            return Json(jsonObject, JsonRequestBehavior.AllowGet);
+                return Json(jsonObject, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.StackTrace);
+            }
+
+            return null;
         }
 
         /// <summary>

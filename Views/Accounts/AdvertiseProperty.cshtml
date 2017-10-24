@@ -232,16 +232,16 @@
                     <div class="row">&nbsp;</div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="input-group">
-                                <input id="streetaddress" value="@Model.StreetAddress" onfocusout="codeAddress(document.getElementById('community').value)" type="text" class="form-control" name="streetaddress" placeholder="Street Address" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
-                            </div>
+                            <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
                         </div>
                     </div>
                     <div class="row">&nbsp;</div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
+                            <div class="input-group">
+                                <input id="streetaddress" value="@Model.StreetAddress" onfocusout="codeAddress(document.getElementById('community').value)" type="text" class="form-control" name="streetaddress" placeholder="Street Address" required>
+                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
+                            </div>
                         </div>
                     </div>
                     <div class="row">&nbsp;</div>
