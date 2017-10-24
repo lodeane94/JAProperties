@@ -29,11 +29,11 @@ function populateDivisionByCountryCode() {
 }
 
 //get all property types by the category name and loads select element with the values
-function populatePropertyTypeByCategoryName(categoryName) {    
+function populatePropertyTypeByCategoryName(categoryName) {
     $.ajax({
         url: '/servicer/GetPropertyTypesByCategoryName',
         type: 'get',
-        data: {propertyCategoryName : categoryName},
+        data: { propertyCategoryName: categoryName },
         success: function (data) {
             $.each(data, function (index, value) {
                 $('#PropertyType').append($('<option></option>').attr('value', value).text(value));
@@ -96,8 +96,8 @@ $(function () {
 
         var redirectionURL = '';
         var queryStr = $('#queryString').val();
-        queryStr = queryStr.replace(/&pgNo=[0-9]/g,'');
-        var currentPageNumber = parseInt($('#pgNo').val());        
+        queryStr = queryStr.replace(/&pgNo=[0-9]/g, '');
+        var currentPageNumber = parseInt($('#pgNo').val());
 
         redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber + 1);
         window.location = redirectionURL;
@@ -139,8 +139,11 @@ $(function () {
 });
 
 $(document).ready(function () {
-    postBackInfo = JSON.parse($('#_postBackInformation').val());//information posted to the server for search
-    if (postBackInfo != null) {
+    var postBackInfoRaw = $('#_postBackInformation').val();
+
+    if (postBackInfoRaw != null || postBackInfoRaw != undefined) {
+        postBackInfo = JSON.parse(postBackInfoRaw);//information posted to the server for search
+
         $('#MinPrice').attr('value', postBackInfo.MinPrice);
         $('#MaxPrice').attr('value', postBackInfo.MaxPrice);
         $('#SearchTerm').attr('value', postBackInfo.SearchTerm);
@@ -228,7 +231,7 @@ $(document).ready(function () {
     //scrolls to the bottom of the getProperty page when button is clicked
     $('#requestPropertyProxyBtn').click(function (event) {
         event.preventDefault();
-        
+
         $('html, body').animate({
             scrollTop: $('#property-reviews').offset().top
         }, 'fast');
@@ -237,7 +240,7 @@ $(document).ready(function () {
     //submits form that will request a property or send a message to the property owner
     $('#requestPropertyBtn').click(function (event) {
         event.preventDefault();
-        
+
         var validator = $('#requestPropertyForm').validate({ errorPlacement: function (error, element) { } });
         var isValid = validator.form();
 

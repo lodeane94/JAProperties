@@ -337,7 +337,6 @@ namespace SS.Controllers
 
             foreach (var file in files)
             {
-
                 string fileName = string.Empty;
 
                 Guid guid = Guid.NewGuid();

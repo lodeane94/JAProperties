@@ -2,7 +2,7 @@
 
 <!--TODO Generate all property information from database-->
 <h2 class="ctnr-headers">Advertise Your Property</h2>
-<div class="container-fluid ctnr-info">
+<div class="container-fluid ctnr-info" id="advertisePropertyDiv">
     <div>
         <form id="ad-submission" enctype="multipart/form-data" method="post">
             <div class="row prop-upload-info-top">
@@ -144,13 +144,13 @@
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="input-group">
-                                <input id="firstname" value="@Model.FirstName" type="text" class="form-control" name="firstname" placeholder="First Name" required>
+                                <input id="firstname" readonly value="@Model.FirstName" type="text" class="form-control" name="firstname" placeholder="First Name" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
                             </div>
                         </div>
                         <div class="col-xs-6">
                             <div class="input-group">
-                                <input id="lastname" value="@Model.LastName" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
+                                <input id="lastname" readonly value="@Model.LastName" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="input-group">
-                                <input id="cellnum" value="@Model.CellNum" type="number" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
+                                <input id="cellnum" readonly value="@Model.CellNum" type="number" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-phone"></i></span>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="input-group">
-                                <input id="email" value="@Model.Email" type="email" class="form-control" name="email" placeholder="Email Address" required>
+                                <input id="email" readonly value="@Model.Email" type="email" class="form-control" name="email" placeholder="Email Address" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-envelope"></i></span>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="input-group">
-                                <input id="password" value="@Model.Password" disabled type="text" class="form-control" name="password" placeholder="Password" required>
+                                <input id="password" readonly value="@Model.Password" disabled type="text" class="form-control" name="password" placeholder="Password" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-lock"></i></span>
                             </div>
                         </div>
@@ -186,7 +186,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="input-group">
-                                <input id="ConfirmPassword" value="@Model.ConfirmPassword" disabled type="text" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
+                                <input id="ConfirmPassword" readonly value="@Model.ConfirmPassword" disabled type="text" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-lock"></i></span>
                             </div>
                         </div>
@@ -327,6 +327,7 @@
         </form>
     </div>
 </div>
+<script src="~/Scripts/GoogleMapJsScript.js"></script>
 <script type="text/javascript">
     (function(){
     $.getScript('/Scripts/MainScript.js', function()

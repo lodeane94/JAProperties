@@ -119,6 +119,7 @@ namespace SS.Controllers
         /// <summary>
         /// Returns the _partialMvcCaptcha view
         /// </summary>
+        [HttpGet]
         public ActionResult GetMvcCaptchaView()
         {
             return PartialView("_PartialMvcCaptcha");
@@ -128,14 +129,29 @@ namespace SS.Controllers
         /// Returns the _partialAdvertiseProperty view
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         public ActionResult GetAdvertisePropertyView()
         {
+            Owner owner = null;
+            Guid ownerId;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                if ((Guid)Session["ownerId"] != null)
+                {
+                    ownerId = (Guid)Session["ownerId"];
+
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                    owner = unitOfWork.Owner.Get(ownerId);
+                }
+            }
+
             AdvertisePropertyViewModel Newmodel = new AdvertisePropertyViewModel()
             {
-                FirstName = "Lodeane",
-                LastName = "Kelly",
-                CellNum = "3912600",
-                Email = "dean@g.com",
+                FirstName = owner.FirstName,
+                LastName = owner.LastName,
+                CellNum = owner.CellNum,
+                Email = owner.Email,
                 StreetAddress = "12 Coolshade Drive",
                 Country = "Jamaica",
                 Division = "Kingston 19",
@@ -150,6 +166,6 @@ namespace SS.Controllers
 
             return PartialView("_partialAdvertiseProperty", Newmodel);
         }
-       
+
     }
 }

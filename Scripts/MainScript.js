@@ -437,7 +437,7 @@ function loadPropertyTags(selectedItem) {
 
     //makes the clickable box active or inactive when clicked and stores the variable clicked
     //property-tags
-    $(document.body).on('click', '#property-tags .clickable-box', function (event) {
+    $('#advertisePropertyDiv').on('click', '#property-tags .clickable-box', function (event) {
         event.preventDefault();
 
         var isActive = $(this).hasClass('clickable-box-active');

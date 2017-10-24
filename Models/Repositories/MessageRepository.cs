@@ -18,7 +18,9 @@ namespace SS.Models.Repositories
 
         public IEnumerable<Message> GetAllMsgsForID(Guid Id)
         {
-            return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id)).ToList();
+            return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
+                .OrderByDescending(x => x.DateTCreated)
+                .ToList();
         }
     }
 }

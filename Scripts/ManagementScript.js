@@ -128,7 +128,7 @@ $(document).ready(function () {
     $('#new-message').click(function (event) {
         event.preventDefault();
         //displays the modal whenever this is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-pencil"></span> Compose New Message');
         /*
@@ -143,7 +143,7 @@ $(document).ready(function () {
     $('#broadcast-message').click(function (event) {
         event.preventDefault();
         //displays the modal whenever this is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-pencil"></span> Broadcast New Message');
         /*
@@ -158,7 +158,7 @@ $(document).ready(function () {
     $('#view-all-messages').click(function (event) {
         event.preventDefault();
         //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-eye-open"></span> View All Messages');
         /*
@@ -187,7 +187,7 @@ $(document).ready(function () {
     $('#new-bill').click(function (event) {
         event.preventDefault();
         //displays the modal whenever this is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-pencil"></span> Broadcast New Bill');
         /*
@@ -222,7 +222,7 @@ $(document).ready(function () {
     $('#view-all-bills').click(function (event) {
         event.preventDefault();
         //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-eye-open"></span> View All Bills');
 
@@ -271,7 +271,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-refresh"></span> Update Property Information');
 
@@ -366,7 +366,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         //displays the modal whenever an image is selected
-        sys.showModal('#propertyModal');
+        sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
 
