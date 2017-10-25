@@ -55,6 +55,10 @@ namespace SS.Models
         public Nullable<System.DateTime> DateTModified { get; set; }
         public System.DateTime DateTCreated { get; set; }
         public string CategoryCode { get; set; }
+        public string NearByEstablishment { get; set; }
+        public string NearByEstablishmentLng { get; set; }
+        public string NearByEstablishmentLat { get; set; }
+        public string Title { get; set; }
     
         public virtual AdPriority AdPriority { get; set; }
         public virtual AdType AdType { get; set; }

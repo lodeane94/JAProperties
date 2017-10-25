@@ -467,6 +467,18 @@ function loadPropertyTags(selectedItem) {
         }
     });
 
+    //outputs the name of the selected company logo image that were selected
+    $('#organizationLogo').change(function () {
+
+        var file = $(this)[0].files[0];
+
+        if (file != undefined) {
+            var filenameOutput = file.name;
+
+            $('#organizationFileNameOutput').val(filenameOutput);//outputing to the textbox
+        }
+    });
+
     //outputs the selected images that were selected
     $('#flPropertyPics').change(function () {
         var files = $(this)[0].files;

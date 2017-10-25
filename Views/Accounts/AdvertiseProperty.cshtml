@@ -177,6 +177,16 @@
                     <div class="row"><div class="col-xs-12 content-heading">Enter your information</div></div>
                     <div class="row">&nbsp;</div>
                     <div class="row">
+                        <div class="col-xs-12">
+                            <div class="input-group">
+                                <input id="title" type="text" class="form-control" name="title" placeholder="Property Title eg. 2 bed room, 1 bathroom house in portmore jamaica" 
+                                       data-toggle="popover" data-content="This is the heading that your property will display to viewers. Write in short, the property's key features ">
+                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-tag"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
                         <div class="col-xs-6">
                             <div class="input-group">
                                 <input id="firstname" value="@Model.FirstName" type="text" class="form-control" name="firstname" placeholder="First Name" required>
@@ -187,6 +197,25 @@
                             <div class="input-group">
                                 <input id="lastname" value="@Model.LastName" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
                                 <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="input-group">
+                                <input id="organization" type="text" class="form-control" name="organization" placeholder="Organization">
+                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-globe"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="input-group">
+                                <label class="input-group-btn">
+                                    <span id="property-images" class="flPropertyPics-btn-file btn btn-default">
+                                        Company Logo <input id="organizationLogo" accept="image/*" name="organizationLogo" type="file" style="display:none;" />
+                                    </span>
+                                </label>
+                                <input id="organizationFileNameOutput" type="text" class="form-control" readonly />
                             </div>
                         </div>
                     </div>

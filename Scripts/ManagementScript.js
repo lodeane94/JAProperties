@@ -363,14 +363,17 @@ $(document).ready(function () {
     });
     //adds new property to a customer's account
     $(document.body).on('click', '#add-new-property', function (event) {
-        event.preventDefault();
+        event.preventDefault();        
+
+        $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
 
         //displays the modal whenever an image is selected
         sys.showModal('#managementModal');
 
-        $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
-
-        $('#action-body').load('/servicer/GetAdvertisePropertyView');
+        $('#loader').show();
+        $('#action-body').load('/servicer/GetAdvertisePropertyView', function () {
+            $('#loader').hide();
+        });
     });
     //sends acceptance mail to requestee 
     $(document.body).on('click', '.btnAcceptRequest', function (event) {
@@ -380,7 +383,7 @@ $(document).ready(function () {
         var gender = $(this).parent().prevAll('.gender').text();
         var emailAddress = $(this).parent().prevAll('.email').text();
         var cell = $(this).parent().prevAll('.cell').text();
-        var requestInfo = { 'firstName': firstName, 'lastName': lastName, 'gender': gender, 'email': emailAddress, 'cell': cell };
+        var requestInfo = { 'firstName': firstName, 'lastName': lastName, 'email': emailAddress, 'cell': cell };
 
         $.ajax({
             url: '/landlordmanagement/acceptrequest',

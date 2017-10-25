@@ -238,6 +238,8 @@
           <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="255" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="Organization" Type="varchar" MaxLength="50" />
+          <Property Name="LogoUrl" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Property">
           <Key>
@@ -272,6 +274,10 @@
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
           <Property Name="CategoryCode" Type="char" MaxLength="1" />
+          <Property Name="NearByEstablishment" Type="varchar" MaxLength="50" />
+          <Property Name="NearByEstablishmentLng" Type="varchar" MaxLength="25" />
+          <Property Name="NearByEstablishmentLat" Type="varchar" MaxLength="25" />
+          <Property Name="Title" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -1323,6 +1329,8 @@
           <NavigationProperty Name="Meeting" Relationship="Self.fk_meeting_owner_id" FromRole="Owner" ToRole="Meeting" />
           <NavigationProperty Name="Property" Relationship="Self.fk_property_owner_id" FromRole="Owner" ToRole="Property" />
           <NavigationProperty Name="Subscription" Relationship="Self.fk_subscription_owner_id" FromRole="Owner" ToRole="Subscription" />
+          <Property Name="Organization" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LogoUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Property">
           <Key>
@@ -1371,6 +1379,10 @@
           <NavigationProperty Name="PropertyType" Relationship="Self.fk_property_type_id" FromRole="Property" ToRole="PropertyType" />
           <NavigationProperty Name="Tags" Relationship="Self.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
           <NavigationProperty Name="Tennant" Relationship="Self.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
+          <Property Name="NearByEstablishment" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NearByEstablishmentLng" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="NearByEstablishmentLat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -2400,6 +2412,8 @@
           <EntitySetMapping Name="Owner">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Owner">
               <MappingFragment StoreEntitySet="Owner">
+                <ScalarProperty Name="LogoUrl" ColumnName="LogoUrl" />
+                <ScalarProperty Name="Organization" ColumnName="Organization" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
@@ -2412,6 +2426,10 @@
           <EntitySetMapping Name="Property">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Property">
               <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="NearByEstablishmentLat" ColumnName="NearByEstablishmentLat" />
+                <ScalarProperty Name="NearByEstablishmentLng" ColumnName="NearByEstablishmentLng" />
+                <ScalarProperty Name="NearByEstablishment" ColumnName="NearByEstablishment" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
                 <ScalarProperty Name="PurposeCode" ColumnName="PurposeCode" />

@@ -170,6 +170,8 @@ namespace SS.Controllers
         {
             Guid ownerID = ownerExist ? unitOfWork.Owner.GetOwnerIDByCellNum(model.CellNum) : Guid.NewGuid();
             Guid propertyID = Guid.NewGuid();
+            String lat = String.Empty;
+            String lng = String.Empty;
 
             //generate enrolment key for users with Landlord subscription
             if (model.SubscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
@@ -177,9 +179,25 @@ namespace SS.Controllers
                 model.EnrolmentKey = getRandomKey(6);
             }
 
+            //Coordinate priority : streetaddress then community
+            if (!String.IsNullOrEmpty(model.saCoordinateLat) && !String.IsNullOrEmpty(model.saCoordinateLng))
+            {
+                lat = model.saCoordinateLat;
+                lng = model.saCoordinateLng;
+            } else if (!String.IsNullOrEmpty(model.cCoordinateLat) && !String.IsNullOrEmpty(model.cCoordinateLng))
+            {
+                //check if lat and lng is already set; if they are then dont using community
+                if (string.IsNullOrEmpty(lat) && string.IsNullOrEmpty(lng))
+                {
+                    lat = model.saCoordinateLat;
+                    lng = model.saCoordinateLng;
+                }
+            }
+
             Property property = new Property()
             {
                 ID = propertyID,
+                Title = model.Title,
                 OwnerID = ownerID,
                 PurposeCode = PropertyHelper.mapPropertyPurposeNameToCode(model.PropertyPurpose),
                 TypeID = unitOfWork.PropertyType.GetPropertyTypeIDByName(model.PropertyType),
@@ -190,9 +208,12 @@ namespace SS.Controllers
                 StreetAddress = model.StreetAddress,
                 Division = model.Division,
                 Community = model.Community,
+                NearByEstablishment = model.NearBy,
                 Country = model.Country,
-                Latitude = model.coordinateLat,
-                Longitude = model.coordinateLng,
+                Latitude = lat,
+                Longitude = lng,
+                NearByEstablishmentLat = model.nearByCoordinateLat,
+                NearByEstablishmentLng = model.nearByCoordinateLng,
                 Price = model.Price,
                 SecurityDeposit = model.SecurityDeposit,
                 Occupancy = model.Occupancy,
@@ -219,6 +240,15 @@ namespace SS.Controllers
 
             if (!ownerExist)
             {
+                Guid guid = Guid.NewGuid();
+                String fileName = String.Empty;
+
+                if (model.organizationLogo != null)
+                {
+                    fileName = guid.ToString() + Path.GetExtension(model.organizationLogo.FileName);
+                    uploadPropertyImages(model.organizationLogo, fileName);
+                }
+
                 Owner owner = new Owner()
                 {
                     ID = ownerID,
@@ -226,6 +256,8 @@ namespace SS.Controllers
                     LastName = model.LastName,
                     CellNum = model.CellNum,
                     Email = model.Email,
+                    Organization = model.Organization,
+                    LogoUrl = fileName,
                     DateTCreated = DateTime.Now
                 };
 
@@ -236,6 +268,7 @@ namespace SS.Controllers
 
             associateTagsWithProperty(unitOfWork, propertyID, model.selectedTags);
             associateImagesWithProperty(unitOfWork, model.flPropertyPics, propertyID);
+
 
             unitOfWork.save();
         }
