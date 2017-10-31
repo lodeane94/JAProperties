@@ -7,6 +7,6 @@ namespace SS.Models.Repositories
 {
     public interface IMessageRepository : IRepository<Message>
     {
-        IEnumerable<Message> GetAllMsgsForID(Guid Id);
+        IEnumerable<Message> GetMsgsForID(Guid Id, int take = 0);
     }
 }

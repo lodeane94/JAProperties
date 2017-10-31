@@ -43,85 +43,6 @@ $(document).ready(function () {
             }
 
         });
-        /*
-        if (hasAccommodation != 0) {
-            $.ajax({
-                url: '/Landlordmanagement/getRequisitions',
-                type: 'GET',
-                success: function (data) {
-                    if (!$.isEmptyObject(data)) {
-                        var count = 1;
-                        var countHistory = 1;
-
-                        $('#dashboard-requisitions')
-                                .append('<table id="tblRequisitions" class="table table-condensed table-striped">'
-                                + '<tr><th></th><th>First Name</th><th>Last Name</th><th>Gender</th><th>Email</th>'
-                                + '<th>Cell</th><th>Date</th><th>&nbsp;</th><th>&nbsp;</th></tr>');
-
-                        $('#dashboard-requisitions-history')
-                                           .append('<table id="tblRequisitionsHistory" class="table table-condensed table-striped">'
-                                           + '<tr><th></th><th>First Name</th><th>Last Name</th><th>Gender</th><th>Email</th>'
-                                           + '<th>Cell</th><th>Date</th><th></th><th></th></tr>');
-                        $.each(data, function (index, value) {
-                            //if the requisition is accepted, do not display that record
-                            if (!value.accepted) {
-                                $('#dashboard-requisitions tr:last').after('<tr>'
-                                + '<td class="property_image">' + '<img style="width:100px;height:100px" src="' + '/Uploads/' + value.Image_URL + '"/>' + '</td>'
-                                + '<td class="first_name">' + value.FirstName + '</td>'
-                                + '<td class="last_name">' + value.LastName + '</td>'
-                                + '<td class="gender">' + value.Gender + '</td>'
-                                + '<td class="email">' + value.Email + '</td>'
-                                + '<td class="cell">' + value.Cell + '</td>'
-                                + '<td class="date">' + value.Date + '</td>'
-                                + '<td class="acc_id"><input type="hidden" value="' + value.ID + '"/></td>'
-                                + '<td><input class="btnAcceptRequest btn btn-primary" type="button" value="Accept"></td>'
-                                + '<td><input class="btnDenyRequest btn btn-danger" type="button" value="Deny"></td>'
-                                + '</tr>'
-                                + '</table>');
-                            } else {
-                                $('#dashboard-requisitions-history tr:last').after('<tr>'
-                                            + '<td class="property_image">' + '<img style="width:100px;height:100px" src="' + '/Uploads/' + value.Image_URL + '"/>' + '</td>'
-                                            + '<td class="first_name">' + value.FirstName + '</td>'
-                                            + '<td class="last_name">' + value.LastName + '</td>'
-                                            + '<td class="gender">' + value.Gender + '</td>'
-                                            + '<td class="email">' + value.Email + '</td>'
-                                            + '<td class="cell">' + value.Cell + '</td>'
-                                            + '<td class="date">' + value.Date + '</td>'
-                                            + '<td class="acc_id"><input type="hidden" value="' + value.ID + '"/></td>'
-                                            + '</tr>'
-                                            + '</table>');
-                            }
-                        });
-                    } else {
-                        //shows complaints and requisitions if accommodations was found
-                        $('#d-complaints').hide();
-                        $('#d-requisitions').hide();
-                    }
-                },
-                beforeSend: function () {
-                    $('#modal-loading').fadeIn();
-                },
-                complete: function () {
-                    $('#modal-loading').fadeOut();
-                }
-            });
-            $.ajax({
-                url: '/Landlordmanagement/getLatestMessages',
-                type: 'GET',
-                success: function (data) {
-                    if (!$.isEmptyObject(data)) {
-                        $.each(data, function (index, value) {
-                            $('#dashboard-messages')
-                                .append('<li><a id="' + value.MessageID + '"><strong>' + value.MessengerName + '</strong> <em>' + value.Message + '</em></a></li>');
-                        });
-                    } else {
-                        $('#dashboard-messages')
-                                .append('<li>No Messages Found</li>');
-                    }
-                }
-            });
-        }
-        */
     })();
 
     //generates modal to compose a new message
@@ -367,11 +288,11 @@ $(document).ready(function () {
 
         $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
 
-        //displays the modal whenever an image is selected
-        sys.showModal('#managementModal');
-
         $('#loader').show();
+
         $('#action-body').load('/servicer/GetAdvertisePropertyView', function () {
+            //displays the modal whenever an image is selected
+            sys.showModal('#managementModal');
             $('#loader').hide();
         });
     });
@@ -486,9 +407,55 @@ $(document).ready(function () {
             });
                 break;
         }
-
-
     });
 
+    //displays all messages on the page 
+    $('#view-all-msgs-btn').click(function (event) {
+        event.preventDefault();
+
+        var btnViewAll = $(this);
+        var btnCmd = $(this).text();
+        
+        if (btnCmd == 'View All') {
+            $('.msg:gt(1)').slideDown('fast', function () {
+                $(this).removeClass('hide').addClass('show');
+                btnViewAll.text('Hide');
+            });
+        } else {
+            $('.msg:gt(1)').slideUp('fast', function () {
+                $(this).removeClass('show').addClass('hide');
+                btnViewAll.text('View All');
+            });
+        }
+    });
+
+    //display the selectd message
+    $('.msg a').click(function (event) {
+        event.preventDefault();
+
+        var id = $(this).attr('id');
+        var txt = $(this).find('.txt');//css properties that truncates message
+        var fullTxt = $(this).find('.fullTxt');
+        
+        if (txt.text() == '') {
+            fullTxt.removeClass('fullTxt').addClass('txt');
+        } else {
+            txt.slideDown('fast', function () {
+                $(this).removeClass('txt').addClass('fullTxt');
+            })
+        }
+
+        $.ajax({
+            url: '/landlordmanagement/updateMsgSeen',
+            type: 'GET',
+            data: {id:id},
+            success: function () {
+                $(this).parent().removeClass('seen').addClass('seen');
+            },
+            error:function(){
+                alert('An error occurred while updating the selected message');
+            }
+        });
+    });
 
 });

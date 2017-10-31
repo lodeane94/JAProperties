@@ -627,7 +627,6 @@ function loadPropertyTags(selectedItem) {
             }
         });
 
-        codeAddress();//gets coordinates from the street address or coordinates
         var isValid = validator.form();
 
         if (isClickableContentValid) {

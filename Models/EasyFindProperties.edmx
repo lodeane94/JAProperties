@@ -227,6 +227,9 @@
           <Property Name="From" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Msg" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="75" />
+          <Property Name="Seen" Type="bit" />
         </EntityType>
         <EntityType Name="Owner">
           <Key>
@@ -2181,6 +2184,9 @@
           <Property Name="From" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Msg" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CellNum" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
+          <Property Name="Seen" Type="Boolean" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -2631,6 +2637,9 @@
           <EntitySetMapping Name="Message">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Message">
               <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="Seen" ColumnName="Seen" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="Msg" ColumnName="Msg" />
                 <ScalarProperty Name="From" ColumnName="From" />

@@ -16,11 +16,21 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public IEnumerable<Message> GetAllMsgsForID(Guid Id)
+        public IEnumerable<Message> GetMsgsForID(Guid Id, int take = 0)
         {
-            return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
-                .OrderByDescending(x => x.DateTCreated)
-                .ToList();
+            if (take > 0)
+            {
+                return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
+                    .OrderByDescending(x => x.DateTCreated)
+                    .Take(take)
+                    .ToList();
+            }
+            else
+            {
+                return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
+                    .OrderByDescending(x => x.DateTCreated)
+                    .ToList();
+            }
         }
     }
 }

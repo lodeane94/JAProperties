@@ -12,6 +12,7 @@ using System.Collections;
 using Newtonsoft.Json;
 using static SS.Code.PropertyConstants.PropertyType;
 using SS.Core;
+using SS.ViewModels;
 
 namespace SS.Controllers
 {
@@ -33,26 +34,17 @@ namespace SS.Controllers
                 {
                     if (HttpContext.User.Identity.Name != null)
                     {
+                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
                         /*
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
                          * so that it may be used if a new property is being added*/
-                         
+
                         var ownerId = dbCtx.Owner.Where(x => x.Email == HttpContext.User.Identity.Name)
                                                         .Select(x => x.ID).Single();
                         Session["ownerId"] = ownerId;
-                        //isAdditionalProperty is a session variable that is used to detect whenever an additional property is being added
-                        //Session["isAdditionalProperty"] = true;
-                        /*
-                         * setting the viewbags in order to load contents specific to users based on the different properties
-                         * they have
-                         
-                        ViewBag.hasAccommodation = 0;
-                        ViewBag.hasHouse = 0;
-                        ViewBag.hasLand = 0;
 
-                        ViewBag.hasAccommodation = dbCtx.ACCOMMODATIONS.Where(a => a.OWNER == landlordID).Count();
-                        ViewBag.hasHouse = dbCtx.HOUSE.Where(a => a.OWNER == landlordID).Count();
-                        ViewBag.hasLand = dbCtx.LAND.Where(a => a.OWNER == landlordID).Count();*/
+                        ViewBag.latestMessages = getMessages(unitOfWork, ownerId, 5);//top 5 messages for the owner
+                        ViewBag.requisitions = getRequisitions(unitOfWork, ownerId);
                     }
                 }
             }
@@ -282,7 +274,7 @@ namespace SS.Controllers
                             imageInfo.Add("propertyID", image.PropertyID.ToString());
                             imageInfo.Add("imageURL", image.ImageURL);
                             pImageInfo.Add(imageInfo);
-                        }     
+                        }
                     }
                 }
             }
@@ -294,70 +286,40 @@ namespace SS.Controllers
             }
 
             return Json(pImageInfo, JsonRequestBehavior.AllowGet);
-        }/*
-        //returns latest 5 messages for a specific user
-        [Authorize]
-        public JsonResult getLatestMessages()
+        }
+
+        /// <summary>
+        /// returns latest 5 messages for a specific user
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        //
+        public IEnumerable<Message> getMessages(UnitOfWork unitOfWork, Guid ownerId, int take)
         {
-            int count = 1;
+            return unitOfWork.Message.GetMsgsForID(ownerId, take);
+        }
 
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            List<Messages> messagesList = new List<Messages>();
-
-            var landlordID = (Guid)Session["landlord_id"];
-
-            var messages = dbCtx.MESSAGES.Where(m => m.ID == landlordID).Select(m => new { m.ID, m.MESSAGE, m.MESSENGER_ID, m.DATE });
-
-            foreach (var message in messages)
+        /// <summary>
+        /// Updates the seen column on the selected message
+        /// </summary>
+        /// <param name="id"></param>
+        [HttpGet]
+        public void updateMsgSeen(Guid id)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                if (count < 6)
-                {
-                    Messages userMessages = new Messages()
-                    {
-                        ID = message.ID.ToString(),
-                        MessengerID = message.MESSENGER_ID.ToString(),
-                        MessengerName = dbCtx.TENNANTS.Where(t => t.ID == message.MESSENGER_ID).Select(t => t.FIRST_NAME).Single(),
-                        Date = message.DATE.ToString(),
-                        Message = message.MESSAGE
-                    };
+                var message = dbCtx.Message.Find(id);
 
-                    messagesList.Add(userMessages);
+                if (!message.Seen.Value)
+                {
+                    message.Seen = true;
+                    dbCtx.SaveChanges();
                 }
-                count++;
             }
-
-            return Json(messagesList, JsonRequestBehavior.AllowGet);
         }
-        //gets the basic information about the messages 
-        [Authorize]
-        public JsonResult getMessagesHeaders()
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            List<Messages> messagesList = new List<Messages>();
-
-            var landlordID = (Guid)Session["landlord_id"];
-
-            var messages = dbCtx.MESSAGES.Where(m => m.ID == landlordID).Select(m => new { m.ID, m.MESSAGE, m.MESSENGER_ID, m.DATE });
-
-            foreach (var message in messages)
-            {
-
-                Messages userMessages = new Messages()
-                {
-                    ID = message.ID.ToString(),
-                    MessengerID = message.MESSENGER_ID.ToString(),
-                    MessengerName = dbCtx.TENNANTS.Where(t => t.ID == message.MESSENGER_ID).Select(t => t.FIRST_NAME).Single(),
-                    Date = message.DATE.ToString()
-                };
-
-                messagesList.Add(userMessages);
-
-            }
-
-            return Json(messagesList, JsonRequestBehavior.AllowGet);
-        }
+        /*
+        /*
         //loads all bills for the current user
         [Authorize]
         public JsonResult getAllBills()
@@ -423,62 +385,40 @@ namespace SS.Controllers
 
                 file.SaveAs(path);
             }
-        }
-        //returns requition information
-        [Authorize]
-        public JsonResult getRequisitions()
+        }*/
+        /// <summary>
+        /// returns requition information for the owner
+        /// </summary>
+        /// <returns></returns>
+        public List<RequisitionViewModel> getRequisitions(UnitOfWork unitOfWork, Guid ownerId)
         {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-            List<RequisitionInformation> rInfo = new List<RequisitionInformation>();
+            List<RequisitionViewModel> requisitionInfo = null;
 
-            try
+            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(ownerId);
+
+            if (requisitions != null)
             {
-                //retrieving requisitions made by users
-                var requisitions = dbCtx.REQUISITION_PROPERTY_MAPPINGS
-                    .Where(x => x.HOUSE.LANDLORDS.USERNAME == HttpContext.User.Identity.Name
-                    || x.LAND.LANDLORDS.USERNAME == HttpContext.User.Identity.Name
-                    || x.ACCOMMODATIONS.LANDLORDS.USERNAME == HttpContext.User.Identity.Name)
-                    .Select(x => x.REQUISITIONS);
+                requisitionInfo = new List<RequisitionViewModel>();
 
-                foreach (var r in requisitions)
+                foreach (var req in requisitions)
                 {
-                    if (r != null)
-                    {
-                        RequisitionInformation requisitionInformation = new RequisitionInformation();
+                    RequisitionViewModel model = new RequisitionViewModel();
 
-                        requisitionInformation.ID = r.REQUISITION_ID.ToString();
-                        requisitionInformation.FirstName = r.FIRST_NAME;
-                        requisitionInformation.LastName = r.LAST_NAME;
-                        requisitionInformation.Email = r.EMAIL;
-                        requisitionInformation.Cell = r.CELL;
-                        requisitionInformation.Gender = r.GENDER;
-                        requisitionInformation.Date = r.R_DATE.ToShortDateString();
-                        requisitionInformation.accepted = r.ACCEPTED;
+                    model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
+                    model.PropertyRequisition.PropertyID = req.PropertyID;
+                    model.PropertyRequisition.FirstName = req.FirstName;
+                    model.PropertyRequisition.LastName = req.LastName;
+                    model.PropertyRequisition.Email = req.Email;
+                    model.PropertyRequisition.CellNum = req.CellNum;
+                    model.PropertyRequisition.Msg = req.Msg;
+                    model.PropertyRequisition.IsAccepted = req.IsAccepted;
+                    model.PropertyRequisition.DateTCreated = req.DateTCreated;
 
-
-                        if (r.REQUISITION_PROPERTY_MAPPINGS.ACCOMMODATION_ID.HasValue
-                            && PropertiesDAO.getPropertyType(r.REQUISITION_PROPERTY_MAPPINGS.ACCOMMODATION_ID.Value).Equals(accommodation))
-                        {
-                            requisitionInformation.Image_URL = dbCtx.ACCOMMODATIONS.Where(a => a.ID == r.REQUISITION_PROPERTY_MAPPINGS.ACCOMMODATION_ID).Select(a => a.IMAGE_URL).Single();
-                        }
-                        if (r.REQUISITION_PROPERTY_MAPPINGS.HOUSE_ID.HasValue
-                            && PropertiesDAO.getPropertyType(r.REQUISITION_PROPERTY_MAPPINGS.HOUSE_ID.Value).Equals(house))
-                        {
-                            requisitionInformation.Image_URL = dbCtx.HOUSE.Where(a => a.ID == r.REQUISITION_PROPERTY_MAPPINGS.HOUSE_ID).Select(a => a.IMAGE_URL).Single();
-                        }
-                        if (r.REQUISITION_PROPERTY_MAPPINGS.LAND_ID.HasValue
-                            && PropertiesDAO.getPropertyType(r.REQUISITION_PROPERTY_MAPPINGS.LAND_ID.Value).Equals(land))
-                        {
-                            requisitionInformation.Image_URL = dbCtx.LAND.Where(a => a.ID == r.REQUISITION_PROPERTY_MAPPINGS.LAND_ID).Select(a => a.IMAGE_URL).Single();
-                        }
-
-                        rInfo.Add(requisitionInformation);
-                    }
+                    requisitionInfo.Add(model);
                 }
             }
-            catch (Exception ex) { Console.WriteLine("Error retrieving requisitions"); }
 
-            return Json(rInfo, JsonRequestBehavior.AllowGet);
+            return requisitionInfo;
         }
         /*
          * gets the information for the property that was selected in order to
@@ -683,6 +623,6 @@ namespace SS.Controllers
 
     }
 
-                }
+}
 
 

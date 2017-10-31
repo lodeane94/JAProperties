@@ -18,13 +18,16 @@ namespace SS.Models.Repositories
 
         public IEnumerable<PropertyRequisition> GetRequestsByPropertyId(Guid Id)
         {
-            return EasyFindPropertiesEntities.PropertyRequisition.Where(x => x.PropertyID.Equals(Id)).ToList();
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.PropertyID.Equals(Id)
+                && x.ExpiryDate > DateTime.Now).ToList();
         }
 
-        /*TODO if necessary
         public IEnumerable<PropertyRequisition> GetRequestsByOwnerId(Guid Id)
         {
-            return EasyFindPropertiesEntities.PropertyRequisition.Where(x => x..Equals(Id)).ToList();
-        }*/
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.Property.OwnerID.Equals(Id)
+                && x.ExpiryDate > DateTime.Now).ToList();
+        }
     }
 }

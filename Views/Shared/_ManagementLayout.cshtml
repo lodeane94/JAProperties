@@ -63,16 +63,16 @@
             <div class="container-fluid">
                 <div class="row">
                     <br/>
-                    <div class="col-md-3">
-                        @RenderSection("utilities", false)
-                        @RenderSection("quickAction", false)
-                        @RenderSection("tennants", false)
+                    <div class="col-md-1">
+                        
                     </div>
-                    <div class="col-md-9">
-                        <br />
+                    <div class="col-md-10">
                         <!--retrieved is an ajax content-->
                         <div id="retrieved"></div>
                         @RenderBody()
+                    </div>
+                    <div class="col-md-1">
+
                     </div>
                 </div>
             </div>

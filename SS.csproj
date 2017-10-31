@@ -404,6 +404,7 @@
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
+    <Compile Include="ViewModels\RequisitionViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

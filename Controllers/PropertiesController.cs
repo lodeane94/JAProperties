@@ -266,13 +266,15 @@ namespace SS.Controllers
                         }
                         else
                         {
-                            String contact = "Email Address : " + request.Email + "\n" + "Contact Number : " + request.CellNum;
                             Message message = new Message()
                             {
                                 ID = Guid.NewGuid(),
                                 To = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).ID,
                                 From = request.FirstName + " " + request.LastName,
-                                Msg = contact + "\n" + request.Msg,
+                                CellNum = request.CellNum,
+                                Email = request.Email,
+                                Msg = request.Msg,
+                                Seen = false,
                                 DateTCreated = DateTime.Now
                             };
 

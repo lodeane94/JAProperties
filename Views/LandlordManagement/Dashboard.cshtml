@@ -15,7 +15,7 @@
 @Html.Partial("_ModalPropertyAdvertised")
 @{
     //displays the message for property removal error
-    if (Session["propertyRemovedMesssage"] != null) 
+    if (Session["propertyRemovedMesssage"] != null)
     {
         <div class="container">
             <div class="row">
@@ -30,7 +30,7 @@
         Session["propertyRemovedMesssage"] = null;
     }
     //displays registration error
-    if (Session["userSignedInCheck"] != null) 
+    if (Session["userSignedInCheck"] != null)
     {
         <div class="container">
             <div class="row">
@@ -45,7 +45,7 @@
         Session["userSignedInCheck"] = null;
     }
     //displays registration error
-    if (Session["registrationErrorMessage"] != null) 
+    if (Session["registrationErrorMessage"] != null)
     {
         <div class="container">
             <div class="row">
@@ -60,7 +60,7 @@
         Session["registrationErrorMessage"] = null;
     }
     //displays registration success
-    if (Session["propertyUpdateSuccess"] != null) 
+    if (Session["propertyUpdateSuccess"] != null)
     {
         <div class="container">
             <div class="row">
@@ -75,7 +75,7 @@
         Session["propertyUpdateSuccess"] = null;
     }
     //displays registration success
-    if (Session["isRegistrationComplete"] != null) 
+    if (Session["isRegistrationComplete"] != null)
     {
         <div class="container">
             <div class="row">
@@ -121,9 +121,9 @@
         Session["acceptedRequestCheck"] = null;
     }
 }
-@section quickAction
-{
-    @{
+
+<div class="row">
+    <div class="col-xs-3">
         <aside id="quick-action">
             <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-pushpin"></span>Quick Actions</div>
             <ul>
@@ -173,12 +173,7 @@
                 }
             </ul>
         </aside>
-    }
-}
-@section tennants
-{
-    @if (ViewBag.hasAccommodation != 0)
-    {
+        <div class="row">&nbsp;</div>
         <aside id="quick-action">
             <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-user"></span><lab>Tennants</div>
             <ul>
@@ -195,46 +190,130 @@
             </ul>
             <h3>Coming Soon ....</h3>
         </aside>
-    }
-}
-
-<div class="row">
-    <div class="dashboard col-md-12">
-        <div class="dashboard-info-headers">
-            Properties Owned
-        </div>
-        <div class="ctnr">
+    </div>
+    <div class="dashboard col-md-7">
+        <div class="jumbotron-container" style="display:block;">
+            <div class="dashboard-info-headers">
+                Properties Owned
+            </div>
             <div id="housing-container">
                 <div id="rooms-collection">
                     <!--Ajax content-->
                 </div>
             </div>
-        </div>
-        <div id="housing-container-options-container">
-            <div id="housing-container-options">
-                <ul>
-                    <li><a id="add-new-property" href="addNewProperty">Add New Property</a></li>
-                </ul>
+            <div id="housing-container-options-container">
+                <div id="housing-container-options">
+                    <button style="float:right;" id="add-new-property" class="btn btn-accent"><span class="glyphicon glyphicon-plus-sign"></span> Add New Property</button>
+                </div>
             </div>
         </div>
-        <div id="d-messages">
-            <div class="dashboard-info-headers">
-                Messages
-            </div>
-            <div class="dashboard-info">
-                <ul id="dashboard-messages">
-                    <!--Ajax content-->
-                </ul>
+        <br /><br />
+        <div class="jumbotron-container" style="display:block;">
+            <div id="d-messages">
+                <div class="dashboard-info-headers">
+                    Messages
+                </div>
+                <div class="dashboard-info">
+                    <ul id="dashboard-messages">
+                        @{
+                            int count = 0;
+                            if (ViewBag.latestMessages != null)
+                            {
+                                foreach (var msg in ViewBag.latestMessages)
+                                {
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        count++;
+                                        <li class="msg @(count > 2 ? "hide" : "show") @(msg.Seen ? "seen" : "")" >
+                                            <a href="@msg.ID" id="@msg.ID">
+                                                <div>
+                                                    <span class="glyphicon glyphicon-user img-circle" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:16px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated.ToShortDateString()</em>
+                                                    <div class="txt">@msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    }
+                                    if (count > 2)
+                                    {
+                                        <li><div><button id="view-all-msgs-btn" class="btn btn-accent" style="float:right;margin-top:10px;">View All</button></div></li>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <li><div class="contact-info-content" colspan="8"><center>No Messages Found</center></div></li>
+                            }
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
-        <hr />
+        <div class="row">&nbsp;</div>
         <div id="d-requisitions">
             <div class="dashboard-info-headers">
                 Requisitions
             </div>
             <div class="dashboard-info">
-                <div id="dashboard-requisitions">
-                    <!--Ajax content-->
+                <div id="dashboard-requisitions" class="table-responsive">
+                    <table id="tblRequisitions">
+                        @{
+                            count = 0;
+                            bool hasHistory = false;
+
+                            if (ViewBag.requisitions != null)
+                            {
+                                <thead>
+                                    <tr>
+                                        <th>Property Image</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Cell</th>
+                                        <th>Date</th>
+                                        <th>&nbsp;</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                foreach (var req in ViewBag.requisitions)
+                                {
+                                    if (!req.PropertyRequisition.IsAccepted)
+                                    {
+                                        <tr>
+                                            <td class="property_image"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></td>
+                                            <td class="first_name"> @req.PropertyRequisition.FirstName</td>
+                                            <td class="last_name"> @req.PropertyRequisition.LastName</td>
+                                            <td class="email"> @req.PropertyRequisition.Email</td>
+                                            <td class="cell"> @req.PropertyRequisition.CellNum</td>
+                                            <td class="date"> @req.PropertyRequisition.DateTCreated</td>
+                                            <td><input id="@req.PropertyRequisition.PropertyID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
+                                            <td><input id="@req.PropertyRequisition.PropertyID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
+                                        </tr>
+                                        if (req.PropertyRequisition.Msg != null)
+                                        {
+                                            <tr>
+                                                <td colspan="10"><div class="contact-info-header" style="overflow:auto;">@req.PropertyRequisition.Msg</div></td>
+                                            </tr>
+                                        }
+                                        count++;
+                                        if (count > 3)
+                                        {
+                                            <tr><td colspan="8"><button id="view-all-req-btn" class="btn btn-accent" style="position:relative;float:right;">View All</button></td></tr>
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                                        hasHistory = true;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                            }
+                        }
+                    </table>
                 </div>
             </div>
         </div>
@@ -245,7 +324,52 @@
             </div>
             <div class="dashboard-info">
                 <div id="dashboard-requisitions-history">
-                    <!--Ajax content-->
+                    <table id="tblRequisitionsHistory" class="table table-condensed table-striped">
+                        @{
+                            count = 0;
+                            if (ViewBag.requisitions != null && hasHistory)
+                            {
+                                <thead>
+                                    <tr>
+                                        <th>Property Image</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Cell</th>
+                                        <th>Date</th>
+                                        <th>&nbsp;</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                foreach (var req in ViewBag.requisitions)
+                                {
+                                    if (req.PropertyRequisition.IsAccepted)
+                                    {
+                                        <tr>
+                                            <td class="property_image"><img style="width:100px;height:100px" src="~/Uploads/@req.ImageUrl" /></td>
+                                            <td class="first_name"> @req.PropertyRequisition.FirstName</td>
+                                            <td class="last_name"> @req.PropertyRequisition.LastName</td>
+                                            <td class="email"> @req.PropertyRequisition.Email</td>
+                                            <td class="cell"> @req.PropertyRequisition.CellNum</td>
+                                            <td class="date"> @req.PropertyRequisition.DateTCreated</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        count++;
+                                        if (count > 0)
+                                        {
+                                            <tr><td class="contact-info-content" colspan="8"><button id="view-all-req-hist-btn" class="btn btn-accent right">View All</button></td></tr>
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <tr><td class="contact-info-content" colspan="8"><center>No Requisition History Records Found</center></td></tr>
+                            }
+                        }
+                    </table>
                 </div>
             </div>
         </div>

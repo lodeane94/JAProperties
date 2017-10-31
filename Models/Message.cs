@@ -19,5 +19,8 @@ namespace SS.Models
         public string From { get; set; }
         public string Msg { get; set; }
         public System.DateTime DateTCreated { get; set; }
+        public string CellNum { get; set; }
+        public string Email { get; set; }
+        public Nullable<bool> Seen { get; set; }
     }
 }
