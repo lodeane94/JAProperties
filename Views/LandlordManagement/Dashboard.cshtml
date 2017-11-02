@@ -211,7 +211,7 @@
         <div class="jumbotron-container" style="display:block;">
             <div id="d-messages">
                 <div class="dashboard-info-headers">
-                    Messages
+                    Messages <span class="glyphicon glyphicon-envelope"></span>
                 </div>
                 <div class="dashboard-info">
                     <ul id="dashboard-messages">
@@ -224,13 +224,19 @@
                                     for (int i = 0; i < 4; i++)
                                     {
                                         count++;
-                                        <li class="msg @(count > 2 ? "hide" : "show") @(msg.Seen ? "seen" : "")" >
+                                        <li class="msg @(count > 2 ? "hide" : "show") @(msg.Seen ? "seen" : "")">
                                             <a href="@msg.ID" id="@msg.ID">
                                                 <div>
                                                     <span class="glyphicon glyphicon-user img-circle" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:16px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated.ToShortDateString()</em>
-                                                    <div class="txt">@msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this</div>
+                                                    <div class="txt-holder txt">
+                                                        @msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this
+                                                    </div>
                                                 </div>
                                             </a>
+                                            <div class="txt-btns-container hide">
+                                                <button id="@msg.ID" class="delete-msg btn btn-search"><span class="glyphicon glyphicon-remove-circle"> </span> Delete</button>
+                                                <button id="@msg.ID" class="reply-to-msg btn btn-search">Reply <i class="fa fa-reply" aria-hidden="true"> </i></button>
+                                            </div>
                                         </li>
                                     }
                                     if (count > 2)

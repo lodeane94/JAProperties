@@ -436,13 +436,20 @@ $(document).ready(function () {
         var id = $(this).attr('id');
         var txt = $(this).find('.txt');//css properties that truncates message
         var fullTxt = $(this).find('.fullTxt');
+
+        $(this).parents('ul').find('a').removeClass('active');
+        $(this).parents('ul').find('.txt-btns-container').addClass('hide');
+        $(this).parents('ul').find('.txt-holder').removeClass('fullTxt').addClass('txt');
         
         if (txt.text() == '') {
             fullTxt.removeClass('fullTxt').addClass('txt');
         } else {
             txt.slideDown('fast', function () {
                 $(this).removeClass('txt').addClass('fullTxt');
-            })
+            });
+
+            $(this).addClass('active');//makes message active
+            $(this).parent().find('.txt-btns-container').removeClass('hide');
         }
 
         $.ajax({

@@ -299,22 +299,27 @@ a.clickable-box-link {
             padding-bottom: 3px;
         }
 
-    .dashboard-info .msg a {
-        display: block;
-        text-decoration: none;
-        color: #6B6B6B;
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-top: 4px;
-        padding-bottom: 4px;
-        border-bottom: 2px solid #499407;
-        border-radius: 2px;
-    }
+.dashboard-info .msg a {
+    display: block;
+    text-decoration: none;
+    color: #6B6B6B;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #499407;
+    border-radius: 2px;
+}
 
-        .dashboard-info .msg a:hover {
-            background-color: #499407;
-            color: #FFFFFF;
-        }
+.dashboard-info .msg a:hover {
+    background-color: #499407;
+    color: #FFFFFF;
+}
+
+.dashboard-info .msg a.active {
+    background-color: #499407;
+    color: #FFFFFF;
+}
 
 .seen {
     border-bottom: 1px solid #499407;
@@ -334,6 +339,12 @@ a.clickable-box-link {
     width: 100%;
     display: block;
     margin-top: 10px;
+}
+
+.txt-btns-container {
+    padding: 5px;
+    background-color: #509911;
+    color: #FFFFFF;
 }
 
 #dashboard-messages ul.msg-list li {
@@ -588,7 +599,7 @@ button.jumbotron-button {
     background-image: -ms-linear-gradient(bottom, #0B3FA1 0%, #2D57A1 53%);
     background-image: linear-gradient(to bottom, #0B3FA1 0%, #2D57A1 53%);
     color: #FFFFFF;
-    height:180px;
+    height: 180px;
 }
 
 .to-left {

@@ -39,12 +39,12 @@ namespace SS.Controllers
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
                          * so that it may be used if a new property is being added*/
 
-                        var ownerId = dbCtx.Owner.Where(x => x.Email == HttpContext.User.Identity.Name)
+                        var userId = dbCtx.Owner.Where(x => x.Email == HttpContext.User.Identity.Name)
                                                         .Select(x => x.ID).Single();
-                        Session["ownerId"] = ownerId;
+                        Session["userId"] = userId;
 
-                        ViewBag.latestMessages = getMessages(unitOfWork, ownerId, 5);//top 5 messages for the owner
-                        ViewBag.requisitions = getRequisitions(unitOfWork, ownerId);
+                        ViewBag.latestMessages = getMessages(unitOfWork, userId, 5);//top 5 messages for the owner
+                        ViewBag.requisitions = getRequisitions(unitOfWork, userId);
                     }
                 }
             }
@@ -262,10 +262,10 @@ namespace SS.Controllers
                 {
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
                     //checking if the landlord id was saved in the session
-                    if ((Guid)Session["ownerId"] != null)
+                    if ((Guid)Session["userId"] != null)
                     {
-                        var ownerId = (Guid)Session["ownerId"];
-                        propertyImage = unitOfWork.PropertyImage.GetAllPrimaryPropertyImageByOwnerId(ownerId);
+                        var userId = (Guid)Session["userId"];
+                        propertyImage = unitOfWork.PropertyImage.GetAllPrimaryPropertyImageByOwnerId(userId);
 
                         foreach (var image in propertyImage)
                         {
@@ -295,9 +295,9 @@ namespace SS.Controllers
         /// <param name="take"></param>
         /// <returns></returns>
         //
-        public IEnumerable<Message> getMessages(UnitOfWork unitOfWork, Guid ownerId, int take)
+        public IEnumerable<Message> getMessages(UnitOfWork unitOfWork, Guid userId, int take)
         {
-            return unitOfWork.Message.GetMsgsForID(ownerId, take);
+            return unitOfWork.Message.GetMsgsForID(userId, take);
         }
 
         /// <summary>
@@ -317,6 +317,72 @@ namespace SS.Controllers
                     dbCtx.SaveChanges();
                 }
             }
+        }
+
+        /// <summary>
+        /// removes the selected message from the system
+        /// </summary>
+        /// <param name="id"></param>
+        [HttpGet]
+        public void deleteMsg(Guid id)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var message = unitOfWork.Message.Get(id);
+
+                if (message != null)
+                {
+                    unitOfWork.Message.Remove(message);
+                    unitOfWork.save();
+                }
+            }
+        }
+
+        /// <summary>
+        /// replies to the message
+        /// </summary>
+        /// <param name="id"></param>
+        //TODO REMODEL DATABASE TO ENSURE MESSAGE IS WORKS WITH REGISTERED USERS
+        [HttpGet]
+        public int replyToMsg(Guid id, String msg)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var message = unitOfWork.Message.Get(id);
+                Guid userId;
+                                
+                if ((Guid)Session["userId"] != null && message != null)
+                {
+                    userId = (Guid)Session["userId"];
+                    var user = unitOfWork.Owner.Get(userId);
+
+                    var to = Guid.NewGuid();//holders
+                    var from = "";//Guid.NewGuid();//holders
+
+                    Message newMsg = new Message()
+                    {
+                        ID = Guid.NewGuid(),
+                        To = to,
+                        From = from,
+                        Msg = msg,
+                        Email = user.Email,
+                        CellNum = user.CellNum,
+                        Seen = false,
+                        DateTCreated = DateTime.Now
+                    };
+
+                    unitOfWork.Message.Add(newMsg);
+                    unitOfWork.save();
+
+                    return 0;
+                }
+            }
+
+            return 1;
         }
         /*
         /*
@@ -390,11 +456,11 @@ namespace SS.Controllers
         /// returns requition information for the owner
         /// </summary>
         /// <returns></returns>
-        public List<RequisitionViewModel> getRequisitions(UnitOfWork unitOfWork, Guid ownerId)
+        public List<RequisitionViewModel> getRequisitions(UnitOfWork unitOfWork, Guid userId)
         {
             List<RequisitionViewModel> requisitionInfo = null;
 
-            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(ownerId);
+            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(userId);
 
             if (requisitions != null)
             {
