@@ -1,5 +1,18 @@
-﻿//loads properties in the dashboard page
+﻿//points the management action pointer to the selected action
+function pointToSelectedAction(position) {
+    $('.arrow-top').animate({
+        left: position.left + 40
+    });
+}
+
+//loads properties in the dashboard page
 $(document).ready(function () {
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+        trigger: 'hover click',
+        container: 'body'
+    });
+
     //sets configuration for the modal display
     var system = function () {
 
@@ -438,11 +451,13 @@ $(document).ready(function () {
         var fullTxt = $(this).find('.fullTxt');
 
         $(this).parents('ul').find('a').removeClass('active');
-        $(this).parents('ul').find('.txt-btns-container').addClass('hide');
-        $(this).parents('ul').find('.txt-holder').removeClass('fullTxt').addClass('txt');
+       //$(this).parents('ul').find('.txt-btns-container').addClass('hide');
+        //$(this).parents('ul').find('.txt-holder').removeClass('fullTxt').addClass('txt');
+
+        $(this).addClass('active');//makes message active
         
-        if (txt.text() == '') {
-            fullTxt.removeClass('fullTxt').addClass('txt');
+       /* if (txt.text() == '') {
+           // fullTxt.removeClass('fullTxt').addClass('txt');
         } else {
             txt.slideDown('fast', function () {
                 $(this).removeClass('txt').addClass('fullTxt');
@@ -450,7 +465,7 @@ $(document).ready(function () {
 
             $(this).addClass('active');//makes message active
             $(this).parent().find('.txt-btns-container').removeClass('hide');
-        }
+        }*/
 
         $.ajax({
             url: '/landlordmanagement/updateMsgSeen',
@@ -463,6 +478,22 @@ $(document).ready(function () {
                 alert('An error occurred while updating the selected message');
             }
         });
+    });
+
+    $('.management-action a').click(function (event) {
+        event.preventDefault();
+        //distinct selections
+        $('.management-action .active').removeClass('active');
+        $(this).addClass('active');
+
+        var position = $(this).position();
+        pointToSelectedAction(position);
+        
+    });    
+
+    $(window).resize(function () {
+        var position = $('.management-action .active').position();
+        pointToSelectedAction(position);
     });
 
 });

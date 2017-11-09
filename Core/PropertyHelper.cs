@@ -240,6 +240,13 @@ namespace SS.Core
                 return null;
             }
         }
+
+        public static bool isUserOfType(IEnumerable<String> userTypes, String userType)
+        {
+            var count = userTypes.Where(x => x.Equals(userType)).Count();
+
+            return count > 0 ? true : false;
+        }
     }
 }
  

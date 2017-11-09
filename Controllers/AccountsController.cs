@@ -104,12 +104,25 @@ namespace SS.Controllers
 
                             var unitOfWork = new UnitOfWork(dbCtx);
 
-                            bool ownerExist = doesOwnerExist(unitOfWork, model.CellNum);
-                            insertProperty(model, unitOfWork, ownerExist);
+                            var doesUserExist = unitOfWork.User.DoesUserExist(model.Email);
 
-                            if (!ownerExist)
-                                createUserAccount(model);
+                            var user = doesUserExist ? unitOfWork.User.GetUserByEmail(model.Email) : null;
+                            //if user already exists and they are not a property owner, then associate user with that user type as well
+                            //TODO: user's role will have to be manipulated as well
+                            if (user != null)
+                            {
+                                var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
+                                bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
 
+                                if(!isUserPropOwner)
+                                    associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.PropertyOwner);
+                            }
+                            else
+                                user = createUserAccount(unitOfWork, EFPConstants.UserType.PropertyOwner, model);
+                            
+                            insertProperty(model, unitOfWork, user);
+
+                            unitOfWork.save();
                             dbCtxTran.Commit();
                         }
                         catch (Exception ex)
@@ -142,33 +155,53 @@ namespace SS.Controllers
             return Json(errorModel);
         }
 
+        //TODO every one should get an account only realtor and landlord can add unlimited amount of properties without paying the extra cost
         /// <summary>
         /// Creates a membership account for the property owner
         /// </summary>
         /// <param name="model"></param>
-        private void createUserAccount(AdvertisePropertyViewModel model)
+        private User createUserAccount(UnitOfWork unitOfWork, String userType, AdvertisePropertyViewModel model)
         {
+            User user = null;
+
             MembershipCreateStatus status = new MembershipCreateStatus();
-            //create account for non-basic subscriptions
-            if (!model.SubscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
+
+            MembershipUser newUser = Membership.CreateUser(model.Email, model.Password, model.Email, "null", "null", true, out status);
+
+            if (newUser != null)
             {
-                MembershipUser newUser = Membership.CreateUser(model.Email, model.Password, model.Email, "null", "null", true, out status);
-                if (newUser != null)
+                var userID = Guid.NewGuid();
+
+                user = new User()
                 {
-                    addUserToRespectedRole(model.Email, model.SubscriptionType);
-                }
-                else
-                    throw new Exception(GetMembershipErrorMessage(status));
+                    ID = userID,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    CellNum = model.CellNum,
+                    Email = model.Email,
+                    DateTCreated = DateTime.Now
+                };
+
+                unitOfWork.User.Add(user);
+
+                associateUserWithUserType(unitOfWork, userID, userType);
+                addUserToRespectedRole(model.Email, model.SubscriptionType);
             }
+            else
+                throw new Exception(GetMembershipErrorMessage(status));
+
+            return user;
         }
 
         /// <summary>
         /// Inserts the property along with it's owner, subscription period and also the property images
         /// </summary>
         /// <param name="model"></param>
-        private void insertProperty(AdvertisePropertyViewModel model, UnitOfWork unitOfWork, bool ownerExist)
+        private void insertProperty(AdvertisePropertyViewModel model, UnitOfWork unitOfWork, User user)
         {
-            Guid ownerID = ownerExist ? unitOfWork.Owner.GetOwnerIDByCellNum(model.CellNum) : Guid.NewGuid();
+            bool doesOwnerExist = user !=  null && user.Owner.Select(x => x.ID).Count() > 0 ? true : false;
+            Guid ownerID = doesOwnerExist ? user.Owner.Select(x => x.ID).Single() : Guid.NewGuid();
+
             Guid propertyID = Guid.NewGuid();
             String lat = String.Empty;
             String lng = String.Empty;
@@ -184,7 +217,8 @@ namespace SS.Controllers
             {
                 lat = model.saCoordinateLat;
                 lng = model.saCoordinateLng;
-            } else if (!String.IsNullOrEmpty(model.cCoordinateLat) && !String.IsNullOrEmpty(model.cCoordinateLng))
+            }
+            else if (!String.IsNullOrEmpty(model.cCoordinateLat) && !String.IsNullOrEmpty(model.cCoordinateLng))
             {
                 //check if lat and lng is already set; if they are then dont using community
                 if (string.IsNullOrEmpty(lat) && string.IsNullOrEmpty(lng))
@@ -238,7 +272,7 @@ namespace SS.Controllers
                 DateTCreated = DateTime.Now
             };
 
-            if (!ownerExist)
+            if (!doesOwnerExist)
             {
                 Guid guid = Guid.NewGuid();
                 String fileName = String.Empty;
@@ -252,10 +286,7 @@ namespace SS.Controllers
                 Owner owner = new Owner()
                 {
                     ID = ownerID,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    CellNum = model.CellNum,
-                    Email = model.Email,
+                    UserID = user.ID,
                     Organization = model.Organization,
                     LogoUrl = fileName,
                     DateTCreated = DateTime.Now
@@ -268,9 +299,19 @@ namespace SS.Controllers
 
             associateTagsWithProperty(unitOfWork, propertyID, model.selectedTags);
             associateImagesWithProperty(unitOfWork, model.flPropertyPics, propertyID);
+        }
 
+        private void associateUserWithUserType(UnitOfWork unitOfWork, Guid userID, String userType)
+        {
+            UserTypeAssoc userTypeAssoc = new UserTypeAssoc()
+            {
+                ID = Guid.NewGuid(),
+                UserID = userID,
+                UserTypeCode = userType,
+                DateTCreated = DateTime.Now
+            };
 
-            unitOfWork.save();
+            unitOfWork.UserTypeAssoc.Add(userTypeAssoc);
         }
 
         /// <summary>
@@ -313,15 +354,25 @@ namespace SS.Controllers
             {
                 Roles.AddUserToRole(email, EFPConstants.RoleNames.Realtor.ToString());
             }
+            else if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Basic.ToString());
+            }
+            else if (subscriptionType.Equals(EFPConstants.RoleNames.Tennant.ToString()))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Tennant.ToString());
+            }
+            else
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Consumer.ToString());
         }
 
         /// <summary>
-        ///  checks if a property owner exists before creating a new one
+        ///  checks if a user exists before creating a new one
         /// </summary>
         /// <returns></returns>
-        private bool doesOwnerExist(UnitOfWork unitOfWork, String cellNum)
+        private bool doesUserExist(UnitOfWork unitOfWork, String email)
         {
-            return unitOfWork.Owner.DoesOwnerExist(cellNum);
+            return unitOfWork.User.DoesUserExist(email);
         }
 
         /// <summary>
@@ -329,13 +380,29 @@ namespace SS.Controllers
         /// </summary>
         private void createRolesIfNotExist()
         {
-            if (!Roles.RoleExists("Landlord")
-                    || !Roles.RoleExists("Tennant")
-                    || !Roles.RoleExists("Realtor"))
+            if (!Roles.RoleExists("Basic"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Basic.ToString());
+            }
+
+            if (!Roles.RoleExists("Landlord"))
             {
                 Roles.CreateRole(EFPConstants.RoleNames.Landlord.ToString());
+            }
+
+            if (!Roles.RoleExists("Tennant"))
+            {
                 Roles.CreateRole(EFPConstants.RoleNames.Tennant.ToString());
+            }
+
+            if (!Roles.RoleExists("Realtor"))
+            {
                 Roles.CreateRole(EFPConstants.RoleNames.Realtor.ToString());
+            }
+
+            if (!Roles.RoleExists("Consumer"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Consumer.ToString());
             }
         }
 
@@ -391,8 +458,6 @@ namespace SS.Controllers
                 unitOfWork.PropertyImage.Add(propertyImage);
 
                 uploadPropertyImages(file, fileName);
-
-                uploadedImageNames.Add(fileName);
             }
         }
 
@@ -410,6 +475,8 @@ namespace SS.Controllers
                 file.SaveAs(path);
 
                 PropertyHelper.resizeFile(fileName);
+
+                uploadedImageNames.Add(fileName);
             }
             else
                 throw new Exception("Upload an image file");

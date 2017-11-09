@@ -239,36 +239,6 @@
     <Compile Include="Models\AdType.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\aspnet_Applications.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_Membership.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_Paths.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_PersonalizationAllUsers.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_PersonalizationPerUser.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_Profile.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_Roles.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_SchemaVersions.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_Users.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\aspnet_WebEvent_Events.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Bill.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -294,12 +264,6 @@
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\IUnitOfWork.cs" />
-    <Compile Include="Models\Meeting.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MeetingRequisition.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Message.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -350,6 +314,9 @@
     <Compile Include="Models\Repositories\ITagsRepository.cs" />
     <Compile Include="Models\Repositories\ITagTypeRepository.cs" />
     <Compile Include="Models\Repositories\ITennantRepository.cs" />
+    <Compile Include="Models\Repositories\IUserRepository.cs" />
+    <Compile Include="Models\Repositories\IUserTypeAssocRepository.cs" />
+    <Compile Include="Models\Repositories\IUserTypeRepository.cs" />
     <Compile Include="Models\Repositories\MessageRepository.cs" />
     <Compile Include="Models\Repositories\OwnerRepository.cs" />
     <Compile Include="Models\Repositories\PropertyCategoryRepository.cs" />
@@ -366,13 +333,13 @@
     <Compile Include="Models\Repositories\TagsRepository.cs" />
     <Compile Include="Models\Repositories\TagTypeRepository.cs" />
     <Compile Include="Models\Repositories\TennantRepository.cs" />
+    <Compile Include="Models\Repositories\UserRepository.cs" />
+    <Compile Include="Models\Repositories\UserTypeAssocRepository.cs" />
+    <Compile Include="Models\Repositories\UserTypeRepository.cs" />
     <Compile Include="Models\Subscription.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubscriptionType.cs">
-      <DependentUpon>EasyFindProperties.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Tags.cs">
@@ -385,6 +352,15 @@
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UnitOfWork.cs" />
+    <Compile Include="Models\User.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserType.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserTypeAssoc.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="PropertiesMerge.cs" />
     <Compile Include="UtilityHelper.cs" />
     <Compile Include="Core\TennantModel.cs" />
@@ -403,6 +379,7 @@
     <Compile Include="RoomHelper.cs" />
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
+    <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
     <Compile Include="ViewModels\RequisitionViewModel.cs" />
   </ItemGroup>
@@ -446,6 +423,7 @@
     <Content Include="Views\Shared\_ModalPropertyRequisitionSuccess.cshtml" />
     <Content Include="Views\Shared\_PartialMvcCaptcha.cshtml" />
     <Content Include="Views\Shared\_partialAdvertiseProperty.cshtml" />
+    <Content Include="Views\Shared\Messages.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

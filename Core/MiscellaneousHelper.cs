@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,12 @@ namespace SS.Core
 {
     public static class MiscellaneousHelper
     {
+        /// <summary>
+        /// Populates the error model to be returned
+        /// </summary>
+        /// <param name="modelStateErrorMsgs"></param>
+        /// <param name="addtlErrorMsgs"></param>
+        /// <returns>ErrorModel</returns>
         public static ErrorModel PopulateErrorModel(ModelStateDictionary modelStateErrorMsgs, List<String> addtlErrorMsgs = null)
         {
             ErrorModel errorModel = new ErrorModel();
@@ -26,6 +33,34 @@ namespace SS.Core
             if(addtlErrorMsgs !=null) errorModel.ErrorMessages.AddRange(addtlErrorMsgs.Select(x => x.ToString()));
 
             return errorModel;
+        }
+
+        /// <summary>
+        /// In the event the application has been stopped however user
+        /// was still signed in, then reload this user, userid into a session variable
+        /// </summary>
+        public static Guid getLoggedInUser()
+        {
+            try
+            {
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    if (HttpContext.Current.User.Identity.Name != null)
+                    {
+                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                        var userId = dbCtx.User.Where(x => x.Email == HttpContext.Current.User.Identity.Name)
+                                                        .Select(x => x.ID).Single();
+                        return userId;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unable to restore user's session");
+            }
+
+            return new Guid();
         }
     }
 }

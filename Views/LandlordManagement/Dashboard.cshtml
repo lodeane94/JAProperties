@@ -123,76 +123,76 @@
 }
 
 <div class="row">
-    <div class="col-xs-3">
-        <aside id="quick-action">
-            <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-pushpin"></span>Quick Actions</div>
-            <ul>
-                <li>
-                    <a id="messages" href="~/messages">
-                        <span class="glyph-style glyphicon glyphicon-inbox"></span>Messages
-                        <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
-                    </a>
-                    <ul>
-                        <li>
-                            <a id="new-message" href="">
-                                <span class="glyph-style glyphicon glyphicon-pencil"></span>Compose New
-                            </a>
-                        </li>
-                        <li>
-                            <a id="broadcast-message" href="~/broadcast-message">
-                                <span class="glyph-style glyphicon glyphicon-export"></span>Broadcast New
-                            </a>
-                        </li>
-                        <li>
-                            <a id="view-all-messages" href="~/view-all-messages">
-                                <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                @if (ViewBag.hasAccommodation != 0)
-                {
-                    <li>
-                        <a id="utility-bills" href="~/utility-bills">
-                            <span class="glyph-style glyphicon glyphicon-flash"></span>Utility Bills
-                            <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
-                        </a>
-                        <ul>
-                            <li>
-                                <a id="new-bill" href="~/new-bill">
-                                    <span class="glyph-style glyphicon glyphicon-plus-sign"></span>Add New
-                                </a>
-                            </li>
-                            <li>
-                                <a id="view-all-bills" href="~/view-all-bills">
-                                    <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                }
-            </ul>
-        </aside>
-        <div class="row">&nbsp;</div>
-        <aside id="quick-action">
-            <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-user"></span><lab>Tennants</div>
-            <ul>
-                @{
-                    /*foreach (var tennant in UtilityHelper.loadTennants(HttpContext.Current.User.Identity.Name))
-                    {
-                        <li>
-                            <a id="tennant-management" href="@tennant.ID">
-                                @tennant.FirstName
-                            </a>
-                        </li>
-                    }*/
-                }
-            </ul>
-            <h3>Coming Soon ....</h3>
-        </aside>
-    </div>
-    <div class="dashboard col-md-7">
-        <div class="jumbotron-container" style="display:block;">
+    <!-- <div class="col-xs-3">
+         <aside id="quick-action">
+             <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-pushpin"></span>Quick Actions</div>
+             <ul>
+                 <li>
+                     <a id="messages" href="~/messages">
+                         <span class="glyph-style glyphicon glyphicon-inbox"></span>Messages
+                         <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
+                     </a>
+                     <ul>
+                         <li>
+                             <a id="new-message" href="">
+                                 <span class="glyph-style glyphicon glyphicon-pencil"></span>Compose New
+                             </a>
+                         </li>
+                         <li>
+                             <a id="broadcast-message" href="~/broadcast-message">
+                                 <span class="glyph-style glyphicon glyphicon-export"></span>Broadcast New
+                             </a>
+                         </li>
+                         <li>
+                             <a id="view-all-messages" href="~/view-all-messages">
+                                 <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
+                             </a>
+                         </li>
+                     </ul>
+                 </li>
+                 @if (ViewBag.hasAccommodation != 0)
+                 {
+                     <li>
+                         <a id="utility-bills" href="~/utility-bills">
+                             <span class="glyph-style glyphicon glyphicon-flash"></span>Utility Bills
+                             <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
+                         </a>
+                         <ul>
+                             <li>
+                                 <a id="new-bill" href="~/new-bill">
+                                     <span class="glyph-style glyphicon glyphicon-plus-sign"></span>Add New
+                                 </a>
+                             </li>
+                             <li>
+                                 <a id="view-all-bills" href="~/view-all-bills">
+                                     <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
+                                 </a>
+                             </li>
+                         </ul>
+                     </li>
+                 }
+             </ul>
+         </aside>
+         <div class="row">&nbsp;</div>
+         <aside id="quick-action">
+             <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-user"></span><lab>Tennants</div>
+             <ul>
+                 @{
+                     /*foreach (var tennant in UtilityHelper.loadTennants(HttpContext.Current.User.Identity.Name))
+                     {
+                         <li>
+                             <a id="tennant-management" href="@tennant.ID">
+                                 @tennant.FirstName
+                             </a>
+                         </li>
+                     }*/
+                 }
+             </ul>
+             <h3>Coming Soon ....</h3>
+         </aside>
+     </div>-->
+    <div class="dashboard col-xs-12">
+        <div class="jumbotron-container jumbotron-color-radius" style="display:block;">
             <div class="dashboard-info-headers">
                 Properties Owned
             </div>
@@ -207,6 +207,7 @@
                 </div>
             </div>
         </div>
+        <!--
         <br /><br />
         <div class="jumbotron-container" style="display:block;">
             <div id="d-messages">
@@ -227,7 +228,7 @@
                                         <li class="msg @(count > 2 ? "hide" : "show") @(msg.Seen ? "seen" : "")">
                                             <a href="@msg.ID" id="@msg.ID">
                                                 <div>
-                                                    <span class="glyphicon glyphicon-user img-circle" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:16px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated.ToShortDateString()</em>
+                                                    <span class="glyphicon glyphicon-user img-circle" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:16px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated</em>
                                                     <div class="txt-holder txt">
                                                         @msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this
                                                     </div>
@@ -239,10 +240,10 @@
                                             </div>
                                         </li>
                                     }
-                                    if (count > 2)
-                                    {
-                                        <li><div><button id="view-all-msgs-btn" class="btn btn-accent" style="float:right;margin-top:10px;">View All</button></div></li>
-                                    }
+                                }
+                                if (count > 2)
+                                {
+                                    <li><div><button id="view-all-msgs-btn" class="btn btn-accent" style="float:right;margin-top:10px;">View All</button></div></li>
                                 }
                             }
                             else
@@ -261,7 +262,7 @@
             </div>
             <div class="dashboard-info">
                 <div id="dashboard-requisitions" class="table-responsive">
-                    <table id="tblRequisitions">
+                    <table id="tblRequisitions" width="100%">
                         @{
                             count = 0;
                             bool hasHistory = false;
@@ -286,10 +287,10 @@
                                     {
                                         <tr>
                                             <td class="property_image"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></td>
-                                            <td class="first_name"> @req.PropertyRequisition.FirstName</td>
-                                            <td class="last_name"> @req.PropertyRequisition.LastName</td>
-                                            <td class="email"> @req.PropertyRequisition.Email</td>
-                                            <td class="cell"> @req.PropertyRequisition.CellNum</td>
+                                            <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
+                                            <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
+                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
+                                            <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
                                             <td class="date"> @req.PropertyRequisition.DateTCreated</td>
                                             <td><input id="@req.PropertyRequisition.PropertyID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
                                             <td><input id="@req.PropertyRequisition.PropertyID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
@@ -353,10 +354,10 @@
                                     {
                                         <tr>
                                             <td class="property_image"><img style="width:100px;height:100px" src="~/Uploads/@req.ImageUrl" /></td>
-                                            <td class="first_name"> @req.PropertyRequisition.FirstName</td>
-                                            <td class="last_name"> @req.PropertyRequisition.LastName</td>
-                                            <td class="email"> @req.PropertyRequisition.Email</td>
-                                            <td class="cell"> @req.PropertyRequisition.CellNum</td>
+                                            <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
+                                            <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
+                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
+                                            <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
                                             <td class="date"> @req.PropertyRequisition.DateTCreated</td>
                                             <td>&nbsp;</td>
                                             <td>&nbsp;</td>
@@ -378,6 +379,62 @@
                     </table>
                 </div>
             </div>
+        </div>-->
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="dashboard-info-headers">
+            Actions
+        </div>
+        <div class="management-action">
+            <a  href="messages" class="col-xs-2 action">
+                <div id="messages">
+                    <span class="glyphicon glyphicon-envelope img-circle img-circle-md" style="margin-right:25px;"></span>
+                    <div class="management-action-title">Messages</div>
+                </div>
+            </a>
+            <a href="requisitions" class="col-xs-2 action">
+                <div id="requisitions">
+                    <span class="glyphicon glyphicon-inbox img-circle img-circle-md" style="margin-right:25px;"> </span>
+                    <div class="management-action-title">Requisitions</div>
+                </div>
+            </a>
+            <a href="meetings" class="col-xs-2 action">
+                <div id="meetings">
+                    <span class="glyphicon glyphicon-link img-circle img-circle-md" style="margin-right:25px;"> </span>
+                    <div class="management-action-title">Meetings</div>
+                </div>
+            </a>
+            <a href="complaints" class="col-xs-2 action">
+                <div id="complaints">
+                    <span class="glyphicon glyphicon-warning-sign img-circle img-circle-md" style="margin-right:25px;"> </span>
+                    <div class="management-action-title">Complaints</div>
+                </div>
+            </a>
+            <a href="bills" class="col-xs-2 action">
+                <div id="bills">
+                    <span class="glyphicon glyphicon-credit-card img-circle img-circle-md" style="margin-right:25px;"> </span>
+                    <div class="management-action-title">Bills</div>
+                </div>
+            </a>
+            <a href="tennants" class="col-xs-2 action">
+                <div id="tennants">
+                    <span class="glyphicon glyphicon-user img-circle img-circle-md" style="margin-right:25px;"> </span>
+                    <div class="management-action-title">Tennants</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+<br/>
+<br />
+<div class="row">
+    <div class="col-xs-12 management-action-container">
+        <div class="arrow-top"></div>
+        <div class="management-action-content-holder"><!--Dynamic content will be placed here-->
+            @Html.Partial("Messages")
         </div>
     </div>
 </div>

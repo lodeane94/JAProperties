@@ -7,7 +7,8 @@ namespace SS.Models.Repositories
 {
     public interface IOwnerRepository : IRepository<Owner>
     {
-        bool DoesOwnerExist(String cellNum);
-        Guid GetOwnerIDByCellNum(String cellNum);
+        //bool DoesOwnerExist(String cellNum);
+        //Guid GetOwnerIDByCellNum(String cellNum);
+        Owner GetOwnerByUserID(Guid ID);
     }
 }

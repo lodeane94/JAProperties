@@ -142,38 +142,39 @@ namespace SS.Controllers
         public ActionResult GetAdvertisePropertyView()
         {
             Owner owner = null;
-            Guid ownerId;
+            AdvertisePropertyViewModel newModel = null;
+            Guid userId;
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                if ((Guid)Session["ownerId"] != null)
+                if (Session["userId"] != null)
                 {
-                    ownerId = (Guid)Session["ownerId"];
+                    userId = (Guid)Session["userId"];
 
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                    owner = unitOfWork.Owner.Get(ownerId);
+
+                    owner = unitOfWork.Owner.GetOwnerByUserID(userId);
                 }
+
+                newModel = new AdvertisePropertyViewModel()
+                {
+                    FirstName = owner.User.FirstName,
+                    LastName = owner.User.LastName,
+                    CellNum = owner.User.CellNum,
+                    Email = owner.User.Email,
+                    StreetAddress = "12 Coolshade Drive",
+                    Country = "Jamaica",
+                    Division = "Kingston 19",
+                    Community = "Havendale",
+                    Price = 4000,
+                    SecurityDeposit = 4000,
+                    TermsAgreement = "Terms",
+                    TotRooms = 1,
+                    IsReviewable = true,
+                    Description = "Very good property"
+                };
             }
-
-            AdvertisePropertyViewModel Newmodel = new AdvertisePropertyViewModel()
-            {
-                FirstName = owner.FirstName,
-                LastName = owner.LastName,
-                CellNum = owner.CellNum,
-                Email = owner.Email,
-                StreetAddress = "12 Coolshade Drive",
-                Country = "Jamaica",
-                Division = "Kingston 19",
-                Community = "Havendale",
-                Price = 4000,
-                SecurityDeposit = 4000,
-                TermsAgreement = "Terms",
-                TotRooms = 1,
-                IsReviewable = true,
-                Description = "Very good property"
-            };
-
-            return PartialView("_partialAdvertiseProperty", Newmodel);
+            return PartialView("_partialAdvertiseProperty", newModel);
         }
 
     }

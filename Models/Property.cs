@@ -28,17 +28,22 @@ namespace SS.Models
     
         public System.Guid ID { get; set; }
         public System.Guid OwnerID { get; set; }
+        public string Title { get; set; }
         public string PurposeCode { get; set; }
         public System.Guid TypeID { get; set; }
         public string AdTypeCode { get; set; }
         public string AdPriorityCode { get; set; }
         public string ConditionCode { get; set; }
+        public string CategoryCode { get; set; }
         public string StreetAddress { get; set; }
         public string Division { get; set; }
         public string Community { get; set; }
+        public string NearByEstablishment { get; set; }
         public string Country { get; set; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
+        public string NearByEstablishmentLng { get; set; }
+        public string NearByEstablishmentLat { get; set; }
         public decimal Price { get; set; }
         public Nullable<decimal> SecurityDeposit { get; set; }
         public Nullable<int> Occupancy { get; set; }
@@ -54,11 +59,6 @@ namespace SS.Models
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> DateTModified { get; set; }
         public System.DateTime DateTCreated { get; set; }
-        public string CategoryCode { get; set; }
-        public string NearByEstablishment { get; set; }
-        public string NearByEstablishmentLng { get; set; }
-        public string NearByEstablishmentLat { get; set; }
-        public string Title { get; set; }
     
         public virtual AdPriority AdPriority { get; set; }
         public virtual AdType AdType { get; set; }

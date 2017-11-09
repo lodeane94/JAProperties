@@ -39,7 +39,7 @@ namespace SS.Controllers
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
                          * so that it may be used if a new property is being added*/
 
-                        var userId = dbCtx.Owner.Where(x => x.Email == HttpContext.User.Identity.Name)
+                        var userId = dbCtx.User.Where(x => x.Email == HttpContext.User.Identity.Name)
                                                         .Select(x => x.ID).Single();
                         Session["userId"] = userId;
 
@@ -262,10 +262,11 @@ namespace SS.Controllers
                 {
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
                     //checking if the landlord id was saved in the session
-                    if ((Guid)Session["userId"] != null)
+                    if (Session["userId"] != null)
                     {
                         var userId = (Guid)Session["userId"];
-                        propertyImage = unitOfWork.PropertyImage.GetAllPrimaryPropertyImageByOwnerId(userId);
+                        var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+                        propertyImage = unitOfWork.PropertyImage.GetAllPrimaryPropertyImageByOwnerId(owner.ID);
 
                         foreach (var image in propertyImage)
                         {
@@ -295,9 +296,30 @@ namespace SS.Controllers
         /// <param name="take"></param>
         /// <returns></returns>
         //
-        public IEnumerable<Message> getMessages(UnitOfWork unitOfWork, Guid userId, int take)
+        public IEnumerable<MessageViewModel> getMessages(UnitOfWork unitOfWork, Guid userId, int take)
         {
-            return unitOfWork.Message.GetMsgsForID(userId, take);
+            var messages = unitOfWork.Message.GetMsgsForID(userId, take);
+            List<MessageViewModel> messagesViewModel = new List<MessageViewModel>();
+
+            foreach (var msg in messages)
+            {
+                var user = unitOfWork.User.Get(msg.From);
+
+                MessageViewModel messageViewModel = new MessageViewModel()
+                {
+                    ID = msg.ID,
+                    From = user.FirstName + " " + user.LastName,
+                    CellNum = user.CellNum,
+                    Email = user.Email,
+                    Msg = msg.Msg,
+                    Seen = msg.Seen,
+                    DateTCreated = msg.DateTCreated.ToShortDateString()
+                };
+
+                messagesViewModel.Add(messageViewModel);
+            }
+
+            return messagesViewModel;
         }
 
         /// <summary>
@@ -311,7 +333,7 @@ namespace SS.Controllers
             {
                 var message = dbCtx.Message.Find(id);
 
-                if (!message.Seen.Value)
+                if (!message.Seen)
                 {
                     message.Seen = true;
                     dbCtx.SaveChanges();
@@ -344,7 +366,6 @@ namespace SS.Controllers
         /// replies to the message
         /// </summary>
         /// <param name="id"></param>
-        //TODO REMODEL DATABASE TO ENSURE MESSAGE IS WORKS WITH REGISTERED USERS
         [HttpGet]
         public int replyToMsg(Guid id, String msg)
         {
@@ -358,10 +379,10 @@ namespace SS.Controllers
                 if ((Guid)Session["userId"] != null && message != null)
                 {
                     userId = (Guid)Session["userId"];
-                    var user = unitOfWork.Owner.Get(userId);
+                    var user = unitOfWork.User.Get(userId);
 
-                    var to = Guid.NewGuid();//holders
-                    var from = "";//Guid.NewGuid();//holders
+                    var to = message.From;
+                    var from = userId;
 
                     Message newMsg = new Message()
                     {
@@ -369,8 +390,6 @@ namespace SS.Controllers
                         To = to,
                         From = from,
                         Msg = msg,
-                        Email = user.Email,
-                        CellNum = user.CellNum,
                         Seen = false,
                         DateTCreated = DateTime.Now
                     };
@@ -460,7 +479,8 @@ namespace SS.Controllers
         {
             List<RequisitionViewModel> requisitionInfo = null;
 
-            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(userId);
+            var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
 
             if (requisitions != null)
             {
@@ -470,12 +490,14 @@ namespace SS.Controllers
                 {
                     RequisitionViewModel model = new RequisitionViewModel();
 
+                    model.PropertyRequisition.User = new User();
+
                     model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
                     model.PropertyRequisition.PropertyID = req.PropertyID;
-                    model.PropertyRequisition.FirstName = req.FirstName;
-                    model.PropertyRequisition.LastName = req.LastName;
-                    model.PropertyRequisition.Email = req.Email;
-                    model.PropertyRequisition.CellNum = req.CellNum;
+                    model.PropertyRequisition.User.FirstName = req.User.FirstName;
+                    model.PropertyRequisition.User.LastName = req.User.LastName;
+                    model.PropertyRequisition.User.Email = req.User.Email;
+                    model.PropertyRequisition.User.CellNum = req.User.CellNum;
                     model.PropertyRequisition.Msg = req.Msg;
                     model.PropertyRequisition.IsAccepted = req.IsAccepted;
                     model.PropertyRequisition.DateTCreated = req.DateTCreated;

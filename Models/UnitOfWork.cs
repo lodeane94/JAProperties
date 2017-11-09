@@ -26,6 +26,9 @@ namespace SS.Models
         public IOwnerRepository Owner { get; private set; }
         public ITagsRepository Tags { get; private set; }
         public IMessageRepository Message { get; private set; }
+        public IUserRepository User { get; private set; }
+        public IUserTypeRepository UserType { get; private set; }
+        public IUserTypeAssocRepository UserTypeAssoc { get; private set; }
 
         public UnitOfWork(EasyFindPropertiesEntities dbCtx)
         {
@@ -47,6 +50,9 @@ namespace SS.Models
             Owner = new OwnerRepository(_dbCtx);
             Tags = new TagsRepository(_dbCtx);
             Message = new MessageRepository(_dbCtx);
+            User = new UserRepository(_dbCtx);
+            UserType = new UserTypeRepository(_dbCtx);
+            UserTypeAssoc = new UserTypeAssocRepository(_dbCtx);
         }
 
         public int save()

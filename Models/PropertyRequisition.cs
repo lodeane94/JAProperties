@@ -16,15 +16,13 @@ namespace SS.Models
     {
         public System.Guid ID { get; set; }
         public System.Guid PropertyID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string CellNum { get; set; }
+        public System.Guid UserID { get; set; }
+        public string Msg { get; set; }
         public Nullable<bool> IsAccepted { get; set; }
         public System.DateTime ExpiryDate { get; set; }
         public System.DateTime DateTCreated { get; set; }
-        public string Msg { get; set; }
     
         public virtual Property Property { get; set; }
+        public virtual User User { get; set; }
     }
 }

@@ -20,14 +20,18 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.PropertyRequisition
                 .Where(x => x.PropertyID.Equals(Id)
-                && x.ExpiryDate > DateTime.Now).ToList();
+                && x.ExpiryDate > DateTime.Now)
+                .OrderByDescending(x => x.DateTCreated)
+                .ToList();
         }
 
         public IEnumerable<PropertyRequisition> GetRequestsByOwnerId(Guid Id)
         {
             return EasyFindPropertiesEntities.PropertyRequisition
                 .Where(x => x.Property.OwnerID.Equals(Id)
-                && x.ExpiryDate > DateTime.Now).ToList();
+                && x.ExpiryDate > DateTime.Now)
+                .OrderByDescending(x => x.DateTCreated)
+                .ToList();
         }
     }
 }

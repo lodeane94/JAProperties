@@ -12,14 +12,14 @@ namespace SS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class aspnet_Profile
+    public partial class UserTypeAssoc
     {
-        public System.Guid UserId { get; set; }
-        public string PropertyNames { get; set; }
-        public string PropertyValuesString { get; set; }
-        public byte[] PropertyValuesBinary { get; set; }
-        public System.DateTime LastUpdatedDate { get; set; }
+        public System.Guid ID { get; set; }
+        public System.Guid UserID { get; set; }
+        public string UserTypeCode { get; set; }
+        public System.DateTime DateTCreated { get; set; }
     
-        public virtual aspnet_Users aspnet_Users { get; set; }
+        public virtual UserType UserType { get; set; }
+        public virtual User User { get; set; }
     }
 }

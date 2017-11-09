@@ -123,7 +123,7 @@
             int rentalCount = 0;
             foreach (var property in Model)
             {
-                if (rentalCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+                if (rentalCount <= featuredPropTotImg && property.property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Rent))
                 {
                     for (int i = 1; i <= 10; i++)
                     {

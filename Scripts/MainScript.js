@@ -403,12 +403,13 @@ function loadPropertyTags(selectedItem) {
         $('#subscription-period').prop('disabled', false);
 
         //accounts should only be created for the subscription type of a realtor/landlord
-        var elements = ['#password', '#ConfirmPassword'];
+        //2017-03-11 : removed as decision was made to allow every one to have an account
+       /* var elements = ['#password', '#ConfirmPassword'];
 
         if (selectedItem == 'Landlord' || selectedItem == 'Realtor')
             enableElements(elements);
         else
-            disableElements(elements);
+            disableElements(elements);*/
 
         updateShoppingCart();
 

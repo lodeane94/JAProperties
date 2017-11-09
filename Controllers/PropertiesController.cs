@@ -19,6 +19,17 @@ namespace SS.Controllers
         private string filterString = string.Empty;
         private string conditionToBeRemoved = string.Empty;
 
+        //TODO get function to reload user id upon restart of application
+       /* PropertiesController()
+        {
+            var userId = MiscellaneousHelper.getLoggedInUser();
+
+            if (!userId.Equals(new Guid()))
+            {
+                Session["userId"] = userId;
+            }
+        }*/
+
         public ActionResult getProperties(PropertySearchViewModel model)
         {
             model.take = 1;
@@ -244,44 +255,44 @@ namespace SS.Controllers
                 {
                     using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                     {
-                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                        if (contactPurpose.Equals("requisition"))
+                        if (Session["userId"] != null)
                         {
-                            PropertyRequisition requisition = new PropertyRequisition()
+                            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                            Guid userId = (Guid)Session["userId"];
+
+                            if (contactPurpose.Equals("requisition"))
                             {
-                                ID = Guid.NewGuid(),
-                                PropertyID = request.PropertyID,
-                                FirstName = request.FirstName,
-                                LastName = request.LastName,
-                                Email = request.Email,
-                                CellNum = request.CellNum,
-                                Msg = request.Msg,
-                                IsAccepted = false,
-                                ExpiryDate = DateTime.Now.AddDays(7),//requisition should last for a week
-                                DateTCreated = DateTime.Now
-                            };
+                                PropertyRequisition requisition = new PropertyRequisition()
+                                {
+                                    ID = Guid.NewGuid(),
+                                    UserID = userId,
+                                    PropertyID = request.PropertyID,
+                                    Msg = request.Msg,
+                                    IsAccepted = false,
+                                    ExpiryDate = DateTime.Now.AddDays(7),//requisition should last for a week
+                                    DateTCreated = DateTime.Now
+                                };
 
-                            unitOfWork.PropertyRequisition.Add(requisition);
-                        }
-                        else
-                        {
-                            Message message = new Message()
+                                unitOfWork.PropertyRequisition.Add(requisition);
+                            }
+                            else
                             {
-                                ID = Guid.NewGuid(),
-                                To = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).ID,
-                                From = request.FirstName + " " + request.LastName,
-                                CellNum = request.CellNum,
-                                Email = request.Email,
-                                Msg = request.Msg,
-                                Seen = false,
-                                DateTCreated = DateTime.Now
-                            };
+                                Message message = new Message()
+                                {
+                                    ID = Guid.NewGuid(),
+                                    To = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User.ID,
+                                    From = userId,
+                                    Msg = request.Msg,
+                                    Seen = false,
+                                    DateTCreated = DateTime.Now
+                                };
 
-                            unitOfWork.Message.Add(message);
+                                unitOfWork.Message.Add(message);
+                            }
+
+                            unitOfWork.save();
                         }
-
-                        unitOfWork.save();
                     }
                 }
                 catch (Exception ex)

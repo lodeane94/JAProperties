@@ -7,6 +7,13 @@ namespace SS.Core
 {
     public static class EFPConstants
     {
+        public static class UserType
+        {
+            public static readonly String Consumer = "C";
+            public static readonly String PropertyOwner = "O";
+            public static readonly String Tennant = "T";
+        }
+
         public static class PropertyCategory
         {
             public static readonly String  RealEstate = "R";
@@ -56,7 +63,9 @@ namespace SS.Core
         {
             Landlord,
             Realtor,
-            Tennant
+            Tennant,
+            Basic,
+            Consumer
         }
 
     }

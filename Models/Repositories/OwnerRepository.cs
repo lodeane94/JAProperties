@@ -16,16 +16,21 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public bool DoesOwnerExist(string cellNum)
+        public Owner GetOwnerByUserID(Guid ID)
         {
-            int count = EasyFindPropertiesEntities.Owner.Where(x => x.CellNum.Equals(cellNum)).Count();
-
-            return count > 0 ? true : false;
+            return EasyFindPropertiesEntities.Owner.Where(x => x.UserID.Equals(ID)).Single();
         }
 
-        public Guid GetOwnerIDByCellNum(string cellNum)
-        {
-            return EasyFindPropertiesEntities.Owner.Where(x => x.CellNum.Equals(cellNum)).Select(x => x.ID).Single();
-        }
+        /* public bool DoesOwnerExist(string cellNum)
+         {
+             int count = EasyFindPropertiesEntities.Owner.Where(x => x.CellNum.Equals(cellNum)).Count();
+
+             return count > 0 ? true : false;
+         }
+
+         public Guid GetOwnerIDByCellNum(string cellNum)
+         {
+             return EasyFindPropertiesEntities.Owner.Where(x => x.CellNum.Equals(cellNum)).Select(x => x.ID).Single();
+         }*/
     }
 }

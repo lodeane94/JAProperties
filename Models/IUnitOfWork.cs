@@ -25,6 +25,9 @@ namespace SS.Models
         IOwnerRepository Owner { get; }
         ITagsRepository Tags { get; }
         IMessageRepository Message { get; }
+        IUserRepository User { get; }
+        IUserTypeRepository UserType { get; }
+        IUserTypeAssocRepository UserTypeAssoc { get; }
         int save();
     }
 }

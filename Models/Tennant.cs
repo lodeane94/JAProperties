@@ -22,12 +22,8 @@ namespace SS.Models
         }
     
         public System.Guid ID { get; set; }
+        public System.Guid UserID { get; set; }
         public System.Guid PropertyID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public Nullable<System.DateTime> DOB { get; set; }
-        public string CellNum { get; set; }
         public decimal RentAmt { get; set; }
         public int SettlementPeriod { get; set; }
         public string InstitutionName { get; set; }
@@ -43,5 +39,6 @@ namespace SS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Complaint> Complaint { get; set; }
         public virtual Property Property { get; set; }
+        public virtual User User { get; set; }
     }
 }

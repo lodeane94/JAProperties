@@ -17,8 +17,6 @@ namespace SS
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-             
-        
         }
     }
 }

@@ -12,29 +12,32 @@ namespace SS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class aspnet_Applications
+    public partial class User
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public aspnet_Applications()
+        public User()
         {
-            this.aspnet_Membership = new HashSet<aspnet_Membership>();
-            this.aspnet_Paths = new HashSet<aspnet_Paths>();
-            this.aspnet_Roles = new HashSet<aspnet_Roles>();
-            this.aspnet_Users = new HashSet<aspnet_Users>();
+            this.Owner = new HashSet<Owner>();
+            this.PropertyRequisition = new HashSet<PropertyRequisition>();
+            this.Tennant = new HashSet<Tennant>();
+            this.UserTypeAssoc = new HashSet<UserTypeAssoc>();
         }
     
-        public string ApplicationName { get; set; }
-        public string LoweredApplicationName { get; set; }
-        public System.Guid ApplicationId { get; set; }
-        public string Description { get; set; }
+        public System.Guid ID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string CellNum { get; set; }
+        public string Email { get; set; }
+        public Nullable<System.DateTime> DOB { get; set; }
+        public System.DateTime DateTCreated { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<aspnet_Membership> aspnet_Membership { get; set; }
+        public virtual ICollection<Owner> Owner { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<aspnet_Paths> aspnet_Paths { get; set; }
+        public virtual ICollection<PropertyRequisition> PropertyRequisition { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<aspnet_Roles> aspnet_Roles { get; set; }
+        public virtual ICollection<Tennant> Tennant { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<aspnet_Users> aspnet_Users { get; set; }
+        public virtual ICollection<UserTypeAssoc> UserTypeAssoc { get; set; }
     }
 }

@@ -19,29 +19,24 @@ namespace SS.Models
         {
             this.Bill = new HashSet<Bill>();
             this.Complaint = new HashSet<Complaint>();
-            this.Meeting = new HashSet<Meeting>();
             this.Property = new HashSet<Property>();
             this.Subscription = new HashSet<Subscription>();
         }
     
         public System.Guid ID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string CellNum { get; set; }
-        public string Email { get; set; }
-        public System.DateTime DateTCreated { get; set; }
+        public System.Guid UserID { get; set; }
         public string Organization { get; set; }
         public string LogoUrl { get; set; }
+        public System.DateTime DateTCreated { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Bill> Bill { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Complaint> Complaint { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Meeting> Meeting { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Property> Property { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Subscription> Subscription { get; set; }
+        public virtual User User { get; set; }
     }
 }

@@ -27,137 +27,6 @@
           <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="aspnet_Applications">
-          <Key>
-            <PropertyRef Name="ApplicationId" />
-          </Key>
-          <Property Name="ApplicationName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="LoweredApplicationName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="256" />
-        </EntityType>
-        <EntityType Name="aspnet_Membership">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Password" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="PasswordFormat" Type="int" Nullable="false" />
-          <Property Name="PasswordSalt" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="MobilePIN" Type="nvarchar" MaxLength="16" />
-          <Property Name="Email" Type="nvarchar" MaxLength="256" />
-          <Property Name="LoweredEmail" Type="nvarchar" MaxLength="256" />
-          <Property Name="PasswordQuestion" Type="nvarchar" MaxLength="256" />
-          <Property Name="PasswordAnswer" Type="nvarchar" MaxLength="128" />
-          <Property Name="IsApproved" Type="bit" Nullable="false" />
-          <Property Name="IsLockedOut" Type="bit" Nullable="false" />
-          <Property Name="CreateDate" Type="datetime" Nullable="false" />
-          <Property Name="LastLoginDate" Type="datetime" Nullable="false" />
-          <Property Name="LastPasswordChangedDate" Type="datetime" Nullable="false" />
-          <Property Name="LastLockoutDate" Type="datetime" Nullable="false" />
-          <Property Name="FailedPasswordAttemptCount" Type="int" Nullable="false" />
-          <Property Name="FailedPasswordAttemptWindowStart" Type="datetime" Nullable="false" />
-          <Property Name="FailedPasswordAnswerAttemptCount" Type="int" Nullable="false" />
-          <Property Name="FailedPasswordAnswerAttemptWindowStart" Type="datetime" Nullable="false" />
-          <Property Name="Comment" Type="ntext" />
-        </EntityType>
-        <EntityType Name="aspnet_Paths">
-          <Key>
-            <PropertyRef Name="PathId" />
-          </Key>
-          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="PathId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Path" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="LoweredPath" Type="nvarchar" MaxLength="256" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_PersonalizationAllUsers">
-          <Key>
-            <PropertyRef Name="PathId" />
-          </Key>
-          <Property Name="PathId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="PageSettings" Type="image" Nullable="false" />
-          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_PersonalizationPerUser">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="PathId" Type="uniqueidentifier" />
-          <Property Name="UserId" Type="uniqueidentifier" />
-          <Property Name="PageSettings" Type="image" Nullable="false" />
-          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_Profile">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="PropertyNames" Type="ntext" Nullable="false" />
-          <Property Name="PropertyValuesString" Type="ntext" Nullable="false" />
-          <Property Name="PropertyValuesBinary" Type="image" Nullable="false" />
-          <Property Name="LastUpdatedDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_Roles">
-          <Key>
-            <PropertyRef Name="RoleId" />
-          </Key>
-          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="LoweredRoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="256" />
-        </EntityType>
-        <EntityType Name="aspnet_SchemaVersions">
-          <Key>
-            <PropertyRef Name="Feature" />
-            <PropertyRef Name="CompatibleSchemaVersion" />
-          </Key>
-          <Property Name="Feature" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="CompatibleSchemaVersion" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="IsCurrentVersion" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_Users">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="LoweredUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="MobileAlias" Type="nvarchar" MaxLength="16" />
-          <Property Name="IsAnonymous" Type="bit" Nullable="false" />
-          <Property Name="LastActivityDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_UsersInRoles">
-          <Key>
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="RoleId" />
-          </Key>
-          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_WebEvent_Events">
-          <Key>
-            <PropertyRef Name="EventId" />
-          </Key>
-          <Property Name="EventId" Type="char" MaxLength="32" Nullable="false" />
-          <Property Name="EventTimeUtc" Type="datetime" Nullable="false" />
-          <Property Name="EventTime" Type="datetime" Nullable="false" />
-          <Property Name="EventType" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="EventSequence" Type="decimal" Precision="19" Scale="0" Nullable="false" />
-          <Property Name="EventOccurrence" Type="decimal" Precision="19" Scale="0" Nullable="false" />
-          <Property Name="EventCode" Type="int" Nullable="false" />
-          <Property Name="EventDetailCode" Type="int" Nullable="false" />
-          <Property Name="Message" Type="nvarchar" MaxLength="1024" />
-          <Property Name="ApplicationPath" Type="nvarchar" MaxLength="256" />
-          <Property Name="ApplicationVirtualPath" Type="nvarchar" MaxLength="256" />
-          <Property Name="MachineName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="RequestUrl" Type="nvarchar" MaxLength="1024" />
-          <Property Name="ExceptionType" Type="nvarchar" MaxLength="256" />
-          <Property Name="Details" Type="ntext" />
-        </EntityType>
         <EntityType Name="Bill">
           <Key>
             <PropertyRef Name="ID" />
@@ -194,55 +63,26 @@
           <Property Name="DateResolved" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="Meeting">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="RequesteeId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Location" Type="varchar" MaxLength="200" Nullable="false" />
-          <Property Name="MeetingDate" Type="date" Nullable="false" />
-          <Property Name="MeetingTime" Type="time" Precision="7" Nullable="false" />
-          <Property Name="Purpose" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="MeetingRequisition">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="75" />
-          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
-          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
-        </EntityType>
         <EntityType Name="Message">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="To" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="From" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="From" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Msg" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Seen" Type="bit" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
-          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="75" />
-          <Property Name="Seen" Type="bit" />
         </EntityType>
         <EntityType Name="Owner">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="255" />
-          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Organization" Type="varchar" MaxLength="50" />
           <Property Name="LogoUrl" Type="varchar" MaxLength="255" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Property">
           <Key>
@@ -250,17 +90,22 @@
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="OwnerID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="50" />
           <Property Name="PurposeCode" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="TypeID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="AdTypeCode" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="AdPriorityCode" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="ConditionCode" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="CategoryCode" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="StreetAddress" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="Division" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="Community" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Division" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Community" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="NearByEstablishment" Type="varchar" MaxLength="100" />
           <Property Name="Country" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Longitude" Type="varchar" MaxLength="25" />
           <Property Name="Latitude" Type="varchar" MaxLength="25" />
+          <Property Name="NearByEstablishmentLng" Type="varchar" MaxLength="25" />
+          <Property Name="NearByEstablishmentLat" Type="varchar" MaxLength="25" />
           <Property Name="Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="SecurityDeposit" Type="decimal" Precision="18" Scale="0" />
           <Property Name="Occupancy" Type="int" />
@@ -276,11 +121,6 @@
           <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
-          <Property Name="CategoryCode" Type="char" MaxLength="1" />
-          <Property Name="NearByEstablishment" Type="varchar" MaxLength="50" />
-          <Property Name="NearByEstablishmentLng" Type="varchar" MaxLength="25" />
-          <Property Name="NearByEstablishmentLat" Type="varchar" MaxLength="25" />
-          <Property Name="Title" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -336,14 +176,11 @@
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="75" />
-          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Msg" Type="varchar" MaxLength="255" />
           <Property Name="IsAccepted" Type="bit" />
           <Property Name="ExpiryDate" Type="date" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
-          <Property Name="Msg" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="PropertyType">
           <Key>
@@ -378,16 +215,6 @@
           <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
         <EntityType Name="Tags">
           <Key>
             <PropertyRef Name="ID" />
@@ -411,12 +238,8 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="75" />
-          <Property Name="DOB" Type="date" />
-          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="RentAmt" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="SettlementPeriod" Type="int" Nullable="false" />
           <Property Name="InstitutionName" Type="varchar" MaxLength="255" />
@@ -427,138 +250,36 @@
           <Property Name="ReferencedLetterURL" Type="varchar" MaxLength="255" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
-        <Association Name="FK__aspnet_Me__Appli__3864608B">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Membership" Type="Self.aspnet_Membership" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Membership">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Me__UserI__395884C4">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
-          <End Role="aspnet_Membership" Type="Self.aspnet_Membership" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_Membership">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pa__Appli__69FBBC1F">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Paths">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pe__PathI__6FB49575">
-          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="1" />
-          <End Role="aspnet_PersonalizationAllUsers" Type="Self.aspnet_PersonalizationAllUsers" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Paths">
-              <PropertyRef Name="PathId" />
-            </Principal>
-            <Dependent Role="aspnet_PersonalizationAllUsers">
-              <PropertyRef Name="PathId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pe__PathI__73852659">
-          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="0..1" />
-          <End Role="aspnet_PersonalizationPerUser" Type="Self.aspnet_PersonalizationPerUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Paths">
-              <PropertyRef Name="PathId" />
-            </Principal>
-            <Dependent Role="aspnet_PersonalizationPerUser">
-              <PropertyRef Name="PathId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pe__UserI__74794A92">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="0..1" />
-          <End Role="aspnet_PersonalizationPerUser" Type="Self.aspnet_PersonalizationPerUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_PersonalizationPerUser">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pr__UserI__4D5F7D71">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
-          <End Role="aspnet_Profile" Type="Self.aspnet_Profile" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_Profile">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Ro__Appli__56E8E7AB">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Roles" Type="Self.aspnet_Roles" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Roles">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Us__Appli__282DF8C2">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Users">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Us__RoleI__5BAD9CC8">
-          <End Role="aspnet_Roles" Type="Self.aspnet_Roles" Multiplicity="1" />
-          <End Role="aspnet_UsersInRoles" Type="Self.aspnet_UsersInRoles" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Roles">
-              <PropertyRef Name="RoleId" />
-            </Principal>
-            <Dependent Role="aspnet_UsersInRoles">
-              <PropertyRef Name="RoleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Us__UserI__5AB9788F">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
-          <End Role="aspnet_UsersInRoles" Type="Self.aspnet_UsersInRoles" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_UsersInRoles">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CellNum" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DOB" Type="date" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserTypeAssoc">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserTypeCode" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <Association Name="fk_bill_owner_id">
           <End Role="Owner" Type="Self.Owner" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -647,29 +368,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_meeting_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+        <Association Name="fk_owner_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <End Role="Owner" Type="Self.Owner" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Owner">
+            <Principal Role="User">
               <PropertyRef Name="ID" />
             </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="OwnerID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_meeting_requestee_id">
-          <End Role="MeetingRequisition" Type="Self.MeetingRequisition" Multiplicity="1" />
-          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MeetingRequisition">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="RequesteeId" />
+            <Dependent Role="Owner">
+              <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -698,7 +407,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_category_code">
-          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="0..1" />
+          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
           <End Role="Property" Type="Self.Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyCategory">
@@ -786,6 +495,18 @@
             </Principal>
             <Dependent Role="PropertyRequisition">
               <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_requisition_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="PropertyRequisition" Type="Self.PropertyRequisition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyRequisition">
+              <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -891,25 +612,48 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_tennant_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Tennant" Type="Self.Tennant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tennant">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_userTypeAssoc_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="UserTypeAssoc" Type="Self.UserTypeAssoc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserTypeAssoc">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_userTypeAssoc_user_type_code">
+          <End Role="UserType" Type="Self.UserType" Multiplicity="1" />
+          <End Role="UserTypeAssoc" Type="Self.UserTypeAssoc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserTypeAssoc">
+              <PropertyRef Name="UserTypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="EasyFindPropertiesModelStoreContainer">
           <EntitySet Name="AdPriority" EntityType="Self.AdPriority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AdType" EntityType="Self.AdType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_Applications" EntityType="Self.aspnet_Applications" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_Membership" EntityType="Self.aspnet_Membership" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_Paths" EntityType="Self.aspnet_Paths" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_PersonalizationAllUsers" EntityType="Self.aspnet_PersonalizationAllUsers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_PersonalizationPerUser" EntityType="Self.aspnet_PersonalizationPerUser" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_Profile" EntityType="Self.aspnet_Profile" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_Roles" EntityType="Self.aspnet_Roles" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_SchemaVersions" EntityType="Self.aspnet_SchemaVersions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_Users" EntityType="Self.aspnet_Users" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_UsersInRoles" EntityType="Self.aspnet_UsersInRoles" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="aspnet_WebEvent_Events" EntityType="Self.aspnet_WebEvent_Events" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bill" EntityType="Self.Bill" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BillType" EntityType="Self.BillType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Complaint" EntityType="Self.Complaint" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Meeting" EntityType="Self.Meeting" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="MeetingRequisition" EntityType="Self.MeetingRequisition" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Owner" EntityType="Self.Owner" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Property" EntityType="Self.Property" Schema="dbo" store:Type="Tables" />
@@ -922,54 +666,12 @@
           <EntitySet Name="PropertyType" EntityType="Self.PropertyType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscription" EntityType="Self.Subscription" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubscriptionType" EntityType="Self.SubscriptionType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tags" EntityType="Self.Tags" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TagType" EntityType="Self.TagType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tennant" EntityType="Self.Tennant" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__aspnet_Me__Appli__3864608B" Association="Self.FK__aspnet_Me__Appli__3864608B">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Me__UserI__395884C4" Association="Self.FK__aspnet_Me__UserI__395884C4">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pa__Appli__69FBBC1F" Association="Self.FK__aspnet_Pa__Appli__69FBBC1F">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pe__PathI__6FB49575" Association="Self.FK__aspnet_Pe__PathI__6FB49575">
-            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
-            <End Role="aspnet_PersonalizationAllUsers" EntitySet="aspnet_PersonalizationAllUsers" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pe__PathI__73852659" Association="Self.FK__aspnet_Pe__PathI__73852659">
-            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
-            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pe__UserI__74794A92" Association="Self.FK__aspnet_Pe__UserI__74794A92">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pr__UserI__4D5F7D71" Association="Self.FK__aspnet_Pr__UserI__4D5F7D71">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_Profile" EntitySet="aspnet_Profile" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Ro__Appli__56E8E7AB" Association="Self.FK__aspnet_Ro__Appli__56E8E7AB">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Us__Appli__282DF8C2" Association="Self.FK__aspnet_Us__Appli__282DF8C2">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Us__RoleI__5BAD9CC8" Association="Self.FK__aspnet_Us__RoleI__5BAD9CC8">
-            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
-            <End Role="aspnet_UsersInRoles" EntitySet="aspnet_UsersInRoles" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Us__UserI__5AB9788F" Association="Self.FK__aspnet_Us__UserI__5AB9788F">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_UsersInRoles" EntitySet="aspnet_UsersInRoles" />
-          </AssociationSet>
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserType" EntityType="Self.UserType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserTypeAssoc" EntityType="Self.UserTypeAssoc" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="fk_bill_owner_id" Association="Self.fk_bill_owner_id">
             <End Role="Owner" EntitySet="Owner" />
             <End Role="Bill" EntitySet="Bill" />
@@ -998,13 +700,9 @@
             <End Role="Tennant" EntitySet="Tennant" />
             <End Role="Complaint" EntitySet="Complaint" />
           </AssociationSet>
-          <AssociationSet Name="fk_meeting_owner_id" Association="Self.fk_meeting_owner_id">
+          <AssociationSet Name="fk_owner_user_id" Association="Self.fk_owner_user_id">
+            <End Role="User" EntitySet="User" />
             <End Role="Owner" EntitySet="Owner" />
-            <End Role="Meeting" EntitySet="Meeting" />
-          </AssociationSet>
-          <AssociationSet Name="fk_meeting_requestee_id" Association="Self.fk_meeting_requestee_id">
-            <End Role="MeetingRequisition" EntitySet="MeetingRequisition" />
-            <End Role="Meeting" EntitySet="Meeting" />
           </AssociationSet>
           <AssociationSet Name="fk_property_ad_priority_code" Association="Self.fk_property_ad_priority_code">
             <End Role="AdPriority" EntitySet="AdPriority" />
@@ -1042,6 +740,10 @@
             <End Role="Property" EntitySet="Property" />
             <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
           </AssociationSet>
+          <AssociationSet Name="fk_property_requisition_user_id" Association="Self.fk_property_requisition_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
+          </AssociationSet>
           <AssociationSet Name="fk_property_type_category_code" Association="Self.fk_property_type_category_code">
             <End Role="PropertyCategory" EntitySet="PropertyCategory" />
             <End Role="PropertyType" EntitySet="PropertyType" />
@@ -1074,177 +776,187 @@
             <End Role="Property" EntitySet="Property" />
             <End Role="Tennant" EntitySet="Tennant" />
           </AssociationSet>
+          <AssociationSet Name="fk_tennant_user_id" Association="Self.fk_tennant_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Tennant" EntitySet="Tennant" />
+          </AssociationSet>
+          <AssociationSet Name="fk_userTypeAssoc_user_id" Association="Self.fk_userTypeAssoc_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserTypeAssoc" EntitySet="UserTypeAssoc" />
+          </AssociationSet>
+          <AssociationSet Name="fk_userTypeAssoc_user_type_code" Association="Self.fk_userTypeAssoc_user_type_code">
+            <End Role="UserType" EntitySet="UserType" />
+            <End Role="UserTypeAssoc" EntitySet="UserTypeAssoc" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EasyFindPropertiesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="EasyFindPropertiesEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AdPriority" EntityType="EasyFindPropertiesModel.AdPriority" />
+          <EntitySet Name="AdType" EntityType="EasyFindPropertiesModel.AdType" />
+          <EntitySet Name="Bill" EntityType="EasyFindPropertiesModel.Bill" />
+          <EntitySet Name="BillType" EntityType="EasyFindPropertiesModel.BillType" />
+          <EntitySet Name="Complaint" EntityType="EasyFindPropertiesModel.Complaint" />
+          <EntitySet Name="Owner" EntityType="EasyFindPropertiesModel.Owner" />
+          <EntitySet Name="Property" EntityType="EasyFindPropertiesModel.Property" />
+          <EntitySet Name="PropertyCategory" EntityType="EasyFindPropertiesModel.PropertyCategory" />
+          <EntitySet Name="PropertyCondition" EntityType="EasyFindPropertiesModel.PropertyCondition" />
+          <EntitySet Name="PropertyImage" EntityType="EasyFindPropertiesModel.PropertyImage" />
+          <EntitySet Name="PropertyPurpose" EntityType="EasyFindPropertiesModel.PropertyPurpose" />
+          <EntitySet Name="PropertyRating" EntityType="EasyFindPropertiesModel.PropertyRating" />
+          <EntitySet Name="PropertyRequisition" EntityType="EasyFindPropertiesModel.PropertyRequisition" />
+          <EntitySet Name="PropertyType" EntityType="EasyFindPropertiesModel.PropertyType" />
+          <EntitySet Name="Subscription" EntityType="EasyFindPropertiesModel.Subscription" />
+          <EntitySet Name="SubscriptionType" EntityType="EasyFindPropertiesModel.SubscriptionType" />
+          <EntitySet Name="Tags" EntityType="EasyFindPropertiesModel.Tags" />
+          <EntitySet Name="TagType" EntityType="EasyFindPropertiesModel.TagType" />
+          <EntitySet Name="Tennant" EntityType="EasyFindPropertiesModel.Tennant" />
+          <EntitySet Name="UserType" EntityType="EasyFindPropertiesModel.UserType" />
+          <EntitySet Name="UserTypeAssoc" EntityType="EasyFindPropertiesModel.UserTypeAssoc" />
+          <AssociationSet Name="fk_property_ad_priority_code" Association="EasyFindPropertiesModel.fk_property_ad_priority_code">
+            <End Role="AdPriority" EntitySet="AdPriority" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_ad_type_code" Association="EasyFindPropertiesModel.fk_property_ad_type_code">
+            <End Role="AdType" EntitySet="AdType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_owner_id" Association="EasyFindPropertiesModel.fk_bill_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_property_id" Association="EasyFindPropertiesModel.fk_bill_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_tennant_id" Association="EasyFindPropertiesModel.fk_bill_tennant_id">
+            <End Role="Tennant" EntitySet="Tennant" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_bill_type_code" Association="EasyFindPropertiesModel.fk_bill_type_code">
+            <End Role="BillType" EntitySet="BillType" />
+            <End Role="Bill" EntitySet="Bill" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_owner_id" Association="EasyFindPropertiesModel.fk_complaint_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_property_id" Association="EasyFindPropertiesModel.fk_complaint_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_complaint_tennant_id" Association="EasyFindPropertiesModel.fk_complaint_tennant_id">
+            <End Role="Tennant" EntitySet="Tennant" />
+            <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_owner_id" Association="EasyFindPropertiesModel.fk_property_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscription_owner_id" Association="EasyFindPropertiesModel.fk_subscription_owner_id">
+            <End Role="Owner" EntitySet="Owner" />
+            <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_category_code" Association="EasyFindPropertiesModel.fk_property_category_code">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_condition_code" Association="EasyFindPropertiesModel.fk_property_condition_code">
+            <End Role="PropertyCondition" EntitySet="PropertyCondition" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_image_property_id" Association="EasyFindPropertiesModel.fk_property_image_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyImage" EntitySet="PropertyImage" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_purpose_code" Association="EasyFindPropertiesModel.fk_property_purpose_code">
+            <End Role="PropertyPurpose" EntitySet="PropertyPurpose" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_rating_property_id" Association="EasyFindPropertiesModel.fk_property_rating_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyRating" EntitySet="PropertyRating" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_requisition_property_id" Association="EasyFindPropertiesModel.fk_property_requisition_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_type_id" Association="EasyFindPropertiesModel.fk_property_type_id">
+            <End Role="PropertyType" EntitySet="PropertyType" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tags_property_id" Association="EasyFindPropertiesModel.fk_tags_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tennant_property_id" Association="EasyFindPropertiesModel.fk_tennant_property_id">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="Tennant" EntitySet="Tennant" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_type_category_code" Association="EasyFindPropertiesModel.fk_property_type_category_code">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="PropertyType" EntitySet="PropertyType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tag_type_property_category_id" Association="EasyFindPropertiesModel.fk_tag_type_property_category_id">
+            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
+            <End Role="TagType" EntitySet="TagType" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscription_type_code" Association="EasyFindPropertiesModel.fk_subscription_type_code">
+            <End Role="SubscriptionType" EntitySet="SubscriptionType" />
+            <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tags_type_id" Association="EasyFindPropertiesModel.fk_tags_type_id">
+            <End Role="TagType" EntitySet="TagType" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="fk_userTypeAssoc_user_type_code" Association="EasyFindPropertiesModel.fk_userTypeAssoc_user_type_code">
+            <End Role="UserType" EntitySet="UserType" />
+            <End Role="UserTypeAssoc" EntitySet="UserTypeAssoc" />
+          </AssociationSet>
+          <EntitySet Name="User" EntityType="EasyFindPropertiesModel.User" />
+          <AssociationSet Name="fk_owner_user_id" Association="EasyFindPropertiesModel.fk_owner_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Owner" EntitySet="Owner" />
+          </AssociationSet>
+          <AssociationSet Name="fk_property_requisition_user_id" Association="EasyFindPropertiesModel.fk_property_requisition_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tennant_user_id" Association="EasyFindPropertiesModel.fk_tennant_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Tennant" EntitySet="Tennant" />
+          </AssociationSet>
+          <AssociationSet Name="fk_userTypeAssoc_user_id" Association="EasyFindPropertiesModel.fk_userTypeAssoc_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserTypeAssoc" EntitySet="UserTypeAssoc" />
+          </AssociationSet>
+          <EntitySet Name="Message" EntityType="EasyFindPropertiesModel.Message" />
+        </EntityContainer>
         <EntityType Name="AdPriority">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Cost" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Cost" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="Value" Type="Int32" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="ModifiedBy" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="DateTModified" Type="DateTime" Precision="3" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_ad_priority_code" FromRole="AdPriority" ToRole="Property" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_ad_priority_code" FromRole="AdPriority" ToRole="Property" />
         </EntityType>
         <EntityType Name="AdType">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_ad_type_code" FromRole="AdType" ToRole="Property" />
-        </EntityType>
-        <EntityType Name="aspnet_Applications">
-          <Key>
-            <PropertyRef Name="ApplicationId" />
-          </Key>
-          <Property Name="ApplicationName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LoweredApplicationName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="aspnet_Membership" Relationship="Self.FK__aspnet_Me__Appli__3864608B" FromRole="aspnet_Applications" ToRole="aspnet_Membership" />
-          <NavigationProperty Name="aspnet_Paths" Relationship="Self.FK__aspnet_Pa__Appli__69FBBC1F" FromRole="aspnet_Applications" ToRole="aspnet_Paths" />
-          <NavigationProperty Name="aspnet_Roles" Relationship="Self.FK__aspnet_Ro__Appli__56E8E7AB" FromRole="aspnet_Applications" ToRole="aspnet_Roles" />
-          <NavigationProperty Name="aspnet_Users" Relationship="Self.FK__aspnet_Us__Appli__282DF8C2" FromRole="aspnet_Applications" ToRole="aspnet_Users" />
-        </EntityType>
-        <EntityType Name="aspnet_Membership">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PasswordFormat" Type="Int32" Nullable="false" />
-          <Property Name="PasswordSalt" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="MobilePIN" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="LoweredEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="PasswordQuestion" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="PasswordAnswer" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="IsApproved" Type="Boolean" Nullable="false" />
-          <Property Name="IsLockedOut" Type="Boolean" Nullable="false" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastLoginDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastPasswordChangedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastLockoutDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="FailedPasswordAttemptCount" Type="Int32" Nullable="false" />
-          <Property Name="FailedPasswordAttemptWindowStart" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="FailedPasswordAnswerAttemptCount" Type="Int32" Nullable="false" />
-          <Property Name="FailedPasswordAnswerAttemptWindowStart" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="aspnet_Applications" Relationship="Self.FK__aspnet_Me__Appli__3864608B" FromRole="aspnet_Membership" ToRole="aspnet_Applications" />
-          <NavigationProperty Name="aspnet_Users" Relationship="Self.FK__aspnet_Me__UserI__395884C4" FromRole="aspnet_Membership" ToRole="aspnet_Users" />
-        </EntityType>
-        <EntityType Name="aspnet_Paths">
-          <Key>
-            <PropertyRef Name="PathId" />
-          </Key>
-          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
-          <Property Name="PathId" Type="Guid" Nullable="false" />
-          <Property Name="Path" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LoweredPath" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="aspnet_Applications" Relationship="Self.FK__aspnet_Pa__Appli__69FBBC1F" FromRole="aspnet_Paths" ToRole="aspnet_Applications" />
-          <NavigationProperty Name="aspnet_PersonalizationAllUsers" Relationship="Self.FK__aspnet_Pe__PathI__6FB49575" FromRole="aspnet_Paths" ToRole="aspnet_PersonalizationAllUsers" />
-          <NavigationProperty Name="aspnet_PersonalizationPerUser" Relationship="Self.FK__aspnet_Pe__PathI__73852659" FromRole="aspnet_Paths" ToRole="aspnet_PersonalizationPerUser" />
-        </EntityType>
-        <EntityType Name="aspnet_PersonalizationAllUsers">
-          <Key>
-            <PropertyRef Name="PathId" />
-          </Key>
-          <Property Name="PathId" Type="Guid" Nullable="false" />
-          <Property Name="PageSettings" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
-          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="aspnet_Paths" Relationship="Self.FK__aspnet_Pe__PathI__6FB49575" FromRole="aspnet_PersonalizationAllUsers" ToRole="aspnet_Paths" />
-        </EntityType>
-        <EntityType Name="aspnet_PersonalizationPerUser">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="PathId" Type="Guid" />
-          <Property Name="UserId" Type="Guid" />
-          <Property Name="PageSettings" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
-          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="aspnet_Paths" Relationship="Self.FK__aspnet_Pe__PathI__73852659" FromRole="aspnet_PersonalizationPerUser" ToRole="aspnet_Paths" />
-          <NavigationProperty Name="aspnet_Users" Relationship="Self.FK__aspnet_Pe__UserI__74794A92" FromRole="aspnet_PersonalizationPerUser" ToRole="aspnet_Users" />
-        </EntityType>
-        <EntityType Name="aspnet_Profile">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="PropertyNames" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PropertyValuesString" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PropertyValuesBinary" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
-          <Property Name="LastUpdatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="aspnet_Users" Relationship="Self.FK__aspnet_Pr__UserI__4D5F7D71" FromRole="aspnet_Profile" ToRole="aspnet_Users" />
-        </EntityType>
-        <EntityType Name="aspnet_Roles">
-          <Key>
-            <PropertyRef Name="RoleId" />
-          </Key>
-          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
-          <Property Name="RoleId" Type="Guid" Nullable="false" />
-          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LoweredRoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="aspnet_Applications" Relationship="Self.FK__aspnet_Ro__Appli__56E8E7AB" FromRole="aspnet_Roles" ToRole="aspnet_Applications" />
-          <NavigationProperty Name="aspnet_Users" Relationship="Self.aspnet_UsersInRoles" FromRole="aspnet_Roles" ToRole="aspnet_Users" />
-        </EntityType>
-        <EntityType Name="aspnet_SchemaVersions">
-          <Key>
-            <PropertyRef Name="Feature" />
-            <PropertyRef Name="CompatibleSchemaVersion" />
-          </Key>
-          <Property Name="Feature" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CompatibleSchemaVersion" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IsCurrentVersion" Type="Boolean" Nullable="false" />
-        </EntityType>
-        <EntityType Name="aspnet_Users">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LoweredUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="MobileAlias" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
-          <Property Name="IsAnonymous" Type="Boolean" Nullable="false" />
-          <Property Name="LastActivityDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="aspnet_Applications" Relationship="Self.FK__aspnet_Us__Appli__282DF8C2" FromRole="aspnet_Users" ToRole="aspnet_Applications" />
-          <NavigationProperty Name="aspnet_Membership" Relationship="Self.FK__aspnet_Me__UserI__395884C4" FromRole="aspnet_Users" ToRole="aspnet_Membership" />
-          <NavigationProperty Name="aspnet_PersonalizationPerUser" Relationship="Self.FK__aspnet_Pe__UserI__74794A92" FromRole="aspnet_Users" ToRole="aspnet_PersonalizationPerUser" />
-          <NavigationProperty Name="aspnet_Profile" Relationship="Self.FK__aspnet_Pr__UserI__4D5F7D71" FromRole="aspnet_Users" ToRole="aspnet_Profile" />
-          <NavigationProperty Name="aspnet_Roles" Relationship="Self.aspnet_UsersInRoles" FromRole="aspnet_Users" ToRole="aspnet_Roles" />
-        </EntityType>
-        <EntityType Name="aspnet_WebEvent_Events">
-          <Key>
-            <PropertyRef Name="EventId" />
-          </Key>
-          <Property Name="EventId" Type="String" MaxLength="32" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="EventTimeUtc" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EventTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EventType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="EventSequence" Type="Decimal" Precision="19" Scale="0" Nullable="false" />
-          <Property Name="EventOccurrence" Type="Decimal" Precision="19" Scale="0" Nullable="false" />
-          <Property Name="EventCode" Type="Int32" Nullable="false" />
-          <Property Name="EventDetailCode" Type="Int32" Nullable="false" />
-          <Property Name="Message" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
-          <Property Name="ApplicationPath" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="ApplicationVirtualPath" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="MachineName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="RequestUrl" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
-          <Property Name="ExceptionType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Details" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_ad_type_code" FromRole="AdType" ToRole="Property" />
         </EntityType>
         <EntityType Name="Bill">
           <Key>
@@ -1254,25 +966,25 @@
           <Property Name="OwnerID" Type="Guid" Nullable="false" />
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
           <Property Name="TennantID" Type="Guid" Nullable="false" />
-          <Property Name="TypeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="AmtDue" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TypeCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="AmtDue" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="IsPaid" Type="Boolean" Nullable="false" />
           <Property Name="BillURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateDue" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Owner" Relationship="Self.fk_bill_owner_id" FromRole="Bill" ToRole="Owner" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_bill_property_id" FromRole="Bill" ToRole="Property" />
-          <NavigationProperty Name="Tennant" Relationship="Self.fk_bill_tennant_id" FromRole="Bill" ToRole="Tennant" />
-          <NavigationProperty Name="BillType" Relationship="Self.fk_bill_type_code" FromRole="Bill" ToRole="BillType" />
+          <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_bill_owner_id" FromRole="Bill" ToRole="Owner" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_bill_property_id" FromRole="Bill" ToRole="Property" />
+          <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_bill_tennant_id" FromRole="Bill" ToRole="Tennant" />
+          <NavigationProperty Name="BillType" Relationship="EasyFindPropertiesModel.fk_bill_type_code" FromRole="Bill" ToRole="BillType" />
         </EntityType>
         <EntityType Name="BillType">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_type_code" FromRole="BillType" ToRole="Bill" />
+          <NavigationProperty Name="Bill" Relationship="EasyFindPropertiesModel.fk_bill_type_code" FromRole="BillType" ToRole="Bill" />
         </EntityType>
         <EntityType Name="Complaint">
           <Key>
@@ -1282,58 +994,28 @@
           <Property Name="OwnerID" Type="Guid" Nullable="false" />
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
           <Property Name="TennantID" Type="Guid" Nullable="false" />
-          <Property Name="Issue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Issue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="IsResolved" Type="Boolean" />
           <Property Name="DateResolved" Type="DateTime" Precision="3" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Owner" Relationship="Self.fk_complaint_owner_id" FromRole="Complaint" ToRole="Owner" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_complaint_property_id" FromRole="Complaint" ToRole="Property" />
-          <NavigationProperty Name="Tennant" Relationship="Self.fk_complaint_tennant_id" FromRole="Complaint" ToRole="Tennant" />
-        </EntityType>
-        <EntityType Name="Meeting">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="OwnerID" Type="Guid" Nullable="false" />
-          <Property Name="RequesteeId" Type="Guid" Nullable="false" />
-          <Property Name="Location" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="MeetingTime" Type="Time" Nullable="false" Precision="7" />
-          <Property Name="Purpose" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Owner" Relationship="Self.fk_meeting_owner_id" FromRole="Meeting" ToRole="Owner" />
-          <NavigationProperty Name="MeetingRequisition" Relationship="Self.fk_meeting_requestee_id" FromRole="Meeting" ToRole="MeetingRequisition" />
-        </EntityType>
-        <EntityType Name="MeetingRequisition">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
-          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Meeting" Relationship="Self.fk_meeting_requestee_id" FromRole="MeetingRequisition" ToRole="Meeting" />
+          <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_complaint_owner_id" FromRole="Complaint" ToRole="Owner" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_complaint_property_id" FromRole="Complaint" ToRole="Property" />
+          <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_complaint_tennant_id" FromRole="Complaint" ToRole="Tennant" />
         </EntityType>
         <EntityType Name="Owner">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_owner_id" FromRole="Owner" ToRole="Bill" />
-          <NavigationProperty Name="Complaint" Relationship="Self.fk_complaint_owner_id" FromRole="Owner" ToRole="Complaint" />
-          <NavigationProperty Name="Meeting" Relationship="Self.fk_meeting_owner_id" FromRole="Owner" ToRole="Meeting" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_owner_id" FromRole="Owner" ToRole="Property" />
-          <NavigationProperty Name="Subscription" Relationship="Self.fk_subscription_owner_id" FromRole="Owner" ToRole="Subscription" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
           <Property Name="Organization" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="LogoUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Bill" Relationship="EasyFindPropertiesModel.fk_bill_owner_id" FromRole="Owner" ToRole="Bill" />
+          <NavigationProperty Name="Complaint" Relationship="EasyFindPropertiesModel.fk_complaint_owner_id" FromRole="Owner" ToRole="Complaint" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_owner_id" FromRole="Owner" ToRole="Property" />
+          <NavigationProperty Name="Subscription" Relationship="EasyFindPropertiesModel.fk_subscription_owner_id" FromRole="Owner" ToRole="Subscription" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_owner_user_id" FromRole="Owner" ToRole="User" />
         </EntityType>
         <EntityType Name="Property">
           <Key>
@@ -1341,22 +1023,27 @@
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="OwnerID" Type="Guid" Nullable="false" />
-          <Property Name="PurposeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PurposeCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="TypeID" Type="Guid" Nullable="false" />
-          <Property Name="AdTypeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="AdPriorityCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="ConditionCode" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="StreetAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Division" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Community" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="AdTypeCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="AdPriorityCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="ConditionCode" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="CategoryCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="StreetAddress" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Division" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Community" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="NearByEstablishment" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Country" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Longitude" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="Latitude" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="NearByEstablishmentLng" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="NearByEstablishmentLat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="SecurityDeposit" Type="Decimal" Precision="18" Scale="0" />
           <Property Name="Occupancy" Type="Int32" />
           <Property Name="GenderPreferenceCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Availability" Type="Boolean" Nullable="false" />
           <Property Name="EnrolmentKey" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
           <Property Name="TermsAgreement" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -1367,47 +1054,42 @@
           <Property Name="ModifiedBy" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="DateTModified" Type="DateTime" Precision="3" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CategoryCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="AdPriority" Relationship="Self.fk_property_ad_priority_code" FromRole="Property" ToRole="AdPriority" />
-          <NavigationProperty Name="AdType" Relationship="Self.fk_property_ad_type_code" FromRole="Property" ToRole="AdType" />
-          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_property_id" FromRole="Property" ToRole="Bill" />
-          <NavigationProperty Name="Complaint" Relationship="Self.fk_complaint_property_id" FromRole="Property" ToRole="Complaint" />
-          <NavigationProperty Name="Owner" Relationship="Self.fk_property_owner_id" FromRole="Property" ToRole="Owner" />
-          <NavigationProperty Name="PropertyCategory" Relationship="Self.fk_property_category_code" FromRole="Property" ToRole="PropertyCategory" />
-          <NavigationProperty Name="PropertyCondition" Relationship="Self.fk_property_condition_code" FromRole="Property" ToRole="PropertyCondition" />
-          <NavigationProperty Name="PropertyImage" Relationship="Self.fk_property_image_property_id" FromRole="Property" ToRole="PropertyImage" />
-          <NavigationProperty Name="PropertyPurpose" Relationship="Self.fk_property_purpose_code" FromRole="Property" ToRole="PropertyPurpose" />
-          <NavigationProperty Name="PropertyRating" Relationship="Self.fk_property_rating_property_id" FromRole="Property" ToRole="PropertyRating" />
-          <NavigationProperty Name="PropertyRequisition" Relationship="Self.fk_property_requisition_property_id" FromRole="Property" ToRole="PropertyRequisition" />
-          <NavigationProperty Name="PropertyType" Relationship="Self.fk_property_type_id" FromRole="Property" ToRole="PropertyType" />
-          <NavigationProperty Name="Tags" Relationship="Self.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
-          <NavigationProperty Name="Tennant" Relationship="Self.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
-          <Property Name="NearByEstablishment" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="NearByEstablishmentLng" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="NearByEstablishmentLat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="AdPriority" Relationship="EasyFindPropertiesModel.fk_property_ad_priority_code" FromRole="Property" ToRole="AdPriority" />
+          <NavigationProperty Name="AdType" Relationship="EasyFindPropertiesModel.fk_property_ad_type_code" FromRole="Property" ToRole="AdType" />
+          <NavigationProperty Name="Bill" Relationship="EasyFindPropertiesModel.fk_bill_property_id" FromRole="Property" ToRole="Bill" />
+          <NavigationProperty Name="Complaint" Relationship="EasyFindPropertiesModel.fk_complaint_property_id" FromRole="Property" ToRole="Complaint" />
+          <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_property_owner_id" FromRole="Property" ToRole="Owner" />
+          <NavigationProperty Name="PropertyCategory" Relationship="EasyFindPropertiesModel.fk_property_category_code" FromRole="Property" ToRole="PropertyCategory" />
+          <NavigationProperty Name="PropertyCondition" Relationship="EasyFindPropertiesModel.fk_property_condition_code" FromRole="Property" ToRole="PropertyCondition" />
+          <NavigationProperty Name="PropertyImage" Relationship="EasyFindPropertiesModel.fk_property_image_property_id" FromRole="Property" ToRole="PropertyImage" />
+          <NavigationProperty Name="PropertyPurpose" Relationship="EasyFindPropertiesModel.fk_property_purpose_code" FromRole="Property" ToRole="PropertyPurpose" />
+          <NavigationProperty Name="PropertyRating" Relationship="EasyFindPropertiesModel.fk_property_rating_property_id" FromRole="Property" ToRole="PropertyRating" />
+          <NavigationProperty Name="PropertyRequisition" Relationship="EasyFindPropertiesModel.fk_property_requisition_property_id" FromRole="Property" ToRole="PropertyRequisition" />
+          <NavigationProperty Name="PropertyType" Relationship="EasyFindPropertiesModel.fk_property_type_id" FromRole="Property" ToRole="PropertyType" />
+          <NavigationProperty Name="Tags" Relationship="EasyFindPropertiesModel.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
+          <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_category_code" FromRole="PropertyCategory" ToRole="Property" />
-          <NavigationProperty Name="PropertyType" Relationship="Self.fk_property_type_category_code" FromRole="PropertyCategory" ToRole="PropertyType" />
-          <NavigationProperty Name="TagType" Relationship="Self.fk_tag_type_property_category_id" FromRole="PropertyCategory" ToRole="TagType" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_category_code" FromRole="PropertyCategory" ToRole="Property" />
+          <NavigationProperty Name="PropertyType" Relationship="EasyFindPropertiesModel.fk_property_type_category_code" FromRole="PropertyCategory" ToRole="PropertyType" />
+          <NavigationProperty Name="TagType" Relationship="EasyFindPropertiesModel.fk_tag_type_property_category_id" FromRole="PropertyCategory" ToRole="TagType" />
         </EntityType>
         <EntityType Name="PropertyCondition">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_condition_code" FromRole="PropertyCondition" ToRole="Property" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_condition_code" FromRole="PropertyCondition" ToRole="Property" />
         </EntityType>
         <EntityType Name="PropertyImage">
           <Key>
@@ -1415,20 +1097,20 @@
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
-          <Property Name="ImageURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ImageURL" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="IsPrimaryDisplay" Type="Boolean" Nullable="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_image_property_id" FromRole="PropertyImage" ToRole="Property" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_image_property_id" FromRole="PropertyImage" ToRole="Property" />
         </EntityType>
         <EntityType Name="PropertyPurpose">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_purpose_code" FromRole="PropertyPurpose" ToRole="Property" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_purpose_code" FromRole="PropertyPurpose" ToRole="Property" />
         </EntityType>
         <EntityType Name="PropertyRating">
           <Key>
@@ -1438,9 +1120,9 @@
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
           <Property Name="Ratings" Type="Int32" Nullable="false" />
           <Property Name="Comments" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="CritqueBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CritqueBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_rating_property_id" FromRole="PropertyRating" ToRole="Property" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_rating_property_id" FromRole="PropertyRating" ToRole="Property" />
         </EntityType>
         <EntityType Name="PropertyRequisition">
           <Key>
@@ -1448,26 +1130,24 @@
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
-          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="Msg" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="IsAccepted" Type="Boolean" />
           <Property Name="ExpiryDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_requisition_property_id" FromRole="PropertyRequisition" ToRole="Property" />
-          <Property Name="Msg" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_requisition_property_id" FromRole="PropertyRequisition" ToRole="Property" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_property_requisition_user_id" FromRole="PropertyRequisition" ToRole="User" />
         </EntityType>
         <EntityType Name="PropertyType">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CategoryCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CategoryCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_property_type_id" FromRole="PropertyType" ToRole="Property" />
-          <NavigationProperty Name="PropertyCategory" Relationship="Self.fk_property_type_category_code" FromRole="PropertyType" ToRole="PropertyCategory" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_type_id" FromRole="PropertyType" ToRole="Property" />
+          <NavigationProperty Name="PropertyCategory" Relationship="EasyFindPropertiesModel.fk_property_type_category_code" FromRole="PropertyType" ToRole="PropertyCategory" />
         </EntityType>
         <EntityType Name="Subscription">
           <Key>
@@ -1475,36 +1155,26 @@
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="OwnerID" Type="Guid" Nullable="false" />
-          <Property Name="TypeCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="TypeCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Period" Type="Int32" Nullable="false" />
           <Property Name="StartDate" Type="DateTime" Precision="0" />
           <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
           <Property Name="ModifiedBy" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="DateTModified" Type="DateTime" Precision="3" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Owner" Relationship="Self.fk_subscription_owner_id" FromRole="Subscription" ToRole="Owner" />
-          <NavigationProperty Name="SubscriptionType" Relationship="Self.fk_subscription_type_code" FromRole="Subscription" ToRole="SubscriptionType" />
+          <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_subscription_owner_id" FromRole="Subscription" ToRole="Owner" />
+          <NavigationProperty Name="SubscriptionType" Relationship="EasyFindPropertiesModel.fk_subscription_type_code" FromRole="Subscription" ToRole="SubscriptionType" />
         </EntityType>
         <EntityType Name="SubscriptionType">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="MonthlyCost" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="MonthlyCost" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Subscription" Relationship="Self.fk_subscription_type_code" FromRole="SubscriptionType" ToRole="Subscription" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <NavigationProperty Name="Subscription" Relationship="EasyFindPropertiesModel.fk_subscription_type_code" FromRole="SubscriptionType" ToRole="Subscription" />
         </EntityType>
         <EntityType Name="Tags">
           <Key>
@@ -1514,32 +1184,28 @@
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
           <Property Name="TypeID" Type="Guid" Nullable="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_tags_property_id" FromRole="Tags" ToRole="Property" />
-          <NavigationProperty Name="TagType" Relationship="Self.fk_tags_type_id" FromRole="Tags" ToRole="TagType" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_tags_property_id" FromRole="Tags" ToRole="Property" />
+          <NavigationProperty Name="TagType" Relationship="EasyFindPropertiesModel.fk_tags_type_id" FromRole="Tags" ToRole="TagType" />
         </EntityType>
         <EntityType Name="TagType">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="PropertyCategoryCode" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="PropertyCategoryCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="PropertyCategory" Relationship="Self.fk_tag_type_property_category_id" FromRole="TagType" ToRole="PropertyCategory" />
-          <NavigationProperty Name="Tags" Relationship="Self.fk_tags_type_id" FromRole="TagType" ToRole="Tags" />
+          <NavigationProperty Name="PropertyCategory" Relationship="EasyFindPropertiesModel.fk_tag_type_property_category_id" FromRole="TagType" ToRole="PropertyCategory" />
+          <NavigationProperty Name="Tags" Relationship="EasyFindPropertiesModel.fk_tags_type_id" FromRole="TagType" ToRole="Tags" />
         </EntityType>
         <EntityType Name="Tennant">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
           <Property Name="PropertyID" Type="Guid" Nullable="false" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
-          <Property Name="DOB" Type="DateTime" Precision="0" />
-          <Property Name="CellNum" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="RentAmt" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RentAmt" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="SettlementPeriod" Type="Int32" Nullable="false" />
           <Property Name="InstitutionName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="ProgrammeName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
@@ -1548,13 +1214,35 @@
           <Property Name="PhotoUrl" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="ReferencedLetterURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Bill" Relationship="Self.fk_bill_tennant_id" FromRole="Tennant" ToRole="Bill" />
-          <NavigationProperty Name="Complaint" Relationship="Self.fk_complaint_tennant_id" FromRole="Tennant" ToRole="Complaint" />
-          <NavigationProperty Name="Property" Relationship="Self.fk_tennant_property_id" FromRole="Tennant" ToRole="Property" />
+          <NavigationProperty Name="Bill" Relationship="EasyFindPropertiesModel.fk_bill_tennant_id" FromRole="Tennant" ToRole="Bill" />
+          <NavigationProperty Name="Complaint" Relationship="EasyFindPropertiesModel.fk_complaint_tennant_id" FromRole="Tennant" ToRole="Complaint" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_tennant_property_id" FromRole="Tennant" ToRole="Property" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_tennant_user_id" FromRole="Tennant" ToRole="User" />
+        </EntityType>
+        <EntityType Name="UserType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="UserTypeAssoc" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_type_code" FromRole="UserType" ToRole="UserTypeAssoc" />
+        </EntityType>
+        <EntityType Name="UserTypeAssoc">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="UserTypeCode" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="UserType" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_type_code" FromRole="UserTypeAssoc" ToRole="UserType" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_id" FromRole="UserTypeAssoc" ToRole="User" />
         </EntityType>
         <Association Name="fk_property_ad_priority_code">
-          <End Role="AdPriority" Type="Self.AdPriority" Multiplicity="1" />
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.AdPriority" Role="AdPriority" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AdPriority">
               <PropertyRef Name="ID" />
@@ -1565,8 +1253,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_ad_type_code">
-          <End Role="AdType" Type="Self.AdType" Multiplicity="1" />
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.AdType" Role="AdType" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AdType">
               <PropertyRef Name="ID" />
@@ -1576,119 +1264,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__aspnet_Me__Appli__3864608B">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Membership" Type="Self.aspnet_Membership" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Membership">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pa__Appli__69FBBC1F">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Paths">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Ro__Appli__56E8E7AB">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Roles" Type="Self.aspnet_Roles" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Roles">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Us__Appli__282DF8C2">
-          <End Role="aspnet_Applications" Type="Self.aspnet_Applications" Multiplicity="1" />
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Applications">
-              <PropertyRef Name="ApplicationId" />
-            </Principal>
-            <Dependent Role="aspnet_Users">
-              <PropertyRef Name="ApplicationId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Me__UserI__395884C4">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
-          <End Role="aspnet_Membership" Type="Self.aspnet_Membership" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_Membership">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pe__PathI__6FB49575">
-          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="1" />
-          <End Role="aspnet_PersonalizationAllUsers" Type="Self.aspnet_PersonalizationAllUsers" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Paths">
-              <PropertyRef Name="PathId" />
-            </Principal>
-            <Dependent Role="aspnet_PersonalizationAllUsers">
-              <PropertyRef Name="PathId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pe__PathI__73852659">
-          <End Role="aspnet_Paths" Type="Self.aspnet_Paths" Multiplicity="0..1" />
-          <End Role="aspnet_PersonalizationPerUser" Type="Self.aspnet_PersonalizationPerUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Paths">
-              <PropertyRef Name="PathId" />
-            </Principal>
-            <Dependent Role="aspnet_PersonalizationPerUser">
-              <PropertyRef Name="PathId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pe__UserI__74794A92">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="0..1" />
-          <End Role="aspnet_PersonalizationPerUser" Type="Self.aspnet_PersonalizationPerUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_PersonalizationPerUser">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__aspnet_Pr__UserI__4D5F7D71">
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="1" />
-          <End Role="aspnet_Profile" Type="Self.aspnet_Profile" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="aspnet_Users">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="aspnet_Profile">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_bill_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Owner" Role="Owner" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Bill" Role="Bill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
               <PropertyRef Name="ID" />
@@ -1699,8 +1279,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_bill_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
-          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Bill" Role="Bill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1711,8 +1291,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_bill_tennant_id">
-          <End Role="Tennant" Type="Self.Tennant" Multiplicity="1" />
-          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Tennant" Role="Tennant" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Bill" Role="Bill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Tennant">
               <PropertyRef Name="ID" />
@@ -1723,8 +1303,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_bill_type_code">
-          <End Role="BillType" Type="Self.BillType" Multiplicity="1" />
-          <End Role="Bill" Type="Self.Bill" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.BillType" Role="BillType" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Bill" Role="Bill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BillType">
               <PropertyRef Name="ID" />
@@ -1735,10 +1315,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_complaint_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Owner" Role="Owner" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Complaint" Role="Complaint" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
               <PropertyRef Name="ID" />
@@ -1749,8 +1329,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_complaint_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1" />
-          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Complaint" Role="Complaint" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1761,8 +1341,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_complaint_tennant_id">
-          <End Role="Tennant" Type="Self.Tennant" Multiplicity="1" />
-          <End Role="Complaint" Type="Self.Complaint" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Tennant" Role="Tennant" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Complaint" Role="Complaint" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Tennant">
               <PropertyRef Name="ID" />
@@ -1772,37 +1352,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_meeting_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Owner">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="OwnerID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_meeting_requestee_id">
-          <End Role="MeetingRequisition" Type="Self.MeetingRequisition" Multiplicity="1" />
-          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MeetingRequisition">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="RequesteeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_property_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Owner" Role="Owner" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
               <PropertyRef Name="ID" />
@@ -1813,10 +1367,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_subscription_owner_id">
-          <End Role="Owner" Type="Self.Owner" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Owner" Role="Owner" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Subscription" Role="Subscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Owner">
               <PropertyRef Name="ID" />
@@ -1827,8 +1381,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_category_code">
-          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="0..1" />
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyCategory" Role="PropertyCategory" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyCategory">
               <PropertyRef Name="ID" />
@@ -1839,8 +1393,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_condition_code">
-          <End Role="PropertyCondition" Type="Self.PropertyCondition" Multiplicity="1" />
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyCondition" Role="PropertyCondition" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyCondition">
               <PropertyRef Name="ID" />
@@ -1851,10 +1405,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_image_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="PropertyImage" Type="Self.PropertyImage" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyImage" Role="PropertyImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1865,8 +1419,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_purpose_code">
-          <End Role="PropertyPurpose" Type="Self.PropertyPurpose" Multiplicity="1" />
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyPurpose" Role="PropertyPurpose" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyPurpose">
               <PropertyRef Name="ID" />
@@ -1877,10 +1431,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_rating_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="PropertyRating" Type="Self.PropertyRating" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyRating" Role="PropertyRating" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1891,10 +1445,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_requisition_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="PropertyRequisition" Type="Self.PropertyRequisition" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyRequisition" Role="PropertyRequisition" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1905,8 +1459,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_type_id">
-          <End Role="PropertyType" Type="Self.PropertyType" Multiplicity="1" />
-          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyType" Role="PropertyType" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyType">
               <PropertyRef Name="ID" />
@@ -1917,10 +1471,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_tags_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Tags" Role="Tags" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1931,10 +1485,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_tennant_property_id">
-          <End Role="Property" Type="Self.Property" Multiplicity="1">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Tennant" Type="Self.Tennant" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.Tennant" Role="Tennant" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Property">
               <PropertyRef Name="ID" />
@@ -1945,8 +1499,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_property_type_category_code">
-          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
-          <End Role="PropertyType" Type="Self.PropertyType" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyCategory" Role="PropertyCategory" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.PropertyType" Role="PropertyType" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyCategory">
               <PropertyRef Name="ID" />
@@ -1957,8 +1511,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_tag_type_property_category_id">
-          <End Role="PropertyCategory" Type="Self.PropertyCategory" Multiplicity="1" />
-          <End Role="TagType" Type="Self.TagType" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.PropertyCategory" Role="PropertyCategory" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.TagType" Role="TagType" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PropertyCategory">
               <PropertyRef Name="ID" />
@@ -1969,8 +1523,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_subscription_type_code">
-          <End Role="SubscriptionType" Type="Self.SubscriptionType" Multiplicity="1" />
-          <End Role="Subscription" Type="Self.Subscription" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.SubscriptionType" Role="SubscriptionType" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Subscription" Role="Subscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="SubscriptionType">
               <PropertyRef Name="ID" />
@@ -1981,8 +1535,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="fk_tags_type_id">
-          <End Role="TagType" Type="Self.TagType" Multiplicity="1" />
-          <End Role="Tags" Type="Self.Tags" Multiplicity="*" />
+          <End Type="EasyFindPropertiesModel.TagType" Role="TagType" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Tags" Role="Tags" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TagType">
               <PropertyRef Name="ID" />
@@ -1992,203 +1546,96 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="aspnet_UsersInRoles">
-          <End Role="aspnet_Roles" Type="Self.aspnet_Roles" Multiplicity="*" />
-          <End Role="aspnet_Users" Type="Self.aspnet_Users" Multiplicity="*" />
+        <Association Name="fk_userTypeAssoc_user_type_code">
+          <End Type="EasyFindPropertiesModel.UserType" Role="UserType" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.UserTypeAssoc" Role="UserTypeAssoc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserTypeAssoc">
+              <PropertyRef Name="UserTypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="EasyFindPropertiesEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="AdPriority" EntityType="Self.AdPriority" />
-          <EntitySet Name="AdType" EntityType="Self.AdType" />
-          <EntitySet Name="aspnet_Applications" EntityType="Self.aspnet_Applications" />
-          <EntitySet Name="aspnet_Membership" EntityType="Self.aspnet_Membership" />
-          <EntitySet Name="aspnet_Paths" EntityType="Self.aspnet_Paths" />
-          <EntitySet Name="aspnet_PersonalizationAllUsers" EntityType="Self.aspnet_PersonalizationAllUsers" />
-          <EntitySet Name="aspnet_PersonalizationPerUser" EntityType="Self.aspnet_PersonalizationPerUser" />
-          <EntitySet Name="aspnet_Profile" EntityType="Self.aspnet_Profile" />
-          <EntitySet Name="aspnet_Roles" EntityType="Self.aspnet_Roles" />
-          <EntitySet Name="aspnet_SchemaVersions" EntityType="Self.aspnet_SchemaVersions" />
-          <EntitySet Name="aspnet_Users" EntityType="Self.aspnet_Users" />
-          <EntitySet Name="aspnet_WebEvent_Events" EntityType="Self.aspnet_WebEvent_Events" />
-          <EntitySet Name="Bill" EntityType="Self.Bill" />
-          <EntitySet Name="BillType" EntityType="Self.BillType" />
-          <EntitySet Name="Complaint" EntityType="Self.Complaint" />
-          <EntitySet Name="Meeting" EntityType="Self.Meeting" />
-          <EntitySet Name="MeetingRequisition" EntityType="Self.MeetingRequisition" />
-          <EntitySet Name="Owner" EntityType="Self.Owner" />
-          <EntitySet Name="Property" EntityType="Self.Property" />
-          <EntitySet Name="PropertyCategory" EntityType="Self.PropertyCategory" />
-          <EntitySet Name="PropertyCondition" EntityType="Self.PropertyCondition" />
-          <EntitySet Name="PropertyImage" EntityType="Self.PropertyImage" />
-          <EntitySet Name="PropertyPurpose" EntityType="Self.PropertyPurpose" />
-          <EntitySet Name="PropertyRating" EntityType="Self.PropertyRating" />
-          <EntitySet Name="PropertyRequisition" EntityType="Self.PropertyRequisition" />
-          <EntitySet Name="PropertyType" EntityType="Self.PropertyType" />
-          <EntitySet Name="Subscription" EntityType="Self.Subscription" />
-          <EntitySet Name="SubscriptionType" EntityType="Self.SubscriptionType" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
-          <EntitySet Name="Tags" EntityType="Self.Tags" />
-          <EntitySet Name="TagType" EntityType="Self.TagType" />
-          <EntitySet Name="Tennant" EntityType="Self.Tennant" />
-          <AssociationSet Name="fk_property_ad_priority_code" Association="Self.fk_property_ad_priority_code">
-            <End Role="AdPriority" EntitySet="AdPriority" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_ad_type_code" Association="Self.fk_property_ad_type_code">
-            <End Role="AdType" EntitySet="AdType" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Me__Appli__3864608B" Association="Self.FK__aspnet_Me__Appli__3864608B">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pa__Appli__69FBBC1F" Association="Self.FK__aspnet_Pa__Appli__69FBBC1F">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Ro__Appli__56E8E7AB" Association="Self.FK__aspnet_Ro__Appli__56E8E7AB">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Us__Appli__282DF8C2" Association="Self.FK__aspnet_Us__Appli__282DF8C2">
-            <End Role="aspnet_Applications" EntitySet="aspnet_Applications" />
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Me__UserI__395884C4" Association="Self.FK__aspnet_Me__UserI__395884C4">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_Membership" EntitySet="aspnet_Membership" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pe__PathI__6FB49575" Association="Self.FK__aspnet_Pe__PathI__6FB49575">
-            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
-            <End Role="aspnet_PersonalizationAllUsers" EntitySet="aspnet_PersonalizationAllUsers" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pe__PathI__73852659" Association="Self.FK__aspnet_Pe__PathI__73852659">
-            <End Role="aspnet_Paths" EntitySet="aspnet_Paths" />
-            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pe__UserI__74794A92" Association="Self.FK__aspnet_Pe__UserI__74794A92">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_PersonalizationPerUser" EntitySet="aspnet_PersonalizationPerUser" />
-          </AssociationSet>
-          <AssociationSet Name="FK__aspnet_Pr__UserI__4D5F7D71" Association="Self.FK__aspnet_Pr__UserI__4D5F7D71">
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-            <End Role="aspnet_Profile" EntitySet="aspnet_Profile" />
-          </AssociationSet>
-          <AssociationSet Name="fk_bill_owner_id" Association="Self.fk_bill_owner_id">
-            <End Role="Owner" EntitySet="Owner" />
-            <End Role="Bill" EntitySet="Bill" />
-          </AssociationSet>
-          <AssociationSet Name="fk_bill_property_id" Association="Self.fk_bill_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="Bill" EntitySet="Bill" />
-          </AssociationSet>
-          <AssociationSet Name="fk_bill_tennant_id" Association="Self.fk_bill_tennant_id">
-            <End Role="Tennant" EntitySet="Tennant" />
-            <End Role="Bill" EntitySet="Bill" />
-          </AssociationSet>
-          <AssociationSet Name="fk_bill_type_code" Association="Self.fk_bill_type_code">
-            <End Role="BillType" EntitySet="BillType" />
-            <End Role="Bill" EntitySet="Bill" />
-          </AssociationSet>
-          <AssociationSet Name="fk_complaint_owner_id" Association="Self.fk_complaint_owner_id">
-            <End Role="Owner" EntitySet="Owner" />
-            <End Role="Complaint" EntitySet="Complaint" />
-          </AssociationSet>
-          <AssociationSet Name="fk_complaint_property_id" Association="Self.fk_complaint_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="Complaint" EntitySet="Complaint" />
-          </AssociationSet>
-          <AssociationSet Name="fk_complaint_tennant_id" Association="Self.fk_complaint_tennant_id">
-            <End Role="Tennant" EntitySet="Tennant" />
-            <End Role="Complaint" EntitySet="Complaint" />
-          </AssociationSet>
-          <AssociationSet Name="fk_meeting_owner_id" Association="Self.fk_meeting_owner_id">
-            <End Role="Owner" EntitySet="Owner" />
-            <End Role="Meeting" EntitySet="Meeting" />
-          </AssociationSet>
-          <AssociationSet Name="fk_meeting_requestee_id" Association="Self.fk_meeting_requestee_id">
-            <End Role="MeetingRequisition" EntitySet="MeetingRequisition" />
-            <End Role="Meeting" EntitySet="Meeting" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_owner_id" Association="Self.fk_property_owner_id">
-            <End Role="Owner" EntitySet="Owner" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="fk_subscription_owner_id" Association="Self.fk_subscription_owner_id">
-            <End Role="Owner" EntitySet="Owner" />
-            <End Role="Subscription" EntitySet="Subscription" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_category_code" Association="Self.fk_property_category_code">
-            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_condition_code" Association="Self.fk_property_condition_code">
-            <End Role="PropertyCondition" EntitySet="PropertyCondition" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_image_property_id" Association="Self.fk_property_image_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="PropertyImage" EntitySet="PropertyImage" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_purpose_code" Association="Self.fk_property_purpose_code">
-            <End Role="PropertyPurpose" EntitySet="PropertyPurpose" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_rating_property_id" Association="Self.fk_property_rating_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="PropertyRating" EntitySet="PropertyRating" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_requisition_property_id" Association="Self.fk_property_requisition_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="PropertyRequisition" EntitySet="PropertyRequisition" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_type_id" Association="Self.fk_property_type_id">
-            <End Role="PropertyType" EntitySet="PropertyType" />
-            <End Role="Property" EntitySet="Property" />
-          </AssociationSet>
-          <AssociationSet Name="fk_tags_property_id" Association="Self.fk_tags_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="Tags" EntitySet="Tags" />
-          </AssociationSet>
-          <AssociationSet Name="fk_tennant_property_id" Association="Self.fk_tennant_property_id">
-            <End Role="Property" EntitySet="Property" />
-            <End Role="Tennant" EntitySet="Tennant" />
-          </AssociationSet>
-          <AssociationSet Name="fk_property_type_category_code" Association="Self.fk_property_type_category_code">
-            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
-            <End Role="PropertyType" EntitySet="PropertyType" />
-          </AssociationSet>
-          <AssociationSet Name="fk_tag_type_property_category_id" Association="Self.fk_tag_type_property_category_id">
-            <End Role="PropertyCategory" EntitySet="PropertyCategory" />
-            <End Role="TagType" EntitySet="TagType" />
-          </AssociationSet>
-          <AssociationSet Name="fk_subscription_type_code" Association="Self.fk_subscription_type_code">
-            <End Role="SubscriptionType" EntitySet="SubscriptionType" />
-            <End Role="Subscription" EntitySet="Subscription" />
-          </AssociationSet>
-          <AssociationSet Name="fk_tags_type_id" Association="Self.fk_tags_type_id">
-            <End Role="TagType" EntitySet="TagType" />
-            <End Role="Tags" EntitySet="Tags" />
-          </AssociationSet>
-          <AssociationSet Name="aspnet_UsersInRoles" Association="Self.aspnet_UsersInRoles">
-            <End Role="aspnet_Roles" EntitySet="aspnet_Roles" />
-            <End Role="aspnet_Users" EntitySet="aspnet_Users" />
-          </AssociationSet>
-          <EntitySet Name="Message" EntityType="EasyFindPropertiesModel.Message" />
-        </EntityContainer>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CellNum" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DOB" Type="DateTime" Precision="0" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_owner_user_id" FromRole="User" ToRole="Owner" />
+          <NavigationProperty Name="PropertyRequisition" Relationship="EasyFindPropertiesModel.fk_property_requisition_user_id" FromRole="User" ToRole="PropertyRequisition" />
+          <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_user_id" FromRole="User" ToRole="Tennant" />
+          <NavigationProperty Name="UserTypeAssoc" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_id" FromRole="User" ToRole="UserTypeAssoc" />
+        </EntityType>
+        <Association Name="fk_owner_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EasyFindPropertiesModel.Owner" Role="Owner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Owner">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_property_requisition_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.PropertyRequisition" Role="PropertyRequisition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PropertyRequisition">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tennant_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Tennant" Role="Tennant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tennant">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_userTypeAssoc_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.UserTypeAssoc" Role="UserTypeAssoc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserTypeAssoc">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Message">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="To" Type="Guid" Nullable="false" />
-          <Property Name="From" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="From" Type="Guid" Nullable="false" />
           <Property Name="Msg" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Seen" Type="Boolean" Nullable="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CellNum" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
-          <Property Name="Email" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
-          <Property Name="Seen" Type="Boolean" />
         </EntityType>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -2197,450 +1644,294 @@
           <EntitySetMapping Name="AdPriority">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.AdPriority">
               <MappingFragment StoreEntitySet="AdPriority">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AdType">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.AdType">
               <MappingFragment StoreEntitySet="AdType">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_Applications">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_Applications">
-              <MappingFragment StoreEntitySet="aspnet_Applications">
-                <ScalarProperty Name="ApplicationName" ColumnName="ApplicationName" />
-                <ScalarProperty Name="LoweredApplicationName" ColumnName="LoweredApplicationName" />
-                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_Membership">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_Membership">
-              <MappingFragment StoreEntitySet="aspnet_Membership">
-                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="PasswordFormat" ColumnName="PasswordFormat" />
-                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
-                <ScalarProperty Name="MobilePIN" ColumnName="MobilePIN" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="LoweredEmail" ColumnName="LoweredEmail" />
-                <ScalarProperty Name="PasswordQuestion" ColumnName="PasswordQuestion" />
-                <ScalarProperty Name="PasswordAnswer" ColumnName="PasswordAnswer" />
-                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
-                <ScalarProperty Name="IsLockedOut" ColumnName="IsLockedOut" />
-                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
-                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
-                <ScalarProperty Name="LastPasswordChangedDate" ColumnName="LastPasswordChangedDate" />
-                <ScalarProperty Name="LastLockoutDate" ColumnName="LastLockoutDate" />
-                <ScalarProperty Name="FailedPasswordAttemptCount" ColumnName="FailedPasswordAttemptCount" />
-                <ScalarProperty Name="FailedPasswordAttemptWindowStart" ColumnName="FailedPasswordAttemptWindowStart" />
-                <ScalarProperty Name="FailedPasswordAnswerAttemptCount" ColumnName="FailedPasswordAnswerAttemptCount" />
-                <ScalarProperty Name="FailedPasswordAnswerAttemptWindowStart" ColumnName="FailedPasswordAnswerAttemptWindowStart" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_Paths">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_Paths">
-              <MappingFragment StoreEntitySet="aspnet_Paths">
-                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
-                <ScalarProperty Name="PathId" ColumnName="PathId" />
-                <ScalarProperty Name="Path" ColumnName="Path" />
-                <ScalarProperty Name="LoweredPath" ColumnName="LoweredPath" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_PersonalizationAllUsers">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_PersonalizationAllUsers">
-              <MappingFragment StoreEntitySet="aspnet_PersonalizationAllUsers">
-                <ScalarProperty Name="PathId" ColumnName="PathId" />
-                <ScalarProperty Name="PageSettings" ColumnName="PageSettings" />
-                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_PersonalizationPerUser">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_PersonalizationPerUser">
-              <MappingFragment StoreEntitySet="aspnet_PersonalizationPerUser">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PathId" ColumnName="PathId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="PageSettings" ColumnName="PageSettings" />
-                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_Profile">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_Profile">
-              <MappingFragment StoreEntitySet="aspnet_Profile">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="PropertyNames" ColumnName="PropertyNames" />
-                <ScalarProperty Name="PropertyValuesString" ColumnName="PropertyValuesString" />
-                <ScalarProperty Name="PropertyValuesBinary" ColumnName="PropertyValuesBinary" />
-                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_Roles">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_Roles">
-              <MappingFragment StoreEntitySet="aspnet_Roles">
-                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
-                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
-                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
-                <ScalarProperty Name="LoweredRoleName" ColumnName="LoweredRoleName" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_SchemaVersions">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_SchemaVersions">
-              <MappingFragment StoreEntitySet="aspnet_SchemaVersions">
-                <ScalarProperty Name="Feature" ColumnName="Feature" />
-                <ScalarProperty Name="CompatibleSchemaVersion" ColumnName="CompatibleSchemaVersion" />
-                <ScalarProperty Name="IsCurrentVersion" ColumnName="IsCurrentVersion" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_Users">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_Users">
-              <MappingFragment StoreEntitySet="aspnet_Users">
-                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="LoweredUserName" ColumnName="LoweredUserName" />
-                <ScalarProperty Name="MobileAlias" ColumnName="MobileAlias" />
-                <ScalarProperty Name="IsAnonymous" ColumnName="IsAnonymous" />
-                <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="aspnet_WebEvent_Events">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.aspnet_WebEvent_Events">
-              <MappingFragment StoreEntitySet="aspnet_WebEvent_Events">
-                <ScalarProperty Name="EventId" ColumnName="EventId" />
-                <ScalarProperty Name="EventTimeUtc" ColumnName="EventTimeUtc" />
-                <ScalarProperty Name="EventTime" ColumnName="EventTime" />
-                <ScalarProperty Name="EventType" ColumnName="EventType" />
-                <ScalarProperty Name="EventSequence" ColumnName="EventSequence" />
-                <ScalarProperty Name="EventOccurrence" ColumnName="EventOccurrence" />
-                <ScalarProperty Name="EventCode" ColumnName="EventCode" />
-                <ScalarProperty Name="EventDetailCode" ColumnName="EventDetailCode" />
-                <ScalarProperty Name="Message" ColumnName="Message" />
-                <ScalarProperty Name="ApplicationPath" ColumnName="ApplicationPath" />
-                <ScalarProperty Name="ApplicationVirtualPath" ColumnName="ApplicationVirtualPath" />
-                <ScalarProperty Name="MachineName" ColumnName="MachineName" />
-                <ScalarProperty Name="RequestUrl" ColumnName="RequestUrl" />
-                <ScalarProperty Name="ExceptionType" ColumnName="ExceptionType" />
-                <ScalarProperty Name="Details" ColumnName="Details" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Bill">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Bill">
               <MappingFragment StoreEntitySet="Bill">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="TennantID" ColumnName="TennantID" />
-                <ScalarProperty Name="TypeCode" ColumnName="TypeCode" />
-                <ScalarProperty Name="AmtDue" ColumnName="AmtDue" />
-                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
-                <ScalarProperty Name="BillURL" ColumnName="BillURL" />
-                <ScalarProperty Name="DateDue" ColumnName="DateDue" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DateDue" ColumnName="DateDue" />
+                <ScalarProperty Name="BillURL" ColumnName="BillURL" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="AmtDue" ColumnName="AmtDue" />
+                <ScalarProperty Name="TypeCode" ColumnName="TypeCode" />
+                <ScalarProperty Name="TennantID" ColumnName="TennantID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BillType">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.BillType">
               <MappingFragment StoreEntitySet="BillType">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Complaint">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Complaint">
               <MappingFragment StoreEntitySet="Complaint">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="TennantID" ColumnName="TennantID" />
-                <ScalarProperty Name="Issue" ColumnName="Issue" />
-                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="DateResolved" ColumnName="DateResolved" />
-                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Meeting">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Meeting">
-              <MappingFragment StoreEntitySet="Meeting">
-                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+                <ScalarProperty Name="Issue" ColumnName="Issue" />
+                <ScalarProperty Name="TennantID" ColumnName="TennantID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
                 <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-                <ScalarProperty Name="RequesteeId" ColumnName="RequesteeId" />
-                <ScalarProperty Name="Location" ColumnName="Location" />
-                <ScalarProperty Name="MeetingDate" ColumnName="MeetingDate" />
-                <ScalarProperty Name="MeetingTime" ColumnName="MeetingTime" />
-                <ScalarProperty Name="Purpose" ColumnName="Purpose" />
-                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="MeetingRequisition">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.MeetingRequisition">
-              <MappingFragment StoreEntitySet="MeetingRequisition">
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
-                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Owner">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Owner">
               <MappingFragment StoreEntitySet="Owner">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="LogoUrl" ColumnName="LogoUrl" />
                 <ScalarProperty Name="Organization" ColumnName="Organization" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Property">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Property">
               <MappingFragment StoreEntitySet="Property">
-                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="IsReviewable" ColumnName="IsReviewable" />
+                <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="TotRooms" ColumnName="TotRooms" />
+                <ScalarProperty Name="TotAvailableBathroom" ColumnName="TotAvailableBathroom" />
+                <ScalarProperty Name="TermsAgreement" ColumnName="TermsAgreement" />
+                <ScalarProperty Name="EnrolmentKey" ColumnName="EnrolmentKey" />
+                <ScalarProperty Name="Availability" ColumnName="Availability" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="GenderPreferenceCode" ColumnName="GenderPreferenceCode" />
+                <ScalarProperty Name="Occupancy" ColumnName="Occupancy" />
+                <ScalarProperty Name="SecurityDeposit" ColumnName="SecurityDeposit" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="NearByEstablishmentLat" ColumnName="NearByEstablishmentLat" />
                 <ScalarProperty Name="NearByEstablishmentLng" ColumnName="NearByEstablishmentLng" />
-                <ScalarProperty Name="NearByEstablishment" ColumnName="NearByEstablishment" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-                <ScalarProperty Name="PurposeCode" ColumnName="PurposeCode" />
-                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
-                <ScalarProperty Name="AdTypeCode" ColumnName="AdTypeCode" />
-                <ScalarProperty Name="AdPriorityCode" ColumnName="AdPriorityCode" />
-                <ScalarProperty Name="ConditionCode" ColumnName="ConditionCode" />
-                <ScalarProperty Name="StreetAddress" ColumnName="StreetAddress" />
-                <ScalarProperty Name="Division" ColumnName="Division" />
-                <ScalarProperty Name="Community" ColumnName="Community" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
                 <ScalarProperty Name="Latitude" ColumnName="Latitude" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="SecurityDeposit" ColumnName="SecurityDeposit" />
-                <ScalarProperty Name="Occupancy" ColumnName="Occupancy" />
-                <ScalarProperty Name="GenderPreferenceCode" ColumnName="GenderPreferenceCode" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Availability" ColumnName="Availability" />
-                <ScalarProperty Name="EnrolmentKey" ColumnName="EnrolmentKey" />
-                <ScalarProperty Name="TermsAgreement" ColumnName="TermsAgreement" />
-                <ScalarProperty Name="TotAvailableBathroom" ColumnName="TotAvailableBathroom" />
-                <ScalarProperty Name="TotRooms" ColumnName="TotRooms" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
-                <ScalarProperty Name="IsReviewable" ColumnName="IsReviewable" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
-                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="NearByEstablishment" ColumnName="NearByEstablishment" />
+                <ScalarProperty Name="Community" ColumnName="Community" />
+                <ScalarProperty Name="Division" ColumnName="Division" />
+                <ScalarProperty Name="StreetAddress" ColumnName="StreetAddress" />
                 <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
+                <ScalarProperty Name="ConditionCode" ColumnName="ConditionCode" />
+                <ScalarProperty Name="AdPriorityCode" ColumnName="AdPriorityCode" />
+                <ScalarProperty Name="AdTypeCode" ColumnName="AdTypeCode" />
+                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+                <ScalarProperty Name="PurposeCode" ColumnName="PurposeCode" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyCategory">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyCategory">
               <MappingFragment StoreEntitySet="PropertyCategory">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyCondition">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyCondition">
               <MappingFragment StoreEntitySet="PropertyCondition">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyImage">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyImage">
               <MappingFragment StoreEntitySet="PropertyImage">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="ImageURL" ColumnName="ImageURL" />
-                <ScalarProperty Name="IsPrimaryDisplay" ColumnName="IsPrimaryDisplay" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="IsPrimaryDisplay" ColumnName="IsPrimaryDisplay" />
+                <ScalarProperty Name="ImageURL" ColumnName="ImageURL" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyPurpose">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyPurpose">
               <MappingFragment StoreEntitySet="PropertyPurpose">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyRating">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyRating">
               <MappingFragment StoreEntitySet="PropertyRating">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="Ratings" ColumnName="Ratings" />
-                <ScalarProperty Name="Comments" ColumnName="Comments" />
-                <ScalarProperty Name="CritqueBy" ColumnName="CritqueBy" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="CritqueBy" ColumnName="CritqueBy" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="Ratings" ColumnName="Ratings" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyRequisition">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyRequisition">
               <MappingFragment StoreEntitySet="PropertyRequisition">
-                <ScalarProperty Name="Msg" ColumnName="Msg" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
-                <ScalarProperty Name="IsAccepted" ColumnName="IsAccepted" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="IsAccepted" ColumnName="IsAccepted" />
+                <ScalarProperty Name="Msg" ColumnName="Msg" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PropertyType">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyType">
               <MappingFragment StoreEntitySet="PropertyType">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Subscription">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Subscription">
               <MappingFragment StoreEntitySet="Subscription">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
-                <ScalarProperty Name="TypeCode" ColumnName="TypeCode" />
-                <ScalarProperty Name="Period" ColumnName="Period" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="TypeCode" ColumnName="TypeCode" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SubscriptionType">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.SubscriptionType">
               <MappingFragment StoreEntitySet="SubscriptionType">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="MonthlyCost" ColumnName="MonthlyCost" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="EasyFindPropertiesModel.sysdiagrams">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="MonthlyCost" ColumnName="MonthlyCost" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Tags">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Tags">
               <MappingFragment StoreEntitySet="Tags">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="TagType">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.TagType">
               <MappingFragment StoreEntitySet="TagType">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="PropertyCategoryCode" ColumnName="PropertyCategoryCode" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="PropertyCategoryCode" ColumnName="PropertyCategoryCode" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Tennant">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Tennant">
               <MappingFragment StoreEntitySet="Tennant">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="DOB" ColumnName="DOB" />
-                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
-                <ScalarProperty Name="RentAmt" ColumnName="RentAmt" />
-                <ScalarProperty Name="SettlementPeriod" ColumnName="SettlementPeriod" />
-                <ScalarProperty Name="InstitutionName" ColumnName="InstitutionName" />
-                <ScalarProperty Name="ProgrammeName" ColumnName="ProgrammeName" />
-                <ScalarProperty Name="ProgrammeStartDate" ColumnName="ProgrammeStartDate" />
-                <ScalarProperty Name="ProgrammeEndDate" ColumnName="ProgrammeEndDate" />
-                <ScalarProperty Name="PhotoUrl" ColumnName="PhotoUrl" />
-                <ScalarProperty Name="ReferencedLetterURL" ColumnName="ReferencedLetterURL" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="ReferencedLetterURL" ColumnName="ReferencedLetterURL" />
+                <ScalarProperty Name="PhotoUrl" ColumnName="PhotoUrl" />
+                <ScalarProperty Name="ProgrammeEndDate" ColumnName="ProgrammeEndDate" />
+                <ScalarProperty Name="ProgrammeStartDate" ColumnName="ProgrammeStartDate" />
+                <ScalarProperty Name="ProgrammeName" ColumnName="ProgrammeName" />
+                <ScalarProperty Name="InstitutionName" ColumnName="InstitutionName" />
+                <ScalarProperty Name="SettlementPeriod" ColumnName="SettlementPeriod" />
+                <ScalarProperty Name="RentAmt" ColumnName="RentAmt" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="aspnet_UsersInRoles" TypeName="EasyFindPropertiesModel.aspnet_UsersInRoles" StoreEntitySet="aspnet_UsersInRoles">
-            <EndProperty Name="aspnet_Roles">
-              <ScalarProperty Name="RoleId" ColumnName="RoleId" />
-            </EndProperty>
-            <EndProperty Name="aspnet_Users">
-              <ScalarProperty Name="UserId" ColumnName="UserId" />
-            </EndProperty>
-          </AssociationSetMapping>
+          <EntitySetMapping Name="UserType">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.UserType">
+              <MappingFragment StoreEntitySet="UserType">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTypeAssoc">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.UserTypeAssoc">
+              <MappingFragment StoreEntitySet="UserTypeAssoc">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="UserTypeCode" ColumnName="UserTypeCode" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DOB" ColumnName="DOB" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Message">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Message">
               <MappingFragment StoreEntitySet="Message">
-                <ScalarProperty Name="Seen" ColumnName="Seen" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="CellNum" ColumnName="CellNum" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Seen" ColumnName="Seen" />
                 <ScalarProperty Name="Msg" ColumnName="Msg" />
                 <ScalarProperty Name="From" ColumnName="From" />
                 <ScalarProperty Name="To" ColumnName="To" />

@@ -27,21 +27,9 @@ namespace SS.Models
     
         public virtual DbSet<AdPriority> AdPriority { get; set; }
         public virtual DbSet<AdType> AdType { get; set; }
-        public virtual DbSet<aspnet_Applications> aspnet_Applications { get; set; }
-        public virtual DbSet<aspnet_Membership> aspnet_Membership { get; set; }
-        public virtual DbSet<aspnet_Paths> aspnet_Paths { get; set; }
-        public virtual DbSet<aspnet_PersonalizationAllUsers> aspnet_PersonalizationAllUsers { get; set; }
-        public virtual DbSet<aspnet_PersonalizationPerUser> aspnet_PersonalizationPerUser { get; set; }
-        public virtual DbSet<aspnet_Profile> aspnet_Profile { get; set; }
-        public virtual DbSet<aspnet_Roles> aspnet_Roles { get; set; }
-        public virtual DbSet<aspnet_SchemaVersions> aspnet_SchemaVersions { get; set; }
-        public virtual DbSet<aspnet_Users> aspnet_Users { get; set; }
-        public virtual DbSet<aspnet_WebEvent_Events> aspnet_WebEvent_Events { get; set; }
         public virtual DbSet<Bill> Bill { get; set; }
         public virtual DbSet<BillType> BillType { get; set; }
         public virtual DbSet<Complaint> Complaint { get; set; }
-        public virtual DbSet<Meeting> Meeting { get; set; }
-        public virtual DbSet<MeetingRequisition> MeetingRequisition { get; set; }
         public virtual DbSet<Owner> Owner { get; set; }
         public virtual DbSet<Property> Property { get; set; }
         public virtual DbSet<PropertyCategory> PropertyCategory { get; set; }
@@ -53,10 +41,12 @@ namespace SS.Models
         public virtual DbSet<PropertyType> PropertyType { get; set; }
         public virtual DbSet<Subscription> Subscription { get; set; }
         public virtual DbSet<SubscriptionType> SubscriptionType { get; set; }
-        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<Tags> Tags { get; set; }
         public virtual DbSet<TagType> TagType { get; set; }
         public virtual DbSet<Tennant> Tennant { get; set; }
+        public virtual DbSet<UserType> UserType { get; set; }
+        public virtual DbSet<UserTypeAssoc> UserTypeAssoc { get; set; }
+        public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Message> Message { get; set; }
     }
 }
