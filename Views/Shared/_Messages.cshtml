@@ -4,15 +4,14 @@
     <aside class="management-action-aside">
         <div class="dashboard-info msg-container">
             <ul id="dashboard-messages">
-                @{
+                @{/*
                     if (ViewBag.latestMessages != null)
                     {
                         foreach (var msg in ViewBag.latestMessages)
                         {
-                            for (int i = 0; i < 9; i++)
-                            {
-                                <li class="msg">
-                                    <a class="@(msg.Seen ? "seen" : "not-seen")" href="@msg.ID" id="@msg.ID">
+     
+                                '<li class="msg">'
+                                 +   <a class="@(msg.Seen ? "seen" : "not-seen")" href="@msg.ID" id="@msg.ID">
                                         <div>
                                             <span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:14px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated</em>
                                             <div class="txt-holder txt">
@@ -21,29 +20,25 @@
                                         </div>
                                     </a>
                                 </li>
-                            }
                         }
                     }
+                    */
                 }
             </ul>
         </div>
         <br/>
         <div id="new-message" class="msg-box-container" style="width:97%;">
-            <button class="btn btn-block btn-accent">Create New <span class="glyphicon glyphicon-plus-sign"></span></button>
+            <button id="new-msg-btn" class="btn btn-block btn-accent">Create New <span class="glyphicon glyphicon-plus-sign"></span></button>
         </div>
     </aside>
     <section class="management-action-section">
         <div class="dashboard-info msg-container">
             <!--Dynamic content-->
-            @for (int i = 0; i < 10; i++)
-            {
-            <div class="user">Hi there <span class="img-circle img-circle-sm" style="font-size:14px;">You</span></div>
-            <div class="not-user"><span class="glyphicon glyphicon-user img-circle img-circle-sm" style="font-size:25px;"> </span> How are you ?</div>
-            }
+            
         </div>
         <div class="msg-box-container">
-            <textarea class="form-control msg-box" rows="1" cols="100" placeholder="Type your message"></textarea>
-            <button class="btn btn-accent">Send Message <span class="glyphicon glyphicon-send"></span></button>
+            <input type="text" id="msg-box" class="form-control msg-box" placeholder="Type your message" />
+            <button disabled id="send-msg-btn" class="btn btn-accent">Send Message <span class="glyphicon glyphicon-send"></span></button>
         </div>
     </section>
 </section>

@@ -17,10 +17,13 @@ namespace SS.Models.Repositories
         { }
 
         public IEnumerable<Message> GetMsgsForID(Guid Id, int take = 0)
-        {
+        {//todo order by latest message
             if (take > 0)
             {
                 return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
+                    .OrderByDescending(x => x.DateTCreated)
+                    .GroupBy(x => x.From)
+                    .Select(x => x.FirstOrDefault())
                     .OrderByDescending(x => x.DateTCreated)
                     .Take(take)
                     .ToList();
@@ -29,8 +32,24 @@ namespace SS.Models.Repositories
             {
                 return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
                     .OrderByDescending(x => x.DateTCreated)
+                    .GroupBy(x => x.From)
+                    .Select(x => x.FirstOrDefault())
+                //    .OrderByDescending(x => x.DateTCreated)
                     .ToList();
             }
+        }
+
+        public IEnumerable<Message> GetMsgThreadByMsgID(Guid msgId, Guid userId)
+        {
+            var from = EasyFindPropertiesEntities.Message.Where(x => x.ID.Equals(msgId)).Select(x => x.From).Single();
+
+            return EasyFindPropertiesEntities.Message
+                .Where(x => (x.From.Equals(from)
+                    && x.To.Equals(userId))
+                    ||(x.From.Equals(userId)
+                    && x.To.Equals(from)))
+                .OrderBy(x => x.DateTCreated)
+                .ToList();
         }
     }
 }

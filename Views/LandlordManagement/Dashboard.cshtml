@@ -192,7 +192,7 @@
          </aside>
      </div>-->
     <div class="dashboard col-xs-12">
-        <div class="jumbotron-container jumbotron-color-radius" style="display:block;">
+        <div class="jumbotron-container" style="display:block;">
             <div class="dashboard-info-headers">
                 Properties Owned
             </div>
@@ -431,10 +431,9 @@
 <br/>
 <br />
 <div class="row">
-    <div class="col-xs-12 management-action-container">
-        <div class="arrow-top"></div>
-        <div class="management-action-content-holder"><!--Dynamic content will be placed here-->
-            @Html.Partial("Messages")
-        </div>
+    <div class="col-xs-12 management-action-container hide">
+        <div class="arrow-top hide"></div>
+        <div class="management-action-content-holder"><!--Dynamic content will be placed here--></div>
     </div>
 </div>
+<input type="hidden" id="userId" value="@ViewBag.userId" />

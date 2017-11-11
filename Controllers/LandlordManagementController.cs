@@ -13,19 +13,19 @@ using Newtonsoft.Json;
 using static SS.Code.PropertyConstants.PropertyType;
 using SS.Core;
 using SS.ViewModels;
+using SS.SignalR;
 
 namespace SS.Controllers
 {
+    [Authorize]
     public class LandlordManagementController : Controller
     {
         //loads the help page
-        [Authorize]
         public ActionResult Help()
         {
             return View();
         }
         //loads dashboard page
-        [Authorize]
         public ActionResult Dashboard()
         {
             try
@@ -42,9 +42,7 @@ namespace SS.Controllers
                         var userId = dbCtx.User.Where(x => x.Email == HttpContext.User.Identity.Name)
                                                         .Select(x => x.ID).Single();
                         Session["userId"] = userId;
-
-                        ViewBag.latestMessages = getMessages(unitOfWork, userId, 5);//top 5 messages for the owner
-                        ViewBag.requisitions = getRequisitions(unitOfWork, userId);
+                        ViewBag.userId = userId;
                     }
                 }
             }
@@ -296,48 +294,57 @@ namespace SS.Controllers
         /// <param name="take"></param>
         /// <returns></returns>
         //
-        public IEnumerable<MessageViewModel> getMessages(UnitOfWork unitOfWork, Guid userId, int take)
+        public JsonResult getMessages()
         {
-            var messages = unitOfWork.Message.GetMsgsForID(userId, take);
-            List<MessageViewModel> messagesViewModel = new List<MessageViewModel>();
+            List<MessageViewModel> messagesViewModel = null;
 
-            foreach (var msg in messages)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var user = unitOfWork.User.Get(msg.From);
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                MessageViewModel messageViewModel = new MessageViewModel()
+                if (Session["userId"] != null)
                 {
-                    ID = msg.ID,
-                    From = user.FirstName + " " + user.LastName,
-                    CellNum = user.CellNum,
-                    Email = user.Email,
-                    Msg = msg.Msg,
-                    Seen = msg.Seen,
-                    DateTCreated = msg.DateTCreated.ToShortDateString()
-                };
+                    var userId = (Guid)Session["userId"];
 
-                messagesViewModel.Add(messageViewModel);
+                    var messages = unitOfWork.Message.GetMsgsForID(userId);
+                    messagesViewModel = new List<MessageViewModel>();
+
+                    foreach (var msg in messages)
+                    {
+                        var user = unitOfWork.User.Get(msg.From);
+
+                        MessageViewModel messageViewModel = new MessageViewModel()
+                        {
+                            ID = msg.ID,
+                            From = user.FirstName + " " + user.LastName,
+                            CellNum = user.CellNum,
+                            Email = user.Email,
+                            Msg = msg.Msg,
+                            Seen = msg.Seen,
+                            DateTCreated = msg.DateTCreated.ToShortDateString()
+                        };
+
+                        messagesViewModel.Add(messageViewModel);
+                    }
+                }
             }
 
-            return messagesViewModel;
+            return Json(messagesViewModel, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
         /// Updates the seen column on the selected message
         /// </summary>
+        /// <param name="unitOfWork"></param>
         /// <param name="id"></param>
-        [HttpGet]
-        public void updateMsgSeen(Guid id)
+        public void updateMsgSeen(UnitOfWork unitOfWork, Guid id)
         {
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            {
-                var message = dbCtx.Message.Find(id);
+            var message = unitOfWork.Message.Get(id);
 
-                if (!message.Seen)
-                {
-                    message.Seen = true;
-                    dbCtx.SaveChanges();
-                }
+            if (!message.Seen)
+            {
+                message.Seen = true;
+                unitOfWork.save();
             }
         }
 
@@ -363,11 +370,36 @@ namespace SS.Controllers
         }
 
         /// <summary>
+        /// Get messages in the proper order both user and sender based on the msg selected
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult getMsgThread(Guid id)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                IEnumerable<Message> messages = null;
+
+                if ((Guid)Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    updateMsgSeen(unitOfWork, id);
+                    messages = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
+                }
+
+                return Json(messages, JsonRequestBehavior.AllowGet); ;
+            }
+        }
+
+        /// <summary>
         /// replies to the message
         /// </summary>
         /// <param name="id"></param>
         [HttpGet]
-        public int replyToMsg(Guid id, String msg)
+        public int sendMsg(Guid id, String msg)
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
@@ -375,20 +407,17 @@ namespace SS.Controllers
 
                 var message = unitOfWork.Message.Get(id);
                 Guid userId;
-                                
+
                 if ((Guid)Session["userId"] != null && message != null)
                 {
                     userId = (Guid)Session["userId"];
-                    var user = unitOfWork.User.Get(userId);
-
-                    var to = message.From;
-                    var from = userId;
+                    var userTo = unitOfWork.User.Get(message.From);
 
                     Message newMsg = new Message()
                     {
                         ID = Guid.NewGuid(),
-                        To = to,
-                        From = from,
+                        To = message.From,
+                        From = userId,
                         Msg = msg,
                         Seen = false,
                         DateTCreated = DateTime.Now
@@ -397,6 +426,8 @@ namespace SS.Controllers
                     unitOfWork.Message.Add(newMsg);
                     unitOfWork.save();
 
+                    //broadcast the new messages to the recipient 
+                    DashboardHub.BroadcastUserMessages(userTo.Email);
                     return 0;
                 }
             }
@@ -475,39 +506,60 @@ namespace SS.Controllers
         /// returns requition information for the owner
         /// </summary>
         /// <returns></returns>
-        public List<RequisitionViewModel> getRequisitions(UnitOfWork unitOfWork, Guid userId)
+        public JsonResult getRequisitions()
         {
             List<RequisitionViewModel> requisitionInfo = null;
 
-            var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
-            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
-
-            if (requisitions != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                requisitionInfo = new List<RequisitionViewModel>();
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                foreach (var req in requisitions)
+                if (Session["userId"] != null)
                 {
-                    RequisitionViewModel model = new RequisitionViewModel();
+                    var userId = (Guid)Session["userId"];
 
-                    model.PropertyRequisition.User = new User();
+                    var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+                    var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
 
-                    model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
-                    model.PropertyRequisition.PropertyID = req.PropertyID;
-                    model.PropertyRequisition.User.FirstName = req.User.FirstName;
-                    model.PropertyRequisition.User.LastName = req.User.LastName;
-                    model.PropertyRequisition.User.Email = req.User.Email;
-                    model.PropertyRequisition.User.CellNum = req.User.CellNum;
-                    model.PropertyRequisition.Msg = req.Msg;
-                    model.PropertyRequisition.IsAccepted = req.IsAccepted;
-                    model.PropertyRequisition.DateTCreated = req.DateTCreated;
+                    if (requisitions != null)
+                    {
+                        requisitionInfo = new List<RequisitionViewModel>();
 
-                    requisitionInfo.Add(model);
+                        foreach (var req in requisitions)
+                        {
+                            RequisitionViewModel model = new RequisitionViewModel();
+
+                            model.PropertyRequisition.User = new User();
+
+                            model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
+                            model.PropertyRequisition.PropertyID = req.PropertyID;
+                            model.PropertyRequisition.User.FirstName = req.User.FirstName;
+                            model.PropertyRequisition.User.LastName = req.User.LastName;
+                            model.PropertyRequisition.User.Email = req.User.Email;
+                            model.PropertyRequisition.User.CellNum = req.User.CellNum;
+                            model.PropertyRequisition.Msg = req.Msg;
+                            model.PropertyRequisition.IsAccepted = req.IsAccepted;
+                            model.PropertyRequisition.DateTCreated = req.DateTCreated;
+
+                            requisitionInfo.Add(model);
+                        }
+                    }
                 }
             }
 
-            return requisitionInfo;
+            return Json(requisitionInfo,JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// returns the messages partial view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetMessagesView()
+        {
+            return PartialView("_Messages");
+        }
+
         /*
          * gets the information for the property that was selected in order to
          * update information about this property

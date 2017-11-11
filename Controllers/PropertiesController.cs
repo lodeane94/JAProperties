@@ -2,6 +2,7 @@
 using SS.Code;
 using SS.Core;
 using SS.Models;
+using SS.SignalR;
 using SS.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -275,13 +276,19 @@ namespace SS.Controllers
                                 };
 
                                 unitOfWork.PropertyRequisition.Add(requisition);
+                                unitOfWork.save();
+
+                                var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
+                                //DashboardHub.BroadcastUserMessages(userTo.Email); broadcast requisition
                             }
                             else
                             {
+                                var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
+
                                 Message message = new Message()
                                 {
                                     ID = Guid.NewGuid(),
-                                    To = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User.ID,
+                                    To = userTo.ID,
                                     From = userId,
                                     Msg = request.Msg,
                                     Seen = false,
@@ -289,9 +296,9 @@ namespace SS.Controllers
                                 };
 
                                 unitOfWork.Message.Add(message);
+                                unitOfWork.save();
+                                DashboardHub.BroadcastUserMessages(userTo.Email);
                             }
-
-                            unitOfWork.save();
                         }
                     }
                 }
