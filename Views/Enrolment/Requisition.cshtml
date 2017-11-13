@@ -1,4 +1,4 @@
-﻿@model SS.Models.TENNANTS
+﻿@model SS.Models.Tennant
 @{
     ViewBag.Title = "Requisition";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,17 +12,9 @@
                 <legend>Tennant Personal Information</legend>
                 <table class="table-responsive registration-form" width="100%">
                     <tr>
-                        <td>Street Address</td>
-                        <td>@Html.TextBoxFor(model => model.STREET_ADDRESS)</td>
-                        <td>City</td>
-                        <td>@Html.TextBoxFor(model => model.CITY)</td>
-                        <td>Parish</td>
-                        <td>@Html.TextBoxFor(model => model.PARISH)</td>
-                    </tr>
-                    <tr>
                         <td>Date of Birth</td>
                         <td>
-                            @Html.TextBoxFor(model => model.DOB,new { @placeholder = "DD/MM/YYYY" }) 
+                            @Html.TextBoxFor(model => model.User.DOB,new { @placeholder = "DD/MM/YYYY" }) 
                         </td>
                         <td>University Student</td>
                         <td>
@@ -30,21 +22,19 @@
                             No @Html.RadioButton("university_student", false, false)
                         </td>
                         <td>Settlement Period</td>
-                        <td>@Html.TextBoxFor(model => model.SETTLEMENT_PERIOD, new { @type = "number", @placeholder = "Years" })</td>
+                        <td>@Html.TextBoxFor(model => model.SettlementPeriod, new { @type = "number", @placeholder = "Years" })</td>
                     </tr>
                     <tr id="university_info">
                         <td>University Name</td>
-                        <td>@Html.TextBoxFor(model => model.UNIVERSITY)</td>
+                        <td>@Html.TextBoxFor(model => model.InstitutionName)</td>
                         <td>Programme Name</td>
-                        <td>@Html.TextBoxFor(model => model.PROGRAMME_NAME)</td>
+                        <td>@Html.TextBoxFor(model => model.ProgrammeName)</td>
                         <td>Programme Start Date</td>
-                        <td>@Html.TextBoxFor(model => model.PROGRAMME_START_DATE)</td>
+                        <td>@Html.TextBoxFor(model => model.ProgrammeStartDate)</td>
                     </tr>
                     <tr>
                         <td class="end_date">Programme End Date</td>
-                        <td class="end_date">@Html.TextBoxFor(model => model.PROGRAMME_END_DATE)</td>
-                        <td>Brief description</td>
-                        <td colspan="2">@Html.TextAreaFor(model => model.DESCRIPTION, 6, 120, null)</td>
+                        <td class="end_date">@Html.TextBoxFor(model => model.ProgrammeEndDate)</td>
                     </tr>
                     <tr>
                         <td>Password</td>

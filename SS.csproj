@@ -289,9 +289,14 @@
     <Compile Include="Models\Message.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MessageMetadata.cs" />
+    <Compile Include="Models\MessageTrash.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Owner.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PartialClasses.cs" />
     <Compile Include="Models\Property.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -321,6 +326,7 @@
     <Compile Include="Models\Repositories\IAdPriorityRepository.cs" />
     <Compile Include="Models\Repositories\IAdTypeRepository.cs" />
     <Compile Include="Models\Repositories\IMessageRepository.cs" />
+    <Compile Include="Models\Repositories\IMessageTrashRepository.cs" />
     <Compile Include="Models\Repositories\IOwnerRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyCategoryRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyConditionRepository.cs" />
@@ -340,6 +346,7 @@
     <Compile Include="Models\Repositories\IUserTypeAssocRepository.cs" />
     <Compile Include="Models\Repositories\IUserTypeRepository.cs" />
     <Compile Include="Models\Repositories\MessageRepository.cs" />
+    <Compile Include="Models\Repositories\MessageTrashRepository.cs" />
     <Compile Include="Models\Repositories\OwnerRepository.cs" />
     <Compile Include="Models\Repositories\PropertyCategoryRepository.cs" />
     <Compile Include="Models\Repositories\PropertyConditionRepository.cs" />
@@ -448,6 +455,7 @@
     <Content Include="Views\Shared\_PartialMvcCaptcha.cshtml" />
     <Content Include="Views\Shared\_partialAdvertiseProperty.cshtml" />
     <Content Include="Views\Shared\_Messages.cshtml" />
+    <Content Include="Views\Shared\_Requisitions.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

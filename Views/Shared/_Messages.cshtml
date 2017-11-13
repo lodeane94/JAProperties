@@ -5,28 +5,28 @@
         <div class="dashboard-info msg-container">
             <ul id="dashboard-messages">
                 @{/*
-                    if (ViewBag.latestMessages != null)
-                    {
-                        foreach (var msg in ViewBag.latestMessages)
-                        {
-     
-                                '<li class="msg">'
-                                 +   <a class="@(msg.Seen ? "seen" : "not-seen")" href="@msg.ID" id="@msg.ID">
-                                        <div>
-                                            <span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:14px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated</em>
-                                            <div class="txt-holder txt">
-                                                @msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                        }
-                    }
-                    */
+if (ViewBag.latestMessages != null)
+{
+    foreach (var msg in ViewBag.latestMessages)
+    {
+
+            '<li class="msg">'
+             +   <a class="@(msg.Seen ? "seen" : "not-seen")" href="@msg.ID" id="@msg.ID">
+                    <div>
+                        <span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:14px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated</em>
+                        <div class="txt-holder txt">
+                            @msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this
+                        </div>
+                    </div>
+                </a>
+            </li>
+    }
+}
+*/
                 }
             </ul>
         </div>
-        <br/>
+        <br />
         <div id="new-message" class="msg-box-container" style="width:97%;">
             <button id="new-msg-btn" class="btn btn-block btn-accent">Create New <span class="glyphicon glyphicon-plus-sign"></span></button>
         </div>
@@ -34,11 +34,13 @@
     <section class="management-action-section">
         <div class="dashboard-info msg-container">
             <!--Dynamic content-->
-            
+
         </div>
-        <div class="msg-box-container">
-            <input type="text" id="msg-box" class="form-control msg-box" placeholder="Type your message" />
-            <button disabled id="send-msg-btn" class="btn btn-accent">Send Message <span class="glyphicon glyphicon-send"></span></button>
-        </div>
+        <form id="send-msg-form">
+            <div class="msg-box-container">
+                <input type="text" id="msg-box" class="form-control msg-box" placeholder="Type your message" />
+                <button disabled id="send-msg-btn" type="submit" class="btn btn-accent">Send Message <span class="glyphicon glyphicon-send"></span></button>
+            </div>
+        </form>
     </section>
 </section>

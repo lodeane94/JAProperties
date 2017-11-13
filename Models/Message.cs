@@ -11,14 +11,25 @@ namespace SS.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.Web.Script.Serialization;
+
     public partial class Message
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Message()
+        {
+            this.MessageTrash = new HashSet<MessageTrash>();
+        }
+    
         public System.Guid ID { get; set; }
         public System.Guid To { get; set; }
         public System.Guid From { get; set; }
         public string Msg { get; set; }
         public bool Seen { get; set; }
         public System.DateTime DateTCreated { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [ScriptIgnore(ApplyToOverrides = true)]
+        public virtual ICollection<MessageTrash> MessageTrash { get; set; }
     }
 }

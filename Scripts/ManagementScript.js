@@ -1,4 +1,5 @@
 ﻿var currentMsgIdSelected = null;
+var currentUserNameSelected = null;
 
 function initializeSockets() {
     var dashboardHub = $.connection.dashboardHub;
@@ -9,7 +10,7 @@ function initializeSockets() {
 
     dashboardHub.client.updateUserMessages = function () {
         alert('message updated');
-        getMsgThread();
+        loadMessagesView();
     }
 }
 
@@ -23,7 +24,10 @@ function pointToSelectedAction(position) {
 //decides which view to load based on the action id
 function loadView(actionId) {
     switch (actionId) {
-        case 'messages': loadMessagesView();
+        case 'messages':
+            currentMsgIdSelected = null;//clear current message selected 
+            currentUserNameSelected = null;
+            loadMessagesView();
             break;
         case 'requisitions': loadRequisitionsView();
             break;
@@ -51,7 +55,12 @@ function loadMessagesView() {
         },
         success: function (data) {
             $('.management-action-content-holder').html(data);
+
             loadMsgList();
+
+            if (currentMsgIdSelected != null) {
+                getMsgThread();
+            }
         },
         error: function () {
             alert('An error occurred while loading messages');
@@ -62,6 +71,28 @@ function loadMessagesView() {
 
     });
 }
+
+//loads the requisitions view
+function loadRequisitionsView() {
+    $.ajax({
+        url: '/landlordmanagement/GetRequisitionsView',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-action-content-holder').html(data);
+        },
+        error: function () {
+            alert('An error occurred while loading requisitions');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+
+    });
+}
+
 //loads/reloads the message list
 function loadMsgList() {
     $.ajax({
@@ -73,14 +104,18 @@ function loadMsgList() {
         success: function (data) {
             $.each(data, function (index, value) {
                 var seenVal = value.Seen ? "seen" : "not-seen";
+                var activeVal = currentUserNameSelected != null
+                                && value.From == currentUserNameSelected ? "active" : "";
+
+                $('#dashboard-messages').empty();
 
                 $('#dashboard-messages').append(
                     '<li class="msg">'
-                    + '<a class="' + seenVal + '" href="' + value.ID + '" id="' + value.ID + '">'
+                    + '<a class="' + seenVal +' '+activeVal+'" href="' + value.ID + '" id="' + value.ID + '">'
                     + '<div>'
-                    + '<span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:14px; margin-right:10px;">' + value.From + '</strong> <em><span class="glyphicon glyphicon-calendar"> </span> ' + value.DateTCreated + '</em>'
+                    + '<span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong id="from-user-name" style="font-size:14px; margin-right:10px;">' + value.From + '</strong> <em><span class="glyphicon glyphicon-calendar"> </span> ' + value.DateTCreated + '</em>'
                     + '<div class="txt-holder txt">' + value.Msg + '</div></div></a></li>'
-                );                
+                );
             });
         },
         error: function () {
@@ -108,11 +143,14 @@ function getMsgThread() {
 
                 $.each(data, function (index, value) {
                     if (userId == value.From) {
-                        msgBoxContainer.append('<div class="user">' + value.Msg + ' <span class="img-circle img-circle-sm" style="font-size:14px;">You</span></div>');
+                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg user">' + value.Msg + ' <span class="img-circle img-circle-sm" style="font-size:14px;">You</span></div>');
                     } else {
-                        msgBoxContainer.append('<div class="not-user"><span class="glyphicon glyphicon-user img-circle img-circle-sm" style="font-size:25px;"> </span>' + value.Msg + '</div>');
+                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg not-user"><span class="glyphicon glyphicon-user img-circle img-circle-sm" style="font-size:25px;"> </span> ' + value.Msg + '</div>');
                     }
                 });
+                //TODO update seen message
+                $(".management-action-section .msg-container").animate({ scrollTop: $('.management-action-section .msg-container').prop("scrollHeight") }, 1000);
+                $('#send-msg-btn').prop('disabled', false);
             },
             error: function () {
                 alert('An error occurred while loading the selected message');
@@ -178,19 +216,20 @@ $(document).ready(function () {
     })();
 
     //generates modal to compose a new message
-    $('#new-message').click(function (event) {
+    $(document.body).on('click', '#new-msg-btn', function (event) {
         event.preventDefault();
+
         //displays the modal whenever this is selected
         sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-pencil"></span> Compose New Message');
-        /*
-        $('#action-body').html('<form action="landlordmanagement/composenewmessage" method="post"><strong>To</strong> <input type="text" id="recipient" class="form-control" placeholder="Recipients Name"><br/>'
+        
+        $('#action-body').html('<form id="new-msg-form" action="landlordmanagement/composenewmessage" method="post"><strong>To</strong> <input type="text" id="recipient" class="form-control" placeholder="Recipients Name"><br/>'
                               + '<strong>Message</strong> <textarea class="form-control" placeholder="Compose new message" rows="4" cols="30"></textarea></form>');
-        $('form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
+        $('#new-msg-form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
                                 + '<input class="btn btn-primary" type="submit" value="Send Message" id="submit-message" /></div>');
-                                */
-        $('#action-body').html('<h3>This feature is coming soon......</h3>');
+
+       // $('#action-body').html('<h3>This feature is coming soon......</h3>');
     });
     //generates modal to compose a new message and broadcast to every tennant
     $('#broadcast-message').click(function (event) {
@@ -418,14 +457,23 @@ $(document).ready(function () {
     $(document.body).on('click', '#add-new-property', function (event) {
         event.preventDefault();
 
-        $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
+        $.ajax({
+            url: '/servicer/GetAdvertisePropertyView',
+            type: 'GET',
+            success: function (data) {
+                //displays the modal whenever an image is selected
+                $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
+                $('#action-body').html(data);
 
-        $('#loader').show();
+                sys.showModal('#managementModal');
+            },
+            beforeSend: function () {
+                $('#modal-loading').fadeIn();
+            },
+            complete: function () {
+                $('#modal-loading').fadeOut();
+            }
 
-        $('#action-body').load('/servicer/GetAdvertisePropertyView', function () {
-            //displays the modal whenever an image is selected
-            sys.showModal('#managementModal');
-            $('#loader').hide();
         });
     });
     //sends acceptance mail to requestee 
@@ -566,33 +614,40 @@ $(document).ready(function () {
         event.preventDefault();
 
         currentMsgIdSelected = $(this).attr('id');
+        currentUserNameSelected = $(this).find('#from-user-name').text();
 
         $(this).parents('ul').find('a').removeClass('active');
         $(this).addClass('active');//makes message active
 
+        var isNotSeen = $(this).hasClass('not-seen');
+        if (isNotSeen) {
+            $(this).removeClass('not-seen');
+            $(this).addClass('seen');//makes message seen
+        }
+
         var msgBox = $('#msg-box');
         msgBox.prop('disabled', false);
         msgBox.val('');//clear msgbox
-        $('#send-msg-btn').prop('disabled', false);
 
         getMsgThread();
     });
 
     //sends message
-    $(document.body).on('click', '#send-msg-btn', function () {
+    $(document.body).on('click', '#send-msg-btn', function (event) {
+        event.preventDefault();
+
         var msgBox = $('#msg-box');
         var isMsgBoxEmpty = msgBox.val() == '' ? true : false;
-        var msgBoxContainer = $('.management-action-section .msg-container');
         var msg = msgBox.val();
         msgBox.val('');
-        
+
         if (!isMsgBoxEmpty) {
             $.ajax({
                 url: '/landlordmanagement/sendMsg',
                 type: 'GET',
                 data: { id: currentMsgIdSelected, msg: msg },
                 success: function (data) {
-                    msgBoxContainer.append('<div class="user">' + msg + ' <span class="img-circle img-circle-sm" style="font-size:14px;">You</span></div>');
+                    getMsgThread();
                 },
                 error: function () {
                     alert('An error occurred while loading the selected message');
@@ -603,10 +658,36 @@ $(document).ready(function () {
         }
     });
 
+    $(document.body).on('mouseenter', '.single-msg', function () {
+        var singleMsgMenu = '<div id="delete-msg" class="single-msg-menu">'
+                            + 'Delete <span class="glyphicon glyphicon-trash"></span></div>';
+
+        $(this).prepend(singleMsgMenu);
+    });
+
+    $(document.body).on('mouseleave', '.single-msg', function () {
+        $('.single-msg-menu').remove();
+    });
+
+    $(document.body).on('click', '#delete-msg', function () {
+        var id = $(this).parent().attr('id');
+        $.ajax({
+            url: '/landlordmanagement/deleteMsg',
+            type: 'GET',
+            data: { id: id },
+            success: function (data) {
+            },
+            error: function () {
+                alert('An error occurred while deleting the selected message');
+            }
+        });
+    });
+
     $('.management-action a').click(function (event) {
         event.preventDefault();
+
         var actionId = $(this).children().attr('id');
-        
+
         //distinct selections
         $('.management-action .active').removeClass('active');
         $(this).addClass('active');

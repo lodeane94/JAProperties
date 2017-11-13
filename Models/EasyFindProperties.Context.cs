@@ -48,5 +48,6 @@ namespace SS.Models
         public virtual DbSet<UserTypeAssoc> UserTypeAssoc { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Message> Message { get; set; }
+        public virtual DbSet<MessageTrash> MessageTrash { get; set; }
     }
 }

@@ -28,6 +28,7 @@ namespace SS.Models
         IUserRepository User { get; }
         IUserTypeRepository UserType { get; }
         IUserTypeAssocRepository UserTypeAssoc { get; }
+        IMessageTrashRepository MessageTrash { get; }
         int save();
     }
 }

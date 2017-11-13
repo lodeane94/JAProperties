@@ -74,6 +74,15 @@
           <Property Name="Seen" Type="bit" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="MessageTrash">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="MessageID" />
+          </Key>
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="MessageID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Owner">
           <Key>
             <PropertyRef Name="ID" />
@@ -368,6 +377,32 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_msg_trash_msg_id">
+          <End Role="Message" Type="Self.Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="MessageTrash" Type="Self.MessageTrash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Message">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MessageTrash">
+              <PropertyRef Name="MessageID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_msg_trash_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="MessageTrash" Type="Self.MessageTrash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MessageTrash">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_owner_user_id">
           <End Role="User" Type="Self.User" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -655,6 +690,7 @@
           <EntitySet Name="BillType" EntityType="Self.BillType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Complaint" EntityType="Self.Complaint" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MessageTrash" EntityType="Self.MessageTrash" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Owner" EntityType="Self.Owner" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Property" EntityType="Self.Property" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PropertyCategory" EntityType="Self.PropertyCategory" Schema="dbo" store:Type="Tables" />
@@ -699,6 +735,14 @@
           <AssociationSet Name="fk_complaint_tennant_id" Association="Self.fk_complaint_tennant_id">
             <End Role="Tennant" EntitySet="Tennant" />
             <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_msg_trash_msg_id" Association="Self.fk_msg_trash_msg_id">
+            <End Role="Message" EntitySet="Message" />
+            <End Role="MessageTrash" EntitySet="MessageTrash" />
+          </AssociationSet>
+          <AssociationSet Name="fk_msg_trash_user_id" Association="Self.fk_msg_trash_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="MessageTrash" EntitySet="MessageTrash" />
           </AssociationSet>
           <AssociationSet Name="fk_owner_user_id" Association="Self.fk_owner_user_id">
             <End Role="User" EntitySet="User" />
@@ -933,7 +977,16 @@
             <End Role="UserTypeAssoc" EntitySet="UserTypeAssoc" />
           </AssociationSet>
           <EntitySet Name="Message" EntityType="EasyFindPropertiesModel.Message" />
-        </EntityContainer>
+          <EntitySet Name="MessageTrash" EntityType="EasyFindPropertiesModel.MessageTrash" />
+          <AssociationSet Name="fk_msg_trash_msg_id" Association="EasyFindPropertiesModel.fk_msg_trash_msg_id">
+            <End Role="Message" EntitySet="Message" />
+            <End Role="MessageTrash" EntitySet="MessageTrash" />
+          </AssociationSet>
+          <AssociationSet Name="fk_msg_trash_user_id" Association="EasyFindPropertiesModel.fk_msg_trash_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="MessageTrash" EntitySet="MessageTrash" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="AdPriority">
           <Key>
             <PropertyRef Name="ID" />
@@ -1573,6 +1626,7 @@
           <NavigationProperty Name="PropertyRequisition" Relationship="EasyFindPropertiesModel.fk_property_requisition_user_id" FromRole="User" ToRole="PropertyRequisition" />
           <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_user_id" FromRole="User" ToRole="Tennant" />
           <NavigationProperty Name="UserTypeAssoc" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_id" FromRole="User" ToRole="UserTypeAssoc" />
+          <NavigationProperty Name="MessageTrash" Relationship="EasyFindPropertiesModel.fk_msg_trash_user_id" FromRole="User" ToRole="MessageTrash" />
         </EntityType>
         <Association Name="fk_owner_user_id">
           <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1">
@@ -1634,7 +1688,45 @@
           <Property Name="Msg" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Seen" Type="Boolean" Nullable="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MessageTrash" Relationship="EasyFindPropertiesModel.fk_msg_trash_msg_id" FromRole="Message" ToRole="MessageTrash" />
         </EntityType>
+        <EntityType Name="MessageTrash">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="MessageID" />
+          </Key>
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="MessageID" Type="Guid" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Message" Relationship="EasyFindPropertiesModel.fk_msg_trash_msg_id" FromRole="MessageTrash" ToRole="Message" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_msg_trash_user_id" FromRole="MessageTrash" ToRole="User" />
+        </EntityType>
+        <Association Name="fk_msg_trash_msg_id">
+          <End Type="EasyFindPropertiesModel.Message" Role="Message" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EasyFindPropertiesModel.MessageTrash" Role="MessageTrash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Message">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MessageTrash">
+              <PropertyRef Name="MessageID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_msg_trash_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.MessageTrash" Role="MessageTrash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MessageTrash">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1936,6 +2028,15 @@
                 <ScalarProperty Name="From" ColumnName="From" />
                 <ScalarProperty Name="To" ColumnName="To" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MessageTrash">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.MessageTrash">
+              <MappingFragment StoreEntitySet="MessageTrash">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

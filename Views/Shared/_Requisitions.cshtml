@@ -1,0 +1,73 @@
+﻿@model List<SS.ViewModels.RequisitionViewModel>
+
+<section class="management-action-content">
+    <section class="management-action-section req">
+        <div class="dashboard-info msg-container req">
+            <div id="dashboard-requisitions" class="table-responsive">
+                <table id="tblRequisitions" width="100%">
+                    @{
+                        int count = 0;
+                        // bool hasHistory = false;
+
+                        if (Model != null)
+                        {
+                            foreach (var req in Model)
+                            {
+                                for (int i = 0; i <= 9; i++)
+                                {
+                                    <thead>
+                                        <tr>
+                                            <th>Property Image</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                            <th>Cell</th>
+                                            <th>Date</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+
+                                    if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value)
+                                    {
+                                        <tr>
+                                            <td class="property_image"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></td>
+                                            <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
+                                            <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
+                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
+                                            <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
+                                            <td class="date"> @req.PropertyRequisition.DateTCreated</td>
+                                            <td><input id="@req.PropertyRequisition.PropertyID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
+                                            <td><input id="@req.PropertyRequisition.PropertyID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
+                                        </tr>
+                                        if (req.PropertyRequisition.Msg != null)
+                                        {
+                                            <tr>
+                                                <td colspan="10"><div class="contact-info-header" style="overflow:auto;">@req.PropertyRequisition.Msg</div></td>
+                                            </tr>
+                                        }
+                                        count++;
+                                        if (count > 3)
+                                        {
+                                            <tr><td colspan="8"><button id="view-all-req-btn" class="btn btn-accent" style="position:relative;float:right;">View All</button></td></tr>
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                                        //hasHistory = true;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                        }
+                    }
+                </table>
+            </div>
+        </div>
+    </section>
+</section>

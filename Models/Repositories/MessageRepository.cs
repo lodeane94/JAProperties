@@ -16,11 +16,14 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public IEnumerable<Message> GetMsgsForID(Guid Id, int take = 0)
+        public IEnumerable<Message> GetMsgsForUserID(Guid Id, int take = 0)
         {//todo order by latest message
+            var deletedMsgIds = EasyFindPropertiesEntities.MessageTrash.Where(x => x.UserID.Equals(Id)).Select(x => x.MessageID).ToList();
+
             if (take > 0)
             {
-                return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
+                return EasyFindPropertiesEntities.Message
+                    .Where(x => x.To.Equals(Id) && !deletedMsgIds.Contains(x.ID))
                     .OrderByDescending(x => x.DateTCreated)
                     .GroupBy(x => x.From)
                     .Select(x => x.FirstOrDefault())
@@ -30,11 +33,11 @@ namespace SS.Models.Repositories
             }
             else
             {
-                return EasyFindPropertiesEntities.Message.Where(x => x.To.Equals(Id))
-                    .OrderByDescending(x => x.DateTCreated)
+                return EasyFindPropertiesEntities.Message
+                    .Where(x => x.To.Equals(Id) && !deletedMsgIds.Contains(x.ID))
                     .GroupBy(x => x.From)
+                    .Select(group => group.OrderByDescending(x => x.DateTCreated))
                     .Select(x => x.FirstOrDefault())
-                //    .OrderByDescending(x => x.DateTCreated)
                     .ToList();
             }
         }
@@ -42,12 +45,14 @@ namespace SS.Models.Repositories
         public IEnumerable<Message> GetMsgThreadByMsgID(Guid msgId, Guid userId)
         {
             var from = EasyFindPropertiesEntities.Message.Where(x => x.ID.Equals(msgId)).Select(x => x.From).Single();
+            var deletedMsgIds = EasyFindPropertiesEntities.MessageTrash.Where(x => x.UserID.Equals(userId)).Select(x => x.MessageID).ToList();
 
             return EasyFindPropertiesEntities.Message
-                .Where(x => (x.From.Equals(from)
+                .Where(x => ((x.From.Equals(from)
                     && x.To.Equals(userId))
-                    ||(x.From.Equals(userId)
+                    || (x.From.Equals(userId)
                     && x.To.Equals(from)))
+                    && !deletedMsgIds.Contains(x.ID))
                 .OrderBy(x => x.DateTCreated)
                 .ToList();
         }

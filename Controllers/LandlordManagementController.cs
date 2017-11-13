@@ -51,86 +51,64 @@ namespace SS.Controllers
 
             return View();
         }
-        /*
+
         [HttpPost]
-        [Authorize]
-        public ActionResult AcceptRequest(Guid reqID, RequisitionInformation requestInfo)
+        public ActionResult AcceptRequest(Guid reqID)
         {
             try
             {
                 //retrieving enrolment key that is associated with an accommodation
-                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    /*
-                     * used to check whether the property is a room or otherwise
-                     * a different email message will be generated depending on the property requested
-                     
-                    //bool isRoomRequest = dbCtx.ACCOMMODATIONS.All(r => r.ID == propertyID);
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var requisition = unitOfWork.PropertyRequisition.Get(reqID);
+                    var reqUser = requisition.User;
+
+                    var property = requisition.Property;
+                    var propertyUser = property.Owner.User;
+                    var propCategoryCode = property.CategoryCode;
+                    var adTypeCode = property.AdTypeCode;
+
                     //email address which acceptance letter should be sent to
-                    string emailTo = requestInfo.Email;
-                    string subject = "Property Requisition Accepted";
+                    string emailTo = reqUser.Email;
+                    string subject = "EasyFindProperties - Property Requisition Accepted";
                     //body of the email
                     string body = string.Empty;
-                    /*
-                    if (isRoomRequest)
+                    bool isRealEstateLeasedOrRent = false;
+
+                    if (propCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate)
+                        &&
+                        (adTypeCode.Equals(EFPConstants.PropertyAdType.Rent)
+                        || adTypeCode.Equals(EFPConstants.PropertyAdType.Lease)))
                     {
                         //generated key that is used to associate each tennant to their landlord
-                        string enrolmentKey = dbCtx.ACCOMMODATIONS.Where(ek => ek.ID == propertyID)
-                                    .Select(ek => ek.ENROLMENT_KEY).Single();
+                        string enrolmentKey = property.EnrolmentKey;
 
                         body = "Congratulations!!, your property request was accepted ." + "Your enrolment key is " + enrolmentKey +
                                     ". " + "If you wish to accommodate this room, please click on the following link and enter your email address and the enrolment key that was provided to you" +
-                                  " localhost:5829/enrolment/requisition/?accID=" + propertyID + "&fname=" + requestInfo.FirstName +
-                                  "&lname=" + requestInfo.LastName + "&gender=" + requestInfo.Gender + "&email=" + requestInfo.Email + "&cell=" + requestInfo.Cell;
+                                  " localhost:5829/enrolment/requisition/?propId=" + property.ID + "&requestId=" + reqID;
+
+                        isRealEstateLeasedOrRent = true;
                     }
                     else
-                    body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
-                            + " is further negotiations or concerns.";
+                        body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
+                                + " is further negotiations or concerns.";
+
                     //getting information about the owner of the property to give back to the requestee
+                    body += "<br/> Owner Information<br/> First Name:&nbsp;" + propertyUser.FirstName + "<br/>Last Name:&nbsp;" + propertyUser.LastName
+                                    + "<br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/>Email:&nbsp;" + propertyUser.Email;
 
-                    var accommodationOwnerInformation = dbCtx.REQUISITION_PROPERTY_MAPPINGS.Where(a => a.ID == reqID)
-                                            .Select(l => l.ACCOMMODATIONS.LANDLORDS);
-
-                    var houseOwnerInformation = dbCtx.REQUISITION_PROPERTY_MAPPINGS.Where(a => a.ID == reqID)
-                                            .Select(l => l.HOUSE.LANDLORDS);
-
-                    var landOwnerInformation = dbCtx.REQUISITION_PROPERTY_MAPPINGS.Where(a => a.ID == reqID)
-                                            .Select(l => l.LAND.LANDLORDS);
-
-                    if (accommodationOwnerInformation != null)
+                    if (sendMail(emailTo, body, subject))
                     {
-                        foreach (var info in accommodationOwnerInformation)
-                        {
-                            body += "<br/> Owner Information<br/> First Name:&nbsp;" + info.FIRST_NAME + "<br/>Last Name:&nbsp;" + info.LAST_NAME
-                                    + "<br/>Cellphone Number:&nbsp;" + info.CELL + "<br/>Email:&nbsp;" + info.EMAIL;
-                        }
-                    }
-                    else if (houseOwnerInformation != null)
-                    {
-                        foreach (var info in houseOwnerInformation)
-                        {
-                            body += "<br/> Owner Information<br/> First Name:&nbsp;" + info.FIRST_NAME + "<br/>Last Name:&nbsp;" + info.LAST_NAME
-                                    + "<br/>Cellphone Number:&nbsp;" + info.CELL + "<br/>Email:&nbsp;" + info.EMAIL;
-                        }
+                        //sets the accepted field of the requisition table to true for the accepted property request
+                        requisition.IsAccepted = true;
+                        unitOfWork.save();
+                        //message outputted if request was accepted successfully
+                        Session["acceptedRequestCheck"] = "Request has been successfully accepted";
                     }
                     else
-                        foreach (var info in landOwnerInformation)
-                        {
-                            body += "<br/> Owner Information<br/> First Name:&nbsp;" + info.FIRST_NAME + "<br/>Last Name:&nbsp;" + info.LAST_NAME
-                                    + "<br/>Cellphone Number:&nbsp;" + info.CELL + "<br/>Email:&nbsp;" + info.EMAIL;
-                        }
-
-                    //if (sendMail(emailTo, body, subject))
-                    //{
-                    //sets the accepted field of the requisition table to true for the accepted property request
-                    REQUISITIONS requisition = dbCtx.REQUISITIONS.Single(x => x.REQUISITION_ID == reqID);
-                    requisition.ACCEPTED = true;
-                    dbCtx.SaveChanges();
-                    //message outputted if request was accepted successfully
-                    Session["acceptedRequestCheck"] = "Request has been successfully accepted";
-                    //}
-                    //else
-                    //    throw new Exception("Mail Exception");
+                        throw new Exception("Mail Exception");
                 }
             }
             catch (Exception ex)
@@ -143,6 +121,7 @@ namespace SS.Controllers
 
             return Content("RequestSuccess");
         }
+
         /*denies user's requisition
         [HttpPost]
         [Authorize]
@@ -217,7 +196,7 @@ namespace SS.Controllers
 
             return Content("");
         }
-
+        */
         public bool sendMail(string emailTo, string body, string subject)
         {
             MailModel mailModel = new MailModel()
@@ -245,7 +224,8 @@ namespace SS.Controllers
             smtp.Send(mail);
 
             return true;
-        }*/
+        }
+
         //returns all properties owned by the current user that is signed in in json format
         [Authorize]
         public JsonResult getAllPropertyImages()
@@ -306,7 +286,7 @@ namespace SS.Controllers
                 {
                     var userId = (Guid)Session["userId"];
 
-                    var messages = unitOfWork.Message.GetMsgsForID(userId);
+                    var messages = unitOfWork.Message.GetMsgsForUserID(userId);
                     messagesViewModel = new List<MessageViewModel>();
 
                     foreach (var msg in messages)
@@ -359,12 +339,28 @@ namespace SS.Controllers
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                var message = unitOfWork.Message.Get(id);
-
-                if (message != null)
+                if ((Guid)Session["userId"] != null)
                 {
-                    unitOfWork.Message.Remove(message);
-                    unitOfWork.save();
+                    var userId = (Guid)Session["userId"];
+                    var userTo = unitOfWork.User.Get(userId);
+
+                    var message = unitOfWork.Message.Get(id);
+
+                    if (message != null)
+                    {
+                        MessageTrash messageTrash = new MessageTrash()
+                        {
+                            UserID = userId,
+                            MessageID = id,
+                            DateTCreated = DateTime.Now
+                        };
+
+                        unitOfWork.MessageTrash.Add(messageTrash);
+                        unitOfWork.save();
+
+                        //broadcast the new messages to the recipient 
+                        DashboardHub.BroadcastUserMessages(userTo.Email);
+                    }
                 }
             }
         }
@@ -377,21 +373,22 @@ namespace SS.Controllers
         [HttpGet]
         public JsonResult getMsgThread(Guid id)
         {
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            //using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            // {
+            EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
+            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+            IEnumerable<Message> messages = null;
+
+            if ((Guid)Session["userId"] != null)
             {
-                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                IEnumerable<Message> messages = null;
+                var userId = (Guid)Session["userId"];
 
-                if ((Guid)Session["userId"] != null)
-                {
-                    var userId = (Guid)Session["userId"];
-
-                    updateMsgSeen(unitOfWork, id);
-                    messages = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
-                }
-
-                return Json(messages, JsonRequestBehavior.AllowGet); ;
+                updateMsgSeen(unitOfWork, id);
+                messages = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
             }
+
+            return Json(messages, JsonRequestBehavior.AllowGet); ;
+            //  }
         }
 
         /// <summary>
@@ -506,7 +503,7 @@ namespace SS.Controllers
         /// returns requition information for the owner
         /// </summary>
         /// <returns></returns>
-        public JsonResult getRequisitions()
+        public IEnumerable<RequisitionViewModel> getRequisitions()
         {
             List<RequisitionViewModel> requisitionInfo = null;
 
@@ -547,7 +544,7 @@ namespace SS.Controllers
                 }
             }
 
-            return Json(requisitionInfo,JsonRequestBehavior.AllowGet);
+            return requisitionInfo;
         }
 
         /// <summary>
@@ -560,98 +557,22 @@ namespace SS.Controllers
             return PartialView("_Messages");
         }
 
+        /// <summary>
+        /// returns the requisition partial view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetRequisitionsView()
+        {
+            var requisitions = getRequisitions();
+            return PartialView("_Requisitions", requisitions);
+        }
+
         /*
          * gets the information for the property that was selected in order to
          * update information about this property
          
-        [Authorize]
-        public JsonResult getProperty(Guid property_id)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            List<AccommodationModel> AInfo = new List<AccommodationModel>();
-            List<HouseModel> HInfo = new List<HouseModel>();
-            List<LandModel> LInfo = new List<LandModel>();
-
-            //var accommodationCount = dbCtx.ACCOMMODATIONS.Where(a => a.ID == property_id).Count();
-            //var houseCount = dbCtx.HOUSE.Where(h => h.ID == property_id).Count();
-            // landCount = dbCtx.LAND.Where(l => l.ID == property_id).Count();
-
-            if (PropertiesDAO.getPropertyType(property_id) == PropertyConstants.PropertyType.accommodation)
-            {
-                var accommodations = dbCtx.ACCOMMODATIONS.Where(a => a.ID == property_id).Select(a => new { a.ID, a.IMAGE_URL, a.WATER, a.TERMS_AGREEMENT, a.AVAILABILITY, a.INTERNET, a.OCCUPANCY, a.PRICE, a.SECURITY_DEPOSIT, a.CABLE, a.DESCRIPTION, a.ELECTRICITY, a.GAS, a.GENDER_PREFERENCE });
-
-                AccommodationModel accommodationModel = new AccommodationModel();
-
-                foreach (var accommodation in accommodations)
-                {
-                    accommodationModel.ID = accommodation.ID.ToString();
-                    accommodationModel.Availability = accommodation.AVAILABILITY == true ? "selected" : "";
-                    accommodationModel.Cable = accommodation.CABLE == true ? "selected" : "";
-                    accommodationModel.Description = accommodation.DESCRIPTION;
-                    accommodationModel.Electricity = accommodation.ELECTRICITY == true ? "selected" : "";
-                    accommodationModel.Gas = accommodation.GAS == true ? "selected" : "";
-                    accommodationModel.Internet = accommodation.INTERNET == true ? "selected" : "";
-                    accommodationModel.Occupancy = accommodation.OCCUPANCY.ToString();
-                    accommodationModel.Price = accommodation.PRICE.ToString();
-                    accommodationModel.TermsAgreement = accommodation.TERMS_AGREEMENT;
-                    accommodationModel.SecurityDeposit = accommodation.SECURITY_DEPOSIT.ToString();
-                    accommodationModel.Water = accommodation.WATER == true ? "selected" : "";
-                    accommodationModel.ImageURL = accommodation.IMAGE_URL;
-                    accommodationModel.GenderPreference = accommodation.GENDER_PREFERENCE;
-                }
-
-                AInfo.Add(accommodationModel);
-
-                return Json(AInfo, JsonRequestBehavior.AllowGet);
-            }
-
-            if (PropertiesDAO.getPropertyType(property_id) == PropertyConstants.PropertyType.house)
-            {
-                var houses = dbCtx.HOUSE.Where(h => h.ID == property_id).Select(h => new { h.ID, h.IMAGE_URL, h.ISFURNISHED, h.PRICE, h.PURPOSE, h.BATH_ROOM_AMOUNT, h.BED_ROOM_AMOUNT, h.DESCRIPTION });
-
-                HouseModel houseModel = new HouseModel();
-
-                foreach (var house in houses)
-                {
-                    houseModel.ID = house.ID.ToString();
-                    houseModel.BathroomAmount = house.BATH_ROOM_AMOUNT;
-                    houseModel.BedroomAmount = house.BED_ROOM_AMOUNT;
-                    houseModel.Price = house.PRICE.ToString();
-                    houseModel.isFurnished = house.ISFURNISHED.ToString();
-                    houseModel.Purpose = house.PURPOSE;
-                    houseModel.Description = house.DESCRIPTION;
-                    houseModel.ImageURL = house.IMAGE_URL;
-                }
-
-                HInfo.Add(houseModel);
-
-                return Json(HInfo, JsonRequestBehavior.AllowGet);
-            }
-
-            if (PropertiesDAO.getPropertyType(property_id) == PropertyConstants.PropertyType.land)
-            {
-                var lands = dbCtx.LAND.Where(l => l.ID == property_id).Select(l => new { l.ID, l.IMAGE_URL, l.PRICE, l.PURPOSE, l.AREA, l.DESCRIPTION });
-
-                LandModel landModel = new LandModel();
-
-                foreach (var land in lands)
-                {
-                    landModel.ID = land.ID.ToString();
-                    landModel.Area = land.AREA.ToString();
-                    landModel.Price = land.PRICE.ToString();
-                    landModel.Purpose = land.PURPOSE;
-                    landModel.ImageURL = land.IMAGE_URL;
-                    landModel.Description = land.DESCRIPTION;
-                }
-
-                LInfo.Add(landModel);
-
-                return Json(LInfo, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json("", JsonRequestBehavior.AllowGet);
-        }
+       
         [Authorize]
         public ActionResult updateAccommodation(Guid id, bool availability, bool cable, bool electricity, bool gas, bool internet, bool water, decimal security_deposit,
                                             string terms_agreement, decimal price, short occupancy, string gender_preference, string description)

@@ -29,6 +29,7 @@ namespace SS.Models
         public IUserRepository User { get; private set; }
         public IUserTypeRepository UserType { get; private set; }
         public IUserTypeAssocRepository UserTypeAssoc { get; private set; }
+        public IMessageTrashRepository MessageTrash { get; private set; }
 
         public UnitOfWork(EasyFindPropertiesEntities dbCtx)
         {
@@ -53,6 +54,7 @@ namespace SS.Models
             User = new UserRepository(_dbCtx);
             UserType = new UserTypeRepository(_dbCtx);
             UserTypeAssoc = new UserTypeAssocRepository(_dbCtx);
+            MessageTrash = new MessageTrashRepository(_dbCtx);
         }
 
         public int save()

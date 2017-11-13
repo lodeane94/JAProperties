@@ -21,6 +21,7 @@ namespace SS.Models
             this.PropertyRequisition = new HashSet<PropertyRequisition>();
             this.Tennant = new HashSet<Tennant>();
             this.UserTypeAssoc = new HashSet<UserTypeAssoc>();
+            this.MessageTrash = new HashSet<MessageTrash>();
         }
     
         public System.Guid ID { get; set; }
@@ -39,5 +40,7 @@ namespace SS.Models
         public virtual ICollection<Tennant> Tennant { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserTypeAssoc> UserTypeAssoc { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MessageTrash> MessageTrash { get; set; }
     }
 }
