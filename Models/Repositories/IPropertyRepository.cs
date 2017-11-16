@@ -15,5 +15,6 @@ namespace SS.Models.Repositories
         IEnumerable<Property> FindPropertiesByCategoryCode(String categoryCode, int take = 16, int pgNo = 0);
         IEnumerable<Property> FindPropertiesBySearchTerm(String searchTerm, int take = 16, int pgNo = 0);
         Owner GetPropertyOwnerByPropID(Guid Id);
+        String GetEnrolmentKeyByPropID(Guid Id);
     }
 }

@@ -63,9 +63,9 @@ namespace SS.Core
         {
             Landlord,
             Realtor,
-            Tennant,
+          //  Tennant,
             Basic,
-            Consumer
+           // Consumer
         }
 
     }

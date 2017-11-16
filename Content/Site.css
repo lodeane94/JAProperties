@@ -1267,7 +1267,7 @@ color:white;
     }
 
     .properties-table-style tr:nth-child(odd) {
-        background-color: #EBEBEB;
+       /* background-color: #EBEBEB;*/
     }
 
 .quick-action-header {

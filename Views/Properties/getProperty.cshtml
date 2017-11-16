@@ -202,73 +202,48 @@
 <div class="row">&nbsp;</div>
 <div class="row">
     <div id="property-requisition" class="col-xs-7">
-        <div class="row"><div style="display:none;" class="col-xs-12 error-container"></div></div>
-        <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
-        <div class="contact-info-content">
-            @using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
-            {
-                <div class="row">
-                    <div class="col-xs-6">
-                        <div class="input-group">
-                            <input id="firstName" type="text" class="form-control" name="firstName" placeholder="First Name" required>
-                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
+        @if (Session["userId"] != null)
+        {
+            <div class="row"><div style="display:none;" class="col-xs-12 error-container"></div></div>
+            <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
+            <div class="contact-info-content">
+                @using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
+                {
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <textarea id="msg" rows="5" class="form-control" name="msg" placeholder="Message"></textarea>
                         </div>
                     </div>
-                    <div class="col-xs-6">
-                        <div class="input-group">
-                            <input id="lastName" type="text" class="form-control" name="lastName" placeholder="Last Name" required>
-                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label>Contact Purpose :</label> &nbsp;
+                            <label class="radio-inline">@Html.RadioButton("contactPurpose", "message", true) Question <i class="glyphicon glyphicon-question-sign glyphicon-color"></i></label>
+                            <label class="radio-inline">@Html.RadioButton("contactPurpose", "requisition") Property Requisition <i class="glyphicon glyphicon-registration-mark glyphicon-color"></i></label>
                         </div>
                     </div>
-                </div>
-                <div class="row">&nbsp;</div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="input-group">
-                            <input id="email" type="text" class="form-control" name="email" placeholder="Email" required>
-                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-envelope"></i></span>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div id="mvcCaptcha">
+                                @Html.Partial("_PartialMvcCaptcha")
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">&nbsp;</div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="input-group">
-                            <input id="cellNum" type="text" class="form-control" name="cellNum" placeholder="Contact Number" required>
-                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-phone"></i></span>
+                    @Html.Hidden("PropertyID", Model.property.ID)
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-xs-4 requestPropertySec">
+                            <button id="requestPropertyBtn" type="submit" class="btn btn-block btn-accent">Submit</button>
                         </div>
                     </div>
-                </div>
-                <div class="row">&nbsp;</div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <textarea id="msg" rows="5" class="form-control" name="msg" placeholder="Message"></textarea>
-                    </div>
-                </div>
-                <div class="row">&nbsp;</div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <label>Contact Purpose :</label> &nbsp;
-                        <label class="radio-inline">@Html.RadioButton("contactPurpose", "message", true) Question <i class="glyphicon glyphicon-question-sign glyphicon-color"></i></label>
-                        <label class="radio-inline">@Html.RadioButton("contactPurpose", "requisition") Property Requisition <i class="glyphicon glyphicon-registration-mark glyphicon-color"></i></label>
-                    </div>
-                </div>
-                <div class="row">&nbsp;</div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div id="mvcCaptcha">
-                            @Html.Partial("_PartialMvcCaptcha")
-                        </div>
-                    </div>
-                </div>
-                @Html.Hidden("PropertyID", Model.property.ID)
-                <div class="row">&nbsp;</div>
-                <div class="row">
-                    <div class="col-xs-4 requestPropertySec">
-                        <button id="requestPropertyBtn" type="submit" class="btn btn-block btn-accent">Submit</button>
-                    </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ctnr-info"><strong><a href="~/accounts/signin">Sign In</a> to Request Property or Ask a Question</strong></div>
+        }
     </div>
 </div>

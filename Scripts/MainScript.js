@@ -167,6 +167,11 @@ function returnToHome() {
     window.location.href = window.location.protocol + '//' + window.location.host + '/';
 }
 
+//navigates browser to the sign in page of the application
+function returnToSignInPage() {
+    window.location.href = window.location.protocol + '//' + window.location.host + '/' + 'accounts/signin';
+}
+
 //sets configuration for the modal display
 var system = function () {
 
@@ -519,6 +524,152 @@ function loadPropertyTags(selectedItem) {
 
         var field = $('#flPropertyPicsFileNameOutput');
         removeErrorField(field);
+    });
+
+    $('#submitEnrolment').click(function (event) {
+        event.preventDefault();
+
+        var validator = $('#EnrollTennantForm').validate({
+            rules: {
+                password: {
+                    minlength: 5
+                },
+                ConfirmPassword: {
+                    minlength: 5,
+                    equalTo: password
+                }
+            },
+
+            messages: {
+                password: {
+                    minlength: 'Password should be at least 5 characters long'
+                },
+                ConfirmPassword: {
+                    minlength: 'Password should be at least 5 characters long',
+                    equalTo: 'Password and Confirm Password values must be the same value'
+                }
+            },
+
+            errorPlacement: function (error, element) { },
+
+            showErrors: function (errorMap, errorList) {
+                $.each(errorList, function () {
+                    addErrorMessage(this.message);
+                });
+
+                displayErrorMessages();
+
+                this.defaultShowErrors();
+            }
+        });
+
+        var isValid = validator.form();
+
+        if (isValid) {
+            loadingGifLocation = $('.enrollBtn');
+            var formData = new FormData($('#EnrollTennantForm')[0]);
+
+            $.ajax({
+                url: '/accounts/enroll',
+                type: 'Post',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+                success: function (data) {
+                    if (data.hasErrors) {
+                        $.each(data.ErrorMessages, function (index, value) {
+                            addErrorMessage(value);
+                        });
+
+                        displayErrorMessages();
+
+                        $('html, body').animate({
+                            scrollTop: $('.error-container').offset().top
+                        }, 'fast');
+                    } else {
+                        sys.showModal('#tennantCreatedModal');
+                    }
+                },
+                error: function (data) { alert('Error encountered while creating user. Contact Website Administrator'); },
+                complete: function () { $('#loading-gif').remove(); },
+            });
+        }
+
+    });
+
+    $('#signUpBtn').click(function (event) {
+        event.preventDefault();
+
+        var validator = $('#signUpUser').validate({
+            rules: {
+                password: {
+                    minlength: 5
+                },
+                ConfirmPassword: {
+                    minlength: 5,
+                    equalTo: password
+                }
+            },
+
+            messages: {
+                password: {
+                    minlength: 'Password should be at least 5 characters long'
+                },
+                ConfirmPassword: {
+                    minlength: 'Password should be at least 5 characters long',
+                    equalTo: 'Password and Confirm Password values must be the same value'
+                }
+            },
+
+            errorPlacement: function (error, element) { },
+
+            showErrors: function (errorMap, errorList) {
+                $.each(errorList, function () {
+                    addErrorMessage(this.message);
+                });
+
+                displayErrorMessages();
+
+                this.defaultShowErrors();
+            }
+        });
+
+        var isValid = validator.form();
+
+        if (isValid) {
+            loadingGifLocation = $('.signUpBtn');
+            var formData = new FormData($('#signUpUser')[0]);
+
+            $.ajax({
+                url: '/accounts/signup',
+                type: 'Post',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+                success: function (data) {
+                    if (data.hasErrors) {
+                        $.each(data.ErrorMessages, function (index, value) {
+                            addErrorMessage(value);
+                        });
+
+                        displayErrorMessages();
+
+                        $('html, body').animate({
+                            scrollTop: $('.error-container').offset().top
+                        }, 'fast');
+                    } else {
+                        sys.showModal('#userCreatedModal');
+                    }
+                },
+                error: function (data) { alert('Error encountered while creating user. Contact Website Administrator'); },
+                complete: function () { $('#loading-gif').remove(); },
+            });
+        }
+
     });
 
     $('#AdvertisePropertyBtn').click(function (event) {

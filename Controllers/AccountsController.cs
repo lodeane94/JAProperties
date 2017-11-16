@@ -56,7 +56,79 @@ namespace SS.Controllers
             }
             return View();
         }
-        //loads registration view
+
+        public ActionResult SignUp()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Signs up regular user in order for them to make property requisition and comments
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <param name="confirmPassword"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SignUp(User user, String password, String confirmPassword)
+        {
+            ErrorModel errorModel = new ErrorModel();
+
+            if (ModelState.IsValid)
+            {
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    using (var dbCtxTran = dbCtx.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            if (!password.Equals(confirmPassword))
+                                throw new Exception("The fields Password and Confirm Password are not equal");
+
+                            PropertyHelper.createRolesIfNotExist();
+
+                            var unitOfWork = new UnitOfWork(dbCtx);
+
+                            var doesUserExist = unitOfWork.User.DoesUserExist(user.Email);
+
+                            if (!doesUserExist)
+                            {
+                                user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Consumer,"", user.Email, user.FirstName,
+                                       user.LastName, user.CellNum, DateTime.MinValue);
+
+                                PropertyHelper.createUserAccount(unitOfWork, user.Email, password);
+                            }
+
+                            else
+                                throw new Exception("This email address already exists");
+
+                            unitOfWork.save();
+                            dbCtxTran.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            dbCtxTran.Rollback();
+
+                            errorModel.hasErrors = true;
+                            errorModel.ErrorMessages = new List<string>();
+                            errorModel.ErrorMessages.Add(ex.Message);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+
+                errorModel.hasErrors = true;
+                errorModel.ErrorMessages = new List<string>();
+                errorModel.ErrorMessages.AddRange(errors);
+            }
+
+            return Json(errorModel);
+        }
+
+        //loads advertise property view
         public ActionResult AdvertiseProperty()
         {
             if (!String.IsNullOrEmpty(HttpContext.User.Identity.Name))
@@ -100,7 +172,10 @@ namespace SS.Controllers
                     {
                         try
                         {
-                            createRolesIfNotExist();
+                            if (!model.Password.Equals(model.ConfirmPassword))
+                                throw new Exception("The fields Password and Confirm Password are not equal");
+
+                            PropertyHelper.createRolesIfNotExist();
 
                             var unitOfWork = new UnitOfWork(dbCtx);
 
@@ -114,12 +189,18 @@ namespace SS.Controllers
                                 var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
                                 bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
 
-                                if(!isUserPropOwner)
-                                    associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.PropertyOwner);
+                                if (!isUserPropOwner)
+                                    PropertyHelper.associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.PropertyOwner);
                             }
                             else
-                                user = createUserAccount(unitOfWork, EFPConstants.UserType.PropertyOwner, model);
-                            
+                            {
+                                user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.PropertyOwner, model.SubscriptionType, model.Email, model.FirstName,
+                                model.LastName, model.CellNum, DateTime.MinValue);
+
+                                PropertyHelper.createUserAccount(unitOfWork, model.Email, model.Password);
+                            }
+
+
                             insertProperty(model, unitOfWork, user);
 
                             unitOfWork.save();
@@ -136,9 +217,7 @@ namespace SS.Controllers
 
                             errorModel.hasErrors = true;
                             errorModel.ErrorMessages = new List<string>();
-                            errorModel.ErrorMessages.Add("A error occurred while adding your property \n Please contact the system administrator");
-
-                            return Json(errorModel);
+                            errorModel.ErrorMessages.Add(ex.Message);
                         }
                     }
                 }
@@ -155,51 +234,13 @@ namespace SS.Controllers
             return Json(errorModel);
         }
 
-        //TODO every one should get an account only realtor and landlord can add unlimited amount of properties without paying the extra cost
-        /// <summary>
-        /// Creates a membership account for the property owner
-        /// </summary>
-        /// <param name="model"></param>
-        private User createUserAccount(UnitOfWork unitOfWork, String userType, AdvertisePropertyViewModel model)
-        {
-            User user = null;
-
-            MembershipCreateStatus status = new MembershipCreateStatus();
-
-            MembershipUser newUser = Membership.CreateUser(model.Email, model.Password, model.Email, "null", "null", true, out status);
-
-            if (newUser != null)
-            {
-                var userID = Guid.NewGuid();
-
-                user = new User()
-                {
-                    ID = userID,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    CellNum = model.CellNum,
-                    Email = model.Email,
-                    DateTCreated = DateTime.Now
-                };
-
-                unitOfWork.User.Add(user);
-
-                associateUserWithUserType(unitOfWork, userID, userType);
-                addUserToRespectedRole(model.Email, model.SubscriptionType);
-            }
-            else
-                throw new Exception(GetMembershipErrorMessage(status));
-
-            return user;
-        }
-
         /// <summary>
         /// Inserts the property along with it's owner, subscription period and also the property images
         /// </summary>
         /// <param name="model"></param>
         private void insertProperty(AdvertisePropertyViewModel model, UnitOfWork unitOfWork, User user)
         {
-            bool doesOwnerExist = user !=  null && user.Owner.Select(x => x.ID).Count() > 0 ? true : false;
+            bool doesOwnerExist = user != null && user.Owner.Select(x => x.ID).Count() > 0 ? true : false;
             Guid ownerID = doesOwnerExist ? user.Owner.Select(x => x.ID).Single() : Guid.NewGuid();
 
             Guid propertyID = Guid.NewGuid();
@@ -301,19 +342,6 @@ namespace SS.Controllers
             associateImagesWithProperty(unitOfWork, model.flPropertyPics, propertyID);
         }
 
-        private void associateUserWithUserType(UnitOfWork unitOfWork, Guid userID, String userType)
-        {
-            UserTypeAssoc userTypeAssoc = new UserTypeAssoc()
-            {
-                ID = Guid.NewGuid(),
-                UserID = userID,
-                UserTypeCode = userType,
-                DateTCreated = DateTime.Now
-            };
-
-            unitOfWork.UserTypeAssoc.Add(userTypeAssoc);
-        }
-
         /// <summary>
         /// Associates a property with the selected tags
         /// </summary>
@@ -340,70 +368,12 @@ namespace SS.Controllers
         }
 
         /// <summary>
-        /// adds user to it's respected role and generate enrolment key if necessary
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="subscriptionType"></param>
-        private void addUserToRespectedRole(string email, string subscriptionType)
-        {
-            if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
-            {
-                Roles.AddUserToRole(email, EFPConstants.RoleNames.Landlord.ToString());
-            }
-            else if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Realtor)))
-            {
-                Roles.AddUserToRole(email, EFPConstants.RoleNames.Realtor.ToString());
-            }
-            else if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
-            {
-                Roles.AddUserToRole(email, EFPConstants.RoleNames.Basic.ToString());
-            }
-            else if (subscriptionType.Equals(EFPConstants.RoleNames.Tennant.ToString()))
-            {
-                Roles.AddUserToRole(email, EFPConstants.RoleNames.Tennant.ToString());
-            }
-            else
-                Roles.AddUserToRole(email, EFPConstants.RoleNames.Consumer.ToString());
-        }
-
-        /// <summary>
         ///  checks if a user exists before creating a new one
         /// </summary>
         /// <returns></returns>
         private bool doesUserExist(UnitOfWork unitOfWork, String email)
         {
             return unitOfWork.User.DoesUserExist(email);
-        }
-
-        /// <summary>
-        /// creates lanlord,tennant and realtor roles if they dont exist
-        /// </summary>
-        private void createRolesIfNotExist()
-        {
-            if (!Roles.RoleExists("Basic"))
-            {
-                Roles.CreateRole(EFPConstants.RoleNames.Basic.ToString());
-            }
-
-            if (!Roles.RoleExists("Landlord"))
-            {
-                Roles.CreateRole(EFPConstants.RoleNames.Landlord.ToString());
-            }
-
-            if (!Roles.RoleExists("Tennant"))
-            {
-                Roles.CreateRole(EFPConstants.RoleNames.Tennant.ToString());
-            }
-
-            if (!Roles.RoleExists("Realtor"))
-            {
-                Roles.CreateRole(EFPConstants.RoleNames.Realtor.ToString());
-            }
-
-            if (!Roles.RoleExists("Consumer"))
-            {
-                Roles.CreateRole(EFPConstants.RoleNames.Consumer.ToString());
-            }
         }
 
         /// <summary>
@@ -482,41 +452,163 @@ namespace SS.Controllers
                 throw new Exception("Upload an image file");
         }
 
-        //used for membership error message
-        public string GetMembershipErrorMessage(MembershipCreateStatus status)
+        public ActionResult Requisition()
         {
-            switch (status)
+            return View();
+        }
+
+        /// <summary>
+        /// Enrolls tennant into a property
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Enroll(EnrolmentViewModel model)
+        {
+            ErrorModel errorModel = new ErrorModel();
+
+            if (ModelState.IsValid)
             {
-                case MembershipCreateStatus.DuplicateUserName:
-                    return "Email address already exists. Please sign into your portal to add more properties";
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    using (var dbCtxTran = dbCtx.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            if (!model.Password.Equals(model.ConfirmPassword))
+                                throw new Exception("The fields Password and Confirm Password are not equal");
 
-                case MembershipCreateStatus.DuplicateEmail:
-                    return "A username for that e-mail address already exists. Please enter a different e-mail address.";
+                            var unitOfWork = new UnitOfWork(dbCtx);
 
-                case MembershipCreateStatus.InvalidPassword:
-                    return "The password provided is invalid. Please enter a valid password value.\nThe passwords should be 4 characters long";
+                            if (model.ReqID != new Guid())
+                            {
+                                EnrollTennantByRequisition(unitOfWork, model);
+                            }
+                            else
+                            {
+                                EnrollNewTennant(unitOfWork, model);
+                            }
 
-                case MembershipCreateStatus.InvalidEmail:
-                    return "The e-mail address provided is invalid. Please check the value and try again.";
+                            unitOfWork.save();
+                            dbCtxTran.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            dbCtxTran.UnderlyingTransaction.Rollback();
 
-                case MembershipCreateStatus.InvalidAnswer:
-                    return "The password retrieval answer provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.InvalidQuestion:
-                    return "The password retrieval question provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.InvalidUserName:
-                    return "The user name provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.ProviderError:
-                    return "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
-
-                case MembershipCreateStatus.UserRejected:
-                    return "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
-
-                default:
-                    return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+                            errorModel.hasErrors = true;
+                            errorModel.ErrorMessages = new List<string>();
+                            errorModel.ErrorMessages.Add(ex.Message);
+                        }
+                    }
+                }
             }
+            else
+            {
+                var errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+
+                errorModel.hasErrors = true;
+                errorModel.ErrorMessages = new List<string>();
+                errorModel.ErrorMessages.AddRange(errors);
+            }
+
+            return Json(errorModel);
+        }
+
+        /// <summary>
+        /// Enrolls tennant by the requisition functionality
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="model"></param>
+        private void EnrollTennantByRequisition(UnitOfWork unitOfWork, EnrolmentViewModel model)
+        {
+            var requisition = unitOfWork.PropertyRequisition.Get(model.ReqID);
+
+            bool isAccepted = requisition.IsAccepted.HasValue ? requisition.IsAccepted.Value : false;
+
+            if (isAccepted)
+            {
+                string enrolKey = unitOfWork.Property.GetEnrolmentKeyByPropID(model.PropertyID);
+
+                if (enrolKey.Equals(model.EnrolmentKey))
+                {
+
+                    PropertyHelper.createRolesIfNotExist();
+
+                    var user = requisition.User;
+                    var property = requisition.Property;
+                    //assigning user as tennant if he/she isn't
+                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
+                    bool isUserTennant = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Tennant);
+
+                    if (!isUserTennant)
+                    {
+                        PropertyHelper.associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.Tennant);
+                    }
+
+                    Tennant tennant = new Tennant()
+                    {
+                        ID = Guid.NewGuid(),
+                        UserID = user.ID,
+                        PropertyID = model.PropertyID,
+                        RentAmt = property.Price,
+                        SettlementPeriod = model.SettlementPeriod,
+                        InstitutionName = model.InstitutionName,
+                        ProgrammeName = model.ProgrammeName,
+                        ProgrammeStartDate = DateTime.Parse(model.ProgrammeEndDate),
+                        ProgrammeEndDate = DateTime.Parse(model.ProgrammeEndDate),
+                        PhotoUrl = null,
+                        ReferencedLetterURL = null,
+                        DateTCreated = DateTime.Now
+                    };
+
+                    unitOfWork.Tennant.Add(tennant);
+                }
+                else
+                    throw new Exception("Enrolment key does not match the property being requested");
+            }
+            else
+                throw new Exception("Requistion was not accepted by the property owner");
+        }
+
+        /// <summary>
+        /// Enrolls a new user tennant and account for the user
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="model"></param>
+        private void EnrollNewTennant(UnitOfWork unitOfWork, EnrolmentViewModel model)
+        {
+            string enrolKey = unitOfWork.Property.GetEnrolmentKeyByPropID(model.PropertyID);
+
+            if (enrolKey.Equals(model.EnrolmentKey))
+            {
+                var user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Tennant, "", model.Email, model.FirstName,
+                    model.LastName, model.CellNum, DateTime.Parse(model.DOB));
+
+                PropertyHelper.createUserAccount(unitOfWork, EFPConstants.UserType.Tennant, model.Password);
+
+                var propertyPrice = unitOfWork.Property.Get(model.PropertyID).Price;
+
+                Tennant tennant = new Tennant()
+                {
+                    ID = Guid.NewGuid(),
+                    UserID = user.ID,
+                    PropertyID = model.PropertyID,
+                    RentAmt = propertyPrice,
+                    SettlementPeriod = model.SettlementPeriod,
+                    InstitutionName = model.InstitutionName,
+                    ProgrammeName = model.ProgrammeName,
+                    ProgrammeStartDate = DateTime.Parse(model.ProgrammeEndDate),
+                    ProgrammeEndDate = DateTime.Parse(model.ProgrammeEndDate),
+                    PhotoUrl = null,
+                    ReferencedLetterURL = null,
+                    DateTCreated = DateTime.Now
+                };
+
+                unitOfWork.Tennant.Add(tennant);
+            }
+            else
+                throw new Exception("Enrolment key does not match the property being requested");
         }
     }
 }

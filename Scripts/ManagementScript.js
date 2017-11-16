@@ -478,18 +478,12 @@ $(document).ready(function () {
     });
     //sends acceptance mail to requestee 
     $(document.body).on('click', '.btnAcceptRequest', function (event) {
-        var reqID = $(this).parent().prevAll(".acc_id").children().val();
-        var firstName = $(this).parent().prevAll('.first_name').text();
-        var lastName = $(this).parent().prevAll('.last_name').text();
-        var gender = $(this).parent().prevAll('.gender').text();
-        var emailAddress = $(this).parent().prevAll('.email').text();
-        var cell = $(this).parent().prevAll('.cell').text();
-        var requestInfo = { 'firstName': firstName, 'lastName': lastName, 'email': emailAddress, 'cell': cell };
+        var reqID = $(this).attr('id');
 
         $.ajax({
             url: '/landlordmanagement/acceptrequest',
             type: 'POST',
-            data: { 'reqID': reqID, 'requestInfo': requestInfo },
+            data: { 'reqID': reqID},
             beforeSend: function () {
                 $('#modal-loading').fadeIn();
             },
@@ -501,16 +495,15 @@ $(document).ready(function () {
             }
         });
     });
+
     //cancels request 
     $(document.body).on('click', '.btnDenyRequest', function (event) {
-        var reqID = $(this).parent().prevAll(".acc_id").children().val();
-        var cell = $(this).parent().prevAll('.cell').text();
-        var emailAddress = $(this).parent().prevAll('.email').text();
+        var reqID = $(this).attr('id');
 
         $.ajax({
             url: '/landlordmanagement/cancelrequest',
             type: 'POST',
-            data: { 'reqID': reqID, 'cell': cell, 'email': emailAddress },
+            data: { 'reqID': reqID},
             beforeSend: function () {
                 $('#modal-loading').fadeIn();
             },

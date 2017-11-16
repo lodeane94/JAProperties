@@ -409,6 +409,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomHelper.cs" />
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
+    <Compile Include="ViewModels\EnrolmentViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
@@ -430,7 +431,7 @@
     <Content Include="Views\Shared\_ManagementLayout.cshtml" />
     <Content Include="Views\LandlordManagement\Feed.cshtml" />
     <Content Include="Views\LandlordManagement\Requisitions.cshtml" />
-    <Content Include="Views\Enrolment\Requisition.cshtml" />
+    <Content Include="Views\Accounts\Requisition.cshtml" />
     <Content Include="Views\LandlordManagement\Utilities.cshtml" />
     <Content Include="Views\Shared\_UtilityManagement.cshtml" />
     <Content Include="Views\Shared\_BillsForm.cshtml" />
@@ -456,6 +457,9 @@
     <Content Include="Views\Shared\_partialAdvertiseProperty.cshtml" />
     <Content Include="Views\Shared\_Messages.cshtml" />
     <Content Include="Views\Shared\_Requisitions.cshtml" />
+    <Content Include="Views\Accounts\SignUp.cshtml" />
+    <Content Include="Views\Shared\_ModalUserCreated.cshtml" />
+    <Content Include="Views\Shared\_ModalTennantCreated.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -465,6 +469,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Uploads\UtilityBills\" />
+    <Folder Include="Views\Enrolment\" />
     <Folder Include="Views\Image\" />
     <Folder Include="Views\Mail\" />
     <Folder Include="Views\Service\" />

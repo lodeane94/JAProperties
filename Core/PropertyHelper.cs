@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Security;
 
 namespace SS.Core
 {
@@ -211,7 +212,7 @@ namespace SS.Core
                 featuredPropertiesSlideViewModel = new FeaturedPropertiesSlideViewModel()
                 {
                     property = property,
-                    propertyImageURLs = ( calledBy.Equals("Home")  && slideTakeCount <= slideTake ) ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
+                    propertyImageURLs = (calledBy.Equals("Home") && slideTakeCount <= slideTake) ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
                     propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
                     averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
                 };
@@ -247,6 +248,189 @@ namespace SS.Core
 
             return count > 0 ? true : false;
         }
+
+        //TODO every one should get an account only realtor and landlord can add unlimited amount of properties without paying the extra cost
+        /// <summary>
+        /// Creates a membership account for the property owner
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="userType"></param>
+        /// <param name="model"></param>
+        public static void createUserAccount(UnitOfWork unitOfWork, String email, String password)
+        {
+            createRolesIfNotExist();
+
+            MembershipCreateStatus status = new MembershipCreateStatus();
+
+            MembershipUser newUser = Membership.CreateUser(email, password, email, "null", "null", true, out status);
+
+            if (newUser == null)
+            {
+                throw new Exception(GetMembershipErrorMessage(status));
+            }
+        }
+
+        /// <summary>
+        /// Creates a user object
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="userType"></param>
+        /// <param name="subscriptionType"></param>
+        /// <param name="email"></param>
+        /// <param name="fName"></param>
+        /// <param name="lName"></param>
+        /// <param name="cellNum"></param>
+        /// <returns></returns>
+        public static User createUser(UnitOfWork unitOfWork, String userType, String subscriptionType
+            , String email, String fName, String lName, String cellNum, DateTime dob)
+        {
+            User user = null;
+            var userID = Guid.NewGuid();
+
+            if (!dob.Equals(DateTime.MinValue))
+            {
+                user = new User()
+                {
+                    ID = userID,
+                    FirstName = fName,
+                    LastName = lName,
+                    CellNum = cellNum,
+                    Email = email,
+                    DOB = dob,
+                    DateTCreated = DateTime.Now
+                };
+            }
+            else
+            {
+                user = new User()
+                {
+                    ID = userID,
+                    FirstName = fName,
+                    LastName = lName,
+                    CellNum = cellNum,
+                    Email = email,
+                    DateTCreated = DateTime.Now
+                };
+
+            }
+
+            unitOfWork.User.Add(user);
+
+            associateUserWithUserType(unitOfWork, userID, userType);
+            addUserToRespectedRole(email, subscriptionType);
+
+            return user;
+        }
+
+        public static void associateUserWithUserType(UnitOfWork unitOfWork, Guid userID, String userType)
+        {
+            UserTypeAssoc userTypeAssoc = new UserTypeAssoc()
+            {
+                ID = Guid.NewGuid(),
+                UserID = userID,
+                UserTypeCode = userType,
+                DateTCreated = DateTime.Now
+            };
+
+            unitOfWork.UserTypeAssoc.Add(userTypeAssoc);
+        }
+
+        /// <summary>
+        /// adds user to it's respected role and generate enrolment key if necessary
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="subscriptionType"></param>
+        public static void addUserToRespectedRole(string email, string subscriptionType)
+        {
+            if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Landlord.ToString());
+            }
+            else if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Realtor)))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Realtor.ToString());
+            }
+            else if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Basic)))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Basic.ToString());
+            }
+            /*removed since subscription type is only for paid users
+            else if (subscriptionType.Equals(EFPConstants.RoleNames.Tennant.ToString()))
+            {
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Tennant.ToString());
+            }
+            else
+                Roles.AddUserToRole(email, EFPConstants.RoleNames.Consumer.ToString());*/
+        }
+
+        /// <summary>
+        /// creates lanlord,tennant and realtor roles if they dont exist
+        /// </summary>
+        public static void createRolesIfNotExist()
+        {
+            if (!Roles.RoleExists("Basic"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Basic.ToString());
+            }
+
+            if (!Roles.RoleExists("Landlord"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Landlord.ToString());
+            }
+
+            if (!Roles.RoleExists("Realtor"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Realtor.ToString());
+            }
+
+            /*
+             if (!Roles.RoleExists("Tennant"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Tennant.ToString());
+            }            
+
+            if (!Roles.RoleExists("Consumer"))
+            {
+                Roles.CreateRole(EFPConstants.RoleNames.Consumer.ToString());
+            }*/
+        }
+
+        //used for membership error message
+        private static string GetMembershipErrorMessage(MembershipCreateStatus status)
+        {
+            switch (status)
+            {
+                case MembershipCreateStatus.DuplicateUserName:
+                    return "Email address already exists. Please sign into your portal to add more properties";
+
+                case MembershipCreateStatus.DuplicateEmail:
+                    return "A username for that e-mail address already exists. Please enter a different e-mail address.";
+
+                case MembershipCreateStatus.InvalidPassword:
+                    return "The password provided is invalid. Please enter a valid password value.\nThe passwords should be 4 characters long";
+
+                case MembershipCreateStatus.InvalidEmail:
+                    return "The e-mail address provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidAnswer:
+                    return "The password retrieval answer provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidQuestion:
+                    return "The password retrieval question provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidUserName:
+                    return "The user name provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.ProviderError:
+                    return "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+
+                case MembershipCreateStatus.UserRejected:
+                    return "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+
+                default:
+                    return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+            }
+        }
     }
 }
- 
+

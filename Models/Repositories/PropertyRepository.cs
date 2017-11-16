@@ -142,5 +142,10 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.Property.Where(x => x.ID.Equals(Id)).Select(x => x.Owner).Single();
         }
+
+        public string GetEnrolmentKeyByPropID(Guid Id)
+        {
+            return EasyFindPropertiesEntities.Property.Where(x => x.ID.Equals(Id)).Select(x => x.EnrolmentKey).Single();
+        }
     }
 }

@@ -39,8 +39,8 @@ namespace SS.Controllers
                          * upon entrance of the dashboard, put the id of the current signed in user into a session
                          * so that it may be used if a new property is being added*/
 
-                        var userId = dbCtx.User.Where(x => x.Email == HttpContext.User.Identity.Name)
-                                                        .Select(x => x.ID).Single();
+                        var userId = unitOfWork.User.GetUserByEmail(HttpContext.User.Identity.Name).ID;
+
                         Session["userId"] = userId;
                         ViewBag.userId = userId;
                     }
@@ -75,7 +75,6 @@ namespace SS.Controllers
                     string subject = "EasyFindProperties - Property Requisition Accepted";
                     //body of the email
                     string body = string.Empty;
-                    bool isRealEstateLeasedOrRent = false;
 
                     if (propCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate)
                         &&
@@ -87,9 +86,8 @@ namespace SS.Controllers
 
                         body = "Congratulations!!, your property request was accepted ." + "Your enrolment key is " + enrolmentKey +
                                     ". " + "If you wish to accommodate this room, please click on the following link and enter your email address and the enrolment key that was provided to you" +
-                                  " localhost:5829/enrolment/requisition/?propId=" + property.ID + "&requestId=" + reqID;
+                                  " localhost:5829/accounts/requisition/?propId=" + property.ID + "&requestId=" + reqID;
 
-                        isRealEstateLeasedOrRent = true;
                     }
                     else
                         body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
@@ -122,35 +120,32 @@ namespace SS.Controllers
             return Content("RequestSuccess");
         }
 
-        /*denies user's requisition
+        //denies user's requisition
         [HttpPost]
-        [Authorize]
-        public ActionResult cancelRequest(Guid reqID, string cell, string email)
+        public ActionResult cancelRequest(Guid reqID)
         {
-            REQUISITIONS requisition;
-            REQUISITION_PROPERTY_MAPPINGS requisitionMapping;
-
             string body = "The owner of the property have declined your requisition";
-            string subject = "Property Requisition Declined";
+            string subject = "EasyFindProperties - Property Requisition Declined";
 
             try
             {
-                using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    //if (sendMail(email, body, subject))
-                    //{
-                    //removes requisition from the database
-                    requisition = dbCtx.REQUISITIONS.Single(x => x.REQUISITION_ID == reqID);
-                    requisitionMapping = dbCtx.REQUISITION_PROPERTY_MAPPINGS.Single(x => x.ID == reqID);
 
-                    dbCtx.REQUISITIONS.Remove(requisition);
-                    dbCtx.REQUISITION_PROPERTY_MAPPINGS.Remove(requisitionMapping);
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                    var requisition = unitOfWork.PropertyRequisition.Get(reqID);
+                    var reqUser = requisition.User;
 
-                    dbCtx.SaveChanges();
-                    Session["cancelRequestCheck"] = "The request has been cancelled";
-                    // }
-                    // else
-                    //   throw new Exception("Mail Exception");
+                    String emailTo = reqUser.Email;
+
+                    if (sendMail(emailTo, body, subject))
+                    {
+                        requisition.IsAccepted = null;
+                        unitOfWork.save();
+                        Session["cancelRequestCheck"] = "The request has been cancelled";
+                    }
+                    else
+                        throw new Exception("Mail Exception");
                 }
             }
             catch (Exception ex)
@@ -158,7 +153,7 @@ namespace SS.Controllers
 
             return Content("Request Cancelled");
         }
-
+        /*
         [HttpPost]
         [Authorize]
         public ActionResult removeProperty(Guid id)
@@ -529,6 +524,7 @@ namespace SS.Controllers
                             model.PropertyRequisition.User = new User();
 
                             model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
+                            model.PropertyRequisition.ID = req.ID;
                             model.PropertyRequisition.PropertyID = req.PropertyID;
                             model.PropertyRequisition.User.FirstName = req.User.FirstName;
                             model.PropertyRequisition.User.LastName = req.User.LastName;
