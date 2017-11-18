@@ -1,5 +1,6 @@
 ﻿var currentMsgIdSelected = null;
 var currentUserNameSelected = null;
+var $calendar = null;
 
 function initializeSockets() {
     var dashboardHub = $.connection.dashboardHub;
@@ -93,6 +94,182 @@ function loadRequisitionsView() {
     });
 }
 
+function loadMeetingCalender() {
+    $calendar = $('#calender').fullCalendar({
+        header: {
+            left: 'title,prev,next today',
+            center: '',
+            right: 'month,agendaWeek,agendaDay'
+        },
+        selectable: true,
+        theme: true,
+        aspectRatio: 2,
+        themeSystem: 'standard',
+        // This is the callback that will be triggered when a selection is made.
+        // It gets start and end date/time as part of its arguments
+        select: function (start, end, jsEvent, view) {
+
+            orStartDate = new Date(start).toISOString();
+            //todo correct time zone
+            var startDate = moment(Date.parse(orStartDate)).format("YYYY/MM/DD");
+
+            loadMeetingRequestView(startDate, null);
+        }, // End select callback
+        // Make events editable, globally
+        editable: true,
+
+        // Callback triggered when we click on an event
+        eventClick: function (event, jsEvent, view) {
+            loadMeetingRequestView(null, event);
+        } // End callback eventClick
+    });
+}
+
+function populateMeetingCalender() {
+    $.ajax({
+        url: '/landlordmanagement/getMeetingsForUser',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            if (data != null) {
+                var date = data.MeetingDate;
+                var time = data.MeetingTime;
+
+                var dateTime = moment(date + ' ' + time, 'DD/MM/YYYY HH:mm');
+
+                $.each(data, function (index, value) {
+                    var event = {
+                        id: value.ID,
+                        title: value.MeetingTitle,
+                        start: dateTime
+                    };
+
+                    $calendar.fullCalendar("updateEvent", event);//adds events to the calender
+                });
+            }
+        },
+        error: function () {
+            alert('An error occurred while loading calender');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function loadMeetingsView() {
+    $.ajax({
+        url: '/landlordmanagement/GetMeetingsView',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-action-content-holder')
+                .html(data).promise().done(function () {
+                    loadMeetingCalender();
+                    populateMeetingCalender();
+                });
+        },
+        error: function () {
+            alert('An error occurred while loading calender');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function getInvitees() {
+    $.ajax({
+        url: '/landlordmanagement/getInvitees',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $.each(data, function (index, value) {
+                $('#meetingMembers').append($('<option></option>')
+                    .attr('id', value.UserID)
+                    .attr('value', value.FullName)
+                    .text(value.FullName));
+            });
+        },
+        error: function () {
+            alert('An error occurred while loading invitees');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function getMeeting(Id) {
+    $.ajax({
+        url: '/landlordmanagement/getMeeting',
+        type: 'GET',
+        data: { Id: Id },
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('#id').val(data.ID);
+            $('#meetingTitle').val(data.MeetingTitle);
+            $('#meetingDate').val(data.MeetingDate);
+            $('#meetingTime').val(data.MeetingTime);
+            $('#location').val(data.Location);
+            $('#purpose').val(data.Purpose);
+            $('#isEdit').val(true);
+
+            //select the invitees which were originally selected within the meeting
+            $("#meetingMembers option").each(function (i) {
+                var inviteeUserID = $(this).attr('id');
+
+                $.each(data.MeetingMemberUserIDs, function (index, value) {
+                    if (inviteeUserID == value) {
+                        $(this).prop('selected', true);
+                    }
+                });
+            });
+        },
+        error: function () {
+            alert('An error occurred while loading invitees');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function loadMeetingRequestView(meetingDate, event) {
+    $.ajax({
+        url: '/landlordmanagement/GetMeetingRequestView',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.meeting-request').html(data).promise().done(function () {
+                $('#meetingDate').val(meetingDate);
+
+                if (event != null)
+                    getMeeting(event.id);//used when editing meetings
+
+                getInvitees();//loads the combo box with the invitees for each user
+            });
+        },
+        error: function () {
+            alert('An error occurred while loading meeting request view');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+
+    });
+}
+
 //loads/reloads the message list
 function loadMsgList() {
     $.ajax({
@@ -111,7 +288,7 @@ function loadMsgList() {
 
                 $('#dashboard-messages').append(
                     '<li class="msg">'
-                    + '<a class="' + seenVal +' '+activeVal+'" href="' + value.ID + '" id="' + value.ID + '">'
+                    + '<a class="' + seenVal + ' ' + activeVal + '" href="' + value.ID + '" id="' + value.ID + '">'
                     + '<div>'
                     + '<span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong id="from-user-name" style="font-size:14px; margin-right:10px;">' + value.From + '</strong> <em><span class="glyphicon glyphicon-calendar"> </span> ' + value.DateTCreated + '</em>'
                     + '<div class="txt-holder txt">' + value.Msg + '</div></div></a></li>'
@@ -161,7 +338,6 @@ function getMsgThread() {
 
 //loads properties in the dashboard page
 $(document).ready(function () {
-
     initializeSockets();
 
     //initialization of bootstrap popover
@@ -223,13 +399,13 @@ $(document).ready(function () {
         sys.showModal('#managementModal');
 
         $('#action-header').html('<span class="glyphicon glyphicon-pencil"></span> Compose New Message');
-        
+
         $('#action-body').html('<form id="new-msg-form" action="landlordmanagement/composenewmessage" method="post"><strong>To</strong> <input type="text" id="recipient" class="form-control" placeholder="Recipients Name"><br/>'
                               + '<strong>Message</strong> <textarea class="form-control" placeholder="Compose new message" rows="4" cols="30"></textarea></form>');
         $('#new-msg-form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
                                 + '<input class="btn btn-primary" type="submit" value="Send Message" id="submit-message" /></div>');
 
-       // $('#action-body').html('<h3>This feature is coming soon......</h3>');
+        // $('#action-body').html('<h3>This feature is coming soon......</h3>');
     });
     //generates modal to compose a new message and broadcast to every tennant
     $('#broadcast-message').click(function (event) {
@@ -483,7 +659,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/landlordmanagement/acceptrequest',
             type: 'POST',
-            data: { 'reqID': reqID},
+            data: { 'reqID': reqID },
             beforeSend: function () {
                 $('#modal-loading').fadeIn();
             },
@@ -503,7 +679,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/landlordmanagement/cancelrequest',
             type: 'POST',
-            data: { 'reqID': reqID},
+            data: { 'reqID': reqID },
             beforeSend: function () {
                 $('#modal-loading').fadeIn();
             },
@@ -674,6 +850,45 @@ $(document).ready(function () {
                 alert('An error occurred while deleting the selected message');
             }
         });
+    });
+
+    $(document.body).on('click', '#schedule-meeting', function (event) {
+        event.preventDefault();
+
+        var validator = $('#meetingRequestForm').validate({});
+
+        var isValid = validator.form();
+
+        if (isValid) {
+            var id = $('#id').val();
+            var title = $('#meetingTitle').val();
+            var date = $('#meetingDate').val();
+            var time = $('#meetingTime').val();
+            var location = $('#location').val();
+            var purpose = $('#purpose').val();
+            var isEdit = $('#isEdit').val();
+            var MeetingMemberUserIDs = [];
+
+            $("#meetingMembers option").each(function (i) {
+                MeetingMemberUserIDs.push($(this).attr('id'));
+            });
+            alert(isEdit);
+
+            $.ajax({
+                url: '/landlordmanagement/scheduleMeeting',
+                type: 'Post',
+                data: {
+                    ID: id, MeetingTitle: title, MeetinDate: date, MeetingTime: time, Location: location,
+                    Purpose: purpose, isEdit: isEdit, MeetingMemberUserIDs: MeetingMemberUserIDs
+                },
+                success: function (data) {
+                    alert('Meeting uploaded successfully');
+                },
+                error: function () {
+                    alert('An error occurred while addoing meeting');
+                }
+            });
+        }
     });
 
     $('.management-action a').click(function (event) {

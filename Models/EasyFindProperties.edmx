@@ -63,6 +63,28 @@
           <Property Name="DateResolved" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Meeting">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="InviterUserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Location" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="MeetingTitle" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="MeetingDate" Type="date" Nullable="false" />
+          <Property Name="MeetingTime" Type="time" Precision="7" Nullable="false" />
+          <Property Name="Purpose" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MeetingMembers">
+          <Key>
+            <PropertyRef Name="MeetingID" />
+            <PropertyRef Name="InviteesUserID" />
+          </Key>
+          <Property Name="MeetingID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="InviteesUserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Message">
           <Key>
             <PropertyRef Name="ID" />
@@ -374,6 +396,46 @@
             </Principal>
             <Dependent Role="Complaint">
               <PropertyRef Name="TennantID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_members_invitees_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="MeetingMembers" Type="Self.MeetingMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MeetingMembers">
+              <PropertyRef Name="InviteesUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_members_member_id">
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="MeetingMembers" Type="Self.MeetingMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Meeting">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MeetingMembers">
+              <PropertyRef Name="MeetingID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="InviterUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -689,6 +751,8 @@
           <EntitySet Name="Bill" EntityType="Self.Bill" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BillType" EntityType="Self.BillType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Complaint" EntityType="Self.Complaint" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Meeting" EntityType="Self.Meeting" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MeetingMembers" EntityType="Self.MeetingMembers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MessageTrash" EntityType="Self.MessageTrash" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Owner" EntityType="Self.Owner" Schema="dbo" store:Type="Tables" />
@@ -735,6 +799,18 @@
           <AssociationSet Name="fk_complaint_tennant_id" Association="Self.fk_complaint_tennant_id">
             <End Role="Tennant" EntitySet="Tennant" />
             <End Role="Complaint" EntitySet="Complaint" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_members_invitees_user_id" Association="Self.fk_meeting_members_invitees_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="MeetingMembers" EntitySet="MeetingMembers" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_members_member_id" Association="Self.fk_meeting_members_member_id">
+            <End Role="Meeting" EntitySet="Meeting" />
+            <End Role="MeetingMembers" EntitySet="MeetingMembers" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_user_id" Association="Self.fk_meeting_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Meeting" EntitySet="Meeting" />
           </AssociationSet>
           <AssociationSet Name="fk_msg_trash_msg_id" Association="Self.fk_msg_trash_msg_id">
             <End Role="Message" EntitySet="Message" />
@@ -985,6 +1061,20 @@
           <AssociationSet Name="fk_msg_trash_user_id" Association="EasyFindPropertiesModel.fk_msg_trash_user_id">
             <End Role="User" EntitySet="User" />
             <End Role="MessageTrash" EntitySet="MessageTrash" />
+          </AssociationSet>
+          <EntitySet Name="MeetingMembers" EntityType="EasyFindPropertiesModel.MeetingMembers" />
+          <AssociationSet Name="fk_meeting_members_invitees_user_id" Association="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="MeetingMembers" EntitySet="MeetingMembers" />
+          </AssociationSet>
+          <EntitySet Name="Meeting" EntityType="EasyFindPropertiesModel.Meeting" />
+          <AssociationSet Name="fk_meeting_members_member_id" Association="EasyFindPropertiesModel.fk_meeting_members_member_id">
+            <End Role="Meeting" EntitySet="Meeting" />
+            <End Role="MeetingMembers" EntitySet="MeetingMembers" />
+          </AssociationSet>
+          <AssociationSet Name="fk_meeting_user_id" Association="EasyFindPropertiesModel.fk_meeting_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Meeting" EntitySet="Meeting" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AdPriority">
@@ -1627,6 +1717,8 @@
           <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_user_id" FromRole="User" ToRole="Tennant" />
           <NavigationProperty Name="UserTypeAssoc" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_id" FromRole="User" ToRole="UserTypeAssoc" />
           <NavigationProperty Name="MessageTrash" Relationship="EasyFindPropertiesModel.fk_msg_trash_user_id" FromRole="User" ToRole="MessageTrash" />
+          <NavigationProperty Name="MeetingMembers" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id" FromRole="User" ToRole="MeetingMembers" />
+          <NavigationProperty Name="Meeting" Relationship="EasyFindPropertiesModel.fk_meeting_user_id" FromRole="User" ToRole="Meeting" />
         </EntityType>
         <Association Name="fk_owner_user_id">
           <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1">
@@ -1724,6 +1816,72 @@
             </Principal>
             <Dependent Role="MessageTrash">
               <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MeetingMembers">
+          <Key>
+            <PropertyRef Name="MeetingID" />
+            <PropertyRef Name="InviteesUserID" />
+          </Key>
+          <Property Name="MeetingID" Type="Guid" Nullable="false" />
+          <Property Name="InviteesUserID" Type="Guid" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id" FromRole="MeetingMembers" ToRole="User" />
+          <NavigationProperty Name="Meeting" Relationship="EasyFindPropertiesModel.fk_meeting_members_member_id" FromRole="MeetingMembers" ToRole="Meeting" />
+        </EntityType>
+        <Association Name="fk_meeting_members_invitees_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.MeetingMembers" Role="MeetingMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MeetingMembers">
+              <PropertyRef Name="InviteesUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Meeting">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="InviterUserID" Type="Guid" Nullable="false" />
+          <Property Name="Location" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="MeetingTitle" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="MeetingTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="Purpose" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MeetingMembers" Relationship="EasyFindPropertiesModel.fk_meeting_members_member_id" FromRole="Meeting" ToRole="MeetingMembers" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_meeting_user_id" FromRole="Meeting" ToRole="User" />
+        </EntityType>
+        <Association Name="fk_meeting_members_member_id">
+          <End Type="EasyFindPropertiesModel.Meeting" Role="Meeting" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EasyFindPropertiesModel.MeetingMembers" Role="MeetingMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Meeting">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="MeetingMembers">
+              <PropertyRef Name="MeetingID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_meeting_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EasyFindPropertiesModel.Meeting" Role="Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="InviterUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2037,6 +2195,29 @@
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="MessageID" ColumnName="MessageID" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MeetingMembers">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.MeetingMembers">
+              <MappingFragment StoreEntitySet="MeetingMembers">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="InviteesUserID" ColumnName="InviteesUserID" />
+                <ScalarProperty Name="MeetingID" ColumnName="MeetingID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Meeting">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Meeting">
+              <MappingFragment StoreEntitySet="Meeting">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+                <ScalarProperty Name="MeetingTime" ColumnName="MeetingTime" />
+                <ScalarProperty Name="MeetingDate" ColumnName="MeetingDate" />
+                <ScalarProperty Name="MeetingTitle" ColumnName="MeetingTitle" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="InviterUserID" ColumnName="InviterUserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -30,6 +30,8 @@ namespace SS.Models
         public IUserTypeRepository UserType { get; private set; }
         public IUserTypeAssocRepository UserTypeAssoc { get; private set; }
         public IMessageTrashRepository MessageTrash { get; private set; }
+        public IMeetingRepository Meeting { get; private set; }
+        public IMeetingMembersRepository MeetingMembers { get; private set; }
 
         public UnitOfWork(EasyFindPropertiesEntities dbCtx)
         {
@@ -55,6 +57,8 @@ namespace SS.Models
             UserType = new UserTypeRepository(_dbCtx);
             UserTypeAssoc = new UserTypeAssocRepository(_dbCtx);
             MessageTrash = new MessageTrashRepository(_dbCtx);
+            Meeting = new MeetingRepository(_dbCtx);
+            MeetingMembers = new MeetingMembersRepository(_dbCtx);
         }
 
         public int save()

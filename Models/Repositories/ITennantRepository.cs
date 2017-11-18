@@ -8,6 +8,7 @@ namespace SS.Models.Repositories
 {
     public interface ITennantRepository : IRepository<Tennant>
     {
-        IEnumerable<Tennant> GetTennantsByPropertyId(String Id);
+        IEnumerable<Tennant> GetTennantsByPropertyId(Guid Id);
+        IEnumerable<Tennant> GetTennantsByUserId(Guid Id);
     }
 }

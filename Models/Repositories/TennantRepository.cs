@@ -16,9 +16,14 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public IEnumerable<Tennant> GetTennantsByPropertyId(string Id)
+        public IEnumerable<Tennant> GetTennantsByPropertyId(Guid Id)
         {
             return EasyFindPropertiesEntities.Tennant.Where(x => x.PropertyID.Equals(Id)).ToList();
+        }
+
+        public IEnumerable<Tennant> GetTennantsByUserId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.Tennant.Where(x => x.UserID.Equals(Id)).ToList();
         }
     }
 }

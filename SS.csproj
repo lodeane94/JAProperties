@@ -160,6 +160,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\facebook.svg" />
+    <Content Include="Content\fullcalendar.min.css" />
+    <Content Include="Content\fullcalendar.print.css" />
     <Content Include="Content\google-plus.svg" />
     <Content Include="Content\instagram.svg" />
     <Content Include="Content\normalize.css" />
@@ -203,6 +205,7 @@
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\fullcalendar.min.js" />
     <Content Include="Scripts\GoogleMapJsScript.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
@@ -221,6 +224,10 @@
     <Content Include="Scripts\MainScript_discard.js" />
     <Content Include="Scripts\ManagementScript.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment-with-locales.js" />
+    <Content Include="Scripts\moment-with-locales.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\PropertiesScript.js" />
     <Content Include="Scripts\propertyController.js" />
     <Content Include="AngularApp\Views\home.html" />
@@ -286,6 +293,12 @@
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\IUnitOfWork.cs" />
+    <Compile Include="Models\Meeting.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MeetingMembers.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Message.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -325,6 +338,8 @@
     <Compile Include="Models\Repositories\AdTypeRepository.cs" />
     <Compile Include="Models\Repositories\IAdPriorityRepository.cs" />
     <Compile Include="Models\Repositories\IAdTypeRepository.cs" />
+    <Compile Include="Models\Repositories\IMeetingMembersRepository.cs" />
+    <Compile Include="Models\Repositories\IMeetingRepository.cs" />
     <Compile Include="Models\Repositories\IMessageRepository.cs" />
     <Compile Include="Models\Repositories\IMessageTrashRepository.cs" />
     <Compile Include="Models\Repositories\IOwnerRepository.cs" />
@@ -345,6 +360,8 @@
     <Compile Include="Models\Repositories\IUserRepository.cs" />
     <Compile Include="Models\Repositories\IUserTypeAssocRepository.cs" />
     <Compile Include="Models\Repositories\IUserTypeRepository.cs" />
+    <Compile Include="Models\Repositories\MeetingMembersRepository.cs" />
+    <Compile Include="Models\Repositories\MeetingRepository.cs" />
     <Compile Include="Models\Repositories\MessageRepository.cs" />
     <Compile Include="Models\Repositories\MessageTrashRepository.cs" />
     <Compile Include="Models\Repositories\OwnerRepository.cs" />
@@ -411,6 +428,8 @@
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
     <Compile Include="ViewModels\EnrolmentViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
+    <Compile Include="ViewModels\InviteeViewModel.cs" />
+    <Compile Include="ViewModels\MeetingViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
     <Compile Include="ViewModels\RequisitionViewModel.cs" />
@@ -460,6 +479,8 @@
     <Content Include="Views\Accounts\SignUp.cshtml" />
     <Content Include="Views\Shared\_ModalUserCreated.cshtml" />
     <Content Include="Views\Shared\_ModalTennantCreated.cshtml" />
+    <Content Include="Views\Shared\_Meetings.cshtml" />
+    <Content Include="Views\Shared\_MeetingRequest.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

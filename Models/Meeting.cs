@@ -12,22 +12,25 @@ namespace SS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Message
+    public partial class Meeting
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Message()
+        public Meeting()
         {
-            this.MessageTrash = new HashSet<MessageTrash>();
+            this.MeetingMembers = new HashSet<MeetingMembers>();
         }
     
         public System.Guid ID { get; set; }
-        public System.Guid To { get; set; }
-        public System.Guid From { get; set; }
-        public string Msg { get; set; }
-        public bool Seen { get; set; }
+        public System.Guid InviterUserID { get; set; }
+        public string Location { get; set; }
+        public string MeetingTitle { get; set; }
+        public System.DateTime MeetingDate { get; set; }
+        public System.TimeSpan MeetingTime { get; set; }
+        public string Purpose { get; set; }
         public System.DateTime DateTCreated { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MessageTrash> MessageTrash { get; set; }
+        public virtual ICollection<MeetingMembers> MeetingMembers { get; set; }
+        public virtual User User { get; set; }
     }
 }

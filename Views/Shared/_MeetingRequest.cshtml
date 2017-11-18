@@ -1,0 +1,47 @@
+﻿<form id="meetingRequestForm">
+    <div class="row">
+        <div class="col-xs-12">
+            <h4>Short Title</h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <input id="meetingTitle" required name="meetingTitle" class="form-control" />
+                </div>
+            </div>
+            <h4>Date and Time</h4>
+            <div class="row">
+                <div class="col-xs-6">
+                    <input readonly id="meetingDate" name="meetingDate" class="form-control" placeholder="Meeting Date" />
+                </div>
+                <div class="col-xs-6">
+                    <input id="meetingTime" required name="meetingTime" class="form-control" placeholder="Meeting Time" />
+                </div>
+            </div>
+            <h4>Who is invited ?</h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <select id="meetingMembers" class="form-control" name="meetingMembers" multiple></select>
+                </div>
+            </div>
+            <h4>Meeting Location</h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <input id="location" required class="form-control" name="location" />
+                </div>
+            </div>
+            <h4>Meeting Purpose</h4>
+            <div class="row">
+                <div class="col-xs-12">
+                    <textarea id="purpose" name="purpose" required class="form-control" placeholder="Enter meeting purpose" cols="10" rows="4"></textarea>
+                </div>
+            </div>
+            <br />
+            <input type="hidden" id="id" name="id" />
+            <input type="hidden" id="isEdit" name="isEdit" value="false" />
+            <div class="row">
+                <div class="col-xs-12">
+                    <button id="schedule-meeting" class="btn btn-accent" style="float:right;position:relative;">Schedule Meeting</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

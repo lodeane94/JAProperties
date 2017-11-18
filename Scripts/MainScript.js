@@ -828,3 +828,4 @@ function loadPropertyTags(selectedItem) {
 
 })();
 /***ADVERTISEPROPERTY FUNCTIONS*/
+/***Enrolment Function*/

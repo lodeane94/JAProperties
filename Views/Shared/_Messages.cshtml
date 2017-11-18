@@ -3,28 +3,7 @@
 <section class="management-action-content">
     <aside class="management-action-aside">
         <div class="dashboard-info msg-container">
-            <ul id="dashboard-messages">
-                @{/*
-if (ViewBag.latestMessages != null)
-{
-    foreach (var msg in ViewBag.latestMessages)
-    {
-
-            '<li class="msg">'
-             +   <a class="@(msg.Seen ? "seen" : "not-seen")" href="@msg.ID" id="@msg.ID">
-                    <div>
-                        <span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:14px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated</em>
-                        <div class="txt-holder txt">
-                            @msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this
-                        </div>
-                    </div>
-                </a>
-            </li>
-    }
-}
-*/
-                }
-            </ul>
+            <ul id="dashboard-messages"></ul>
         </div>
         <br />
         <div id="new-message" class="msg-box-container" style="width:97%;">

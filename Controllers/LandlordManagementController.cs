@@ -544,6 +544,244 @@ namespace SS.Controllers
         }
 
         /// <summary>
+        /// returns the users which the user can set meetings for
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult getInvitees()
+        {
+            List<InviteeViewModel> invitees = new List<InviteeViewModel>();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    /*
+                    *   If user is a property owner, then he/she should be able to set meetings 
+                    *   with the tennants or property requestees
+                    *   Tennants should be able to set meetings with the property owner
+                    *   as well as the other tennants
+                    */
+                    //var user = unitOfWork.User.Get(userId);
+                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
+                    bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
+                    bool isUserTennant = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Tennant);
+
+                    if (isUserPropOwner)
+                    {
+                        setInviteeVMForPO(unitOfWork, userId, invitees);
+                    }
+                    else if (isUserTennant)
+                    {
+                        setInviteeVMForTennant(unitOfWork, userId, invitees);
+                    }
+                }
+            }
+
+            return Json(invitees, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Sets the invitee view model for property owners
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="userId"></param>
+        /// <param name="invitees"></param>
+        private void setInviteeVMForTennant(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
+        {
+            var tennant = unitOfWork.Tennant.Get(userId);
+            var poUser = tennant.User;
+
+            //getting all tennants that are in the same property
+            var currentPropertyId = tennant.PropertyID;
+            var tennants = unitOfWork.Tennant.GetTennantsByPropertyId(currentPropertyId);
+
+            InviteeViewModel inviteeViewModel = new InviteeViewModel()
+            {
+                UserID = tennant.User.ID,
+                FullName = poUser.FirstName + " " + poUser.LastName,
+                ImageUrl = "",
+                inviteeType = "O"
+            };
+
+            invitees.Add(inviteeViewModel);
+
+            foreach (var t in tennants)
+            {
+                inviteeViewModel = new InviteeViewModel()
+                {
+                    UserID = tennant.User.ID,
+                    FullName = tennant.User.FirstName + " " + tennant.User.LastName,
+                    ImageUrl = tennant.PhotoUrl,
+                    inviteeType = EFPConstants.UserType.Tennant
+                };
+
+                invitees.Add(inviteeViewModel);
+            }
+        }
+
+        /// <summary>
+        /// Sets the invitee view model for property owners
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="userId"></param>
+        /// <param name="invitees"></param>
+        private void setInviteeVMForPO(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
+        {
+            var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+            var tennants = unitOfWork.Tennant.GetTennantsByUserId(userId);
+            var requisitions = unitOfWork.PropertyRequisition.GetAcceptedRequestsByOwnerId(owner.ID);
+
+            //populate invitee model with each ienumerable items
+            foreach (var tennant in tennants)
+            {
+                InviteeViewModel inviteeViewModel = new InviteeViewModel()
+                {
+                    UserID = tennant.User.ID,
+                    FullName = tennant.User.FirstName + " " + tennant.User.LastName,
+                    ImageUrl = tennant.PhotoUrl,
+                    inviteeType = EFPConstants.UserType.Tennant
+                };
+
+                invitees.Add(inviteeViewModel);
+            }
+
+            foreach (var req in requisitions)
+            {
+                InviteeViewModel inviteeViewModel = new InviteeViewModel()
+                {
+                    UserID = req.User.ID,
+                    FullName = req.User.FirstName + " " + req.User.LastName,
+                    ImageUrl = "",
+                    inviteeType = "R"
+                };
+
+                invitees.Add(inviteeViewModel);
+            }
+        }
+
+        /// <summary>
+        /// returns the meeting for the given Id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult getMeeting(Guid Id)
+        {
+            MeetingViewModel model = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var meeting = unitOfWork.Meeting.Get(Id);
+
+                model = new MeetingViewModel()
+                {
+                    ID = meeting.ID,
+                    MeetingTitle = meeting.MeetingTitle,
+                    MeetingDate = meeting.MeetingDate,
+                    MeetingTime = meeting.MeetingTime,
+                    Location = meeting.Location,
+                    Purpose = meeting.Purpose,
+                    MeetingMemberUserIDs = meeting.MeetingMembers.Select(x => x.InviteesUserID).ToList()    //gets all meeting member user ids
+                };
+            }
+
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// returns the meeting for the given Id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult getMeetingsForUser()
+        {
+            IEnumerable<Meeting> meetings = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    meetings = unitOfWork.Meeting.GetMeetingsByUserId(userId);
+                }
+            }
+
+            return Json(meetings, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Insert meeting records
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public void scheduleMeeting(MeetingViewModel model, Boolean isEdit = false)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    Meeting meeting = null;
+                    var userId = (Guid)Session["userId"];
+                    
+                    IEnumerable<MeetingMembers> orMeetingMembers = null;
+                    if (isEdit)
+                    {
+                        meeting = unitOfWork.Meeting.Get(model.ID);
+
+                        meeting.MeetingTitle = model.MeetingTitle;
+                        meeting.MeetingDate = model.MeetingDate;
+                        meeting.MeetingTime = model.MeetingTime;
+                        meeting.Location = model.Location;
+                        meeting.Purpose = model.Purpose;
+                        meeting.DateTCreated = DateTime.Now;
+
+                        //remove previous meeting members and replace with new
+                        orMeetingMembers = unitOfWork.Meeting.Get(model.ID).MeetingMembers;
+                        unitOfWork.MeetingMembers.RemoveRange(orMeetingMembers);
+                    }
+                    else {
+                        meeting = new Meeting()
+                        {
+                            ID = Guid.NewGuid(),
+                            InviterUserID = userId,
+                            MeetingTitle = model.MeetingTitle,
+                            MeetingDate = model.MeetingDate,
+                            MeetingTime = model.MeetingTime,
+                            Location = model.Location,
+                            Purpose = model.Purpose,
+                            DateTCreated = DateTime.Now
+                        };
+
+                        unitOfWork.Meeting.Add(meeting);//if it is not an edit then add new meeting
+                    }
+
+                    foreach (var id in model.MeetingMemberUserIDs)
+                    {
+                        MeetingMembers meetingMembers = new MeetingMembers()
+                        {
+                            MeetingID = meeting.ID,
+                            InviteesUserID = id
+                        };
+
+                        unitOfWork.MeetingMembers.Add(meetingMembers);
+                    }
+
+                    unitOfWork.save();
+                }
+            }
+        }
+
+        /// <summary>
         /// returns the messages partial view
         /// </summary>
         /// <returns></returns>
@@ -562,6 +800,26 @@ namespace SS.Controllers
         {
             var requisitions = getRequisitions();
             return PartialView("_Requisitions", requisitions);
+        }
+
+        /// <summary>
+        /// returns the requisition partial view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetMeetingRequestView()
+        {
+            return PartialView("_MeetingRequest");
+        }
+
+        /// <summary>
+        /// returns the Meetings view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetMeetingsView()
+        {
+            return PartialView("_Meetings");
         }
 
         /*

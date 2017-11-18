@@ -746,17 +746,17 @@ button.jumbotron-button {
     display: block;
     padding: 0px;
     width: 100%;
-    height: 400px;
+    height: 500px;
     border: 1.8px solid #F5F6FA;
 }
 
 .management-action-content-holder {
-    height: 395px;
+    height: inherit;
     position: relative;
 }
 
 .management-action-content {
-    height: 395px;
+    height: inherit;
     display: flex;
 }
 
@@ -780,6 +780,15 @@ button.jumbotron-button {
     background-color: #FFFFFF;
     width: 70%;
     height: inherit;
+}
+
+.meeting-request-container {
+    display: block;
+    width: auto;
+    height:inherit;
+    overflow: auto;
+    padding:10px;
+    background-color:#FFFFFF;
 }
 
 .req {
