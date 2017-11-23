@@ -109,10 +109,8 @@ function loadMeetingCalender() {
         // It gets start and end date/time as part of its arguments
         select: function (start, end, jsEvent, view) {
 
-            orStartDate = new Date(start).toISOString();
-            //todo correct time zone
-            var startDate = moment(Date.parse(orStartDate)).format("YYYY/MM/DD");
-
+            var startDate = moment(start).format('LL');
+            
             loadMeetingRequestView(startDate, null);
         }, // End select callback
         // Make events editable, globally
@@ -125,6 +123,26 @@ function loadMeetingCalender() {
     });
 }
 
+//populates the meeting hour, minute and period with their
+//values
+function populateMeetingTime() {
+    //meeting hour
+    for (var i = 1; i <= 12; i++) {
+        $('#meetingHour').append($('<option></option>')
+                    .attr('id', i)
+                    .attr('value', i)
+                    .text(i));
+    }
+
+    //meeting minute
+    for (var i = 1; i <= 59; i++) {
+        $('#meetingMinute').append($('<option></option>')
+                    .attr('id', i)
+                    .attr('value', i)
+                    .text(i));
+    }
+}
+
 function populateMeetingCalender() {
     $.ajax({
         url: '/landlordmanagement/getMeetingsForUser',
@@ -134,19 +152,20 @@ function populateMeetingCalender() {
         },
         success: function (data) {
             if (data != null) {
-                var date = data.MeetingDate;
-                var time = data.MeetingTime;
-
-                var dateTime = moment(date + ' ' + time, 'DD/MM/YYYY HH:mm');
 
                 $.each(data, function (index, value) {
+                    var time = value.MeetingHour + ':' + value.MeetingMinute + ' ' + value.MeetingPeriod;
+
+                    var date = moment(value.MeetingDate).format('LL');
+                    var dateTime = moment(date + ' ' + time);
+
                     var event = {
                         id: value.ID,
                         title: value.MeetingTitle,
-                        start: dateTime
+                        start: moment(dateTime)
                     };
 
-                    $calendar.fullCalendar("updateEvent", event);//adds events to the calender
+                    $calendar.fullCalendar("renderEvent", event, true);
                 });
             }
         },
@@ -215,21 +234,46 @@ function getMeeting(Id) {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
+            var date = moment(data.MeetingDate).format('LL');//removes time from the date
+            
             $('#id').val(data.ID);
             $('#meetingTitle').val(data.MeetingTitle);
-            $('#meetingDate').val(data.MeetingDate);
-            $('#meetingTime').val(data.MeetingTime);
+            $('#meetingDate').val(date);
             $('#location').val(data.Location);
             $('#purpose').val(data.Purpose);
             $('#isEdit').val(true);
 
+            $('#meetingHour option').each(function () {
+                var id = $(this).attr('id');
+
+                if (data.MeetingHour == id) {
+                    $(this).prop('selected', true);
+                }
+            });
+
+            $('#meetingMinute option').each(function () {
+                var id = $(this).attr('id');
+
+                if (data.MeetingMinute == id) {
+                    $(this).prop('selected', true);
+                }
+            });
+
+            $('#meetingPeriod option').each(function () {
+                var id = $(this).attr('id');
+
+                if (data.MeetingPeriod == id) {
+                    $(this).prop('selected', true);
+                }
+            });
+            
             //select the invitees which were originally selected within the meeting
             $("#meetingMembers option").each(function (i) {
                 var inviteeUserID = $(this).attr('id');
-
+                
                 $.each(data.MeetingMemberUserIDs, function (index, value) {
                     if (inviteeUserID == value) {
-                        $(this).prop('selected', true);
+                        $('#meetingMembers option[id="'+value+'"').prop("selected", true);
                     }
                 });
             });
@@ -252,12 +296,14 @@ function loadMeetingRequestView(meetingDate, event) {
         },
         success: function (data) {
             $('.meeting-request').html(data).promise().done(function () {
+
                 $('#meetingDate').val(meetingDate);
+                populateMeetingTime();
+
+                getInvitees();//loads the combo box with the invitees for each user
 
                 if (event != null)
                     getMeeting(event.id);//used when editing meetings
-
-                getInvitees();//loads the combo box with the invitees for each user
             });
         },
         error: function () {
@@ -317,7 +363,8 @@ function getMsgThread() {
                 var userId = $('#userId').val();
                 var msgBoxContainer = $('.management-action-section .msg-container');
                 msgBoxContainer.empty();
-
+                //if this message is sent from the current logged in user
+                //then dispaly it to the right and it should not have any glyphicon to it
                 $.each(data, function (index, value) {
                     if (userId == value.From) {
                         msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg user">' + value.Msg + ' <span class="img-circle img-circle-sm" style="font-size:14px;">You</span></div>');
@@ -855,7 +902,11 @@ $(document).ready(function () {
     $(document.body).on('click', '#schedule-meeting', function (event) {
         event.preventDefault();
 
-        var validator = $('#meetingRequestForm').validate({});
+        var validator = $('#meetingRequestForm').validate({
+            showErrors: function (errorMap, errorList) {
+                this.defaultShowErrors();
+            }
+        });
 
         var isValid = validator.form();
 
@@ -863,7 +914,9 @@ $(document).ready(function () {
             var id = $('#id').val();
             var title = $('#meetingTitle').val();
             var date = $('#meetingDate').val();
-            var time = $('#meetingTime').val();
+            var hour = $('#meetingHour').val();
+            var minute = $('#meetingMinute').val();
+            var period = $('#meetingPeriod').val();
             var location = $('#location').val();
             var purpose = $('#purpose').val();
             var isEdit = $('#isEdit').val();
@@ -872,20 +925,21 @@ $(document).ready(function () {
             $("#meetingMembers option").each(function (i) {
                 MeetingMemberUserIDs.push($(this).attr('id'));
             });
-            alert(isEdit);
+
 
             $.ajax({
                 url: '/landlordmanagement/scheduleMeeting',
                 type: 'Post',
                 data: {
-                    ID: id, MeetingTitle: title, MeetinDate: date, MeetingTime: time, Location: location,
+                    ID: id, MeetingTitle: title, MeetingDate: date, MeetingHour: hour,
+                    MeetingMinute: minute, MeetingPeriod: period, Location: location,
                     Purpose: purpose, isEdit: isEdit, MeetingMemberUserIDs: MeetingMemberUserIDs
                 },
                 success: function (data) {
                     alert('Meeting uploaded successfully');
                 },
                 error: function () {
-                    alert('An error occurred while addoing meeting');
+                    alert('An error occurred while adding meeting');
                 }
             });
         }

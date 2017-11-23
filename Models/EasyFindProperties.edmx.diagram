@@ -60,9 +60,9 @@
         <EntityTypeShape EntityType="EasyFindPropertiesModel.MessageTrash" Width="1.5" PointX="3" PointY="6.875" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_msg_trash_msg_id" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_msg_trash_user_id" />
-        <EntityTypeShape EntityType="EasyFindPropertiesModel.MeetingMembers" Width="1.5" PointX="13.125" PointY="23.875" />
-        <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id" />
-        <EntityTypeShape EntityType="EasyFindPropertiesModel.Meeting" Width="1.5" PointX="3" PointY="24" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.MeetingMembers" Width="1.5" PointX="13.25" PointY="24.375" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_members_invitee_id" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Meeting" Width="1.5" PointX="3" PointY="23.875" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_members_member_id" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_user_id" />
         </Diagram>

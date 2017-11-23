@@ -25,7 +25,9 @@ namespace SS.Models
         public string Location { get; set; }
         public string MeetingTitle { get; set; }
         public System.DateTime MeetingDate { get; set; }
-        public System.TimeSpan MeetingTime { get; set; }
+        public string MeetingHour { get; set; }
+        public string MeetingMinute { get; set; }
+        public string MeetingPeriod { get; set; }
         public string Purpose { get; set; }
         public System.DateTime DateTCreated { get; set; }
     

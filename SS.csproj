@@ -204,6 +204,7 @@
     <Content Include="Models\EasyFindProperties.edmx.diagram">
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Content>
+    <Content Include="App_Data\EasyFindProperties_22112017.bak" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\fullcalendar.min.js" />
     <Content Include="Scripts\GoogleMapJsScript.js" />
@@ -481,6 +482,7 @@
     <Content Include="Views\Shared\_ModalTennantCreated.cshtml" />
     <Content Include="Views\Shared\_Meetings.cshtml" />
     <Content Include="Views\Shared\_MeetingRequest.cshtml" />
+    <Content Include="Views\Shared\_Tennants.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

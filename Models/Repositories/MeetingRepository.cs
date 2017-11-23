@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,9 +17,24 @@ namespace SS.Models.Repositories
             : base(dbctx)
         { }
 
-        public IEnumerable<Meeting> GetMeetingsByUserId(Guid Id)
+        public IEnumerable GetMeetingsByUserId(Guid Id)
         {
-            return EasyFindPropertiesEntities.Meeting.Where(x => x.InviterUserID.Equals(Id)).ToList();
+            return EasyFindPropertiesEntities.Meeting
+                .Where(x => x.InviterUserID.Equals(Id))
+                .Select(x => new
+                {
+                    x.ID,
+                    x.InviterUserID,
+                    x.Location,
+                    x.MeetingDate,
+                    x.MeetingHour,
+                    x.MeetingMinute,
+                    x.MeetingPeriod,
+                    x.MeetingTitle,
+                    x.Purpose,
+                    x.DateTCreated
+                }).ToList();
+                
         }
     }
 }

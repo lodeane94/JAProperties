@@ -71,8 +71,10 @@
           <Property Name="InviterUserID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Location" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="MeetingTitle" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="MeetingDate" Type="date" Nullable="false" />
-          <Property Name="MeetingTime" Type="time" Precision="7" Nullable="false" />
+          <Property Name="MeetingDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="MeetingHour" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="MeetingMinute" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="MeetingPeriod" Type="varchar" MaxLength="2" Nullable="false" />
           <Property Name="Purpose" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
@@ -399,7 +401,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_meeting_members_invitees_user_id">
+        <Association Name="fk_meeting_members_invitee_id">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="MeetingMembers" Type="Self.MeetingMembers" Multiplicity="*" />
           <ReferentialConstraint>
@@ -800,7 +802,7 @@
             <End Role="Tennant" EntitySet="Tennant" />
             <End Role="Complaint" EntitySet="Complaint" />
           </AssociationSet>
-          <AssociationSet Name="fk_meeting_members_invitees_user_id" Association="Self.fk_meeting_members_invitees_user_id">
+          <AssociationSet Name="fk_meeting_members_invitee_id" Association="Self.fk_meeting_members_invitee_id">
             <End Role="User" EntitySet="User" />
             <End Role="MeetingMembers" EntitySet="MeetingMembers" />
           </AssociationSet>
@@ -1063,7 +1065,7 @@
             <End Role="MessageTrash" EntitySet="MessageTrash" />
           </AssociationSet>
           <EntitySet Name="MeetingMembers" EntityType="EasyFindPropertiesModel.MeetingMembers" />
-          <AssociationSet Name="fk_meeting_members_invitees_user_id" Association="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id">
+          <AssociationSet Name="fk_meeting_members_invitee_id" Association="EasyFindPropertiesModel.fk_meeting_members_invitee_id">
             <End Role="User" EntitySet="User" />
             <End Role="MeetingMembers" EntitySet="MeetingMembers" />
           </AssociationSet>
@@ -1717,7 +1719,7 @@
           <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_user_id" FromRole="User" ToRole="Tennant" />
           <NavigationProperty Name="UserTypeAssoc" Relationship="EasyFindPropertiesModel.fk_userTypeAssoc_user_id" FromRole="User" ToRole="UserTypeAssoc" />
           <NavigationProperty Name="MessageTrash" Relationship="EasyFindPropertiesModel.fk_msg_trash_user_id" FromRole="User" ToRole="MessageTrash" />
-          <NavigationProperty Name="MeetingMembers" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id" FromRole="User" ToRole="MeetingMembers" />
+          <NavigationProperty Name="MeetingMembers" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitee_id" FromRole="User" ToRole="MeetingMembers" />
           <NavigationProperty Name="Meeting" Relationship="EasyFindPropertiesModel.fk_meeting_user_id" FromRole="User" ToRole="Meeting" />
         </EntityType>
         <Association Name="fk_owner_user_id">
@@ -1827,10 +1829,10 @@
           <Property Name="MeetingID" Type="Guid" Nullable="false" />
           <Property Name="InviteesUserID" Type="Guid" Nullable="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitees_user_id" FromRole="MeetingMembers" ToRole="User" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitee_id" FromRole="MeetingMembers" ToRole="User" />
           <NavigationProperty Name="Meeting" Relationship="EasyFindPropertiesModel.fk_meeting_members_member_id" FromRole="MeetingMembers" ToRole="Meeting" />
         </EntityType>
-        <Association Name="fk_meeting_members_invitees_user_id">
+        <Association Name="fk_meeting_members_invitee_id">
           <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
           <End Type="EasyFindPropertiesModel.MeetingMembers" Role="MeetingMembers" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1850,8 +1852,10 @@
           <Property Name="InviterUserID" Type="Guid" Nullable="false" />
           <Property Name="Location" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="MeetingTitle" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="MeetingTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="MeetingHour" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="MeetingMinute" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="MeetingPeriod" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="Purpose" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="MeetingMembers" Relationship="EasyFindPropertiesModel.fk_meeting_members_member_id" FromRole="Meeting" ToRole="MeetingMembers" />
@@ -2212,7 +2216,9 @@
               <MappingFragment StoreEntitySet="Meeting">
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="Purpose" ColumnName="Purpose" />
-                <ScalarProperty Name="MeetingTime" ColumnName="MeetingTime" />
+                <ScalarProperty Name="MeetingPeriod" ColumnName="MeetingPeriod" />
+                <ScalarProperty Name="MeetingMinute" ColumnName="MeetingMinute" />
+                <ScalarProperty Name="MeetingHour" ColumnName="MeetingHour" />
                 <ScalarProperty Name="MeetingDate" ColumnName="MeetingDate" />
                 <ScalarProperty Name="MeetingTitle" ColumnName="MeetingTitle" />
                 <ScalarProperty Name="Location" ColumnName="Location" />

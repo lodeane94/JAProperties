@@ -632,7 +632,7 @@ namespace SS.Controllers
         private void setInviteeVMForPO(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
         {
             var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
-            var tennants = unitOfWork.Tennant.GetTennantsByUserId(userId);
+            var tennants = unitOfWork.Tennant.GetTennantsByOwnerId(owner.ID);
             var requisitions = unitOfWork.PropertyRequisition.GetAcceptedRequestsByOwnerId(owner.ID);
 
             //populate invitee model with each ienumerable items
@@ -683,10 +683,12 @@ namespace SS.Controllers
                     ID = meeting.ID,
                     MeetingTitle = meeting.MeetingTitle,
                     MeetingDate = meeting.MeetingDate,
-                    MeetingTime = meeting.MeetingTime,
+                    MeetingHour = meeting.MeetingHour,
+                    MeetingMinute = meeting.MeetingMinute,
+                    MeetingPeriod = meeting.MeetingPeriod,
                     Location = meeting.Location,
                     Purpose = meeting.Purpose,
-                    MeetingMemberUserIDs = meeting.MeetingMembers.Select(x => x.InviteesUserID).ToList()    //gets all meeting member user ids
+                    MeetingMemberUserIDs = new List<Guid>(meeting.MeetingMembers.Select(x => x.InviteesUserID).ToList())    //gets all meeting member user ids
                 };
             }
 
@@ -700,8 +702,6 @@ namespace SS.Controllers
         [HttpGet]
         public JsonResult getMeetingsForUser()
         {
-            IEnumerable<Meeting> meetings = null;
-
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
@@ -710,11 +710,14 @@ namespace SS.Controllers
                 {
                     var userId = (Guid)Session["userId"];
 
-                    meetings = unitOfWork.Meeting.GetMeetingsByUserId(userId);
+                    var meetings = unitOfWork.Meeting.GetMeetingsByUserId(userId);
+
+                    return Json(meetings, JsonRequestBehavior.AllowGet);
                 }
+                
             }
 
-            return Json(meetings, JsonRequestBehavior.AllowGet);
+            return Json(null, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -732,15 +735,16 @@ namespace SS.Controllers
                 {
                     Meeting meeting = null;
                     var userId = (Guid)Session["userId"];
-                    
+
                     IEnumerable<MeetingMembers> orMeetingMembers = null;
                     if (isEdit)
                     {
                         meeting = unitOfWork.Meeting.Get(model.ID);
 
                         meeting.MeetingTitle = model.MeetingTitle;
-                        meeting.MeetingDate = model.MeetingDate;
-                        meeting.MeetingTime = model.MeetingTime;
+                        meeting.MeetingHour = model.MeetingHour;
+                        meeting.MeetingMinute = model.MeetingMinute;
+                        meeting.MeetingPeriod = model.MeetingPeriod;
                         meeting.Location = model.Location;
                         meeting.Purpose = model.Purpose;
                         meeting.DateTCreated = DateTime.Now;
@@ -749,14 +753,17 @@ namespace SS.Controllers
                         orMeetingMembers = unitOfWork.Meeting.Get(model.ID).MeetingMembers;
                         unitOfWork.MeetingMembers.RemoveRange(orMeetingMembers);
                     }
-                    else {
+                    else
+                    {
                         meeting = new Meeting()
                         {
                             ID = Guid.NewGuid(),
                             InviterUserID = userId,
                             MeetingTitle = model.MeetingTitle,
                             MeetingDate = model.MeetingDate,
-                            MeetingTime = model.MeetingTime,
+                            MeetingHour = model.MeetingHour,
+                            MeetingMinute = model.MeetingMinute,
+                            MeetingPeriod = model.MeetingPeriod,
                             Location = model.Location,
                             Purpose = model.Purpose,
                             DateTCreated = DateTime.Now
@@ -765,12 +772,14 @@ namespace SS.Controllers
                         unitOfWork.Meeting.Add(meeting);//if it is not an edit then add new meeting
                     }
 
+
                     foreach (var id in model.MeetingMemberUserIDs)
                     {
                         MeetingMembers meetingMembers = new MeetingMembers()
                         {
                             MeetingID = meeting.ID,
-                            InviteesUserID = id
+                            InviteesUserID = id,
+                            DateTCreated = DateTime.Now
                         };
 
                         unitOfWork.MeetingMembers.Add(meetingMembers);

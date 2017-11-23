@@ -12,7 +12,9 @@ namespace SS.ViewModels
         public string Location { get; set; }
         public String MeetingTitle { get; set; }
         public DateTime MeetingDate { get; set; }
-        public TimeSpan MeetingTime { get; set; }
+        public String MeetingHour { get; set; }
+        public String MeetingMinute { get; set; }
+        public String MeetingPeriod { get; set; }
         public string Purpose { get; set; }
         public List<Guid> MeetingMemberUserIDs { get; set; }
     }

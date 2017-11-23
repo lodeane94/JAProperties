@@ -1,37 +1,54 @@
 ﻿<form id="meetingRequestForm">
+    <center><h4>Meeting Requisition</h4></center>
     <div class="row">
         <div class="col-xs-12">
-            <h4>Short Title</h4>
+            <h5>Short Title</h5>
             <div class="row">
                 <div class="col-xs-12">
                     <input id="meetingTitle" required name="meetingTitle" class="form-control" />
                 </div>
             </div>
-            <h4>Date and Time</h4>
+            <h5>Date</h5>
             <div class="row">
-                <div class="col-xs-6">
+                <div class="col-xs-12">
                     <input readonly id="meetingDate" name="meetingDate" class="form-control" placeholder="Meeting Date" />
                 </div>
-                <div class="col-xs-6">
-                    <input id="meetingTime" required name="meetingTime" class="form-control" placeholder="Meeting Time" />
+            </div>
+            <h5>Time</h5>
+            <div class="row">
+                <div class="col-xs-4">
+                    <select required id="meetingHour" class="form-control" name="meetingHour">
+                        <option id="na" disabled selected>Hour</option>
+                    </select>
+                </div>
+                <div class="col-xs-4">
+                    <select required id="meetingMinute" class="form-control" name="meetingMinute">
+                        <option id="na" disabled selected>Minute</option>
+                    </select>
+                </div>
+                <div  class="col-xs-4">
+                    <select required id="meetingPeriod" class="form-control" name="meetingPeriod">
+                        <option id="AM" selected>AM</option>
+                        <option id="PM">PM</option>
+                    </select>
                 </div>
             </div>
-            <h4>Who is invited ?</h4>
+            <h5>Who is invited ?</h5>
             <div class="row">
                 <div class="col-xs-12">
                     <select id="meetingMembers" class="form-control" name="meetingMembers" multiple></select>
                 </div>
             </div>
-            <h4>Meeting Location</h4>
+            <h5>Meeting Location</h5>
             <div class="row">
                 <div class="col-xs-12">
                     <input id="location" required class="form-control" name="location" />
                 </div>
             </div>
-            <h4>Meeting Purpose</h4>
+            <h5>Meeting Purpose</h5>
             <div class="row">
                 <div class="col-xs-12">
-                    <textarea id="purpose" name="purpose" required class="form-control" placeholder="Enter meeting purpose" cols="10" rows="4"></textarea>
+                    <textarea id="purpose" name="purpose" required class="form-control" placeholder="Enter meeting purpose" cols="15" rows="4"></textarea>
                 </div>
             </div>
             <br />
