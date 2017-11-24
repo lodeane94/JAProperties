@@ -383,8 +383,31 @@ function getMsgThread() {
     }
 }
 
+//loads the tennants view on the management portal
+function loadTennantsView() {
+    $.ajax({
+        url: '/landlordmanagement/GetTennantsView',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-action-content-holder').html(data);
+            $('#accordion').accordion();
+        },
+        error: function () {
+            alert('An error occurred while loading calender');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
 //loads properties in the dashboard page
 $(document).ready(function () {
+    //initialize signalr sockets which will broadcast notifications 
+    //in real time
     initializeSockets();
 
     //initialization of bootstrap popover

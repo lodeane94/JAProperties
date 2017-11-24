@@ -714,7 +714,7 @@ namespace SS.Controllers
 
                     return Json(meetings, JsonRequestBehavior.AllowGet);
                 }
-                
+
             }
 
             return Json(null, JsonRequestBehavior.AllowGet);
@@ -829,6 +829,33 @@ namespace SS.Controllers
         public ActionResult GetMeetingsView()
         {
             return PartialView("_Meetings");
+        }
+
+        /// <summary>
+        /// returns the tennants view with date for the current logged in user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetTennantsView()
+        {
+            IEnumerable<Tennant> tennants = null;
+
+            //using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            //{
+            EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
+            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+
+                var ownerId = unitOfWork.Owner.GetOwnerByUserID(userId).ID;
+
+                tennants = unitOfWork.Tennant.GetTennantsByOwnerId(ownerId);
+            }
+            //}
+
+            return PartialView("_Tennants", tennants);
         }
 
         /*

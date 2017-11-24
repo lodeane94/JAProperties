@@ -11,7 +11,8 @@ namespace SS.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.Web.Script.Serialization;
+
     public partial class Message
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -26,7 +27,8 @@ namespace SS.Models
         public string Msg { get; set; }
         public bool Seen { get; set; }
         public System.DateTime DateTCreated { get; set; }
-    
+
+        [ScriptIgnore(ApplyToOverrides = true)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MessageTrash> MessageTrash { get; set; }
     }
