@@ -83,6 +83,10 @@ html, body {
 
 #body-content {
     background-color: #FFFFFF;
+    font-family: 'Raleway';
+    font-size:14px;
+    font-style:normal;
+    font-weight: 400;
 }
 
 .btn-accent {
@@ -244,19 +248,20 @@ a.clickable-box-link {
 
 .ctnr-headers {
     padding: 5px;
-    font-family: Rockwell, "Courier Bold", Courier, Georgia, Times, "Times New Roman", serif;
-    font-size: 25px;
-    font-weight: 600;
+    font-family: 'Raleway';
+    font-size: 23px;
+    font-style:normal;
+    font-weight: 400;
     color: #1654C7;
     line-height: 20px;
     margin-bottom: 20px;
 }
 
 .ctnr-info {
-    font-family: Rockwell, "Courier Bold", Courier, Georgia, Times, "Times New Roman", serif;
-    font-size: 16px;
+    font-family: Arial,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
     font-weight: 500;
-    color: #6B6B6B;
+    color:#696969 !important;
 }
 
 .ctnr-options {
@@ -1516,3 +1521,7 @@ textarea {
     textarea.txt-area-desc {
         width: 100%;
     }
+
+.ui-accordion-header{
+   background:black;
+}

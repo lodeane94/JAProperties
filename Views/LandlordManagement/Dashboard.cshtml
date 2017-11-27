@@ -8,11 +8,18 @@
 
     (function(){
     $('#dashboard').attr('class','active');
+
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+    trigger : 'hover click',
+    container: 'body'
+    });
     })();
 }
 @using SS.Code
 @Html.Partial("_ModelManagement")
 @Html.Partial("_ModalPropertyAdvertised")
+@Html.Partial("_ModalCreateNewMessage")
 @{
     //displays the message for property removal error
     if (Session["propertyRemovedMesssage"] != null)

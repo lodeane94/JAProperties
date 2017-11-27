@@ -1,6 +1,7 @@
 ﻿var currentMsgIdSelected = null;
 var currentUserNameSelected = null;
 var $calendar = null;
+var orRentCntrDataContent = null;
 
 function initializeSockets() {
     var dashboardHub = $.connection.dashboardHub;
@@ -12,6 +13,11 @@ function initializeSockets() {
     dashboardHub.client.updateUserMessages = function () {
         alert('message updated');
         loadMessagesView();
+    }
+
+    dashboardHub.client.updateMeeting = function () {
+        alert('A meeting has been updated on your portal');
+        loadMeetingCalender();
     }
 }
 
@@ -392,8 +398,15 @@ function loadTennantsView() {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
-            $('.management-action-content-holder').html(data);
-            $('#accordion').accordion();
+            $('.management-action-content-holder').html(data).promise().done(function () {
+                $('#accordion').accordion({ header: "h5", collapsible: true, active: false });
+
+                //initialization of bootstrap popover
+                $('[data-toggle="popover"]').popover({
+                    trigger: 'hover click',
+                    container: '#accordion'
+                });
+            });
         },
         error: function () {
             alert('An error occurred while loading calender');
@@ -403,6 +416,68 @@ function loadTennantsView() {
         }
     });
 }
+
+function updateRent(tennantId, updateVal) {
+    
+    $.ajax({
+        url: '/landlordmanagement/updateRent',
+        type: 'GET',
+        data: { id: tennantId, newRentAmt: updateVal },
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function () {
+            alert('Rent updated');
+        },
+        error: function () {
+            alert('An error occurred while updating rent');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function unenrollTennant(tennantId) {
+    $.ajax({
+        url: '/landlordmanagement/unenrollTennant',
+        type: 'GET',
+        data: { id: tennantId},
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function () {
+            alert('Tennant unenrolled successfully');
+            loadTennantsView();
+        },
+        error: function () {
+            alert('An error occurred while unenrolling tennant');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+/*TODO later if necessary
+function sendNotice(tennantId) {
+    $.ajax({
+        url: '/landlordmanagement/sendNotice',
+        type: 'GET',
+        data: { tennantId: tennantId },
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+
+        },
+        error: function () {
+            alert('An error occurred while unenrolling tennant');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}*/
 
 //loads properties in the dashboard page
 $(document).ready(function () {
@@ -464,7 +539,7 @@ $(document).ready(function () {
     //generates modal to compose a new message
     $(document.body).on('click', '#new-msg-btn', function (event) {
         event.preventDefault();
-
+        /*
         //displays the modal whenever this is selected
         sys.showModal('#managementModal');
 
@@ -475,7 +550,8 @@ $(document).ready(function () {
         $('#new-msg-form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
                                 + '<input class="btn btn-primary" type="submit" value="Send Message" id="submit-message" /></div>');
 
-        // $('#action-body').html('<h3>This feature is coming soon......</h3>');
+        // $('#action-body').html('<h3>This feature is coming soon......</h3>');*/
+        sys.showModal('#createNewMessageModal');
     });
     //generates modal to compose a new message and broadcast to every tennant
     $('#broadcast-message').click(function (event) {
@@ -967,6 +1043,42 @@ $(document).ready(function () {
             });
         }
     });
+
+    $(document.body).on('click', '.update-rent', function () {
+        var btnAction = $(this).text();
+        var tennantId = $(this).attr('id');
+        var price = $(this).parent().find('.price');
+        var rentCtnr = $(this).parent();
+        
+        
+        if (btnAction == 'Update') {
+            orRentCntrDataContent = rentCtnr.attr('data-content');
+
+            price.prop('readonly', false);
+            $(this).text('Save');
+
+            //change text content of the popover to prompt user to save their changes
+            rentCtnr.attr('data-content', 'Click the save button to change the rent amount');
+        } else {
+            var priceChanged = price.val();
+
+            price.prop('readonly', true);
+            $(this).text('Update');
+
+            //change text content of the popover to prompt user to save their changes
+            rentCtnr.attr('data-content', orRentCntrDataContent);
+
+            updateRent(tennantId, priceChanged);
+        }
+
+    });
+
+    $(document.body).on('click', '.unenroll-tennant', function () {
+        var tennantId = $(this).attr('id');
+        alert(tennantId);
+        unenrollTennant(tennantId);
+    });
+
 
     $('.management-action a').click(function (event) {
         event.preventDefault();

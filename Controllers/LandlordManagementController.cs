@@ -786,6 +786,11 @@ namespace SS.Controllers
                     }
 
                     unitOfWork.save();
+                    //alert active users of their updated scheduled meetings
+                    foreach (var id in model.MeetingMemberUserIDs)
+                    {
+                        DashboardHub.broadcastMeeting(id.ToString());
+                    }
                 }
             }
         }
@@ -858,6 +863,47 @@ namespace SS.Controllers
             return PartialView("_Tennants", tennants);
         }
 
+        /// <summary>
+        /// Updates the rent amount for the selected tennant
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public void updateRent(Guid id, decimal newRentAmt)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var tennant = unitOfWork.Tennant.Get(id);
+
+                tennant.RentAmt = newRentAmt;
+
+                unitOfWork.save();
+            }
+        }
+
+        /// <summary>
+        /// removes the tennant's record from the system
+        /// as well as remove the tennant role from the user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public void unenrollTennant(Guid id)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var tennant = unitOfWork.Tennant.Get(id);
+
+                var userTypeAssoc = unitOfWork.UserTypeAssoc.GetTennantUserTypeAssocByUserID(tennant.UserID);
+
+                unitOfWork.UserTypeAssoc.Remove(userTypeAssoc);
+                unitOfWork.Tennant.Remove(tennant);
+
+                unitOfWork.save();
+            }
+        }
         /*
          * gets the information for the property that was selected in order to
          * update information about this property

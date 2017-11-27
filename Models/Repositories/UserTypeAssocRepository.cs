@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using SS.Core;
 
 namespace SS.Models.Repositories
 {
@@ -19,6 +20,18 @@ namespace SS.Models.Repositories
         public IEnumerable<String> GetUserTypesByUserID(Guid ID)
         {
             return EasyFindPropertiesEntities.UserTypeAssoc.Where(x => x.UserID.Equals(ID)).Select(x => x.UserTypeCode).ToList();
+        }
+
+        public IEnumerable<UserTypeAssoc> GetUserTypeAssocsByUserID(Guid ID)
+        {
+            return EasyFindPropertiesEntities.UserTypeAssoc.Where(x => x.UserID.Equals(ID)).ToList();
+        }
+
+        public UserTypeAssoc GetTennantUserTypeAssocByUserID(Guid ID)
+        {
+            return EasyFindPropertiesEntities.UserTypeAssoc
+                .Where(x => x.UserID.Equals(ID) && x.UserTypeCode.Equals(EFPConstants.UserType.Tennant))
+                .Single();
         }
     }
 }
