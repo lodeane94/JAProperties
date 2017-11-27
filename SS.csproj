@@ -489,6 +489,7 @@
     <Content Include="Views\Shared\_Meetings.cshtml" />
     <Content Include="Views\Shared\_MeetingRequest.cshtml" />
     <Content Include="Views\Shared\_Tennants.cshtml" />
+    <Content Include="Views\Shared\_ModalCreateNewMessage.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

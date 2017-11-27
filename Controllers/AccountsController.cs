@@ -562,6 +562,8 @@ namespace SS.Controllers
                         DateTCreated = DateTime.Now
                     };
 
+                    user.DOB = DateTime.Parse(model.DOB);
+
                     unitOfWork.Tennant.Add(tennant);
                 }
                 else

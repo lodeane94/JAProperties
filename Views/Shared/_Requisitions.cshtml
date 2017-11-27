@@ -6,17 +6,16 @@
             <div id="dashboard-requisitions" class="table-responsive">
                 <table id="tblRequisitions" width="100%">
                     @{
-                        //int count = 0;
+                        int notAcceptedCount = 0;//keeps count of the accepted requisitions
                         // bool hasHistory = false;
 
                         if (Model != null)
                         {
                             foreach (var req in Model)
                             {
-                                // for (int i = 0; i <= 9; i++)
-                                //{
                                 if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value)
                                 {
+                                    notAcceptedCount++;
                                     <thead>
                                         <tr>
                                             <th>Property Image</th>
@@ -51,11 +50,10 @@
                                     //hasHistory = true;
                                 }
                             }
-                            //}
-                        }
-                        else
-                        {
-                            <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                            if (Model != null && notAcceptedCount < 1)
+                            {
+                                <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                            }
                         }
                     }
                 </table>

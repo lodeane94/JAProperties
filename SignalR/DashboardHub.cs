@@ -19,5 +19,16 @@ namespace SS.SignalR
             IHubContext context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
             context.Clients.User(identity).updateUserMessages();
         }
+
+        /// <summary>
+        /// Updates a clients message box if online with new message real time
+        /// </summary>
+        /// <param name="identity">The email of the user that the message is designated to</param>
+        [HubMethodName("broadcastMeeting")]
+        public static void broadcastMeeting(String identity)
+        {
+            IHubContext context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
+            context.Clients.User(identity).updateMeeting();
+        }
     }
 }

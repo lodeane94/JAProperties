@@ -1,103 +1,122 @@
 ﻿@model  IEnumerable<SS.Models.Tennant>
 <section class="management-action-content">
     <section class="management-action-section req">
-        <div class="dashboard-info msg-container">
-            <div class="row">
-                <div class="col-xs-12" id="accordion">
-                    @{
-                        foreach (var t in Model)
-                        {
-                            <h5 id="tennant-name"><span class="glyphicon glyphicon-user img-circle img-circle-sm" style="font-size:25px;"></span> @t.User.FirstName @t.User.LastName</h5>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <label>Non-active information can not be edited</label>
-                                </div>
-                                <br/>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>First Name : @t.User.FirstName</label>
-                                    </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>Cell Number : @t.User.CellNum</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Middle Name : @t.User.LastName</label>
-                                    </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>Email : @t.User.Email</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Last Name : @t.User.LastName</label>
-                                    </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>DOB : @t.User.DOB</label>
-                                    </div>
-                                </div>
-                                <hr />
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Monthly Rent Amount : </label>
-                                        $ <div class="input-group">
-                                            <input id="price" value="@t.RentAmt" type="text" class="form-control">
-                                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+        <div class="dashboard-info msg-container ctnr-info">
+            @{
+                <div class="row">
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        <div class="col-xs-12" id="accordion">
+                            @foreach (var t in Model)
+                            {
+                                <div class="tennant">
+                                    <h5 id="tennant-name"><span class="glyphicon glyphicon-user img-circle img-circle-sm" style="font-size:25px;"></span> @t.User.FirstName @t.User.LastName</h5>
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <div class="ctnr-headers">Personal Information</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <label>First Name : @t.User.FirstName</label>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>Cell Number : @t.User.CellNum</label>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <label>Middle Name : @t.User.LastName</label>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>Email : @t.User.Email</label>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <label>Last Name : @t.User.LastName</label>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>DOB : @t.User.DOB</label>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <div class="ctnr-headers">Rent Information</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-xs-4">
+                                                <label>Settlement Period : @t.SettlementPeriod Years</label>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-xs-3 rent-cntr" data-toggle="popover" data-content="Click the update button to update the rent amount">
+                                                <label>Monthly Rent Amount : </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                                    <input readonly value="@t.RentAmt" type="text" class="form-control price">
+                                                </div>
+                                                <br />
+                                                <button id="@t.ID" class="btn btn-block btn-accent update-rent">Update</button>
+                                            </div>
+                                            <div class="col-md-offset-1 col-xs-4">
+                                                <label>Last Paid Rent : -</label>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <div class="ctnr-headers">Institution Information</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <label>Institution Name : @t.InstitutionName</label>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>Programme Name : @t.ProgrammeName</label>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <label>Programme Start Date : @t.ProgrammeStartDate.Value.ToShortDateString()</label>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <label>Programme End Date : @t.ProgrammeEndDate.Value.ToShortDateString()</label>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <label>Enrolment Date : @t.DateTCreated.ToShortDateString()</label>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-xs-3">
+                                                <button id="@t.ID" class="btn btn-block btn-accent unenroll-tennant">Unenroll Tennant</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>Last Paid Rent : -</label>
-                                    </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Institution Name : @t.User.Email</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Settlement Period : @t.SettlementPeriod Years</label>
-                                    </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>Institution Name : @t.InstitutionName</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Programme Name : @t.ProgrammeName</label>
-                                    </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>Programme Start Date : @t.ProgrammeStartDate.Value.ToShortDateString()</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <label>Programme End Date : @t.ProgrammeEndDate.Value.ToShortDateString()</label>
-                                    </div>
-                                    <div class="col-md-offset-6 col-xs-6">
-                                        <label>Enrolment Date : @t.DateTCreated.ToShortDateString()</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <button class="btn btn-accent">Unenroll Tennant</button>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <button class="btn btn-accent">Send Notice</button>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <button class="btn btn-accent">Update Tennant</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <input type="hidden" id="tennant-id" value="@t.ID" />
-                        }
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-xs-12">
+                            <center><label class="ctnr-info">No tennant is currently enrolled on your portal</label></center>
+                        </div>
                     }
                 </div>
-            </div>
+            }
         </div>
     </section>
 </section>
-    
