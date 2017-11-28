@@ -1,0 +1,96 @@
+﻿@model SS.ViewModels.EnrolmentViewModel
+@{
+    ViewBag.Title = "Requisition";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+@section pageScript{
+    (function(){
+    $.getScript('/Scripts/MainScript.js', function()
+    {
+    setActiveNavigation('home');
+
+    //initializing html content
+    $('#ad-placement').hide();
+    $('#ad-promotion').hide();
+
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+    trigger : 'hover click',
+    container: 'body'
+    });
+
+    });
+
+    $(function () {
+    $(".date-picker").datepicker();
+    });
+
+    })();
+}
+
+@Html.Partial("_ModalTennantCreated")
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            @using (Html.BeginForm("Enroll", "Accounts", FormMethod.Post, new { @id = "EnrollTennantForm" }))
+            {
+                <h1>Tennant Personal Information</h1>
+                <table class="properties-table-style" width="100%">
+                    <tr id="university_info">
+                        <td>University Name</td>
+                        <td>@Html.TextBoxFor(model => model.InstitutionName, null, new { @class = "form-control" })</td>
+                        <td>Programme Name</td>
+                        <td>@Html.TextBoxFor(model => model.ProgrammeName, null, new { @class = "form-control" })</td>
+                        <td>Programme Start Date</td>
+                        <td>@Html.TextBoxFor(model => model.ProgrammeStartDate, null, new { @class = "form-control date-picker" })</td>
+                    </tr>
+                    <tr>
+                        <td>Settlement Period</td>
+                        <td>@Html.TextBoxFor(model => model.SettlementPeriod, null, new { @type = "number", @placeholder = "Years", @class = "form-control" })</td>
+                        <td class="end_date">Programme End Date</td>
+                        <td class="end_date">@Html.TextBoxFor(model => model.ProgrammeEndDate, null, new { @class = "form-control date-picker" })</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Date of Birth</td>
+                        <td>
+                            @Html.TextBoxFor(model => model.DOB, null, new { @class = "form-control date-picker" })
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>@Html.Password("password", null, new { @class = "form-control" })</td>
+                        <td>Confirmed Password</td>
+                        <td>@Html.Password("confirmPassword", null, new { @class = "form-control" })</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Enrolment Key</td>
+                        <td>
+                            <div class="enrollBtn">
+                                @Html.TextBox("enrolmentKey", null, new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input id="submitEnrolment" class="btn " type="submit" value="Enroll"></td>
+                    </tr>
+                </table>
+                @Html.Hidden("propertyId", Request.QueryString["propId"])
+                @Html.Hidden("reqID", Request.QueryString["requestId"])
+            }
+        </div>
+    </div>
+</div>
