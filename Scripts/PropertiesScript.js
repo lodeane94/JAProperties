@@ -163,10 +163,10 @@ $(document).ready(function () {
     //sets the menu to fixed after scrolling pass a certain amount of pixels
     $(window).scroll(function () {
         if ($(this).scrollTop() > 280) {
-            $('.header-content').addClass('fixed');
+     //       $('.header-content').addClass('fixed');
             $('.search-bar-container').addClass('fixed-search');
         } else {
-            $('.header-content').removeClass('fixed');
+      //      $('.header-content').removeClass('fixed');
             $('.search-bar-container').removeClass('fixed-search');
         }
     });

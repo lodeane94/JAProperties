@@ -478,9 +478,11 @@ textarea:-ms-input-placeholder {
     z-index: 9999;
     position: fixed;
     left: 0;
-    top: 50px;
+    top: 0px;
     width: 100%;
-    background-color: #F5F5F5;
+    background-color: #FAFAFA;
+    border-bottom:1px solid #FAFAFA;
+    padding:10px;
 }
 
 .flPropertyPics {
@@ -612,13 +614,14 @@ textarea:-ms-input-placeholder {
 
 .jumbotron-container {
     padding: 10px;
-    border: 1px solid #C8C8C3;
+    
     position: relative;
     background-color: #FAFAFA;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 13px;
     color: #6B6B6B;
     display: none;
+    box-shadow: 1px 1px 10px #C8C8C3;
 }
 
     .jumbotron-container select option {
@@ -1015,7 +1018,7 @@ ul.property-ratings {
     margin-right: 29px;
     width: auto;
     height: auto;
-    border: 1.6px solid #F5F5F5;
+    box-shadow: 4px 4px 10px #888888;
 }
 
     .image-link a {
@@ -1091,11 +1094,12 @@ padding-top: 10px;
         padding-left: 25px;
         text-decoration: none;
         color: #524F52;
-        font-size: 13px;
         line-height: 45px;
         text-transform: uppercase;
-        font-weight: 400;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-family: 'Raleway';
+        font-size:13px;
+        font-style:normal;
+        font-weight: 600;
     }
 
     .main-menu ul li:first-child a {

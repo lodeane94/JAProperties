@@ -4,8 +4,10 @@ var $calendar = null;
 var orRentCntrDataContent = null;
 
 function initializeSockets() {
-    var dashboardHub = $.connection.dashboardHub;
+    var dashboardHub = $.connection.notificationHub;
 
+    $.connection.hub.logging = true;
+    
     $.connection.hub.start().done(function () {
         console.log('Connection establised');
     });
@@ -231,6 +233,30 @@ function getInvitees() {
     });
 }
 
+function getMsgRecipients() {
+    $.ajax({
+        url: '/landlordmanagement/getMsgRecipients',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $.each(data, function (index, value) {
+                $('#messageRecipients').append($('<option></option>')
+                    .attr('id', value.UserID)
+                    .attr('value', value.FullName)
+                    .text(value.FullName));
+            });
+        },
+        error: function () {
+            alert('An error occurred while loading message recipients');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
 function getMeeting(Id) {
     $.ajax({
         url: '/landlordmanagement/getMeeting',
@@ -331,12 +357,12 @@ function loadMsgList() {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
+            $('#dashboard-messages').empty();
+
             $.each(data, function (index, value) {
                 var seenVal = value.Seen ? "seen" : "not-seen";
                 var activeVal = currentUserNameSelected != null
-                                && value.From == currentUserNameSelected ? "active" : "";
-
-                $('#dashboard-messages').empty();
+                                && value.From == currentUserNameSelected ? "active" : "";                
 
                 $('#dashboard-messages').append(
                     '<li class="msg">'
@@ -539,20 +565,46 @@ $(document).ready(function () {
     //generates modal to compose a new message
     $(document.body).on('click', '#new-msg-btn', function (event) {
         event.preventDefault();
-        /*
-        //displays the modal whenever this is selected
-        sys.showModal('#managementModal');
 
-        $('#action-header').html('<span class="glyphicon glyphicon-pencil"></span> Compose New Message');
-
-        $('#action-body').html('<form id="new-msg-form" action="landlordmanagement/composenewmessage" method="post"><strong>To</strong> <input type="text" id="recipient" class="form-control" placeholder="Recipients Name"><br/>'
-                              + '<strong>Message</strong> <textarea class="form-control" placeholder="Compose new message" rows="4" cols="30"></textarea></form>');
-        $('#new-msg-form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
-                                + '<input class="btn btn-primary" type="submit" value="Send Message" id="submit-message" /></div>');
-
-        // $('#action-body').html('<h3>This feature is coming soon......</h3>');*/
         sys.showModal('#createNewMessageModal');
+
+        getMsgRecipients();
     });
+
+    //sends a message to a user
+    $(document.body).on('click', '#send-new-message', function (event) {
+        event.preventDefault();
+        
+        var msgRecipientIds = [];
+        var msg = $('#new-message').val();
+
+        $("#messageRecipients option").each(function (i) {
+            msgRecipientIds.push($(this).attr('id'));
+            alert($(this).attr('id'));
+        });
+
+        $.ajax({
+            url: '/landlordmanagement/sendMessage',
+            type: 'POST',
+            data: { msgRecipients: msgRecipientIds, msg: msg },
+            beforeSend: function () {
+                $('#modal-loading').fadeIn();
+            },
+            success: function () {
+                $('#close-modal').click();
+
+                alert('Message sent');
+                loadMessagesView();
+            },
+            error: function () {
+                alert('An error occurred while sending message');
+            },
+            complete: function () {
+                $('#modal-loading').fadeOut();
+            }
+        });
+    });
+
     //generates modal to compose a new message and broadcast to every tennant
     $('#broadcast-message').click(function (event) {
         event.preventDefault();

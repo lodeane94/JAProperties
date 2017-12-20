@@ -93,7 +93,7 @@ namespace SS.Controllers
 
                             if (!doesUserExist)
                             {
-                                user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Consumer,"", user.Email, user.FirstName,
+                                user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Consumer, "", user.Email, user.FirstName,
                                        user.LastName, user.CellNum, DateTime.MinValue);
 
                                 PropertyHelper.createUserAccount(unitOfWork, user.Email, password);
@@ -555,14 +555,14 @@ namespace SS.Controllers
                         SettlementPeriod = model.SettlementPeriod,
                         InstitutionName = model.InstitutionName,
                         ProgrammeName = model.ProgrammeName,
-                        ProgrammeStartDate = DateTime.Parse(model.ProgrammeEndDate),
-                        ProgrammeEndDate = DateTime.Parse(model.ProgrammeEndDate),
+                        ProgrammeStartDate = DateTime.ParseExact(model.ProgrammeStartDate, "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        ProgrammeEndDate = DateTime.ParseExact(model.ProgrammeEndDate, "MM/dd/yyyy", CultureInfo.InvariantCulture),
                         PhotoUrl = null,
                         ReferencedLetterURL = null,
                         DateTCreated = DateTime.Now
                     };
 
-                    user.DOB = DateTime.Parse(model.DOB);
+                    user.DOB = DateTime.ParseExact(model.DOB, "MM/dd/yyyy", CultureInfo.InvariantCulture);
 
                     unitOfWork.Tennant.Add(tennant);
                 }

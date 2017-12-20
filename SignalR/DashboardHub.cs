@@ -7,6 +7,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 
 namespace SS.SignalR
 {
+    [HubName("notificationHub")]
     public class DashboardHub : Hub
     {
         /// <summary>

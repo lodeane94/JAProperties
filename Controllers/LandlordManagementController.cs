@@ -592,8 +592,8 @@ namespace SS.Controllers
         /// <param name="invitees"></param>
         private void setInviteeVMForTennant(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
         {
-            var tennant = unitOfWork.Tennant.Get(userId);
-            var poUser = tennant.User;
+            var tennant = unitOfWork.Tennant.GetTennantByUserId(userId);
+            var poUser = tennant.Property.Owner.User;
 
             //getting all tennants that are in the same property
             var currentPropertyId = tennant.PropertyID;
@@ -601,7 +601,7 @@ namespace SS.Controllers
 
             InviteeViewModel inviteeViewModel = new InviteeViewModel()
             {
-                UserID = tennant.User.ID,
+                UserID = poUser.ID,
                 FullName = poUser.FirstName + " " + poUser.LastName,
                 ImageUrl = "",
                 inviteeType = "O"
@@ -611,15 +611,19 @@ namespace SS.Controllers
 
             foreach (var t in tennants)
             {
-                inviteeViewModel = new InviteeViewModel()
+                //exclude current signed in tennant from being populated
+                if (!t.ID.Equals(tennant.ID))
                 {
-                    UserID = tennant.User.ID,
-                    FullName = tennant.User.FirstName + " " + tennant.User.LastName,
-                    ImageUrl = tennant.PhotoUrl,
-                    inviteeType = EFPConstants.UserType.Tennant
-                };
+                    inviteeViewModel = new InviteeViewModel()
+                    {
+                        UserID = tennant.User.ID,
+                        FullName = tennant.User.FirstName + " " + tennant.User.LastName,
+                        ImageUrl = tennant.PhotoUrl,
+                        inviteeType = EFPConstants.UserType.Tennant
+                    };
 
-                invitees.Add(inviteeViewModel);
+                    invitees.Add(inviteeViewModel);
+                }
             }
         }
 
@@ -660,6 +664,56 @@ namespace SS.Controllers
                 };
 
                 invitees.Add(inviteeViewModel);
+            }
+        }
+
+        /// <summary>
+        /// Returns message recipients
+        /// getinvitees wrapper
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult getMsgRecipients()
+        {
+            return getInvitees();
+        }
+
+        /// <summary>
+        /// Sends new message to a user
+        /// getinvitees wrapper
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public void sendMessage(List<Guid> msgRecipients, String msg)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    foreach (var recipientId in msgRecipients)
+                    {
+                        Message message = new Message()
+                        {
+                            ID = Guid.NewGuid(),
+                            To = recipientId,
+                            From = userId,
+                            Msg = msg,
+                            Seen = false,
+                            DateTCreated = DateTime.Now
+                        };
+
+                        unitOfWork.Message.Add(message);
+                        unitOfWork.save();
+
+                        var userTo = unitOfWork.User.Get(recipientId);
+
+                        DashboardHub.BroadcastUserMessages(userTo.Email);
+                    }
+                }
             }
         }
 

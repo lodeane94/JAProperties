@@ -29,5 +29,12 @@ namespace SS.Models.Repositories
 
             return EasyFindPropertiesEntities.Tennant.Where(x => ownerPropertyIds.Contains(x.PropertyID)).ToList();
         }
+
+        public Tennant GetTennantByUserId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.Tennant
+                .Where(x => x.UserID.Equals(Id))
+                .Single();
+        }
     }
 }

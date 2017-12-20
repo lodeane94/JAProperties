@@ -186,21 +186,10 @@
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
       <LastGenOutput>EasyFindProperties.cs</LastGenOutput>
     </Content>
-    <Content Include="Scripts\angular-mocks.js" />
-    <Content Include="Scripts\angular-resource.js" />
-    <Content Include="Scripts\angular-resource.min.js" />
-    <Content Include="Scripts\angular-route.js" />
-    <Content Include="Scripts\angular-route.min.js" />
-    <Content Include="Scripts\app.js" />
-    <Content Include="Scripts\angular.js" />
-    <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Scripts\angular.min.js.map" />
-    <Content Include="Scripts\angular-resource.min.js.map" />
-    <Content Include="Scripts\angular-route.min.js.map" />
     <Content Include="App_Data\EasyFindProperties-2017-06-10.bak" />
     <EntityDeploy Include="Models\EasyFindProperties.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
@@ -236,8 +225,6 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\PropertiesScript.js" />
-    <Content Include="Scripts\propertyController.js" />
-    <Content Include="AngularApp\Views\home.html" />
     <Content Include="Uploads\01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg" />
     <Content Include="Uploads\0e61817b-b70f-4361-b828-41c81dba700b.jpg" />
     <Content Include="Uploads\5282d459-7492-431d-9eeb-4e7f6d622b9f.jpg" />
@@ -248,23 +235,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\ServicerController.cs" />
-    <Compile Include="Core\AccommodationModel.cs" />
-    <Compile Include="Core\BillsModel.cs" />
-    <Compile Include="Core\Complaints.cs" />
     <Compile Include="Core\EFPConstants.cs" />
     <Compile Include="Core\ErrorModel.cs" />
     <Compile Include="Core\FilterHelper.cs" />
-    <Compile Include="Core\HouseModel.cs" />
-    <Compile Include="Core\IPropertiesModel.cs" />
-    <Compile Include="Core\LandModel.cs" />
     <Compile Include="Core\MailModel.cs" />
-    <Compile Include="Core\Messages.cs" />
     <Compile Include="Core\MiscellaneousHelper.cs" />
-    <Compile Include="Core\OwnerModel.cs" />
-    <Compile Include="Core\PropertiesInformation.cs" />
     <Compile Include="Core\PropertyConstants.cs" />
     <Compile Include="Core\PropertyHelper.cs" />
-    <Compile Include="Core\RequisitionInformation.cs" />
     <Compile Include="Controllers\AdvertismentsController.cs" />
     <Compile Include="Core\ExpressionBuilder.cs" />
     <Compile Include="Core\Filter.cs" />
@@ -414,15 +391,11 @@
     <Compile Include="Models\UserTypeAssoc.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
-    <Compile Include="PropertiesMerge.cs" />
     <Compile Include="SignalR\DashboardHub.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="UtilityHelper.cs" />
-    <Compile Include="Core\TennantModel.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
-    <Compile Include="Controllers\EnrolmentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LandlordManagementController.cs" />
     <Compile Include="Controllers\MailController.cs" />
@@ -431,7 +404,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoomHelper.cs" />
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
     <Compile Include="ViewModels\EnrolmentViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
