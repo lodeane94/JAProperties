@@ -107,7 +107,7 @@
     <center>
         <ul class="pagination pagination-sm">
             @{
-                double noOfPages = Math.Ceiling((Convert.ToDouble(ViewBag.totalItemsFound) / Convert.ToDouble(ViewBag.fetchAmount)));
+                double noOfPages = Math.Ceiling((Convert.ToDouble(Model.Count) / Convert.ToDouble(ViewBag.fetchAmount)));
                 for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
                 {
                     <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>

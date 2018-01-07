@@ -21,15 +21,15 @@ namespace SS.Controllers
         private string conditionToBeRemoved = string.Empty;
 
         //TODO get function to reload user id upon restart of application
-       /* PropertiesController()
-        {
-            var userId = MiscellaneousHelper.getLoggedInUser();
+        /* PropertiesController()
+         {
+             var userId = MiscellaneousHelper.getLoggedInUser();
 
-            if (!userId.Equals(new Guid()))
-            {
-                Session["userId"] = userId;
-            }
-        }*/
+             if (!userId.Equals(new Guid()))
+             {
+                 Session["userId"] = userId;
+             }
+         }*/
 
         public ActionResult getProperties(PropertySearchViewModel model)
         {
@@ -37,35 +37,11 @@ namespace SS.Controllers
             model.PgNo = model.PgNo > 0 ? model.PgNo - 1 : 0;//this is done to since page number should start at 0
 
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
-            IEnumerable<Property> filteredProperties = null;
-            IEnumerable<Property> searchTermProperties = null;
-            IEnumerable<Property> properties = null;
 
-            IEnumerable<Property> filteredPropertiesCount = null;
-            IEnumerable<Property> searchTermPropertiesCount = null;
-            int propertiesCount = 0;
-
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            {
-                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                List<Core.Filter> filters = createFilterList(model, unitOfWork);
-                var deleg = ExpressionBuilder.GetExpression<Property>(filters);
-
-                filteredProperties = unitOfWork.Property.FindProperties(deleg, model.take, model.PgNo);
-                searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.take, model.PgNo);
-                properties = filteredProperties.Concat(searchTermProperties).Distinct();
-                //TODO find a more efficient way to get count of total properties
-                filteredPropertiesCount = unitOfWork.Property.FindProperties(deleg);
-                searchTermPropertiesCount = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm);
-                propertiesCount = filteredPropertiesCount.Concat(searchTermPropertiesCount).Distinct().Count();
-
-                featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(properties, unitOfWork, "Properties");
-            }
+            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(model, "Properties");
 
             ViewBag.activeNavigation = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
             ViewBag.searchViewModel = model;
-            ViewBag.totalItemsFound = propertiesCount;
             ViewBag.fetchAmount = model.take;
             ViewBag.pageNumber = model.PgNo + 1;
 

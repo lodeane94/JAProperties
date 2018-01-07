@@ -195,30 +195,69 @@ namespace SS.Core
             }
         }
 
-        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(IEnumerable<Property> properties, UnitOfWork unitOfWork, String calledBy)
+        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(PropertySearchViewModel model, String calledBy)
+        {
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+
+            IEnumerable<Property> filteredProperties = null;
+            IEnumerable<Property> searchTermProperties = null;
+            IEnumerable<Property> properties = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                List<Core.Filter> filters = createFilterList(model, unitOfWork);
+                var deleg = ExpressionBuilder.GetExpression<Property>(filters);
+
+                filteredProperties = unitOfWork.Property.FindProperties(deleg, model.take, model.PgNo);
+                searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.take, model.PgNo);
+                properties = filteredProperties.Concat(searchTermProperties).Distinct();
+
+                foreach (var property in properties)
+                {
+                    IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
+
+                    featuredPropertiesSlideViewModelList.Add(new FeaturedPropertiesSlideViewModel()
+                    {
+                        property = property,
+                        propertyImageURLs = null,
+                        propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
+                        averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
+                    });
+                }
+            }
+
+            return featuredPropertiesSlideViewModelList;
+        }
+
+
+        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(int take, String calledBy)
         {
             int slideTake = 5;
             int slideTakeCount = 0;//used to determine whether to get retrieve multiple images or one
-
-            FeaturedPropertiesSlideViewModel featuredPropertiesSlideViewModel;
+            
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
 
-            foreach (var property in properties)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                slideTakeCount++;
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
-
-                featuredPropertiesSlideViewModel = new FeaturedPropertiesSlideViewModel()
+                foreach (var property in unitOfWork.Property.GetFeaturedProperties(take))
                 {
-                    property = property,
-                    propertyImageURLs = (calledBy.Equals("Home") && slideTakeCount <= slideTake) ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
-                    propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
-                    averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
-                };
+                    slideTakeCount++;
 
-                featuredPropertiesSlideViewModelList.Add(featuredPropertiesSlideViewModel);
-            }
+                    IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);                    
+
+                    featuredPropertiesSlideViewModelList.Add(new FeaturedPropertiesSlideViewModel()
+                    {
+                        property = property,
+                        propertyImageURLs = (calledBy.Equals("Home") && slideTakeCount <= slideTake) ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
+                        propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
+                        averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
+                    });
+                }
+            };
 
             return featuredPropertiesSlideViewModelList;
         }
@@ -247,6 +286,143 @@ namespace SS.Core
             var count = userTypes.Where(x => x.Equals(userType)).Count();
 
             return count > 0 ? true : false;
+        }
+
+        /// <summary>
+        /// Create a filter list to be used for property searching purposes
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="unitOfWork"></param>
+        /// <returns></returns>
+        private static List<Core.Filter> createFilterList(PropertySearchViewModel model, UnitOfWork unitOfWork)
+        {
+            List<Core.Filter> filters = new List<Core.Filter>();
+
+            //country
+            if (!string.IsNullOrEmpty(model.Country))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "Country",
+                    Operation = Op.Equals,
+                    Value = model.Country
+                };
+
+                filters.Add(filter);
+            }
+
+            //division
+            if (!string.IsNullOrEmpty(model.Division))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "Division",
+                    Operation = Op.Equals,
+                    Value = model.Division
+                };
+
+                filters.Add(filter);
+            }
+
+            //property category
+            if (!string.IsNullOrEmpty(model.PropertyCategory))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "CategoryCode",
+                    Operation = Op.Equals,
+                    Value = model.PropertyCategory
+                };
+
+                filters.Add(filter);
+            }
+
+            //property type
+            if (!string.IsNullOrEmpty(model.PropertyType))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "TypeID",
+                    Operation = Op.Equals,
+                    Value = unitOfWork.PropertyType.GetPropertyTypeIDByName(model.PropertyType)
+                };
+
+                filters.Add(filter);
+            }
+
+            //property purpose
+            if (!string.IsNullOrEmpty(model.PropertyPurpose))
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "PurposeCode",
+                    Operation = Op.Equals,
+                    Value = PropertyHelper.mapPropertyPurposeNameToCode(model.PropertyPurpose)
+                };
+
+                filters.Add(filter);
+            }
+
+            //price range
+            if (model.MinPrice >= 0 && model.MaxPrice > 0)
+            {
+                Core.Filter filter1 = new Core.Filter()
+                {
+                    PropertyName = "Price",
+                    Operation = Op.GreaterThanOrEqual,
+                    Value = model.MinPrice
+                };
+
+                Core.Filter filter2 = new Core.Filter()
+                {
+                    PropertyName = "price",
+                    Operation = Op.LessThanOrEqual,
+                    Value = model.MaxPrice
+                };
+                filters.Add(filter1);
+                filters.Add(filter2);
+            }
+            ///////////////TODO implement Or conditions for these///////////////////////
+            //ad type sale
+            if (model.ChkBuyProperty)
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "AdTypeCode",
+                    Operation = Op.Equals,
+                    Value = EFPConstants.PropertyAdType.Sale
+                };
+
+                filters.Add(filter);
+            }
+
+            //ad type rent
+            if (model.ChkRentProperty)
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "AdTypeCode",
+                    Operation = Op.Equals,
+                    Value = EFPConstants.PropertyAdType.Rent
+                };
+
+                filters.Add(filter);
+            }
+
+            //ad type lease
+            if (model.ChkLeasedProperty)
+            {
+                Core.Filter filter = new Core.Filter()
+                {
+                    PropertyName = "AdTypeCode",
+                    Operation = Op.Equals,
+                    Value = EFPConstants.PropertyAdType.Lease
+                };
+
+                filters.Add(filter);
+            }
+
+            return filters;
         }
 
         //TODO every one should get an account only realtor and landlord can add unlimited amount of properties without paying the extra cost
