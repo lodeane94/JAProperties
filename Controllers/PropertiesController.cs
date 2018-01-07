@@ -38,7 +38,7 @@ namespace SS.Controllers
 
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
 
-            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(model, "Properties");
+            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(model);
 
             ViewBag.activeNavigation = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
             ViewBag.searchViewModel = model;

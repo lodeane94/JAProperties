@@ -195,7 +195,7 @@ namespace SS.Core
             }
         }
 
-        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(PropertySearchViewModel model, String calledBy)
+        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(PropertySearchViewModel model)
         {
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
 
@@ -232,11 +232,8 @@ namespace SS.Core
         }
 
 
-        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(int take, String calledBy)
-        {
-            int slideTake = 5;
-            int slideTakeCount = 0;//used to determine whether to get retrieve multiple images or one
-            
+        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(int take)
+        {            
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
@@ -245,14 +242,12 @@ namespace SS.Core
 
                 foreach (var property in unitOfWork.Property.GetFeaturedProperties(take))
                 {
-                    slideTakeCount++;
-
                     IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);                    
 
                     featuredPropertiesSlideViewModelList.Add(new FeaturedPropertiesSlideViewModel()
                     {
                         property = property,
-                        propertyImageURLs = (calledBy.Equals("Home") && slideTakeCount <= slideTake) ? unitOfWork.PropertyImage.GetImageURLsByPropertyId(property.ID, slideTake) : null,
+                        propertyImageURLs = null,
                         propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
                         averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
                     });
