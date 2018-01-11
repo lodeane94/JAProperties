@@ -407,6 +407,8 @@
     <Compile Include="ViewModels\AdvertisePropertyViewModel.cs" />
     <Compile Include="ViewModels\EnrolmentViewModel.cs" />
     <Compile Include="ViewModels\FeaturedPropertiesSlideViewModel.cs" />
+    <Compile Include="ViewModels\Home\FeaturedProperty.cs" />
+    <Compile Include="ViewModels\Home\HomePageViewModel.cs" />
     <Compile Include="ViewModels\InviteeViewModel.cs" />
     <Compile Include="ViewModels\MeetingViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
@@ -462,6 +464,7 @@
     <Content Include="Views\Shared\_MeetingRequest.cshtml" />
     <Content Include="Views\Shared\_Tennants.cshtml" />
     <Content Include="Views\Shared\_ModalCreateNewMessage.cshtml" />
+    <Content Include="Views\Home\_FeaturedProperties.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<SS.ViewModels.FeaturedProperty>
+
+@foreach (var item in Model)
+{
+    <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+        <a href="~/properties/getProperty/@item.ID">
+            <div class="image-container">
+                <ul>
+                    <li>
+                        <div class="image">
+                            <img id="@item.ID" src="~/Uploads/@item.PrimaryImageURL" />
+                        </div>
+                    </li>
+                    <li>
+                        <div class="image-information-container">
+                            <p class="content-heading"><strong>$ @item.Price</strong></p>
+                            <p>@item.StreetAddress</p>
+                            <p>@item.Division</p>
+                            <p>@item.Country</p>
+                            <p>@item.Description</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </a>
+        @if (item.ShowRating)
+        {
+            <ul class="property-ratings">
+                @if (item.AverageRating > 0)
+                {
+                    for (int ratingCount = 1; ratingCount <= item.AverageRating; ratingCount++)
+                    {
+                        <li><span class="glyphicon glyphicon-star"></span></li>
+                    }
+                }
+                else
+                {
+                    int maxRating = 5;
+                    for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                    {
+                        <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                    }
+                }
+                <br />
+                <br />
+                <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+            </ul>
+        }
+    </div>
+}
+

@@ -23,7 +23,7 @@ namespace SS.Controllers
         {
             int take = 8; //amount of featured properties to be retieved per category
 
-            return View(PropertyHelper.PopulatePropertiesViewModel(take));
+            return View(PropertyHelper.PopulateHomePageViewModel(take));
         }        
         
     }

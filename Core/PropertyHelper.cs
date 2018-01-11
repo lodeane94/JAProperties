@@ -232,29 +232,51 @@ namespace SS.Core
         }
 
 
-        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(int take)
-        {            
-            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+        public static HomePageViewModel PopulateHomePageViewModel(int take)
+        {
+            HomePageViewModel ViewModel = new HomePageViewModel();
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
+                FeaturedProperty Temporary = new FeaturedProperty();
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                IEnumerable<int> avgPropRatings;
 
                 foreach (var property in unitOfWork.Property.GetFeaturedProperties(take))
                 {
-                    IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);                    
+                    avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
 
-                    featuredPropertiesSlideViewModelList.Add(new FeaturedPropertiesSlideViewModel()
+                    Temporary = new FeaturedProperty
                     {
-                        property = property,
-                        propertyImageURLs = null,
-                        propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
-                        averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
-                    });
+                        ID = property.ID,
+                        PrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
+                        Price = property.Price,
+                        StreetAddress = property.StreetAddress,
+                        Division = property.Division,
+                        Country = property.Country,
+                        Description = property.Description,
+                        AverageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
+                    };
+
+                    if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Rent))
+                    {
+                        Temporary.ShowRating = true;
+                        ViewModel.FeaturedRental.Add(Temporary);
+                    }
+
+                    if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+                    {
+                        ViewModel.FeaturedSale.Add(Temporary);
+                    }
+
+                    if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Lease))
+                    {
+                        ViewModel.FeaturedLease.Add(Temporary);
+                    }
                 }
             };
 
-            return featuredPropertiesSlideViewModelList;
+            return ViewModel;
         }
 
         public static String MakeHttpRequest(String Url)
