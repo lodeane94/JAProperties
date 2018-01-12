@@ -880,6 +880,16 @@ button.jumbotron-button {
     border-radius:20px;
 }
 
+.delete-msg-bar {
+    cursor:pointer;
+    display: block;
+    padding-left:9px;
+    padding-top:5px;
+    height: 30px;
+    background-color: #509911;
+    color: #FFFFFF;
+}
+
 /* Set width on the form input elements since they're 100% wide by default */
 select {
     max-width: 280px;

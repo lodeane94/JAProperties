@@ -1,6 +1,8 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
+using SS.Code;
 using SS.Models;
+using SS.SignalR;
 using SS.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Security;
 
@@ -586,6 +589,250 @@ namespace SS.Core
             {
                 Roles.CreateRole(EFPConstants.RoleNames.Consumer.ToString());
             }*/
+        }
+
+        /// <summary>
+        /// deletes all messages from a message thread by retrieving all messages 
+        /// sent to another user and and received from this same user then
+        /// adding this list into the message trash. The messages list is refreshed after
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="userId"></param>
+        /// <param name="messageId"></param>
+        public static void deleteMsgsFromMsgThread(UnitOfWork unitOfWork, Guid userId, Guid messageId)
+        {
+            IEnumerable<Message> messagesToBeDeleted = null;
+
+            messagesToBeDeleted = unitOfWork.Message.GetMsgThreadByMsgID(messageId, userId);
+
+            if (messagesToBeDeleted != null)
+            {
+                foreach (var msg in messagesToBeDeleted)
+                {
+                    MessageTrash messageTrash = new MessageTrash()
+                    {
+                        UserID = userId,
+                        MessageID = msg.ID,
+                        DateTCreated = DateTime.Now
+                    };
+
+                    unitOfWork.MessageTrash.Add(messageTrash);
+                }
+
+                unitOfWork.save();
+
+                //broadcast the new messages to the user
+                var userTo = unitOfWork.User.Get(userId).Email;
+
+                DashboardHub.BroadcastUserMessages(userTo);
+            }
+        }
+
+        /// <summary>
+        /// populates the RequisitionViewModel for the property owner
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="requisitions"></param>
+        /// <returns></returns>
+        public static List<RequisitionViewModel> populateRequisitionVMForOwner(UnitOfWork unitOfWork, IEnumerable<PropertyRequisition> requisitions)
+        {
+            List<RequisitionViewModel> requisitionInfo = null;
+
+            if (requisitions != null)
+            {
+                requisitionInfo = new List<RequisitionViewModel>();
+
+                foreach (var req in requisitions)
+                {
+                    RequisitionViewModel model = new RequisitionViewModel();
+
+                    model.PropertyRequisition.User = new User();
+
+                    model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
+                    model.PropertyRequisition.ID = req.ID;
+                    model.PropertyRequisition.PropertyID = req.PropertyID;
+                    model.PropertyRequisition.User.FirstName = req.User.FirstName;
+                    model.PropertyRequisition.User.LastName = req.User.LastName;
+                    model.PropertyRequisition.User.Email = req.User.Email;
+                    model.PropertyRequisition.User.CellNum = req.User.CellNum;
+                    model.PropertyRequisition.Msg = req.Msg;
+                    model.PropertyRequisition.IsAccepted = req.IsAccepted;
+                    model.PropertyRequisition.DateTCreated = req.DateTCreated;
+                    model.isUserPropOwner = true;
+
+                    requisitionInfo.Add(model);
+                }
+            }
+
+            return requisitionInfo;
+        }
+
+        /// <summary>
+        /// Populates the RequisitionViewModel for the property requestor
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="requisitions"></param>
+        /// <returns></returns>
+        public static List<RequisitionViewModel> populateRequisitionVMForRequestor(UnitOfWork unitOfWork, IEnumerable<PropertyRequisition> requisitions)
+        {
+            List<RequisitionViewModel> requisitionInfo = null;
+
+            if (requisitions != null)
+            {
+                requisitionInfo = new List<RequisitionViewModel>();
+
+                foreach (var req in requisitions)
+                {
+                    RequisitionViewModel model = new RequisitionViewModel();
+
+                    model.PropertyRequisition.User = new User();
+
+                    model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
+                    model.PropertyRequisition.ID = req.ID;
+                    model.PropertyRequisition.PropertyID = req.PropertyID;
+                    model.PropertyRequisition.User.FirstName = req.Property.Owner.User.FirstName;
+                    model.PropertyRequisition.User.LastName = req.Property.Owner.User.LastName;
+                    model.PropertyRequisition.User.CellNum = req.Property.Owner.User.CellNum;
+                    model.PropertyRequisition.Msg = req.Msg;
+                    model.PropertyRequisition.IsAccepted = req.IsAccepted;
+                    model.PropertyRequisition.DateTCreated = req.DateTCreated;
+                    model.isUserPropOwner = false;
+
+                    requisitionInfo.Add(model);
+                }
+            }
+
+            return requisitionInfo;
+        }
+
+        /// <summary>
+        /// Used by property owners to accept property requisitions
+        /// It also generates an appropriate email to the property requestor
+        /// notifying them that their requisition was successful
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="reqID"></param>
+        /// <returns></returns>
+        public static bool AcceptPropertyRequisition(UnitOfWork unitOfWork, Guid reqID)
+        {
+            var requisition = unitOfWork.PropertyRequisition.Get(reqID);
+            var reqUser = requisition.User;
+
+            var property = requisition.Property;
+            var propertyUser = property.Owner.User;
+            var propCategoryCode = property.CategoryCode;
+            var adTypeCode = property.AdTypeCode;
+
+            //email address which acceptance letter should be sent to
+            string emailTo = reqUser.Email;
+            string subject = "EasyFindProperties - Property Requisition Accepted";
+            //body of the email
+            string body = string.Empty;
+
+            if (propCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate)
+                &&
+                (adTypeCode.Equals(EFPConstants.PropertyAdType.Rent)
+                || adTypeCode.Equals(EFPConstants.PropertyAdType.Lease)))
+            {
+                //generated key that is used to associate each tennant to their landlord
+                string enrolmentKey = property.EnrolmentKey;
+
+                body = "Congratulations!!, your property request was accepted ." + "Your enrolment key is " + enrolmentKey +
+                            ". " + "If you wish to accommodate this room, please click on the following link and enter your email address and the enrolment key that was provided to you" +
+                          " localhost:5829/accounts/requisition/?propId=" + property.ID + "&requestId=" + reqID;
+
+            }
+            else
+                body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
+                        + " is further negotiations or concerns.";
+
+            //getting information about the owner of the property to give back to the requestee
+            body += "<br/> Owner Information<br/> First Name:&nbsp;" + propertyUser.FirstName + "<br/>Last Name:&nbsp;" + propertyUser.LastName
+                            + "<br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/>Email:&nbsp;" + propertyUser.Email;
+
+            if (sendMail(emailTo, body, subject))
+            {
+                //sets the accepted field of the requisition table to true for the accepted property request
+                requisition.IsAccepted = true;
+                unitOfWork.save();
+
+                return true;
+            }
+            else
+                throw new Exception("Mail Exception");
+        }
+
+        /// <summary>
+        /// cancels any property request by either the property owner
+        /// or the property requestor and sends the appropriate 
+        /// email to the users.
+        /// </summary>
+        public static bool CancelOrDenyPropertyRequisition(UnitOfWork unitOfWork, Guid reqID, bool isUserPropOwner)
+        {
+            string body = String.Empty;
+            string subject = String.Empty;
+            string emailTo = String.Empty;
+
+            var requisition = unitOfWork.PropertyRequisition.Get(reqID);
+
+            if (isUserPropOwner)
+            {
+                body = "The owner of the property have declined your requisition";
+                subject = "EasyFindProperties - Property Requisition Declined";
+                emailTo = requisition.User.Email;
+            }
+            else
+            {
+                body = "The property requisition has been cancelled";
+                subject = "EasyFindProperties - Property Requisition Cancelled";
+                emailTo = requisition.Property.Owner.User.Email;
+            }
+
+            if (sendMail(emailTo, body, subject))
+            {
+                requisition.IsAccepted = null;
+                unitOfWork.save();
+
+                return true;
+            }
+            else
+                throw new Exception("Mail Exception");
+        }
+
+        /// <summary>
+        /// sends email from the application server
+        /// </summary>
+        /// <param name="emailTo"></param>
+        /// <param name="body"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        public static bool sendMail(string emailTo, string body, string subject)
+        {
+            MailModel mailModel = new MailModel()
+            {
+                To = emailTo,
+                Subject = subject,
+                From = "jamprops@hotmail.com",
+                Body = body
+            };
+
+            //setting mail requirements
+            MailMessage mail = new MailMessage();
+            mail.To.Add(mailModel.To);
+            mail.From = new MailAddress(mailModel.From);
+            mail.Subject = mailModel.Subject;
+            mail.Body = mailModel.Body;
+            mail.IsBodyHtml = true;
+
+            SmtpClient smtp = new SmtpClient();
+            smtp.Host = "smtp-mail.outlook.com";
+            smtp.Port = 587;
+            smtp.UseDefaultCredentials = false;
+            smtp.Credentials = new System.Net.NetworkCredential("jamprops@hotmail.com", "Daveyot88*");
+            smtp.EnableSsl = true;
+            smtp.Send(mail);
+
+            return true;
         }
 
         //used for membership error message

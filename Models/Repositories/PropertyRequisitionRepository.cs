@@ -46,5 +46,15 @@ namespace SS.Models.Repositories
                 .OrderByDescending(x => x.DateTCreated)
                 .ToList();
         }
+
+        public IEnumerable<PropertyRequisition> GetRequestsMadeByUserId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.UserID.Equals(Id)
+                && x.IsAccepted.HasValue.Equals(true)
+                && x.ExpiryDate > DateTime.Now)
+                .OrderByDescending(x => x.DateTCreated)
+                .ToList();
+        }
     }
 }

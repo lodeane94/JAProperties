@@ -7,7 +7,8 @@
                 <table id="tblRequisitions" width="100%">
                     @{
                         int notAcceptedCount = 0;//keeps count of the accepted requisitions
-                        // bool hasHistory = false;
+                                                 // bool hasHistory = false;
+                        int headerCount = 0;
 
                         if (Model != null)
                         {
@@ -15,28 +16,49 @@
                             {
                                 if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value)
                                 {
+                                    headerCount++;
                                     notAcceptedCount++;
-                                    <thead>
-                                        <tr>
-                                            <th>Property Image</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Email</th>
-                                            <th>Cell</th>
-                                            <th>Date</th>
-                                            <th>&nbsp;</th>
-                                            <th>&nbsp;</th>
-                                        </tr>
-                                    </thead>
+                                    //display header only once
+                                    if (headerCount < 2)
+                                    {
+                                        <thead>
+                                            <tr>
+                                                <th>Property Image</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                @if (req.isUserPropOwner)
+                                                {
+                                                    <th>Email</th>
+                                                }
+                                                <th>Cell</th>
+                                                <th>Date</th>
+                                                <th>&nbsp;</th>
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <input id="isUserPropOwner" type="hidden" value="@Html.Raw(req.isUserPropOwner)" />
+                                        
+                                    }
                                     <tr>
                                         <td class="property_image"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></td>
                                         <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
                                         <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
-                                        <td class="email"> @req.PropertyRequisition.User.Email</td>
+                                        @if (req.isUserPropOwner)
+                                        {
+                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
+                                        }
                                         <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
                                         <td class="date"> @req.PropertyRequisition.DateTCreated</td>
-                                        <td><input id="@req.PropertyRequisition.ID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
-                                        <td><input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
+                                        @if (req.isUserPropOwner)
+                                        {
+                                            <td><input id="@req.PropertyRequisition.ID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
+                                            <td><input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
+                                        }
+                                        else
+                                        {
+                                            <td><em>Awaiting response ...</em></td>
+                                            <td><input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-accent" type="button" value="Cancel"></td>
+                                        }
                                     </tr>
                                     if (req.PropertyRequisition.Msg != null)
                                     {
