@@ -1,4 +1,6 @@
 ﻿using BotDetect.Web.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SS.Code;
 using SS.Core;
 using SS.Models;
@@ -46,6 +48,37 @@ namespace SS.Controllers
             ViewBag.pageNumber = model.PgNo + 1;
 
             return View(featuredPropertiesSlideViewModelList);
+        }
+
+        public ActionResult getNearbyProperties(String distanceMtxInfo)
+        {
+            var take = 1;
+
+            //will be used to eliminate properties that are of further distance
+            double distanceRadius = 40.0;//distance in km
+            
+            var model = JsonConvert.DeserializeObject<NearbyPropertySearchViewModel>(distanceMtxInfo);
+            var revisedModel = PropertyHelper.NarrowSearchResultsToDistanceRadius(model, distanceRadius);
+
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
+
+            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(revisedModel);
+
+         //   ViewBag.searchViewModel = model;
+            ViewBag.fetchAmount = take;
+           ViewBag.pageNumber = 1;
+
+            return View("getProperties", featuredPropertiesSlideViewModelList);
+        }
+
+        [HttpGet]
+        public JsonResult GetPropertiesCoordinates(PropertySearchViewModel model)
+        {
+            Array propertyCoordinates = null;
+
+            propertyCoordinates = PropertyHelper.PopulateModelForPropertyCoordinates(model);
+
+            return Json(propertyCoordinates, JsonRequestBehavior.AllowGet);            
         }
 
         public ActionResult getProperty(Guid id)

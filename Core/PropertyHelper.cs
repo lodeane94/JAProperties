@@ -63,6 +63,37 @@ namespace SS.Core
             return null;
         }
 
+        /// <summary>
+        /// narrows the search result to those properties that are
+        /// within the distance radius
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="distanceRadius"></param>
+        /// <returns></returns>
+        public static List<NearbyPropertySearchModel> NarrowSearchResultsToDistanceRadius(NearbyPropertySearchViewModel model, double distanceRadius)
+        {
+            List<NearbyPropertySearchModel> revisedModel = new List<NearbyPropertySearchModel>();
+              
+            foreach (var x in model.DestinationInformation)
+            {
+                double distance = (double)x.distance;
+
+                if (distance <= distanceRadius)
+                {
+                    var nearbyPropertySearchModel = new NearbyPropertySearchModel()
+                    {
+                        StreetAddress = x.streetAddress,
+                        Distance = x.distance,
+                        Duration = x.duration
+                    };
+
+                    revisedModel.Add(nearbyPropertySearchModel);
+                }
+            }
+
+            return revisedModel;
+        }
+
         public static String mapPropertyPurposeNameToCode(String propertyPurposeName)
         {
             if (!String.IsNullOrEmpty(propertyPurposeName))
@@ -217,6 +248,8 @@ namespace SS.Core
                 searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.take, model.PgNo);
                 properties = filteredProperties.Concat(searchTermProperties).Distinct();
 
+                //TODO optimize by removing extra calls to the database
+                //this could be done via a single query
                 foreach (var property in properties)
                 {
                     IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
@@ -234,6 +267,47 @@ namespace SS.Core
             return featuredPropertiesSlideViewModelList;
         }
 
+        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(List<NearbyPropertySearchModel> revisedModel)
+        {
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var properties = unitOfWork.Property.FindPropertiesByStreetAddress(revisedModel);
+
+                //TODO optimize by removing extra calls to the database
+                //this could be done via a single query
+                foreach (var property in properties)
+                {
+                    IEnumerable<int> avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
+
+                    var model = new FeaturedPropertiesSlideViewModel();
+
+                    model.property = property;
+                    model.propertyImageURLs = null;
+                    model.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID);
+                    model.averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
+                    
+                    //matching the distance and durations to the property
+                    int matchCount = revisedModel.Where(x => x.StreetAddress.Equals(property.StreetAddress)).Count();
+
+                    if (matchCount > 0)
+                    {
+                        model.Distance = revisedModel.Where(x => x.StreetAddress.Equals(property.StreetAddress))
+                            .Select(x => x.Distance).SingleOrDefault();
+
+                        model.Duration = revisedModel.Where(x => x.StreetAddress.Equals(property.StreetAddress))
+                            .Select(x => x.Duration).SingleOrDefault();
+                    }
+
+                    featuredPropertiesSlideViewModelList.Add(model);
+                }
+            }
+
+            return featuredPropertiesSlideViewModelList;
+        }
 
         public static HomePageViewModel PopulateHomePageViewModel(int take)
         {
@@ -870,6 +944,28 @@ namespace SS.Core
                 default:
                     return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
             }
+        }
+
+        /// <summary>
+        /// Retrieves the coordinates of properties based on conditions
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static Array PopulateModelForPropertyCoordinates(PropertySearchViewModel model)
+        {
+            Array propertyCoordinates = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                List<Core.Filter> filters = createFilterList(model, unitOfWork);
+                var deleg = ExpressionBuilder.GetExpression<Property>(filters);
+
+                propertyCoordinates = unitOfWork.Property.FindPropertiesCoordinates(deleg);
+            }
+
+            return propertyCoordinates;
         }
     }
 }

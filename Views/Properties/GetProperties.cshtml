@@ -42,64 +42,61 @@
         {
             foreach (var property in Model)
             {
-                for (int i = 1; i <= 10; i++)
-                {
-                    <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
-                        <a href="~/properties/getProperty/@property.property.ID">
-                            <div class="image-container">
-                                <ul>
-                                    <li>
-                                        <div class="image">
-                                            <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="image-information-container">
-                                            <p class="content-heading"><strong>$ @property.property.Price</strong></p>
-                                            <p>@property.property.StreetAddress</p>
-                                            <p>@property.property.Division</p>
-                                            <p>@property.property.Country</p>
-                                            <p>@property.property.Description</p>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </a>
-                        <ul class="property-ratings">
-                            @if (property.averageRating > 0)
+                <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
+                    <a href="~/properties/getProperty/@property.property.ID">
+                        <div class="image-container">
+                            <ul>
+                                <li>
+                                    <div class="image">
+                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="image-information-container">
+                                        <p class="content-heading"><strong>$ @property.property.Price</strong></p>
+                                        <p>@property.property.StreetAddress</p>
+                                        <p>@property.property.Division</p>
+                                        <p>@property.property.Country</p>
+                                        <p>@property.property.Description</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </a>
+                    <ul class="property-ratings">
+                        @if (property.averageRating > 0)
                         {
                             for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
                             {
-                                    <li><span class="glyphicon glyphicon-star"></span></li>
-                                }
+                                <li><span class="glyphicon glyphicon-star"></span></li>
                             }
-                            else
+                        }
+                        else
+                        {
+                            int maxRating = 5;
+                            for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
                             {
-                                int maxRating = 5;
-                                for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
-                                {
-                                    <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
-                                }
+                                <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
                             }
-                            <br />
-                            <br />
-                            <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
-                            <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
-                            <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
-                        </ul>
-                    </div>
-                }
+                        }
+                        <br />
+                        <br />
+                        <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                        <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                        <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+                    </ul>
+                </div>
             }
             <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
-            }
-            else
-            {
-                <center>
-                    <div class="ctnr-headers">
-                        <label><strong>No Results Found</strong></label>
-                    </div>
-                </center>
-            }
+        }
+        else
+        {
+            <center>
+                <div class="ctnr-headers">
+                    <label><strong>No Results Found</strong></label>
+                </div>
+            </center>
+        }
     }
 </div>
 <div class="row">&nbsp;</div>

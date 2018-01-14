@@ -15,5 +15,8 @@ namespace SS.ViewModels
         public String propertyPrimaryImageURL { get; set; }
         public IEnumerable<PropertyRating> propRatings { get; set; }
         public int averageRating { get; set; }
+        public String OriginAddress { get; set; }
+        public String Distance { get; set; }
+        public String Duration { get; set; }
     }
 }
