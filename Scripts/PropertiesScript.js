@@ -1,5 +1,6 @@
-﻿var selectedLocation = { country: '', countryCode: '', division: '' };
+﻿var selectedLocation = { country: 'Jamaica', countryCode: 'jm', division: '' };
 var postBackInfo = null;
+var distanceMtxInfo = null;
 
 //used to display a loading element
 var loadingGifHTML = '<div id="loading-gif" class="col-xs-1">'
@@ -36,7 +37,7 @@ function populateDivisionByCountryCode() {
         }
     });
 
-    
+
 }
 
 //get all property types by the category name and loads select element with the values
@@ -81,6 +82,124 @@ function populatePropertyType() {
             alert('Error occurred while retrieving property types, contact system administrator');
         }
     });
+}
+
+//populates google maps MVC array that will hold the LatLng objects of 
+//property coordinates
+function populateMapsMVCArray(data) {
+    console.log(data);
+
+    var mvcArray = new google.maps.MVCArray();
+    console.log(mvcArray);
+
+    $.each(data, function (key, val) {
+        var mapLatLng = new google.maps.LatLng(val.Latitude, val.Longitude);
+        console.log(mapLatLng);
+
+        mvcArray.push(mapLatLng);
+
+    });
+
+    console.log(mvcArray);
+
+    return mvcArray;
+}
+
+//populates the distance matrix object which contains 
+//the origin location and all the destination locations along
+//with thier duration and distances away from the origin location
+//This is done to get a better object structure that is easy to manipulate
+function populateDistanceMatrixInformation(data) {
+
+    distanceMtxInfo = {
+        originAddress: data.origin_addresses,
+        destinationInformation: [],
+    };
+
+    $.each(data.destination_addresses, function (index, val) {
+
+        var distance, duration = '';
+
+        $.each(data.rows, function (index, value) {
+            distance = value.elements[index].distance.text;
+            duration = value.elements[index].duration.text;
+        });
+
+        //remove unit section from the distance
+        var spcIndex = distance.indexOf(' ');
+        var newDistanceOutput = distance.substring(0, spcIndex);
+        distance = newDistanceOutput;
+
+        //remove string starting from the first comma location in the result
+        var firstStrAddrCommaIndex = val.indexOf(',');
+        var newStrAddrOutput = val.substring(0, firstStrAddrCommaIndex);
+
+        var destinationInfo = {
+            streetAddress: newStrAddrOutput,
+            distance: distance,
+            duration: duration
+        }
+
+        distanceMtxInfo.destinationInformation.push(destinationInfo);
+    });   
+}
+
+//makes call to the server that will make call to the google distance matrix
+//api to calculate the distances between the locations
+//it also post the newly created distance matrix object to the server for 
+//further manipulation
+function setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl) {
+
+    var distanceMatrixUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + orLat + ',' + orlng +
+             '&destinations=enc:' + encodedCoordinatesUrl + ':&key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w';
+
+    $.ajax({
+        url: '/servicer/RequestJsonDataFromUrl',
+        type: 'get',
+        data:{ Url : distanceMatrixUrl},
+        success: function (data) {
+            if (data.status == "OK"
+                && data.rows[0].elements[0].status != 'ZERO_RESULTS') {
+                populateDistanceMatrixInformation(data);
+
+                searchNearByProperties();
+            } else {
+                alert('Unable to detemine distance between locations');
+            }
+        },
+        error: function () {
+            alert('Error occurred while retrieving details, contact system administrator');
+        }
+    });
+}
+
+function searchNearByProperties(){
+  
+    if (distanceMtxInfo != null) {
+        var data = JSON.stringify(distanceMtxInfo);
+
+        console.log(escapeHtml(data));
+
+        var form = $('<form enctype="application/json" action="/properties/getNearbyProperties" method="POST">' +
+          '<input type="hidden" name="distanceMtxInfo" value="' + escapeHtml(data) + '">' +
+          '</form>');
+
+        $(document.body).append(form);
+
+        form.submit();
+    }
+}
+
+function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 //displays previous and next signs depending on the number of properties returned
@@ -151,6 +270,8 @@ $(function () {
 
 $(document).ready(function () {
 
+    populateDivisionByCountryCode();
+
     var postBackInfoRaw = $('#_postBackInformation').val();
 
     if (postBackInfoRaw != 'null') {
@@ -163,14 +284,16 @@ $(document).ready(function () {
     //sets the menu to fixed after scrolling pass a certain amount of pixels
     $(window).scroll(function () {
         if ($(this).scrollTop() > 280) {
-            $('.header-content').addClass('fixed');
+            //       $('.header-content').addClass('fixed');
             $('.search-bar-container').addClass('fixed-search');
         } else {
-            $('.header-content').removeClass('fixed');
+            //      $('.header-content').removeClass('fixed');
             $('.search-bar-container').removeClass('fixed-search');
         }
     });
 
+    //this will not be effected since Jamaica is the primary focus
+    /*
     //get all countries and populate the country select element
     $.ajax({
         url: '/servicer/RequestJsonDataFromUrl',
@@ -178,7 +301,7 @@ $(document).ready(function () {
         dataType: "json",
         data: { Url: 'http://westclicks.com/webservices/?f=json' },
         beforeSend: function () {
-           // $('#country').append($('<option></option>').attr('value', 'selectHolder').attr('selected', true).text('Detecting Country ...'));
+            // $('#country').append($('<option></option>').attr('value', 'selectHolder').attr('selected', true).text('Detecting Country ...'));
         },
         success: function (countriesData) {
             //detect selectedLocation of user
@@ -205,12 +328,12 @@ $(document).ready(function () {
             });
         },
         complete: function () {
-          //  $('#country option[value="selectHolder"]').remove();
+            //  $('#country option[value="selectHolder"]').remove();
         },
         error: function () {
             alert('Error occurred while retrieving countries, contact system administrator');
         }
-    });
+    });*/
 
     //get all property purpose and loads select element with the values
     $.ajax({
@@ -292,5 +415,41 @@ $(document).ready(function () {
                 complete: function () { $('#loading-gif').remove(); },
             });
         }
+    });
+    //submits the search form depending on the search type that
+    //is selected i.e. if it's all, then it will submit the form as normal
+    //otherwise it will submit the form asynchronously to the server to retrieve
+    //all the coordinates of the properties then it will send the new results to the server
+    $('.btn-search').click(function (event) {
+        event.preventDefault();
+
+        var searchType = $('input[name=searchType]:checked').val();
+
+        if (searchType == 'all') {
+            $('#search-properties-form').submit();
+        } else {
+            //coordinates of the near by place/establishment
+            var orLat = $('#coordinateLat').val();
+            var orlng = $('#coordinateLng').val();
+
+            //retrieve coordinates for all / conditioned properties within the database
+            $.ajax({
+                url: '/properties/GetPropertiesCoordinates',
+                type: 'get',
+                data: $('#search-properties-form').serialize(),
+                success: function (data) {
+                    
+                    var mvcArray = populateMapsMVCArray(data);
+                    //encoding coordinates to compress url in the event that the URl exceeds its limit
+                    var encodedCoordinatesUrl = google.maps.geometry.encoding.encodePath(mvcArray);
+                    
+                    setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl);
+                },
+                error: function () {
+                    alert('Error occurred while retrieving property coordinates, contact system administrator');
+                }
+            });
+        }
+
     });
 });

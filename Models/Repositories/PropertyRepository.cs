@@ -52,13 +52,18 @@ namespace SS.Models.Repositories
 
         public IEnumerable<Property> FindProperties(Expression<Func<Property, bool>> predicate, int take = 16, int pgNo = 0)
         {
-            return EasyFindPropertiesEntities.Property
-               .Where(predicate)
-               .OrderBy(x => x.AdPriority.Value)
-               .ThenBy(x => x.DateTCreated)
-               .Skip(pgNo * take)
-               .Take(take)
-               .ToList();
+            if (predicate != null)
+            {
+                return EasyFindPropertiesEntities.Property
+                   .Where(predicate)
+                   .OrderBy(x => x.AdPriority.Value)
+                   .ThenBy(x => x.DateTCreated)
+                   .Skip(pgNo * take)
+                   .Take(take)
+                   .ToList();
+            }
+            else
+                return new List<Property>();
         }
 
         public IEnumerable<Property> FindPropertiesByCategoryCode(string categoryCode, int take = 0, int pgNo = 0)
@@ -146,6 +151,36 @@ namespace SS.Models.Repositories
         public string GetEnrolmentKeyByPropID(Guid Id)
         {
             return EasyFindPropertiesEntities.Property.Where(x => x.ID.Equals(Id)).Select(x => x.EnrolmentKey).Single();
+        }
+
+        public Array FindPropertiesCoordinates(Expression<Func<Property, bool>> predicate)
+        {
+            if (predicate != null)
+            {
+                return EasyFindPropertiesEntities.Property
+                   .Where(predicate)
+                   .Select(x => new { x.Latitude, x.Longitude }).ToArray();
+            }
+            else
+            {
+                return EasyFindPropertiesEntities.Property
+                   .Select(x => new { x.Latitude, x.Longitude }).ToArray();
+            }
+        }
+
+        public IEnumerable<Property> FindPropertiesByStreetAddress(List<NearbyPropertySearchModel> model, int take = 16, int pgNo = 0)
+        {
+            var properties = (from p in EasyFindPropertiesEntities.Property.AsEnumerable()
+                              where model.Select(x => x.StreetAddress).Contains(p.StreetAddress)
+                              select p
+                              )
+                              .OrderBy(x => x.AdPriority.Value)
+                              .ThenBy(x => x.DateTCreated)
+                              .Skip(pgNo * take)
+                              .Take(take)
+                              .ToList();
+
+            return properties;
         }
     }
 }

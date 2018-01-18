@@ -68,6 +68,7 @@ $('#jumbotron-button').click(function () {
 });
 
 //updates the shopping cart with the selected items
+//TODO remove hard coding
 function updateShoppingCart() {
     if (lastSelectedClickableAdvertismentPriority != null
         && lastSelectedClickableSubscriptionType != null

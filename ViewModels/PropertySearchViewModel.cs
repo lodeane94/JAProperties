@@ -57,5 +57,8 @@ namespace SS.ViewModels
         }
         public int PgNo { get; set; }
         public int take { get; set; }
+        public String coordinateLat { get; set; }
+        public String coordinateLng { get; set; }
+        public String SearchType { get; set; }
     }
 }

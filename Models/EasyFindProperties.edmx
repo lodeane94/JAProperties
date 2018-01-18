@@ -154,6 +154,7 @@
           <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="StreetNumber" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -1213,6 +1214,7 @@
           <NavigationProperty Name="PropertyType" Relationship="EasyFindPropertiesModel.fk_property_type_id" FromRole="Property" ToRole="PropertyType" />
           <NavigationProperty Name="Tags" Relationship="EasyFindPropertiesModel.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
           <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
+          <Property Name="StreetNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -1972,6 +1974,7 @@
           <EntitySetMapping Name="Property">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Property">
               <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="StreetNumber" ColumnName="StreetNumber" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />

@@ -61,52 +61,7 @@ namespace SS.Controllers
                 using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                    var requisition = unitOfWork.PropertyRequisition.Get(reqID);
-                    var reqUser = requisition.User;
-
-                    var property = requisition.Property;
-                    var propertyUser = property.Owner.User;
-                    var propCategoryCode = property.CategoryCode;
-                    var adTypeCode = property.AdTypeCode;
-
-                    //email address which acceptance letter should be sent to
-                    string emailTo = reqUser.Email;
-                    string subject = "EasyFindProperties - Property Requisition Accepted";
-                    //body of the email
-                    string body = string.Empty;
-
-                    if (propCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate)
-                        &&
-                        (adTypeCode.Equals(EFPConstants.PropertyAdType.Rent)
-                        || adTypeCode.Equals(EFPConstants.PropertyAdType.Lease)))
-                    {
-                        //generated key that is used to associate each tennant to their landlord
-                        string enrolmentKey = property.EnrolmentKey;
-
-                        body = "Congratulations!!, your property request was accepted ." + "Your enrolment key is " + enrolmentKey +
-                                    ". " + "If you wish to accommodate this room, please click on the following link and enter your email address and the enrolment key that was provided to you" +
-                                  " localhost:5829/accounts/requisition/?propId=" + property.ID + "&requestId=" + reqID;
-
-                    }
-                    else
-                        body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
-                                + " is further negotiations or concerns.";
-
-                    //getting information about the owner of the property to give back to the requestee
-                    body += "<br/> Owner Information<br/> First Name:&nbsp;" + propertyUser.FirstName + "<br/>Last Name:&nbsp;" + propertyUser.LastName
-                                    + "<br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/>Email:&nbsp;" + propertyUser.Email;
-
-                    if (sendMail(emailTo, body, subject))
-                    {
-                        //sets the accepted field of the requisition table to true for the accepted property request
-                        requisition.IsAccepted = true;
-                        unitOfWork.save();
-                        //message outputted if request was accepted successfully
-                        Session["acceptedRequestCheck"] = "Request has been successfully accepted";
-                    }
-                    else
-                        throw new Exception("Mail Exception");
+                    PropertyHelper.AcceptPropertyRequisition(unitOfWork, reqID);
                 }
             }
             catch (Exception ex)
@@ -117,39 +72,31 @@ namespace SS.Controllers
                 return Content("RequestFailed");
             }
 
+            //message outputted if request was accepted successfully
+            Session["acceptedRequestCheck"] = "Request has been successfully accepted";
+
             return Content("RequestSuccess");
         }
 
         //denies user's requisition
         [HttpPost]
-        public ActionResult cancelRequest(Guid reqID)
+        public ActionResult cancelRequest(Guid reqID, bool isUserPropOwner)
         {
-            string body = "The owner of the property have declined your requisition";
-            string subject = "EasyFindProperties - Property Requisition Declined";
-
             try
             {
                 using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                    var requisition = unitOfWork.PropertyRequisition.Get(reqID);
-                    var reqUser = requisition.User;
-
-                    String emailTo = reqUser.Email;
-
-                    if (sendMail(emailTo, body, subject))
-                    {
-                        requisition.IsAccepted = null;
-                        unitOfWork.save();
-                        Session["cancelRequestCheck"] = "The request has been cancelled";
-                    }
-                    else
-                        throw new Exception("Mail Exception");
+                    PropertyHelper.CancelOrDenyPropertyRequisition(unitOfWork, reqID, isUserPropOwner);
                 }
             }
             catch (Exception ex)
-            { Session["cancelRequestCheck"] = "An error has occurred while accepting the request. Please contact site administrator"; }
+            {
+                Session["cancelRequestCheck"] = "An error has occurred while cancelling the request. Please contact site administrator";
+            }
+
+            //message outputted if request was accepted successfully
+            Session["acceptedRequestCheck"] = "Request has been successfully accepted";
 
             return Content("Request Cancelled");
         }
@@ -192,34 +139,6 @@ namespace SS.Controllers
             return Content("");
         }
         */
-        public bool sendMail(string emailTo, string body, string subject)
-        {
-            MailModel mailModel = new MailModel()
-            {
-                To = emailTo,
-                Subject = subject,
-                From = "jamprops@hotmail.com",
-                Body = body
-            };
-
-            //setting mail requirements
-            MailMessage mail = new MailMessage();
-            mail.To.Add(mailModel.To);
-            mail.From = new MailAddress(mailModel.From);
-            mail.Subject = mailModel.Subject;
-            mail.Body = mailModel.Body;
-            mail.IsBodyHtml = true;
-
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = "smtp-mail.outlook.com";
-            smtp.Port = 587;
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new System.Net.NetworkCredential("jamprops@hotmail.com", "Daveyot88*");
-            smtp.EnableSsl = true;
-            smtp.Send(mail);
-
-            return true;
-        }
 
         //returns all properties owned by the current user that is signed in in json format
         [Authorize]
@@ -387,6 +306,27 @@ namespace SS.Controllers
         }
 
         /// <summary>
+        /// deletes all messages within the message thread both user and sender
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public void deleteMsgThread(Guid id)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if ((Guid)Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    PropertyHelper.deleteMsgsFromMsgThread(unitOfWork, userId, id);
+                }
+            }
+        }
+
+        /// <summary>
         /// replies to the message
         /// </summary>
         /// <param name="id"></param>
@@ -495,12 +435,13 @@ namespace SS.Controllers
             }
         }*/
         /// <summary>
-        /// returns requition information for the owner
+        /// returns requition information for the user
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RequisitionViewModel> getRequisitions()
         {
             List<RequisitionViewModel> requisitionInfo = null;
+            IEnumerable<PropertyRequisition> requisitions = null;
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
@@ -508,34 +449,22 @@ namespace SS.Controllers
 
                 if (Session["userId"] != null)
                 {
+
                     var userId = (Guid)Session["userId"];
 
-                    var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
-                    var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
+                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
+                    bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
 
-                    if (requisitions != null)
+                    if (isUserPropOwner)
                     {
-                        requisitionInfo = new List<RequisitionViewModel>();
-
-                        foreach (var req in requisitions)
-                        {
-                            RequisitionViewModel model = new RequisitionViewModel();
-
-                            model.PropertyRequisition.User = new User();
-
-                            model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
-                            model.PropertyRequisition.ID = req.ID;
-                            model.PropertyRequisition.PropertyID = req.PropertyID;
-                            model.PropertyRequisition.User.FirstName = req.User.FirstName;
-                            model.PropertyRequisition.User.LastName = req.User.LastName;
-                            model.PropertyRequisition.User.Email = req.User.Email;
-                            model.PropertyRequisition.User.CellNum = req.User.CellNum;
-                            model.PropertyRequisition.Msg = req.Msg;
-                            model.PropertyRequisition.IsAccepted = req.IsAccepted;
-                            model.PropertyRequisition.DateTCreated = req.DateTCreated;
-
-                            requisitionInfo.Add(model);
-                        }
+                        var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+                        requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
+                        requisitionInfo = PropertyHelper.populateRequisitionVMForOwner(unitOfWork, requisitions);
+                    }
+                    else
+                    {
+                        requisitions = unitOfWork.PropertyRequisition.GetRequestsMadeByUserId(userId);
+                        requisitionInfo = PropertyHelper.populateRequisitionVMForRequestor(unitOfWork, requisitions);
                     }
                 }
             }
@@ -578,6 +507,10 @@ namespace SS.Controllers
                     {
                         setInviteeVMForTennant(unitOfWork, userId, invitees);
                     }
+                    else
+                    {
+                        setInviteeVMForPropertyRequestors(unitOfWork, userId, invitees);
+                    }
                 }
             }
 
@@ -585,15 +518,17 @@ namespace SS.Controllers
         }
 
         /// <summary>
-        /// Sets the invitee view model for property owners
+        /// Sets the invitee view model for tennants
+        /// property owner and other tennants belonging to the same property
+        /// should be sent back as invitees
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="userId"></param>
         /// <param name="invitees"></param>
         private void setInviteeVMForTennant(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
         {
-            var tennant = unitOfWork.Tennant.Get(userId);
-            var poUser = tennant.User;
+            var tennant = unitOfWork.Tennant.GetTennantByUserId(userId);
+            var poUser = tennant.Property.Owner.User;
 
             //getting all tennants that are in the same property
             var currentPropertyId = tennant.PropertyID;
@@ -601,7 +536,7 @@ namespace SS.Controllers
 
             InviteeViewModel inviteeViewModel = new InviteeViewModel()
             {
-                UserID = tennant.User.ID,
+                UserID = poUser.ID,
                 FullName = poUser.FirstName + " " + poUser.LastName,
                 ImageUrl = "",
                 inviteeType = "O"
@@ -611,12 +546,40 @@ namespace SS.Controllers
 
             foreach (var t in tennants)
             {
-                inviteeViewModel = new InviteeViewModel()
+                //exclude current signed in tennant from being populated
+                if (!t.ID.Equals(tennant.ID))
                 {
-                    UserID = tennant.User.ID,
-                    FullName = tennant.User.FirstName + " " + tennant.User.LastName,
-                    ImageUrl = tennant.PhotoUrl,
-                    inviteeType = EFPConstants.UserType.Tennant
+                    inviteeViewModel = new InviteeViewModel()
+                    {
+                        UserID = tennant.User.ID,
+                        FullName = tennant.User.FirstName + " " + tennant.User.LastName,
+                        ImageUrl = tennant.PhotoUrl,
+                        inviteeType = EFPConstants.UserType.Tennant
+                    };
+
+                    invitees.Add(inviteeViewModel);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the invitee view model for users who currently requested propeties
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="userId"></param>
+        /// <param name="invitees"></param>
+        private void setInviteeVMForPropertyRequestors(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
+        {
+            var requisitions = unitOfWork.PropertyRequisition.GetRequestsMadeByUserId(userId);
+
+            foreach (var req in requisitions)
+            {
+                InviteeViewModel inviteeViewModel = new InviteeViewModel()
+                {
+                    UserID = req.Property.Owner.UserID,
+                    FullName = req.Property.Owner.User.FirstName + " " + req.Property.Owner.User.LastName,
+                    ImageUrl = "",
+                    inviteeType = "R"
                 };
 
                 invitees.Add(inviteeViewModel);
@@ -625,6 +588,8 @@ namespace SS.Controllers
 
         /// <summary>
         /// Sets the invitee view model for property owners
+        /// Property owner's tennants and requisitions not yet declined should be
+        /// sent back as invitees
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="userId"></param>
@@ -633,7 +598,7 @@ namespace SS.Controllers
         {
             var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
             var tennants = unitOfWork.Tennant.GetTennantsByOwnerId(owner.ID);
-            var requisitions = unitOfWork.PropertyRequisition.GetAcceptedRequestsByOwnerId(owner.ID);
+            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
 
             //populate invitee model with each ienumerable items
             foreach (var tennant in tennants)
@@ -660,6 +625,56 @@ namespace SS.Controllers
                 };
 
                 invitees.Add(inviteeViewModel);
+            }
+        }
+
+        /// <summary>
+        /// Returns message recipients
+        /// getinvitees wrapper
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult getMsgRecipients()
+        {
+            return getInvitees();
+        }
+
+        /// <summary>
+        /// Sends new message to a user
+        /// getinvitees wrapper
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public void sendMessage(List<Guid> msgRecipients, String msg)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    foreach (var recipientId in msgRecipients)
+                    {
+                        Message message = new Message()
+                        {
+                            ID = Guid.NewGuid(),
+                            To = recipientId,
+                            From = userId,
+                            Msg = msg,
+                            Seen = false,
+                            DateTCreated = DateTime.Now
+                        };
+
+                        unitOfWork.Message.Add(message);
+                        unitOfWork.save();
+
+                        var userTo = unitOfWork.User.Get(recipientId);
+
+                        DashboardHub.BroadcastUserMessages(userTo.Email);
+                    }
+                }
             }
         }
 
@@ -904,119 +919,7 @@ namespace SS.Controllers
                 unitOfWork.save();
             }
         }
-        /*
-         * gets the information for the property that was selected in order to
-         * update information about this property
-         
-       
-        [Authorize]
-        public ActionResult updateAccommodation(Guid id, bool availability, bool cable, bool electricity, bool gas, bool internet, bool water, decimal security_deposit,
-                                            string terms_agreement, decimal price, short occupancy, string gender_preference, string description)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
-            List<ACCOMMODATIONS> accommodation = (from x in dbCtx.ACCOMMODATIONS
-                                                  where x.ID == id
-                                                  select x).ToList();
-
-            foreach (ACCOMMODATIONS prop in accommodation)
-            {
-                prop.PRICE = price;
-                prop.SECURITY_DEPOSIT = security_deposit;
-                prop.OCCUPANCY = occupancy;
-                prop.GENDER_PREFERENCE = gender_preference;
-                prop.DESCRIPTION = description;
-                prop.WATER = water;
-                prop.ELECTRICITY = electricity;
-                prop.CABLE = cable;
-                prop.GAS = gas;
-                prop.INTERNET = internet;
-                prop.AVAILABILITY = availability;
-                prop.TERMS_AGREEMENT = terms_agreement;
-            }
-            //dbCtx.sp_update_accommodations(id, price, security_deposit, occupancy, gender_preference, description, water, electricity, cable, gas, internet, availability, terms_agreement);
-            try
-            {
-                dbCtx.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.Write(e.Message);
-                Session["propertyUpdateFailure"] = "Property was not updated successfully";
-                return RedirectToAction("Dashboard");
-            }
-
-            Session["propertyUpdateSuccess"] = "Property was updated successfully";
-
-            return RedirectToAction("Dashboard");
-        }
-        [Authorize]
-        public ActionResult updateHouse(Guid id, decimal price, string description, string purpose, bool isFurnished)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            List<HOUSE> house = (from x in dbCtx.HOUSE
-                                 where x.ID == id
-                                 select x).ToList();
-
-            foreach (HOUSE prop in house)
-            {
-                prop.PURPOSE = purpose;
-                prop.PRICE = price;
-                prop.DESCRIPTION = description;
-                prop.ISFURNISHED = isFurnished;
-            }
-
-            //dbCtx.sp_update_house(id, purpose, price, isFurnished, description);
-            try
-            {
-                dbCtx.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.Write(e.Message);
-                Session["propertyUpdateFailure"] = "Property was not updated successfully";
-                return RedirectToAction("Dashboard");
-            }
-
-            Session["propertyUpdateSuccess"] = "Property was updated successfully";
-
-            return RedirectToAction("Dashboard");
-
-        }
-        [Authorize]
-        public ActionResult updateLand(Guid id, decimal price, string purpose, string area, string description)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            List<LAND> land = (from x in dbCtx.LAND
-                               where x.ID == id
-                               select x).ToList();
-
-            foreach (LAND prop in land)
-            {
-                prop.PURPOSE = purpose;
-                prop.PRICE = price;
-                prop.DESCRIPTION = description;
-                prop.AREA = Decimal.Parse(area);
-            }
-            //dbCtx.sp_update_land(id, purpose, price, area, description);
-            try
-            {
-                dbCtx.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.Write(e.Message);
-                Session["propertyUpdateFailure"] = "Property was not updated successfully";
-                return RedirectToAction("Dashboard");
-            }
-
-            Session["propertyUpdateSuccess"] = "Property was updated successfully";
-
-            return RedirectToAction("Dashboard");
-
-        }*/
 
     }
 

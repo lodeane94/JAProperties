@@ -10,6 +10,7 @@ namespace SS.ViewModels
     {
         public String ImageUrl { get; set; }
         public PropertyRequisition PropertyRequisition;
+        public bool isUserPropOwner { get; set; }
 
         public RequisitionViewModel()
         {
