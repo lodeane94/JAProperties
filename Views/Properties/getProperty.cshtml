@@ -1,8 +1,8 @@
-﻿@model SS.ViewModels.FeaturedPropertiesSlideViewModel
+﻿@model SS.ViewModels.SelectedPropertyViewModel
 @using SS.Core
 @using SS.Models
 @{
-    ViewBag.Title = "EasyFindProperties - " + "Properties being " + Model.property.AdType.Name + " in " + Model.property.Community + ", " + Model.property.Division + ", " + Model.property.Country;
+    ViewBag.Title = "EasyFindProperties - " + "Properties being " + Model.AdType + " in " + Model.property.Community + ", " + Model.property.Division + ", " + Model.property.Country;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -105,8 +105,8 @@
             <div class="contact-info-header"><strong>Owner Information</strong></div>
             <div class="contact-info-content">
                 <ul>
-                    <li><span class="glyphicon glyphicon-user"></span> <span class="content-info float-right">@Model.owner.User.FirstName @Model.owner.User.LastName </span></li>
-                    <li><span class="glyphicon glyphicon-phone-alt"></span> <span class="content-info float-right">@Model.owner.User.CellNum</span></li>
+                    <li><span class="glyphicon glyphicon-user"></span> <span class="content-info float-right">@Model.OwnerFirstName @Model.OwnerLastName </span></li>
+                    <li><span class="glyphicon glyphicon-phone-alt"></span> <span class="content-info float-right">@Model.OwnerCellNumber</span></li>
                     <li><button id="requestPropertyProxyBtn" class="btn btn-block btn-accent">Request Property</button></li>
                 </ul>
             </div>
@@ -144,7 +144,7 @@
                 }
                 else
                 {
-                    <div><strong>Condition : <span class="float-right">@Model.property.PropertyCondition.Name</span></strong></div>
+                    <div><strong>Condition : <span class="float-right">@Model.PropertyCondition</span></strong></div>
                 }
                 foreach (var tag in Model.tags)
                 {

@@ -83,28 +83,7 @@ namespace SS.Controllers
 
         public ActionResult getProperty(Guid id)
         {
-            FeaturedPropertiesSlideViewModel propertyInformation = null;
-
-            //  using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            //  {
-            EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
-
-            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-            propertyInformation = new FeaturedPropertiesSlideViewModel();
-
-            propertyInformation.property = unitOfWork.Property.Get(id);
-            propertyInformation.owner = unitOfWork.Owner.Get(propertyInformation.property.OwnerID);
-            propertyInformation.tags = unitOfWork.Tags.GetTagNamesByPropertyId(id);
-            propertyInformation.propertyImageURLs = unitOfWork.PropertyImage.GetImageURLsByPropertyId(id, 0);
-            propertyInformation.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(id);
-
-            propertyInformation.propRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
-            propertyInformation.averageRating = propertyInformation.propRatings.Count() > 0 ? (int)propertyInformation.propRatings.Select(x => x.Ratings).Average() : 0;
-
-            return View(propertyInformation);
-            //  }
-
+            return View(PropertyHelper.GetProperty(id));
         }
 
         /// <summary>

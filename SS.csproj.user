@@ -10,6 +10,7 @@
     <WebStackScaffolding_ViewDialogWidth>1152</WebStackScaffolding_ViewDialogWidth>
     <WebStackScaffolding_DbContextTypeFullName>SS.Models.EasyFindPropertiesEntities</WebStackScaffolding_DbContextTypeFullName>
     <UseIISExpress>true</UseIISExpress>
+    <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

@@ -240,6 +240,8 @@
     <Compile Include="Core\FilterHelper.cs" />
     <Compile Include="Core\MailModel.cs" />
     <Compile Include="Core\MiscellaneousHelper.cs" />
+    <Compile Include="Core\NearbyPropertySearchModel.cs" />
+    <Compile Include="Core\Parish.cs" />
     <Compile Include="Core\PropertyConstants.cs" />
     <Compile Include="Core\PropertyHelper.cs" />
     <Compile Include="Controllers\AdvertismentsController.cs" />
@@ -412,6 +414,8 @@
     <Compile Include="ViewModels\InviteeViewModel.cs" />
     <Compile Include="ViewModels\MeetingViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
+    <Compile Include="ViewModels\NearbyPropertySearchViewModel.cs" />
+    <Compile Include="ViewModels\Properties\SelectedPropertyViewModel.cs" />
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
     <Compile Include="ViewModels\RequisitionViewModel.cs" />
   </ItemGroup>

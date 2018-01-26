@@ -967,6 +967,32 @@ namespace SS.Core
 
             return propertyCoordinates;
         }
+
+        public static SelectedPropertyViewModel GetProperty(Guid id)
+        {
+            SelectedPropertyViewModel ViewModel = new SelectedPropertyViewModel();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                ViewModel.property = unitOfWork.Property.Get(id);
+                ViewModel.AdType = ViewModel.property.AdType.Name;
+                ViewModel.PropertyCondition = ViewModel.property.PropertyCondition.Name;
+                ViewModel.owner = unitOfWork.Owner.Get(ViewModel.property.OwnerID);
+                ViewModel.OwnerFirstName = ViewModel.owner.User.FirstName;
+                ViewModel.OwnerLastName = ViewModel.owner.User.LastName;
+                ViewModel.OwnerCellNumber = ViewModel.owner.User.CellNum;
+                ViewModel.tags = unitOfWork.Tags.GetTagNamesByPropertyId(id);
+                ViewModel.propertyImageURLs = unitOfWork.PropertyImage.GetImageURLsByPropertyId(id, 0);
+                ViewModel.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(id);
+
+                ViewModel.propRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
+                ViewModel.averageRating = ViewModel.propRatings.Count() > 0 ? (int)ViewModel.propRatings.Select(x => x.Ratings).Average() : 0;
+
+                return ViewModel;
+            }
+        }
     }
 }
 
