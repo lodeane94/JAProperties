@@ -11,9 +11,6 @@
     $.getScript('/Scripts/MainScript.js', function()
     {
     setActiveNavigation('@ViewBag.activeNavigation');
-    showJumbotrun();
-    // setJumbotrunActionBtnText('Search');
-    setIsCollapsable(false);
 
     //initialization of bootstrap popover
     $('[data-toggle="popover"]').popover({
@@ -40,52 +37,43 @@
     @{
         if (Model != null && Model.Count > 0)
         {
-            foreach (var property in Model)
+            foreach (var item in Model)
             {
-                <div class="col-xs-12 col-md-6 image-link" data-toggle="popover" data-content="Click to view details">
-                    <a href="~/properties/getProperty/@property.property.ID">
-                        <div class="image-container">
-                            <ul>
-                                <li>
-                                    <div class="image">
-                                        <img id="@property.property.ID" src="~/Uploads/@property.propertyPrimaryImageURL" />
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="image-information-container">
-                                        <p class="content-heading"><strong>$ @property.property.Price</strong></p>
-                                        <p>@property.property.StreetAddress</p>
-                                        <p>@property.property.Division</p>
-                                        <p>@property.property.Country</p>
-                                        <p>@property.property.Description</p>
-                                    </div>
-                                </li>
-                            </ul>
+                <div class="col-md-12">
+                    <div class="image-container">
+                        <div class="image-link">
+                            <a href="~/properties/getProperty/@item.property.ID">
+                                <div class="image">
+                                    <img id="@item.property.ID" src="~/Uploads/@item.propertyPrimaryImageURL" />
+                                </div>
+                            </a>
                         </div>
-                    </a>
-                    <ul class="property-ratings">
-                        @if (property.averageRating > 0)
-                        {
-                            for (int ratingCount = 1; ratingCount <= property.averageRating; ratingCount++)
-                            {
-                                <li><span class="glyphicon glyphicon-star"></span></li>
-                            }
-                        }
-                        else
-                        {
-                            int maxRating = 5;
-                            for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
-                            {
-                                <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
-                            }
-                        }
-                        <br />
-                        <br />
-                        <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
-                        <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
-                        <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
-                    </ul>
+                        <div class="image-information-container">
+                            <div class="image-information">
+                                <div class="image-information-content">
+                                    <div class="property-type-banner"><a title="Save Property" class="save-property"><i class="fa fa-thumbs-up fa-2x"></i></a>@item.property.PropertyType.Name | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.property.Price) </span></div>
+                                    <div class="property-address">
+                                        Located at : <em>@( (!String.IsNullOrEmpty(item.property.StreetNumber) ? item.property.StreetNumber + ", " : "") + item.property.StreetAddress + ", " + item.property.Division + ", " + item.property.Country )</em>
+                                    </div>
+                                    <div class="property-owner-contact"><span>Contact Owner At @item.owner.User.CellNum</span></div>
+                                    <div class="property-desc">@item.property.Description</div>
+                                    <!--<div class="property-ratings-container">
+                                        @*@Html.Partial("_PropertyRatings", item)*@
+                                        <div class="social-icons">
+                                            <div><a href=""><img src="~/Content/facebook.svg" /></a></div>
+                                            <div><a href=""><img src="~/Content/twitter.svg" /></a></div>
+                                            <div><a href=""><img src="~/Content/google-plus.svg" /></a></div>
+                                        </div>
+                                    </div>-->
+                                </div>
+                                <a href="~/properties/getProperty/@item.property.ID" class="view-property-banner" data-toggle="popover" data-content="Click to view details"><i class="fa fa-sign-in fa-2x"></i></a>
+                            </div>
+                            @*@Html.Partial("_PropertyThumbnailInformation", @item)*@
+                        </div>
+                    </div>
+                    <br />
                 </div>
+               
             }
             <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
         }

@@ -14,18 +14,27 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
                      + '<img src="/Content/ajax-loader-dark.gif" />'
                      + '</div>';
 
+//enable bootstrap tooptip display
+(function () {
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+        trigger: 'hover',
+        container: 'body'
+    });
+})();
+
 /***GENERAL FUNCTIONS*/
 //highlights navigation link curRently active
 function setActiveNavigation(id) {
-    if(id != null && id != '' )
+    if (id != null && id != '')
         $('#' + id).attr('class', 'active');
     else
         $('#home').attr('class', 'active');
 }
 
 //displays jumbotrun container
-function showJumbotrun() {    
-    $('#jumbotron-container').fadeIn('fast');
+function hideJumbotrun() {
+    $('#jumbotron-container').hide();
 }
 
 //dynamically change the content that will be presented in the jumbotrun
@@ -80,21 +89,21 @@ function updateShoppingCart() {
 
         $('.shopping-cart-container').empty();
 
-        $('.shopping-cart-container').append('<div class="row">'
-                                + '<div class="col-xs-4 cart-headings"><span class="ctnr-info"><b>Product</b></span></div>'
-                                + '<div class="col-xs-4 cart-headings"><span class="ctnr-info"><b>Period</b></span></div>'
-                                + '<div class="col-xs-4 cart-headings"><span class="ctnr-info"><b>Price</b></span></div>'
-                                + '</div>');
+        $('.shopping-cart-container').append('<br />'
+                                + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Product</b></span></div>'
+                                + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Period</b></span></div>'
+                                + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Price</b></span></div>'
+                                );
 
         $.each(advertismentPriorityItemCost, function (index, value) {
             switch (index) {
                 case lastSelectedClickableAdvertismentPriority.attr('id'):
                     $('.shopping-cart-container')
-                        .append('<div class="row">&nbsp;</div><div class="row">'
-                                + '<div class="col-xs-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
-                                + '<div class="col-xs-4"><span class="ctnr-info">' + period + '</span></div>'
-                                + '<div class="col-xs-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
-                                + '</div>');
+                        .append('<br />'
+                                + '<div class="col-md-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
+                                + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
+                                + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                                );
                     totalCost += value;
                     break;
             }
@@ -104,20 +113,19 @@ function updateShoppingCart() {
             switch (index) {
                 case lastSelectedClickableSubscriptionType.attr('id'):
                     $('.shopping-cart-container')
-                        .append('<div class="row">&nbsp;</div><div class="row">'
-                                + '<div class="col-xs-4"><span class="ctnr-info">' + 'Subscription : ' + index + '</span></div>'
-                                + '<div class="col-xs-4"><span class="ctnr-info">' + period + '</span></div>'
-                                + '<div class="col-xs-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
-                                + '</div>');
+                        .append('<br />'
+                                + '<div class="col-md-4"><span class="ctnr-info">' + 'Subscription : ' + index + '</span></div>'
+                                + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
+                                + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                                );
                     totalCost += value;
                     break;
             }
         });
 
-        $('.shopping-cart-container').append('<div class="row">'
-                                + '<hr/>'
-                                + '<div class="col-sm-offset-8 col-xs-2 cart-headings"><span class="ctnr-info"><b>Total</b></span></div>'
-                                + '<div class="col-xs-2">' + '$' + (totalCost * period) + '.00 JMD' + '</div></div>');
+        $('.shopping-cart-container').append('<hr />'
+                                + '<div class="offset-8 col-md-2 cart-headings"><span class="ctnr-info"><b>Total</b></span></div>'
+                                + '<div class="col-md-2">' + '$' + (totalCost * period) + '.00 JMD' + '</div>');
     }
 }
 
@@ -171,6 +179,11 @@ function returnToHome() {
 //navigates browser to the sign in page of the application
 function returnToSignInPage() {
     window.location.href = window.location.protocol + '//' + window.location.host + '/' + 'accounts/signin';
+}
+
+//navigates browser to the URL passed into the URL
+function navigateToUrl(url) {
+    window.location.href = window.location.protocol + '//' + window.location.host + '/' + url;
 }
 
 //sets configuration for the modal display
@@ -230,13 +243,13 @@ function loadPropertyTags(selectedItem) {
             $('#property-tags').empty();
             $.each(data, function (index, value) {
                 $('#property-tags').append(
-                    '<div class="col-xs-2">'
+                    '<div class="col-md-2">'
                     + '  <a href="#" class="clickable-box-link">'
                     + '  <div id="' + value + '" class="clickable-box">' + value + '</div>'
                     + '  </a></div> '
                 );
                 if (index % 5 == 0 && index != 0) {
-                    $('#property-tags').append('<div class="row">&nbsp;</div><div class="row">&nbsp;</div>');
+                    $('#property-tags').append('<br /><br /><br />');
                 }
             });
 
@@ -410,12 +423,12 @@ function loadPropertyTags(selectedItem) {
 
         //accounts should only be created for the subscription type of a realtor/landlord
         //2017-03-11 : removed as decision was made to allow every one to have an account
-       /* var elements = ['#password', '#ConfirmPassword'];
-
-        if (selectedItem == 'Landlord' || selectedItem == 'Realtor')
-            enableElements(elements);
-        else
-            disableElements(elements);*/
+        /* var elements = ['#password', '#ConfirmPassword'];
+ 
+         if (selectedItem == 'Landlord' || selectedItem == 'Realtor')
+             enableElements(elements);
+         else
+             disableElements(elements);*/
 
         updateShoppingCart();
 
@@ -444,7 +457,7 @@ function loadPropertyTags(selectedItem) {
 
     //makes the clickable box active or inactive when clicked and stores the variable clicked
     //property-tags
-    $('#advertisePropertyDiv').on('click', '#property-tags .clickable-box', function (event) {
+    $(document).on('click', '#property-tags .clickable-box', function (event) {
         event.preventDefault();
 
         var isActive = $(this).hasClass('clickable-box-active');
@@ -684,7 +697,7 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickablePropertyCategory != null) {
             addHiddenInputToForm('propertycategory', lastSelectedClickablePropertyCategory.attr('id'));
         } else {
-         //   alert('Select property category');
+            //   alert('Select property category');
             isClickableContentValid = false;
 
             var field = $('#property-category');
@@ -694,7 +707,7 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickablePropertyPurpose != null) {
             addHiddenInputToForm('propertypurpose', lastSelectedClickablePropertyPurpose.attr('id'));
         } else {
-         //   alert('Select property purpose');
+            //   alert('Select property purpose');
             isClickableContentValid = false;
 
             var field = $('#property-purpose');
@@ -704,7 +717,7 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickableAdvertismentType != null) {
             addHiddenInputToForm('advertismenttype', lastSelectedClickableAdvertismentType.attr('id'));
         } else {
-       //     alert('Select advertisment type');
+            //     alert('Select advertisment type');
             isClickableContentValid = false;
 
             var field = $('#advertisment-type');
@@ -714,7 +727,7 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickableSubscriptionType != null) {
             addHiddenInputToForm('subscriptiontype', lastSelectedClickableSubscriptionType.attr('id'));
         } else {
-       //     alert('Select subscription type');
+            //     alert('Select subscription type');
             isClickableContentValid = false;
 
             var field = $('#subscription-type');
@@ -724,7 +737,7 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickableAdvertismentPriority != null) {
             addHiddenInputToForm('advertismentpriority', lastSelectedClickableAdvertismentPriority.attr('id'));
         } else {
-     //       alert('Select advertisment priority');
+            //       alert('Select advertisment priority');
             isClickableContentValid = false;
 
             var field = $('#advertisment-priority');

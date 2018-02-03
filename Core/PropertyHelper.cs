@@ -73,7 +73,7 @@ namespace SS.Core
         public static List<NearbyPropertySearchModel> NarrowSearchResultsToDistanceRadius(NearbyPropertySearchViewModel model, double distanceRadius)
         {
             List<NearbyPropertySearchModel> revisedModel = new List<NearbyPropertySearchModel>();
-              
+
             foreach (var x in model.DestinationInformation)
             {
                 double distance = (double)x.distance;
@@ -237,8 +237,9 @@ namespace SS.Core
             IEnumerable<Property> searchTermProperties = null;
             IEnumerable<Property> properties = null;
 
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            {
+            EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
+            //using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            //{
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
                 List<Core.Filter> filters = createFilterList(model, unitOfWork);
@@ -257,12 +258,13 @@ namespace SS.Core
                     featuredPropertiesSlideViewModelList.Add(new FeaturedPropertiesSlideViewModel()
                     {
                         property = property,
+                        owner = property.Owner,
                         propertyImageURLs = null,
                         propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
                         averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
                     });
                 }
-            }
+           // }
 
             return featuredPropertiesSlideViewModelList;
         }
@@ -289,7 +291,7 @@ namespace SS.Core
                     model.propertyImageURLs = null;
                     model.propertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID);
                     model.averageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
-                    
+
                     //matching the distance and durations to the property
                     int matchCount = revisedModel.Where(x => x.StreetAddress.Equals(property.StreetAddress)).Count();
 
@@ -332,8 +334,25 @@ namespace SS.Core
                         Division = property.Division,
                         Country = property.Country,
                         Description = property.Description,
+                        PropertyType = property.PropertyType,
+                        OwnerContactNum = property.Owner.User.CellNum,
                         AverageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0
                     };
+
+                    if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
+                    {
+                        Temporary.TotRooms = property.TotRooms.Value;
+                        Temporary.TotAvailableBathroom = property.TotAvailableBathroom.Value;
+
+                        Temporary.FurnishedValue = unitOfWork.Tags.GetTagNamesByPropertyId(property.ID)
+                            .Where(x => x.ToString().Contains("Furnished")).SingleOrDefault();
+                    }
+
+                    if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
+                    {
+                        Temporary.Area = property.Area;
+                        Temporary.PropertyPurpose = property.PropertyPurpose;
+                    }
 
                     if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Rent))
                     {
@@ -477,40 +496,14 @@ namespace SS.Core
                 filters.Add(filter2);
             }
             ///////////////TODO implement Or conditions for these///////////////////////
-            //ad type sale
-            if (model.ChkBuyProperty)
+            //ad type
+            if (!String.IsNullOrEmpty(model.RdoAdType))
             {
                 Core.Filter filter = new Core.Filter()
                 {
                     PropertyName = "AdTypeCode",
                     Operation = Op.Equals,
-                    Value = EFPConstants.PropertyAdType.Sale
-                };
-
-                filters.Add(filter);
-            }
-
-            //ad type rent
-            if (model.ChkRentProperty)
-            {
-                Core.Filter filter = new Core.Filter()
-                {
-                    PropertyName = "AdTypeCode",
-                    Operation = Op.Equals,
-                    Value = EFPConstants.PropertyAdType.Rent
-                };
-
-                filters.Add(filter);
-            }
-
-            //ad type lease
-            if (model.ChkLeasedProperty)
-            {
-                Core.Filter filter = new Core.Filter()
-                {
-                    PropertyName = "AdTypeCode",
-                    Operation = Op.Equals,
-                    Value = EFPConstants.PropertyAdType.Lease
+                    Value = mapPropertyAdTypeNameToCode(model.RdoAdType)
                 };
 
                 filters.Add(filter);

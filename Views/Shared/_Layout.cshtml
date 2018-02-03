@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
     <link href="https://fonts.googleapis.com/css?family=Maitree|Open+Sans|Slabo+27px" rel="stylesheet">
-    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="~/Content/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/normalize.css" rel="stylesheet" />
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
-    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
-    <script src="https://use.fontawesome.com/9172b7147e.js"></script>
     @RenderSection("pageCss", false)
 </head>
 <body>
@@ -23,7 +18,8 @@
         </span>
     </div>
     <div id="page-container">
-        <div id="top-header"><!--
+        <div id="top-header">
+            <!--
             TODO put image at the top of the page as well as change the color theme
             <div class="row">
                 <div class="col-md-3">
@@ -48,177 +44,256 @@
             </div>-->
         </div>
         <!--main heading area of the page-->
-        <div id="header" class="header-content">
+        <nav id="header" class="navbar navbar-expand-md navbar-light header-content">
             <div class="container">
                 <div class="row">
-                    <!--<div class="col-md-2">
-                        logo placement
-                        <div class="logo">
-                            <a href="~/">JamProps</a>
-                        </div>
+                    <div class="col-md-12">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <!--<div class="col-md-2">
+                            logo placement
+                            <div class="logo">
+                                <a href="~/">JamProps</a>
+                            </div>
 
-                    </div>-->
-                    <!--main menu list-->
-                    <div class="col-xs-9 col-md-10">
-                        <div class="main-menu">
-                            <ul>
+                        </div>-->
+                        <!--main menu list-->
+                        <div id="main-menu" class="collapse navbar-collapse main-menu">
+                            <ul class="navbar-nav mr-auto">
                                 <li>
-                                    <a href="~/" id="home"><i class="fa fa-globe fa-2x" aria-hidden="true"></i> Properties</a>
+                                    <a href="~/" id="home"><i class="nav-link fa fa-globe fa-2x" aria-hidden="true"></i> Properties</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=" id="Student"><i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i> Student Accommodations</a>
+                                    <a href="~/properties/getproperties?propertycategory=" id="Student"><i class="nav-link fa fa-graduation-cap fa-2x" aria-hidden="true"></i> Student Accommodations</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=RealEstate" id="RealEstate"><i class="fa fa-home fa-2x" aria-hidden="true"></i> Real Estates</a>
+                                    <a href="~/properties/getproperties?propertycategory=RealEstate" id="RealEstate"><i class="nav-link fa fa-home fa-2x" aria-hidden="true"></i> Real Estates</a>
                                 </li>
                                 <li>
-                                    <a href="~/properties/getproperties?propertycategory=Lot" id="Lot"><i class="fa fa-map-o fa-2x" aria-hidden="true"></i> Lots</a>
+                                    <a href="~/properties/getproperties?propertycategory=Lot" id="Lot"><i class="nav-link fa fa-map-o fa-2x" aria-hidden="true"></i> Lots</a>
                                 </li>
+                                <li class="sign-inout">
+                                    <ul class="sign-register">
+                                        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+                                        {
+                                            <li>@Html.ActionLink("Sign Out", "SignOut", "Accounts") </li>
+                                        }
+                                        else
+                                        {
+                                            <li>@Html.ActionLink("Sign In", "signin", "Accounts")</li>
+                                        }
+                                        <li><button class="btn btn-sm btn-outline-info" onclick="navigateToUrl('accounts/advertiseproperty')" >Advertise</button></li>
+                                    </ul>
+                                </li>
+                                <!--Temporary removal -->
+                                <!--
                                 <li>
                                     <a href="~/properties/getproperties?propertycategory=Machinery" id="Machinery"><i class="fa fa-wrench fa-2x" aria-hidden="true"></i> Machineries</a>
                                 </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-xs-1 col-md-2">
-                        <div class="sign-register">
-                            <ul>
-                                @if (HttpContext.Current.User.Identity.IsAuthenticated)
-                                {
-                                    <li>@Html.ActionLink("Sign Out", "SignOut", "Accounts") </li>
-                                }
-                                else
-                                {
-                                    <li><a href="~/accounts/signin"><img src="~/Content/user.svg" /></a></li>
-                                    <li>@Html.ActionLink("Sign In", "signin", "Accounts")</li>
-                                }
+                                -->
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <form action="~/Properties/GetProperties" method="get" id="search-properties-form">
-            <div id="jumbotron-container" class="jumbotron-container">
-                <div class="container-fluid">
+        </nav>
+
+        <div class="container">
+            <form action="~/Properties/GetProperties" method="get" id="search-properties-form">
+                <div id="jumbotron-container" class="jumbotron-container">
+                    <br />
                     <div class="row">
-                        <div class="col-xs-12">
-                            <!--Dynamic Content Goes Here-->
-                            <div class="filter-container">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <select class="form-control" id="division" name="division"><option disabled selected value="na">Parish/State/Division</option></select>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <select class="form-control" id="PropertyType" name="PropertyType"><option disabled selected value="na">Property Type</option></select>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <select class="form-control" id="PropertyPurpose" name="PropertyPurpose"><option disabled selected value="na">Property Purpose</option></select>
-                                    </div>
+                        <div class="col-md-auto">
+                            <a href="#" id="search-filter-parish" class="search-filter" title="Parish">Parish</a>
+                            <div class="search-filter-popdown search-filter-parish">
+                                <div class="clear-border"></div>
+                                <div class="search-filter-popdown-content">
+                                    <select onchange="appySearchFilterName(document.getElementById('search-filter-parish'), this);"
+                                            class="form-control" id="division" name="division">
+                                        <option selected value="">Select a parish</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="row">&nbsp;</div>
-                            <div class="row">
-                                <div class="group-form-price-range">
-                                    <div class="col-xs-2">
+                            <!--
+                            <div class="remove-filter-container">
+                                <div class="horizontal-separator"></div>
+                                <a onclick="removeSearchFilter(document.getElementById('search-filter-parish'), 'division', 'Parish',this);" class="remove-filter" aria-label="Remove Filter">
+                                    Remove
+                                    <span aria-hidden="true">&times;</span>
+                                </a>
+                            </div>-->
+                        </div>
+                        <div class="col-md-auto">
+                            <a href="#" id="search-filter-property-type" class="search-filter" title="Property Type">Property Type</a>
+                            <div class="search-filter-popdown search-filter-property-type">
+                                <div class="clear-border"></div>
+                                <div class="search-filter-popdown-content">
+                                    <select onchange="appySearchFilterName(document.getElementById('search-filter-property-type'), this);"
+                                            class=" form-control" id="PropertyType" name="PropertyType">
+                                        <option selected value="">Property Type</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-auto">
+                            <a href="#" id="search-filter-property-purpose" class="search-filter" title="Property Purpose">Property Purpose</a>
+                            <div class="search-filter-popdown search-filter-property-purpose">
+                                <div class="clear-border"></div>
+                                <div class="search-filter-popdown-content">
+                                    <select onchange="appySearchFilterName(document.getElementById('search-filter-property-purpose'), this);"
+                                            class=" form-control" id="PropertyPurpose" name="PropertyPurpose">
+                                        <option selected value="">Property Purpose</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-auto">
+                            <a href="#" id="search-filter-property-price-range" class="search-filter" title="Price Range">Price Range</a>
+                            <div class="search-filter-popdown search-filter-property-price-range">
+                                <div class="clear-border"></div>
+                                <div class="search-filter-popdown-content">
+                                    <div class="group-form-price-range">
                                         <div class="input-group">
-                                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                            <span class="input-group-prepend"><span class="input-group-text "><i class="fa fa-usd" aria-hidden="true"></i></span></span>
                                             <input id="MinPrice" type="text" class="form-control" name="MinPrice" placeholder="Minimum Price">
                                         </div>
-                                    </div>
-                                    <div class="col-xs-1 col-width-4" style="line-height:35px;">TO</div>
-                                    <div class="col-xs-2">
+                                        <center>TO</center>
                                         <div class="input-group">
-                                            <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                            <span class="input-group-prepend"><span class="input-group-text "><i class="fa fa-usd" aria-hidden="true"></i></span></span>
                                             <input id="MaxPrice" type="text" class="form-control" name="MaxPrice" placeholder="Maximum Price">
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-1">
-                                    <div class="checkbox">
-                                        <label>@Html.CheckBox("chkBuyProperty") Buy</label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-1">
-                                    <div class="checkbox">
-                                        <label>@Html.CheckBox("chkRentProperty") Rent</label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-1">
-                                    <div class="checkbox">
-                                        <label>@Html.CheckBox("chkLeasedProperty") Leased</label>
+                                        <div class="horizontal-separator"></div>
+                                        <button type="button" id="price-range-add-btn" class="add-filter-btn btn btn-sm btn-outline-secondary"
+                                                style="float:right;" onclick="addFilterBtnClick(document.getElementById('search-filter-property-price-range'), document.getElementById('MinPrice').value, document.getElementById('MaxPrice').value, this)">
+                                            Add
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">&nbsp;</div>
-                <div class="container-fluid search-bar-container">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <label>Search Type</label> &nbsp;
-                            <label class="radio-inline">@Html.RadioButton("searchType", "all", true) All</label>
-                            <label class="radio-inline">@Html.RadioButton("searchType", "nearByPlaces") Near by places</label>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="input-group">
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-search"></i></span>
-                                <input id="SearchTerm" onclick="initAutocomplete('SearchTerm'); geolocate();" type="text" class="form-control" name="SearchTerm" placeholder="Search Term">
-                            </div>
-                        </div>                        
-                        <div class="col-xs-2">
-                            <div class="input-group-btn">
-                                <button id="jumbotron-button" class="btn btn-block btn-search jumbotron-button">
-                                    Search <i class="glyphicon glyphicon-search"></i>
+                        <div class="col-md-auto">
+                            <a href="#" id="search-filter-property-adtype" class="search-filter" title="Rent / Buy">Rent / Buy</a>
+                            <div class="search-filter-popdown search-filter-property-adtype">
+                                <div class="clear-border"></div>
+                                <label>@Html.RadioButton("rdoAdType", "Buy") Buy</label> |
+                                <label>@Html.RadioButton("rdoAdType", "Rent") Rent</label> |
+                                <label>@Html.RadioButton("rdoAdType", "Leased") Leased</label>
+                                <div class="horizontal-separator"></div>
+                                <button type="button" id="ad-type-add-btn" class="add-filter-btn btn btn-sm btn-outline-secondary" style="float:right;"
+                                        onclick="addFilterBtnClick(document.getElementById('search-filter-property-adtype'), document.querySelector('input[name=rdoAdType]:checked').value, null, this)">
+                                    Add
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <input id="coordinateLat" type="hidden" name="coordinateLat" />
-            <input id="coordinateLng" type="hidden" name="coordinateLng" />
-        </form>
-        <!--------------Body Content--------------------
-        
-        <div class="jumbotron-container ad show">
-            d
-        </div>---->
-        <div id="body">
-            <div class="container-fluid">
-                <br />
-                <div class="row">
-                    <div class="col-md-offset-2 col-md-6">
-                        <div class="ctnr">
-                            <div class="ctnr-info">
-                                <span id="ad-promotion"><label> Want to Sell, Rent or Lease your property ? </label> <a href="~/accounts/advertiseproperty">Advertise Your Property Here</a></span>
+                    <br />
+                    <div class="row">
+                        <!--<div class="container-fluid">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                Dynamic Content Goes Here
+                                <div class="filter-container">
+                                    <div class="row">
+                                        <!--Temporary removal of the country select ddl-->
+                        <!--
+                                            <div class="col-xs-3">
+                                                <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
+                                            </div>
+
+                                            <div class="col-xs-3">
+                                                <select class="form-control" id="division" name="division"><option disabled selected value="">Parish/State/Division</option></select>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <select class="form-control" id="PropertyType" name="PropertyType"><option selected value="">Property Type</option></select>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <select class="form-control" id="PropertyPurpose" name="PropertyPurpose"><option selected value="">Property Purpose</option></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">&nbsp;</div>
+                                    <div class="row">
+                                        <div class="group-form-price-range">
+                                            <div class="col-xs-2">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                                    <input id="MinPrice" type="text" class="form-control" name="MinPrice" placeholder="Minimum Price">
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-1 col-width-4" style="line-height:35px;">TO</div>
+                                            <div class="col-xs-2">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                                                    <input id="MaxPrice" type="text" class="form-control" name="MaxPrice" placeholder="Maximum Price">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <div class="checkbox">
+                                                <label>@Html.CheckBox("chkBuyProperty") Buy</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <div class="checkbox">
+                                                <label>@Html.CheckBox("chkRentProperty") Rent</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-1">
+                                            <div class="checkbox">
+                                                <label>@Html.CheckBox("chkLeasedProperty") Leased</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+                        <div class="col-md-11">
+                            <div class="input-group">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    <label class="btn btn-sm btn-outline-secondary active">
+                                        <input type="radio" name="searchType" value="SearchTerm" id="searchType" autocomplete="off" checked> Search By Keyword
+                                    </label>
+                                    <label class="btn btn-sm btn-outline-secondary">
+                                        <input type="radio" name="searchType" value="nearByPlaces" id="searchType" autocomplete="off"> Find Properties Near To Location
+                                    </label>
+                                </div>
+
+                                <input type="text" onclick="initAutocomplete('SearchTerm'); geolocate();" class="form-control" name="SearchTerm" id="SearchTerm" placeholder="" aria-label="" aria-describedby="basic-addon2">
                             </div>
                         </div>
+                        <div class="col-md-1">
+                            <button class="btn btn-primary btn-search" type="submit">Search</button>
+                        </div>
+                        <input id="coordinateLat" type="hidden" name="coordinateLat" />
+                        <input id="coordinateLng" type="hidden" name="coordinateLng" />
                     </div>
                 </div>
+            </form>
+            <!--------------Body Content--------------------
+
+            <div class="jumbotron-container ad show">
+                d
+            </div>---->
+            <div id="body">
+                <br />
+                <!--
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="~/advertisments/adspace"><div id="ad-placement"><center>AD PLACEMENT</center></div></a>
+                        <a href="~/advertisments/adspace"><div class="ctnr-headers" id="ad-placement">AD PLACEMENT</div></a>
                     </div>
                 </div>
-                <br />
+                    -->
                 <div class="row">
-                    <div class="col-md-2">
-                        <div id="body-content">
-                        </div>
-                    </div>
-                    <div class="col-md-8">
+                    <div class="col-md-9">
                         <div id="body-content">
                             @RenderBody()
                             <div id="map" style="display:none;"></div>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div id="body-content">
+                    <div class="col-md-3">
+                        <div class="advertisment-section">
+                            AD Space
                         </div>
                     </div>
                 </div>
@@ -251,15 +326,19 @@
     </div>
     <!-------------------------------------------------->
     <input type="hidden" id="_postBackInformation" value="@Json.Encode(ViewBag.searchViewModel)" />
-
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/popper.min.js"></script>
+    <script src="https://use.fontawesome.com/9172b7147e.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
     <!--main script removed and is now placed in each page <script src="~/Scripts/MainScript.js"></script>-->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places,geometry"></script>
     <script src="~/Scripts/GoogleMapJsScript.js"></script>
     @RenderSection("pageScriptSrc", false)
     <script type="text/javascript">
         @RenderSection("pageScript",false)
     </script>
-    
+
 </body>
 </html>

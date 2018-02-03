@@ -10,7 +10,6 @@
     $.getScript('/Scripts/MainScript.js', function()
     {
     setActiveNavigation('home');
-    showJumbotrun();
     // setJumbotrunActionBtnText('Search');
     setIsCollapsable(false);
 
@@ -23,17 +22,15 @@
     });
 
     $.getScript('/Scripts/PropertiesScript.js',function(){
-    populatePropertyType();
+        populatePropertyType();
     });
     })();
 
 }
-<br />
-<div class="row">&nbsp;</div>
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-md-12">
         <div class="ctnr-headers">
-            <label><strong>Featured Properties Being Rented</strong></label>
+            Featured Properties Being Rented
         </div>
     </div>
 </div>
@@ -41,15 +38,15 @@
     @Html.Partial("_FeaturedProperties", Model.FeaturedRental)
 </div>
 <div class="row">
-    <div class="col-md-offset-8 col-xs-4">
+    <div class="offset-8 col-md-4">
         <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
     </div>
 </div>
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-md-12">
         <div class="ctnr-headers">
-            <label><strong>Featured Properties Being Sold</strong></label>
+            Featured Properties Being Sold
         </div>
     </div>
 </div>
@@ -57,15 +54,15 @@
     @Html.Partial("_FeaturedProperties", Model.FeaturedSale)
 </div>
 <div class="row">
-    <div class="col-md-offset-8 col-xs-4">
+    <div class="offset-8 col-md-4">
         <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
     </div>
 </div>
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-md-12">
         <div class="ctnr-headers">
-            <label><strong>Featured Properties Being Leased</strong></label>
+            Featured Properties Being Leased
         </div>
     </div>
 </div>
@@ -73,9 +70,7 @@
     @Html.Partial("_FeaturedProperties", Model.FeaturedLease)
 </div>
 <div class="row">
-    <div class="col-md-offset-8 col-xs-4">
+    <div class="offset-8 col-md-4">
         <a href="#" class="btn btn-block btn-accent" id="btnViewAllRentalEstate">See More <span class="glyphicon glyphicon-eye-open"></span></a>
     </div>
 </div>
-
-

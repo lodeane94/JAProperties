@@ -1,6 +1,9 @@
 ﻿var selectedLocation = { country: 'Jamaica', countryCode: 'jm', division: '' };
 var postBackInfo = null;
 var distanceMtxInfo = null;
+var activeSearchFilterElement = null;
+var activeSearchFilterId = null;
+var activeSearchFilterHeight = null;
 
 //used to display a loading element
 var loadingGifHTML = '<div id="loading-gif" class="col-xs-1">'
@@ -8,7 +11,8 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-1">'
                      + '</div>';
 
 function populateDivisionByCountryCode() {
-    var division = $('#division');
+    var elementId = '#division';
+    var division = $(elementId);
 
     division.find("option:disabled").nextAll('option').remove();//removes all items from the division list
 
@@ -26,7 +30,8 @@ function populateDivisionByCountryCode() {
             });
 
             if (postBackInfo != null) {
-                $('#division option[value="' + postBackInfo.Division + '"').prop('selected', true);
+                //$('#division option[value="' + postBackInfo.Division + '"').prop('selected', true);
+                reapplySelectSearchFilterOnPostback(elementId, postBackInfo.Division);
             }
         },
         complete: function () {
@@ -66,22 +71,91 @@ function populatePropertyTypeByCategoryName(categoryName) {
 
 //get all property types and loads select element with the values
 function populatePropertyType() {
+    var elementId = '#PropertyType';
     $.ajax({
         url: '/servicer/GetAllPropertyTypeNames',
         type: 'get',
         success: function (data) {
             $.each(data, function (index, value) {
-                $('#PropertyType').append($('<option></option>').attr('value', value).text(value));
+                $(elementId).append($('<option></option>').attr('value', value).text(value));
             });
-
+            //reinitialize filter values on server postback
             if (postBackInfo != null) {
-                $('#PropertyType option[value="' + postBackInfo.PropertyType + '"').prop('selected', true);
+                reapplySelectSearchFilterOnPostback(elementId, postBackInfo.PropertyType);
             }
         },
         error: function () {
             alert('Error occurred while retrieving property types, contact system administrator');
         }
     });
+}
+
+//get all property purpose and loads select element with the values
+function populatePropertyPurpose() {
+    var elementId = '#PropertyPurpose';
+
+    $.ajax({
+        url: '/servicer/GetAllPropertyPurposeNames',
+        type: 'get',
+        success: function (data) {
+            $.each(data, function (index, value) {
+                $(elementId).append($('<option></option>').attr('value', value).text(value));
+            });
+
+            if (postBackInfo != null) {
+                reapplySelectSearchFilterOnPostback(elementId, postBackInfo.PropertyPurpose);
+            }
+        },
+        error: function () {
+            alert('Error occurred while retrieving property types, contact system administrator');
+        }
+    });
+}
+
+//populates the price range values on postback of the server
+function populatePriceRange() {
+    var elementId = '#MinPrice';
+
+    //max price cannot be 0
+    if (postBackInfo.MaxPrice > 0) {
+        $(elementId).attr('value', postBackInfo.MinPrice);
+        $('#MaxPrice').attr('value', postBackInfo.MaxPrice);
+
+        reapplyAddFilterBtnOnPostBack(elementId, postBackInfo.MinPrice, postBackInfo.MaxPrice);
+    }
+}
+
+//reselects the property adtype that was selected
+function reselectPropertyAdType() {
+    var elementId = '#rdoAdType';
+    
+    $(elementId).filter(`[value=${postBackInfo.RdoAdType}]`).prop('checked', true);
+
+    reapplyAddFilterBtnOnPostBack(elementId, postBackInfo.RdoAdType, null);
+}
+
+//reapplies the search filters on postback of the server
+//since these selected would be lost
+function reapplySelectSearchFilterOnPostback(elementId, selectValue) {
+
+    if (selectValue != null) {
+        $(elementId + ' option[value="' + selectValue + '"').prop('selected', true);
+
+        var searchFilterElement = $(elementId).closest('.search-filter-popdown').siblings();
+        appySearchFilterName(searchFilterElement, $(elementId));
+    }
+}
+
+function reapplyAddFilterBtnOnPostBack(elementId, value1, value2) {
+
+    if (value1 != null) {
+        
+        var filterElement = $(elementId).closest('.search-filter-popdown').siblings();
+        
+        var filterBtn = $(elementId).parent().siblings('.add-filter-btn');
+
+        addFilterBtnClick(filterElement, value1, value2, filterBtn);
+    }
 }
 
 //populates google maps MVC array that will hold the LatLng objects of 
@@ -141,7 +215,7 @@ function populateDistanceMatrixInformation(data) {
         }
 
         distanceMtxInfo.destinationInformation.push(destinationInfo);
-    });   
+    });
 }
 
 //makes call to the server that will make call to the google distance matrix
@@ -156,7 +230,7 @@ function setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl) {
     $.ajax({
         url: '/servicer/RequestJsonDataFromUrl',
         type: 'get',
-        data:{ Url : distanceMatrixUrl},
+        data: { Url: distanceMatrixUrl },
         success: function (data) {
             if (data.status == "OK"
                 && data.rows[0].elements[0].status != 'ZERO_RESULTS') {
@@ -172,9 +246,10 @@ function setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl) {
         }
     });
 }
+//submits form containing the search distance matrix informatin
+//to the server for processing
+function searchNearByProperties() {
 
-function searchNearByProperties(){
-  
     if (distanceMtxInfo != null) {
         var data = JSON.stringify(distanceMtxInfo);
 
@@ -190,6 +265,150 @@ function searchNearByProperties(){
     }
 }
 
+//displays the search filter popdown
+//remove bottom border of the search-filter button
+//and increase the height of the element by 16px
+function activateSearchFilterPopdown(element, searchFilterId, searchFilterHeight) {
+    $(element).css({
+        'border-bottom': '1px solid #FFFFFF', 'border-bottom-right-radius': '0px',
+        'border-bottom-left-radius': '0px', 'height': (searchFilterHeight + 16) + 'px'
+    });
+
+    //$(searchFilterPopdownHtml).insertAfter(element);
+    //displaySearchFilterContent(searchFilterId);
+
+    $('.' + searchFilterId).show();
+
+    //will be used to clear a section of the top border of the search-filter class
+    var clearBorderWidth = $(element).outerWidth(true);
+    var clearBorderWidthFix = clearBorderWidth - 2;//removing 2 pixels from the width ; unable to get the correct fix
+    $('.clear-border').css({ 'width': clearBorderWidthFix });
+
+    activeSearchFilterElement = element;
+    activeSearchFilterHeight = searchFilterHeight + 16;
+}
+
+//inserts the criteria that user can use to filter their searches
+/*function displaySearchFilterContent(searchFilterId) {
+    var content = '';
+
+    switch (searchFilterId) {
+        case 'search-filter-parish': content = '<select class="form-control" id="division" name="division"><option disabled selected value="">Parish</option></select>';
+            break;
+    }
+
+    $(content).appendTo('.search-filter-popdown-content');
+}*/
+
+//removes the search filter popdown display from the dom
+//and resets the search filter element to normal
+function deactivateSearchFilterPopdown(element, searchFilterHeight) {
+    //remove popdown
+    $('.search-filter-popdown').hide();
+
+    //return search filter element to normal
+    $(element).css({
+        'border-bottom': '1px solid #C1CED1', 'border-bottom-right-radius': '4px',
+        'border-bottom-left-radius': '4px', 'height': (searchFilterHeight - 16) + 'px'
+    });
+
+    activeSearchFilterElement = null;
+    activeSearchFilterHeight = null;
+}
+
+//Displays the selected filter item and highlights the selected element
+function appySearchFilterName(filterElement, selectedFilter) {
+
+    var selectedValue = $(selectedFilter).find('option:selected').attr('value');
+
+    $(filterElement).text(selectedValue);
+    $(filterElement).addClass('active');
+
+    //deactivates the current filter popdown content
+    deactivateSearchFilterPopdown(activeSearchFilterElement, activeSearchFilterHeight);
+
+    var selectElementId = $(selectedFilter).attr('id');
+    var searchFilterElementId = $(filterElement).attr('id');
+    var filterResetValue = $(filterElement).attr('title');
+
+    //only create element if it does not already exist
+    if ($(filterElement).siblings('.search-filter-popdown').siblings('.remove-filter-container').length < 1) {
+        var removeFilterElementHtml = createRemoveFilterElement(selectElementId, searchFilterElementId, filterResetValue, 'this');
+
+        //find the closest 'search-filter-popdown' element then insert the remove filter html after it
+        $(selectedFilter).closest('.search-filter-popdown').after(removeFilterElementHtml);
+    }
+}
+
+//Removes the search filter from the search criteria and remove highlight from the element
+function removeSearchFilter(filterlinkElement, returnedFilterLinkElement, removeFilterElement) {
+
+    $(filterlinkElement).text(returnedFilterLinkElement);
+    $(filterlinkElement).removeClass('active');
+
+    $(removeFilterElement).parent().remove();
+
+    resetInputValues(filterlinkElement);
+}
+
+//creates the html that creates the remove filter element for filters
+//that are drop down lists
+function createRemoveFilterElement(selectElementId, searchFilterElementId, filterResetValue, removeElement) {
+    var html = '<div class="remove-filter-container">'
+                + '<div class="horizontal-separator" style="border-bottom:4px;"></div>'
+                + `<a onclick="${selectElementId != null ? `resetSelectOption('${(selectElementId)}');` : ''} removeSearchFilter(document.getElementById('${searchFilterElementId}'), '${filterResetValue}', ${removeElement});"`
+                + 'class="remove-filter" aria-label="Remove Filter">'
+                + 'Remove <span aria-hidden="true">&times; </span> </a>'
+                + '</div>';
+
+    return html;
+}
+
+//deselects all option on a select element
+function resetSelectOption(filterCriteriaElementId) {
+    $('select#' + filterCriteriaElementId).prop('selectedIndex', 0);
+}
+
+//sets input values to their  default value
+function resetInputValues(searchFilterElement) {
+    $(searchFilterElement).siblings('.search-filter-popdown').find('input').each(function (index) {
+        if ($(this).attr('type') != 'radio')
+            $(this).val('');
+
+        $(this).prop('checked', false);
+    });
+}
+
+function addFilterBtnClick(filterElement, value1, value2, thisBtn) {
+    var filterText = '';
+
+    //alert(value1.value);
+
+    //price range
+    if (value2 != null)
+        filterText = '$' + value1 + ' - ' + '$' + value2;
+    else
+        filterText = value1;
+
+    $(filterElement).text(filterText);
+    $(filterElement).addClass('active');
+
+    deactivateSearchFilterPopdown(activeSearchFilterElement, activeSearchFilterHeight);
+
+    var searchFilterElementId = $(filterElement).attr('id');
+    var filterResetValue = $(filterElement).attr('title');
+
+    //only create element if it does not already exist
+    if ($(filterElement).siblings('.search-filter-popdown').siblings('.remove-filter-container').length < 1) {
+
+        var removeFilterElementHtml = createRemoveFilterElement(null, searchFilterElementId, filterResetValue, 'this');
+
+        // alert($(thisBtn).attr('id'));
+        //find the closest 'search-filter-popdown' element then insert the remove filter html after it
+        $(thisBtn).closest('.search-filter-popdown').after(removeFilterElementHtml);
+    }
+}
+
 function escapeHtml(text) {
     var map = {
         '&': '&amp;',
@@ -199,7 +418,7 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
 
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    return text.replace(/[&<>"']/g, function (m) { return map[m]; });
 }
 
 //displays previous and next signs depending on the number of properties returned
@@ -270,17 +489,20 @@ $(function () {
 
 $(document).ready(function () {
 
-    populateDivisionByCountryCode();
-
     var postBackInfoRaw = $('#_postBackInformation').val();
-
+    //setting back the search filter values after postback response from the server
     if (postBackInfoRaw != 'null') {
         postBackInfo = JSON.parse(postBackInfoRaw);//information posted to the server for search
 
-        $('#MinPrice').attr('value', postBackInfo.MinPrice);
-        $('#MaxPrice').attr('value', postBackInfo.MaxPrice);
+        populatePriceRange();
+        reselectPropertyAdType();
         $('#SearchTerm').attr('value', postBackInfo.SearchTerm);
     }
+
+    populateDivisionByCountryCode();
+    populatePropertyPurpose();
+    //populatePropertyType();// why is this giving problem ? TODO resolve
+
     //sets the menu to fixed after scrolling pass a certain amount of pixels
     $(window).scroll(function () {
         if ($(this).scrollTop() > 280) {
@@ -334,24 +556,6 @@ $(document).ready(function () {
             alert('Error occurred while retrieving countries, contact system administrator');
         }
     });*/
-
-    //get all property purpose and loads select element with the values
-    $.ajax({
-        url: '/servicer/GetAllPropertyPurposeNames',
-        type: 'get',
-        success: function (data) {
-            $.each(data, function (index, value) {
-                $('#PropertyPurpose').append($('<option></option>').attr('value', value).text(value));
-            });
-
-            if (postBackInfo != null) {
-                $('#PropertyPurpose option[value="' + postBackInfo.PropertyPurpose + '"').prop('selected', true);
-            }
-        },
-        error: function () {
-            alert('Error occurred while retrieving property types, contact system administrator');
-        }
-    });
 
     //updates the division select element whenever the country option is changed
     $('#country').change(function () {
@@ -438,11 +642,11 @@ $(document).ready(function () {
                 type: 'get',
                 data: $('#search-properties-form').serialize(),
                 success: function (data) {
-                    
+
                     var mvcArray = populateMapsMVCArray(data);
                     //encoding coordinates to compress url in the event that the URl exceeds its limit
                     var encodedCoordinatesUrl = google.maps.geometry.encoding.encodePath(mvcArray);
-                    
+
                     setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl);
                 },
                 error: function () {
@@ -452,4 +656,61 @@ $(document).ready(function () {
         }
 
     });
+
+    //activates and or deactivates that search filter popdown
+    $('.search-filter').click(function (event) {
+        event.preventDefault();
+        event.stopPropagation();//prevents search filter element from being removed when element is clicked
+
+        var newSearchFilterId = $(this).attr('id');
+        var searchFilterHeight = $(this).outerHeight(true);
+
+        if (activeSearchFilterElement == null) {
+
+            activateSearchFilterPopdown($(this), newSearchFilterId, searchFilterHeight);
+
+        } else if (activeSearchFilterElement != null
+            && activeSearchFilterElement.attr('id') != newSearchFilterId) {
+
+            deactivateSearchFilterPopdown(activeSearchFilterElement, activeSearchFilterHeight);
+            activateSearchFilterPopdown($(this), newSearchFilterId, searchFilterHeight);
+        }
+        else {
+            deactivateSearchFilterPopdown($(this), searchFilterHeight);
+        }
+    });
+
+    $(document.body).on('click', '.search-filter-popdown', function (event) {
+        event.stopPropagation();
+    });
+
+    //removes search filter element from DOM whenever anywhere else is clicked
+    $(document).click(function () {
+        if (activeSearchFilterElement != null) {
+
+            //check if a search filter is not activated before reseting the input values on document click
+            if ($(activeSearchFilterElement).siblings('.search-filter-popdown').siblings('.remove-filter-container').length < 1) {
+                //clear input and radio filters upon document click
+                resetInputValues(activeSearchFilterElement);
+            }
+
+            deactivateSearchFilterPopdown(activeSearchFilterElement, activeSearchFilterHeight);
+        }
+    });
+
+    //ensures that only numbers are entered into the MinPrice and MaxPrice fields
+    $('#MinPrice, #MaxPrice').keypress(function (e) {
+        //if the letter is not digit then display error and don't type anything
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    });
+
+    //prevent pasting within the MinPrice and MaxPrice fields
+    //TODO allow pasting only if it is numbers
+    $('#MinPrice, #MaxPrice').bind('paste', function (e) {
+        e.preventDefault();
+    });
+
+
 });

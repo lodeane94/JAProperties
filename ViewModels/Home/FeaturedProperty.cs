@@ -11,5 +11,7 @@ namespace SS.ViewModels
         public string PrimaryImageURL { get; set; }
         public int AverageRating { get; set; }
         public bool ShowRating { get; set; }
+        public string FurnishedValue { get; set; }
+        public string OwnerContactNum { get; set; }
     }
 }

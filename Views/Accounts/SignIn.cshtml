@@ -8,55 +8,48 @@
     (function(){
     $.getScript('/Scripts/MainScript.js', function()
     {
-        $('#home').attr('class','active');
-        displayFadedAnnouncment();
+    $('#home').attr('class','active');
+    displayFadedAnnouncment();
     });
     })();
 }
+<script type="text/javascript">
+    var jumbotrun = document.getElementById('jumbotron-container');
+    jumbotrun.style.display = 'none';
+</script>
 @{
     if (Session["invalidUser"] != null)
     {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="fadedAnnouncment" class="error" style="display:none; color:#FFFFFF;">
-                        <strong>Login Failed</strong> <span class="glyphicon glyphicon-exclamation-sign"></span>
-                        <br /><br /><em>@Session["invalidUser"]</em>
-                    </div>
-                </div>
+        <div class="col-md-12">
+            <div id="fadedAnnouncment" class="error" style="display:none; color:#FFFFFF;">
+                <strong>Login Failed</strong> <span class="glyphicon glyphicon-exclamation-sign"></span>
+                <br /><br /><em>@Session["invalidUser"]</em>
             </div>
-            <div class="row">&nbsp;</div>
         </div>
-        Session["invalidUser"] = null; 
+        Session["invalidUser"] = null;
     }
 }
-
-<div class="container">
-    <br/>
-    <div class="row">
-        <div class="col-md-5">
-            @using (Html.BeginForm("SignIn", "Accounts", FormMethod.Post))
+<br />
+<div class="col-md-12">
+    @using (Html.BeginForm("SignIn", "Accounts", FormMethod.Post))
             {
-                <fieldset>
-                    <legend><div class="ctnr-headers"><label>Sign in</label></div></legend>
-                    <table class="table-condensed registration-form" width="100%">
-                        <tr>
-                            <td>Username</td>
-                            <td>@Html.TextBox("username", "", new { @required = "true", @class = "form-control"})</td>
-                        </tr>
-                        <tr>
-                            <td>Password</td>
-                            <td>@Html.Password("password", "", new { @required = "true", @class = "form-control" })</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><input type="submit" class="btn btn-accent pull-right" value="Sign in"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3"><label>Not a registered user ? </label>@Html.ActionLink("Sign Up Here","signup","Accounts")</td>
-                        </tr>
-                    </table>
-                </fieldset>
-            }
-        </div>
-    </div>
+
+        <div class="ctnr-headers"><label>Sign in</label></div>
+        <table class="table-condensed registration-form" width="100%">
+            <tr>
+                <td>Username</td>
+                <td>@Html.TextBox("username", "", new { @required = "true", @class = "form-control" })</td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td>@Html.Password("password", "", new { @required = "true", @class = "form-control" })</td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" class="btn btn-accent pull-right" value="Sign in"></td>
+            </tr>
+            <tr>
+                <td colspan="3"><label>Not a registered user ? </label> @Html.ActionLink("Sign Up Here", "signup", "Accounts")</td>
+            </tr>
+        </table>
+    }
 </div>
