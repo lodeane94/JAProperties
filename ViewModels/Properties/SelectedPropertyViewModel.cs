@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace SS.ViewModels
 {
@@ -12,5 +10,8 @@ namespace SS.ViewModels
         public string OwnerFirstName { get; internal set; }
         public string OwnerCellNumber { get; internal set; }
         public string PropertyCondition { get; internal set; }
+        public string PropertyCategoryCode { get; internal set; }
+        public IEnumerable<String> Tags { get; internal set; }
+        public IEnumerable<String> PropertyImageURLs { get; internal set; }
     }
 }

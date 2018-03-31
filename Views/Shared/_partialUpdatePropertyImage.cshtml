@@ -1,0 +1,20 @@
+﻿@model SS.ViewModels.Management.UpdatePropertyViewModel
+
+<div class="dd-primary-img dropdown" data-toggle="dropdown" data-content="Image that displays when searched">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="ddmPropertyImgs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Update Primary Image
+        <hr />
+        <img id="primary-property-img" style="width:200px;height:100px;" src="~/Uploads/@Model.PrimaryImageUrl" />
+    </button>
+    <div class="dropdown-menu" aria-labelledby="propertyImagesDropdownMenu">
+        @foreach (var img in Model.PropertyImages)
+        {
+            <button id="@img.ID" class="dropdown-item" type="button"><img id="@img.ID" src="~/Uploads/@img.ImageURL" /></button>
+            <div class="upd-property-images-options">
+                <button class="btn btn-sm btn-primary select-as-primary @(img.IsPrimaryDisplay ? "disabled" : "")">Make Primary Image</button>
+                <button class="btn btn-sm btn-danger delete-img  @(img.IsPrimaryDisplay ? "disabled" : "")">Delete Image</button>
+            </div>
+            <hr />
+        }
+    </div>
+</div>

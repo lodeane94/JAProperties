@@ -1,0 +1,86 @@
+﻿@model SS.ViewModels.Management.ProfileViewModel
+
+<div class="profile-container jumbotron-container">
+    <div class="ctnr-headers">Profile</div>
+    <div class="row">
+        <div class="col-md-12">
+            <a href="#" id="edit-profile-btn" data-toggle="popover" data-content="Change Profile Information" style="position:relative; float:right;" class="btn btn-outline-secondary btn-sm">Edit</a>
+        </div>
+    </div>
+    <form id="updateProfileForm">
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+                First Name
+            </div>
+            <div class="col-md-8">
+                <input disabled id="firstname" value="@Model.FirstName" type="text" class="form-control" name="firstname" required>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+                Last Name
+            </div>
+            <div class="col-md-8">
+                <input disabled id="lastname" value="@Model.LastName" type="text" class="form-control" name="lastname" required>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+                Cell Number
+            </div>
+            <div class="col-md-8">
+                <input disabled id="cellNum" value="@Model.CellNum" type="text" class="form-control" name="cellNum" required>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+                Email
+            </div>
+            <div class="col-md-8">
+                <input disabled id="email" value="@Model.Email" type="text" class="form-control" name="email" required>
+            </div>
+        </div>
+        @if (Session["isUserPropOwner"] != null && (bool)Session["isUserPropOwner"])
+        {
+            <br />
+            <div class="row">
+                <div class="col-md-2">
+                    Organization Name
+                </div>
+                <div class="col-md-8">
+                    <input disabled id="organization" value="@Model.Organization" type="text" class="form-control" name="organization">
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-2">
+                    @if (!String.IsNullOrEmpty(Model.LogoUrl))
+                {
+                        <img class="img-thumbnail" src="~/Uploads/@Model.LogoUrl" data-toggle="popover" data-content="Current Company Logo">
+                    }
+                    else
+                    {
+                        <span>Upload Company Logo</span>
+                    }
+                </div>
+                <div class="col-md-8">
+                    <div class="input-group mb-1">
+                        <div class="custom-file">
+                            <input disabled id="organizationLogo" name="organizationLogo" accept="image/*" type="file" class="custom-file-input">
+                            <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <input type="hidden" value="@Model.ID" id="id" name="id" />
+    </form>
+    <div id="management-add-prop-container">
+        <br />
+        <a href="" style="float:right;" id="updateProfileBtn" class="btn btn-accent disabled">Update Profile</a>
+    </div>
+</div>

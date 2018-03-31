@@ -31,6 +31,12 @@ namespace SS.Models
         IMessageTrashRepository MessageTrash { get; }
         IMeetingRepository Meeting { get; }
         IMeetingMembersRepository MeetingMembers { get; }
+        ISavedPropertiesRepository SavedProperties { get; }
+        IPaymentRepository Payment { get; }
+        IPaymentMethodRepository PaymentMethod { get; }
+        ISubscriptionExtensionRepository SubscriptionExtension { get; }
+        IDivisionRepository Division { get; }
+        IPasswordRecoveryRequestRepository PasswordRecoveryRequest { get; }
         int save();
     }
 }

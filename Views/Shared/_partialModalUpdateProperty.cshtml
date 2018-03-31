@@ -1,0 +1,107 @@
+﻿@model SS.ViewModels.Management.UpdatePropertyViewModel
+@using SS.ViewModels.RazorHelperModels
+
+<div id="updatePropertyModalContainer" class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="updatePropertyModal" class="modal fade">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form id="form-upd-property" action="~/landlordmanagement/UpdateProperty" method="post">
+                            <div class="modal-header">
+                                <div id="action-header">
+                                    <span class="fa fa-Example of pencil-square-o fa-pencil-square-o"></span> Update Property
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="prop-upload-info">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="upd-property-images-ctnr">
+                                                @Html.Partial("_partialUpdatePropertyImage",Model)
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="ctnr-headers">Add Property Images</div>
+                                            <input id="flPropertyImg" type="file" class="form-control" />
+                                            <br />
+                                            <button id="add-image" class="btn btn-block btn-secondary">Add</button>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="content-heading">Enter your property's information</div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="title">Title</label>
+                                            <input value="@Model.Title" id="title" type="text" class="form-control" name="title"
+                                                   data-toggle="popover" data-content="This is the heading that your property will display to viewers. Write in short, the property's key features " required>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="price">Price</label>
+                                            <input id="price" value="@Model.Price" type="text" class="form-control" name="price" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="securitydeposit">Security Deposit</label>
+                                            <input id="securitydeposit" value="@(Model.SecurityDeposit > 0 ? Model.SecurityDeposit.ToString() : "")" type="text" class="form-control" name="securitydeposit">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="occupancy">Occupancy</label>
+                                            <input id="occupancy" value="@(Model.Occupancy > 0 ? Model.Occupancy.ToString() : "")" type="text" class="form-control" name="occupancy">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="GenderPreferenceCode">Gender Preference Code</label>
+                                            @Html.DropDownListFor(m => m.GenderPreferenceCode, PropertyViewHelper.GenderPreferenceCode, new { @class = "form-control", @required = true })
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="TotAvailableBathroom">Total Bathrooms</label>
+                                            <input id="TotAvailableBathroom" value="@(Model.TotAvailableBathroom > 0 ? Model.TotAvailableBathroom.ToString() : "")" type="text" class="form-control" name="TotAvailableBathroom">
+                                        </div>
+                                        <br /><br />
+                                        <div class="col-md-3">
+                                            <label for="TotRooms">Total Bedrooms</label>
+                                            <input id="TotRooms" value="@(Model.TotRooms > 0 ? Model.TotRooms.ToString() : "")" type="text" class="form-control" name="TotRooms">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="area">Area</label>
+                                            <input id="area" value="@(Model.Area > 0 ? Model.Area.ToString() : "")" type="text" class="form-control" name="area" placeholder="Property Area">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="IsReviewable">Allow Reviews</label>
+                                            @Html.DropDownListFor(m => m.IsReviewable, PropertyViewHelper.IsReviewable, new { @class = "form-control", @required = true })
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="description">Description</label>
+                                            <textarea id="description" rows="4" class="form-control" name="description" required>@Model.Description</textarea>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="termsagreement">Terms and Agreement</label>
+                                            <textarea id="termsagreement" rows="4" class="form-control" name="termsagreement">@Model.TermsAgreement</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                @Html.Hidden("ID", Model.ID)
+                                <button type="button" id="close-modal" class="btn btn-default" data-dismiss="modal">Close</button>'
+                                <input class="btn btn-primary" type="submit" value="Update Property" id="upd-property" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿<div class="properties-saved jumbotron-container">
+    <div class="ctnr-headers">Properties Saved</div>
+    <div class="card">
+        <div class="card-body" id="management-prop-images-container">
+            @{
+                String propertyID = "", imageURL = "", propertyTitle = "";
+            }
+            @if (ViewBag.propertyImages != null)
+            {
+                foreach (var imgInfo in ViewBag.propertyImages)
+                {
+                    if (imgInfo != null
+                            && imgInfo.TryGetValue("propertyID", out propertyID)
+                            && imgInfo.TryGetValue("imageURL", out imageURL)
+                            && imgInfo.TryGetValue("propertyTitle", out propertyTitle))
+                    {
+                        <div class="management-prop-images" data-toggle="popover" data-content="View Property">
+                            <a class="property-saved-image" id="@propertyID" href="~/landlordmanagement/getproperty/@propertyID">
+                                <img id="@propertyID" src="~/Uploads/@imageURL" />
+                                <div class="management-prop-title">@propertyTitle</div>
+                                <div style="float:right; padding:5px;">
+                                    <div id="@propertyID" class="btn btn-sm btn-outline-warning remove-saved-prop">Remove</div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                }
+            }
+            else
+            {
+                <div class="management-prop-container">
+                    <div class="ctnr-info">No Properties Found</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

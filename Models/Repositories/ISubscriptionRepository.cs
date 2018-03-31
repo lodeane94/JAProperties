@@ -9,5 +9,6 @@ namespace SS.Models.Repositories
     public interface ISubscriptionRepository : IRepository<Subscription>
     {
         IEnumerable<Subscription> GetSubscriptionsByTypeCode(String code);
+        Subscription GetSubscriptionByOwnerID(Guid ID);
     }
 }

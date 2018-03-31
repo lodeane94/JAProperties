@@ -3,5 +3,5 @@
 @{MvcCaptcha captcha = new MvcCaptcha("captcha");}
 @Html.Captcha(captcha)
 <br />
-<label>Enter the characters presented in the image: </label>
-@Html.TextBox("captchaCode", "", new { required = true })
+<label for="captchaCode">Enter the characters presented in the image before submitting: </label>
+@Html.TextBox("captchaCode", "", new { required = true, @class="form-control" })

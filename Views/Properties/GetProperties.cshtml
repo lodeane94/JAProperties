@@ -1,4 +1,5 @@
 ﻿@using SS.ViewModels
+@using SS.Core
 @model List<FeaturedPropertiesSlideViewModel>
 @{
     ViewBag.Title = "EasyFindProperties - Get Properties ";
@@ -26,39 +27,85 @@
     populatePropertyType();
     }
     else{
-    populatePropertyTypeByCategoryName('@ViewBag.activeNavigation');
+    populatePropertyTypeByCategoryName('@ViewBag.category','@ViewBag.isStudentAccommodationCat');
     }
     });
     })();
 
 }
-
+<a href="#" onclick="goBack();" class="badge badge-primary"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back</a>
+<br /><br />
+<div class="row">
+    <div class="col-md-12">
+        <div class="ctnr-headers">@ViewBag.runningHeader</div>
+    </div>
+</div>
 <div class="row" id="properties-container">
+    @if (ViewBag.tags != null && ViewBag.tags.Count > 0)
+    {
+        <div class="col-md-3" style="margin-bottom:10px;">
+            <div style="position:relative;">
+                <div class="card">
+                    <div class="card-header">Filter <i class="fa fa-filter" aria-hidden="true"></i></div>
+                    <div class="card-body" id="property-tags">
+                        @if (ViewBag.SearchType != null && ViewBag.SearchType.Equals("nearByPlaces"))
+                        {
+                            <div class="slidecontainer">
+                                <div class="ctnr-info" style="font-size:12px;">Distance Radius</div>
+                                <input type="range" min="1" max="100" value="@(ViewBag.DistanceRadius != null ? ViewBag.DistanceRadius : 20)" class="slider" id="range-distance-radius">
+                                &nbsp;<span class="ctnr-info" style="font-size:11px;float:right;" id="range-distance-radius-val"></span>
+                            </div>
+                            <div class="horizontal-separator"></div>
+                        }
+                        @foreach (var tag in ViewBag.tags)
+                        {
+                            <div style="width:100%;" class="details-col-header">
+                                @tag.Key
+                                <span style="position:static;" class="details-col-det">
+                                    <input type="checkbox" value="@tag.Value.ToString()" id="@tag.Key" name="@("Tags[" + tag.Key + "]")"
+                                           @(tag.Value ? "checked" : "") class="chkTags" 
+                                           @(ViewBag.activeNavigation != null && ViewBag.activeNavigation == "isStudentAccommodationCat" && tag.Key == "For Student" ? "disabled" : "") />
+                                </span>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
     @{
         if (Model != null && Model.Count > 0)
         {
+            int count = 0;
             foreach (var item in Model)
             {
-                <div class="col-md-12">
+                count++;
+                <div class="@(count > 1 ? "offset-md-3 offset-sm-0" : "") col-md-9">
                     <div class="image-container">
                         <div class="image-link">
-                            <a href="~/properties/getProperty/@item.property.ID">
+                            <a href="~/properties/getProperty/@item.ID">
                                 <div class="image">
-                                    <img id="@item.property.ID" src="~/Uploads/@item.propertyPrimaryImageURL" />
+                                    <img id="@item.ID" src="~/Uploads/@item.PropertyPrimaryImageURL" />
                                 </div>
                             </a>
                         </div>
                         <div class="image-information-container">
                             <div class="image-information">
                                 <div class="image-information-content">
-                                    <div class="property-type-banner"><a title="Save Property" class="save-property"><i class="fa fa-thumbs-up fa-2x"></i></a>@item.property.PropertyType.Name | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.property.Price) </span></div>
-                                    <div class="property-address">
-                                        Located at : <em>@( (!String.IsNullOrEmpty(item.property.StreetNumber) ? item.property.StreetNumber + ", " : "") + item.property.StreetAddress + ", " + item.property.Division + ", " + item.property.Country )</em>
+                                    <div class="property-type-banner @(item.IsPropertySaved ? "saved" : "")">
+                                        <a id="@item.ID" data-toggle="popover" data-content="@(item.IsPropertySaved ? "Already Saved" : "I'm Interested")" class="save-property">
+                                            <i class="fa fa-heart fa-2x"></i>
+                                        </a>
+                                        @item.PropertyType | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.Price) </span>
                                     </div>
-                                    <div class="property-owner-contact"><span>Contact Owner At @item.owner.User.CellNum</span></div>
-                                    <div class="property-desc">@item.property.Description</div>
+                                    <div class="property-address">
+                                        Located at : <em>@( (!String.IsNullOrEmpty(item.StreetNumber) ? item.StreetNumber + ", " : "") + item.StreetAddress + ", " + item.Division + ", " + item.Country )</em>
+                                    </div>
+                                    <div class="property-owner-contact"><span>Contact Owner At @item.User.CellNum</span></div>
+                                    <div class="property-desc">@item.Description</div>
                                     <!--<div class="property-ratings-container">
-                                        @*@Html.Partial("_PropertyRatings", item)*@
+                                        @Html.Partial("_PropertyRatings", item.PropertyAverageRatings)
                                         <div class="social-icons">
                                             <div><a href=""><img src="~/Content/facebook.svg" /></a></div>
                                             <div><a href=""><img src="~/Content/twitter.svg" /></a></div>
@@ -66,44 +113,64 @@
                                         </div>
                                     </div>-->
                                 </div>
-                                <a href="~/properties/getProperty/@item.property.ID" class="view-property-banner" data-toggle="popover" data-content="Click to view details"><i class="fa fa-sign-in fa-2x"></i></a>
+                                <a href="~/properties/getProperty/@item.ID" class="view-property-banner" data-toggle="popover" data-content="Click to view details"><i class="fa fa-sign-in fa-2x"></i></a>
                             </div>
-                            @*@Html.Partial("_PropertyThumbnailInformation", @item)*@
+                            <div class="secondary-info-container">
+                                @if (item.TotalBedrooms > 0)
+                                {
+                                    <div><label>@(item.TotalBedrooms > 1 ? item.TotalBedrooms + " Bedrooms" : item.TotalBedrooms + " Bedroom" )</label></div>
+                                    <div><label>@(item.TotalBathrooms > 1 ? item.TotalBathrooms + " Bathrooms" : item.TotalBathrooms + " Bathroom" )</label></div>
+                                    <div><label>@(item.isFurnished ? "Furnished" : "Not Furnished" )</label></div>
+                                }
+                                else
+                                {
+                                    <div><label>@(item.Area > 1 ? item.Area + " Acres " : item.Area + " Acre" )</label></div>
+                                    <div><label>@item.PropertyPurpose</label></div>
+                                }
+                            </div>
                         </div>
                     </div>
+                    @if (item.DistanceFromSearchedAddress != null && item.DuratiionFromSearchedAddress != null && ViewBag.SearchTerm != null)
+                    {
+                        <div class="tertiary-info-container">
+                            <div class="horizontal-separator">@ViewBag.SearchTerm</div>
+                            <div>Approximately @item.DistanceFromSearchedAddress KM away</div>
+                            <div>Approximately @item.DuratiionFromSearchedAddress away</div>
+                        </div>
+                    }
                     <br />
                 </div>
-               
             }
             <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
         }
         else
         {
-            <center>
+            <div class="col-md-12">
                 <div class="ctnr-headers">
                     <label><strong>No Results Found</strong></label>
                 </div>
-            </center>
+            </div>
         }
     }
 </div>
-<div class="row">&nbsp;</div>
-<div class="ctnr-options">
-    <center>
-        <ul class="pagination pagination-sm">
-            @{
-                double noOfPages = Math.Ceiling((Convert.ToDouble(Model.Count) / Convert.ToDouble(ViewBag.fetchAmount)));
-                for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
-                {
-                    <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <div class="ctnr-options">
+            <ul class="pagination pagination-sm">
+                @{
+                    double noOfPages = Math.Ceiling((Convert.ToDouble(Model.Count) / Convert.ToDouble(ViewBag.fetchAmount)));
+                    for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
+                    {
+                        <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
+                    }
                 }
-            }
-        </ul>
-    </center>
-    <span class="previous-page" style="float: left; display:none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
-    <span class="next-page" style="float:right; display:none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
-    <input type="hidden" id="noOfPages" value="@noOfPages" />
-    <input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
-    <input type="hidden" id="queryString" value="@ViewContext.HttpContext.Request.QueryString;" />
+            </ul>
+            <span class="previous-page" style="float: left; display:none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
+            <span class="next-page" style="float:right; display:none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
+            <input type="hidden" id="noOfPages" value="@noOfPages" />
+            <input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
+        </div>
+    </div>
 </div>
 

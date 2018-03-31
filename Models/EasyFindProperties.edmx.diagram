@@ -4,14 +4,14 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="3fec57285edd4722abee162a28cf199d" Name="Diagram1">
+      <Diagram DiagramId="3fec57285edd4722abee162a28cf199d" Name="Diagram1" ZoomLevel="88">
         <EntityTypeShape EntityType="EasyFindPropertiesModel.AdPriority" Width="1.5" PointX="6" PointY="29.125" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.AdType" Width="1.5" PointX="6" PointY="35.375" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Bill" Width="1.5" PointX="5.25" PointY="19" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.BillType" Width="1.5" PointX="3" PointY="10.125" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Complaint" Width="1.5" PointX="10.5" PointY="19.375" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Owner" Width="1.5" PointX="3" PointY="19.375" />
-        <EntityTypeShape EntityType="EasyFindPropertiesModel.Property" Width="1.5" PointX="8.25" PointY="15.875" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Property" Width="1.5" PointX="8.125" PointY="14.625" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyCategory" Width="1.5" PointX="6" PointY="10.375" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyCondition" Width="1.5" PointX="6" PointY="32.625" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.PropertyImage" Width="1.5" PointX="10.5" PointY="29.5" />
@@ -56,8 +56,8 @@
         <AssociationConnector Association="EasyFindPropertiesModel.fk_property_requisition_user_id" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_tennant_user_id" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_userTypeAssoc_user_id" />
-        <EntityTypeShape EntityType="EasyFindPropertiesModel.Message" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="EasyFindPropertiesModel.MessageTrash" Width="1.5" PointX="3" PointY="6.875" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Message" Width="1.5" PointX="1.75" PointY="3.625" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.MessageTrash" Width="1.5" PointX="2.625" PointY="6.625" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_msg_trash_msg_id" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_msg_trash_user_id" />
         <EntityTypeShape EntityType="EasyFindPropertiesModel.MeetingMembers" Width="1.5" PointX="13.25" PointY="24.375" />
@@ -65,6 +65,18 @@
         <EntityTypeShape EntityType="EasyFindPropertiesModel.Meeting" Width="1.5" PointX="3" PointY="23.875" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_members_member_id" />
         <AssociationConnector Association="EasyFindPropertiesModel.fk_meeting_user_id" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.SavedProperties" Width="1.5" PointX="13.5" PointY="15" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_properties_sp" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_user_sp" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Payment" Width="1.5" PointX="10.5" PointY="11.625" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PaymentMethod" Width="1.5" PointX="8.25" PointY="11" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_payment_payment_type" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_payment_subscription_type" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.SubscriptionExtension" Width="1.5" PointX="12.75" PointY="12.25" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_subscriptionext_payment" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.Division" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EasyFindPropertiesModel.PasswordRecoveryRequest" Width="1.5" PointX="3" PointY="28.625" />
+        <AssociationConnector Association="EasyFindPropertiesModel.fk_pswd_recvry_user_id" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

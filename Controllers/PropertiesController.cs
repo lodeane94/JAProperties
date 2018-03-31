@@ -35,38 +35,127 @@ namespace SS.Controllers
 
         public ActionResult getProperties(PropertySearchViewModel model)
         {
-            model.take = 1;
-            model.PgNo = model.PgNo > 0 ? model.PgNo - 1 : 0;//this is done to since page number should start at 0
-
+            var userId = Guid.Empty;
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
 
-            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(model);
+            if (Session["userId"] != null)
+            {
+                userId = (Guid)Session["userId"];
+            }
 
-            ViewBag.activeNavigation = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
-            ViewBag.searchViewModel = model;
-            ViewBag.fetchAmount = model.take;
-            ViewBag.pageNumber = model.PgNo + 1;
+            model.PgNo = model.PgNo > 0 ? model.PgNo - 1 : 0;
+
+            if (String.IsNullOrEmpty(model.SearchTerm) && PropertyHelper.createFilterList(model).Count() < 1 && model.Tags == null)
+                return RedirectToAction("/", "home");
+
+            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(model, userId);
+
+            initPropertiesTags(model);
+            initPropertiesPgValues(model);
+
+            Session["PropertySearchViewModel"] = model;
 
             return View(featuredPropertiesSlideViewModelList);
         }
 
-        public ActionResult getNearbyProperties(String distanceMtxInfo)
+        /// <summary>
+        /// set the tag viewbag field with tags associated with the 
+        /// returned propertes
+        /// </summary>
+        /// <param name="model"></param>
+        private void initPropertiesTags(PropertySearchViewModel model)
         {
-            var take = 1;
+            if (model.Tags == null || (model.Tags != null && model.Tags.Count() == 0))
+                ViewBag.tags = setPropertyTags();
+            else
+                ViewBag.tags = setPropertyTags(model.Tags);
+        }
 
-            //will be used to eliminate properties that are of further distance
-            double distanceRadius = 40.0;//distance in km
-            
-            var model = JsonConvert.DeserializeObject<NearbyPropertySearchViewModel>(distanceMtxInfo);
-            var revisedModel = PropertyHelper.NarrowSearchResultsToDistanceRadius(model, distanceRadius);
+        /// <summary>
+        /// initialize the viewbag fields on the getProperties page
+        /// </summary>
+        /// <param name="model"></param>
+        private void initPropertiesPgValues(PropertySearchViewModel model)
+        {
+            ViewBag.activeNavigation = model.IsStudentAccommodationCat ? "isStudentAccommodationCat" : PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
+            ViewBag.isStudentAccommodationCat = model.IsStudentAccommodationCat;
+            ViewBag.category = PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory);
+            ViewBag.runningHeader = getRunningHeader(model);
+            ViewBag.searchViewModel = model;
+            ViewBag.fetchAmount = model.take;
+            ViewBag.pageNumber = model.PgNo + 1;
+        }
+        /// <summary>
+        /// Creates the running header for each properties searched result page
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private String getRunningHeader(PropertySearchViewModel model)
+        {
+            String header = "Showing results ";
 
+            if (!String.IsNullOrEmpty(model.SearchTerm))
+            {
+                header += "for the search : " + model.SearchTerm;
+            }
+            else if (!String.IsNullOrEmpty(model.PropertyCategory))
+            {
+                if (model.IsStudentAccommodationCat)
+                {
+                    header += "for properties in the Student Accommodation category";
+                }
+                else
+                {
+                    if (EFPConstants.PropertyCategory.RealEstate.Equals(model.PropertyCategory))
+                    {
+                        header += "for properties in the Real Estate category";
+                    }
+                    else
+                        header += "for properties in the " + PropertyHelper.mapPropertyCategoryCodeToName(model.PropertyCategory) + " category";
+                }
+            }
+
+            return header;
+        }
+
+        public ActionResult getNearbyProperties(String distanceMtxInfo, double distanceRadius = 20.0)
+        {
+            var userId = Guid.Empty;
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
+            var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
 
-            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(revisedModel);
+            if (Session["userId"] != null)
+            {
+                userId = (Guid)Session["userId"];
+            }
 
-         //   ViewBag.searchViewModel = model;
-            ViewBag.fetchAmount = take;
-           ViewBag.pageNumber = 1;
+            if (!String.IsNullOrEmpty(distanceMtxInfo) && !distanceMtxInfo.Equals("null"))
+                Session["distanceMtxInfo"] = distanceMtxInfo;
+            else if (Session["distanceMtxInfo"] != null)
+                distanceMtxInfo = (String)Session["distanceMtxInfo"];
+            else
+                return RedirectToAction("/", "home");
+
+            if (searchViewModel == null)
+                return RedirectToAction("/", "home");
+
+            if (!String.IsNullOrEmpty(distanceMtxInfo))
+            {
+                //distance radius is in KM TODO give option to convert to miles
+                //will be used to eliminate properties that are of further distance
+                var model = JsonConvert.DeserializeObject<NearbyPropertySearchViewModel>(distanceMtxInfo);
+                var revisedModel = PropertyHelper.NarrowSearchResultsToDistanceRadius(model, distanceRadius);
+
+                searchViewModel.PgNo = searchViewModel.PgNo > 0 ? searchViewModel.PgNo - 1 : 0;
+                featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(revisedModel, searchViewModel, userId);
+
+                ViewBag.SearchTerm = searchViewModel.SearchTerm;
+                ViewBag.SearchType = searchViewModel.SearchType;
+                ViewBag.DistanceRadius = distanceRadius;
+
+                initPropertiesTags(searchViewModel);
+                initPropertiesPgValues(searchViewModel);
+            }
 
             return View("getProperties", featuredPropertiesSlideViewModelList);
         }
@@ -74,18 +163,71 @@ namespace SS.Controllers
         [HttpGet]
         public JsonResult GetPropertiesCoordinates(PropertySearchViewModel model)
         {
-            Array propertyCoordinates = null;
+            Array propertyCoordinates = PropertyHelper.PopulateModelForPropertyCoordinates(model);
 
-            propertyCoordinates = PropertyHelper.PopulateModelForPropertyCoordinates(model);
+            Session["PropertySearchViewModel"] = model;
 
-            return Json(propertyCoordinates, JsonRequestBehavior.AllowGet);            
+            return Json(propertyCoordinates, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult getProperty(Guid id)
         {
+            var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
+
+            ViewBag.searchViewModel = searchViewModel;
+
             return View(PropertyHelper.GetProperty(id));
         }
 
+        /// <summary>
+        /// returns the tags associated with the search along with
+        /// initializing the checked state on these tags
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<String, Boolean> setPropertyTags()
+        {
+            var uncheckedTags = new Dictionary<String, Boolean>();
+            var tags = PropertyHelper.GetSearchResultPropertyTags();
+
+            foreach (var tag in tags)
+            {
+                uncheckedTags.Add(tag, false);
+            }
+
+            return uncheckedTags;
+        }
+
+        /// <summary>
+        /// returns the tags associated with the search along with
+        /// initializing the checked state on these tags
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<String, Boolean> setPropertyTags(Dictionary<String, Boolean> checkedTags)
+        {
+            var checkedPTags = new Dictionary<String, Boolean>();
+            var tags = PropertyHelper.GetSearchResultPropertyTags();
+            bool isChecked;
+
+            foreach (var tag in tags)
+            {
+                isChecked = false;
+
+                foreach (var checkT in checkedTags.Keys)
+                {
+                    if (tag.Equals(checkT))
+                    {
+                        checkedPTags.Add(tag, true);
+                        isChecked = true;
+                        break;
+                    }
+                }
+
+                if (!isChecked)
+                    checkedPTags.Add(tag, false);
+            }
+
+            return checkedPTags;
+        }
         /*
          * makes requisition for the property that the user selected if they wanted to use the system*/
 
@@ -130,7 +272,7 @@ namespace SS.Controllers
                                 unitOfWork.save();
 
                                 var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
-                                //DashboardHub.BroadcastUserMessages(userTo.Email); broadcast requisition
+                                DashboardHub.alertRequisition(userTo.Email);
                             }
                             else
                             {
@@ -148,6 +290,7 @@ namespace SS.Controllers
 
                                 unitOfWork.Message.Add(message);
                                 unitOfWork.save();
+
                                 DashboardHub.BroadcastUserMessages(userTo.Email);
                             }
                         }
@@ -165,191 +308,26 @@ namespace SS.Controllers
 
             MvcCaptcha.ResetCaptcha("captcha");//TODO find a way to reload captcha image after returning the response
             return Json(errorModel);
-        }/*
-        //sends mail
-        public bool sendMail(string emailTo, string body, string subject)
-        {
-            MailModel mailModel = new MailModel()
-            {
-                To = emailTo,
-                Subject = subject,
-                From = "jamprops@hotmail.com",
-                Body = body
-            };
-
-            //setting mail requirements
-            MailMessage mail = new MailMessage();
-            mail.To.Add(mailModel.To);
-            mail.From = new MailAddress(mailModel.From);
-            mail.Subject = mailModel.Subject;
-            mail.Body = mailModel.Body;
-            mail.IsBodyHtml = true;
-
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = "smtp-mail.outlook.com";
-            smtp.Port = 587;
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new System.Net.NetworkCredential("jamprops@hotmail.com", "Daveyot88*");
-            smtp.EnableSsl = true;
-            smtp.Send(mail);
-
-            return true;
         }
-        /*
-         * retrieves the information for the property that the user selected 
-         
-        public JsonResult RetrieveSelectedAccommodation(Guid property_id)
+
+        /// <summary>
+        /// Used for saving properties to be viewed on the dashboard/portal
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult SaveLikedProperty(Guid propertyId)
         {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
+            string result = "False";
 
-            List<AccommodationModel> AInfo = new List<AccommodationModel>();
-
-            var accommodations = dbCtx.ACCOMMODATIONS.Where(a => a.ID == property_id).Select(a => new { a.ID, a.HOUSE_BATHROOM_AMOUNT, a.IMAGE_URL, a.WATER, a.TERMS_AGREEMENT, a.AVAILABILITY, a.INTERNET, a.OCCUPANCY, a.PRICE, a.SECURITY_DEPOSIT, a.CABLE, a.DESCRIPTION, a.ELECTRICITY, a.GAS, a.GENDER_PREFERENCE, a.STREET_ADDRESS, a.PARISH, a.CITY });
-
-            var propertyOwner = dbCtx.ACCOMMODATIONS.Where(a => a.ID == property_id).Select(a => new { a.LANDLORDS.ID, a.LANDLORDS.FIRST_NAME, a.LANDLORDS.LAST_NAME, a.LANDLORDS.EMAIL, a.LANDLORDS.CELL, a.LANDLORDS.GENDER });
-
-            AccommodationModel accommodationModel = new AccommodationModel();
-
-            foreach (var accommodation in accommodations)
+            if (Session["userId"] != null)
             {
-                accommodationModel.ID = accommodation.ID.ToString();
-                accommodationModel.Availability = accommodation.AVAILABILITY == true ? "Yes" : "No";
-                accommodationModel.Cable = accommodation.CABLE == true ? "Yes" : "No";
-                accommodationModel.Description = accommodation.DESCRIPTION;
-                accommodationModel.Electricity = accommodation.ELECTRICITY == true ? "Yes" : "No";
-                accommodationModel.Gas = accommodation.GAS == true ? "Yes" : "No";
-                accommodationModel.Internet = accommodation.INTERNET == true ? "Yes" : "No";
-                accommodationModel.Occupancy = accommodation.OCCUPANCY.ToString();
-                accommodationModel.Price = "$" + accommodation.PRICE.ToString() + " JMD";
-                accommodationModel.TermsAgreement = accommodation.TERMS_AGREEMENT;
-                accommodationModel.SecurityDeposit = "$" + accommodation.SECURITY_DEPOSIT.ToString() + " JMD";
-                accommodationModel.Water = accommodation.WATER == true ? "Yes" : "No";
-                accommodationModel.ImageURL = accommodation.IMAGE_URL;
-                accommodationModel.BathroomAmount = accommodation.HOUSE_BATHROOM_AMOUNT.ToString();
-                accommodationModel.StreetAddress = accommodation.STREET_ADDRESS;
-                accommodationModel.City = accommodation.CITY;
-                accommodationModel.Parish = accommodation.PARISH;
-
-                switch (accommodation.GENDER_PREFERENCE)
-                {
-                    case "M":
-                        accommodationModel.GenderPreference = "Males Only";
-                        break;
-                    case "F":
-                        accommodationModel.GenderPreference = "Females Only";
-                        break;
-                    case "B":
-                        accommodationModel.GenderPreference = "Both Genders";
-                        break;
-                }
+                var userId = (Guid)Session["userId"];
+                result = PropertyHelper.SaveLikedProperty(userId, propertyId).ToString();
             }
+            else
+                result = "Sign in to add property to your liked list";
 
-            foreach (var owner in propertyOwner)
-            {
-                accommodationModel.ownerModel.ID = owner.ID.ToString();
-                accommodationModel.ownerModel.FirstName = owner.FIRST_NAME;
-                accommodationModel.ownerModel.LastName = owner.LAST_NAME;
-                accommodationModel.ownerModel.Gender = owner.GENDER == "M" ? "Male" : "Female";
-                accommodationModel.ownerModel.Email = owner.EMAIL;
-                accommodationModel.ownerModel.Cell = owner.CELL;
-            }
-
-            AInfo.Add(accommodationModel);
-
-            return Json(AInfo, JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
-        /*
-         * retrieves the information for the property that the user selected 
-         
-        public JsonResult RetrieveSelectedHouse(Guid property_id)
-        {
-            List<HouseModel> HInfo = new List<HouseModel>();
-
-            using (JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities())
-            {
-                try
-                {
-
-                    var houses = dbCtx.HOUSE.Where(h => h.ID == property_id).Select(h => new { h.ID, h.STREET_ADDRESS, h.PARISH, h.CITY, h.IMAGE_URL, h.ISFURNISHED, h.PRICE, h.PURPOSE, h.BATH_ROOM_AMOUNT, h.BED_ROOM_AMOUNT, h.DESCRIPTION });
-
-                    var propertyOwner = dbCtx.HOUSE.Where(a => a.ID == property_id).Select(a => new { a.LANDLORDS.ID, a.LANDLORDS.FIRST_NAME, a.LANDLORDS.LAST_NAME, a.LANDLORDS.EMAIL, a.LANDLORDS.CELL, a.LANDLORDS.GENDER });
-
-                    HouseModel houseModel = new HouseModel();
-
-                    foreach (var house in houses)
-                    {
-                        houseModel.ID = house.ID.ToString();
-                        houseModel.BathroomAmount = house.BATH_ROOM_AMOUNT;
-                        houseModel.BedroomAmount = house.BED_ROOM_AMOUNT;
-                        houseModel.Price = "$" + house.PRICE.ToString() + " JMD";
-                        houseModel.isFurnished = house.ISFURNISHED ? "Yes" : "No";
-                        houseModel.Purpose = house.PURPOSE;
-                        houseModel.Description = house.DESCRIPTION;
-                        houseModel.ImageURL = house.IMAGE_URL;
-                        houseModel.StreetAddress = house.STREET_ADDRESS;
-                        houseModel.City = house.CITY;
-                        houseModel.Parish = house.PARISH;
-                    }
-
-                    foreach (var owner in propertyOwner)
-                    {
-                        houseModel.ownerModel.ID = owner.ID.ToString();
-                        houseModel.ownerModel.FirstName = owner.FIRST_NAME;
-                        houseModel.ownerModel.LastName = owner.LAST_NAME;
-                        houseModel.ownerModel.Gender = owner.GENDER == "M" ? "Male" : "Female";
-                        houseModel.ownerModel.Email = owner.EMAIL;
-                        houseModel.ownerModel.Cell = owner.CELL;
-                    }
-
-                    HInfo.Add(houseModel);
-                }
-                catch (Exception ex) { }
-            }
-
-            return Json(HInfo, JsonRequestBehavior.AllowGet);
-        }
-        /*
-         * retrieves the information for the property that the user selected 
-         
-        public JsonResult RetrieveSelectedLand(Guid property_id)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            List<LandModel> LInfo = new List<LandModel>();
-
-            var lands = dbCtx.LAND.Where(l => l.ID == property_id).Select(l => new { l.ID, l.DESCRIPTION, l.STREET_ADDRESS, l.PARISH, l.CITY, l.IMAGE_URL, l.PRICE, l.PURPOSE, l.AREA });
-
-            var propertyOwner = dbCtx.LAND.Where(a => a.ID == property_id).Select(a => new { a.LANDLORDS.ID, a.LANDLORDS.FIRST_NAME, a.LANDLORDS.LAST_NAME, a.LANDLORDS.EMAIL, a.LANDLORDS.CELL, a.LANDLORDS.GENDER });
-
-            LandModel landModel = new LandModel();
-
-            foreach (var land in lands)
-            {
-                landModel.ID = land.ID.ToString();
-                landModel.Area = land.AREA.ToString() + " Acre";
-                landModel.Price = "$" + land.PRICE.ToString() + " JMD";
-                landModel.Purpose = land.PURPOSE;
-                landModel.ImageURL = land.IMAGE_URL;
-                landModel.StreetAddress = land.STREET_ADDRESS;
-                landModel.City = land.CITY;
-                landModel.Parish = land.PARISH;
-                landModel.Description = land.DESCRIPTION;
-            }
-
-            foreach (var owner in propertyOwner)
-            {
-                landModel.ownerModel.ID = owner.ID.ToString();
-                landModel.ownerModel.FirstName = owner.FIRST_NAME;
-                landModel.ownerModel.LastName = owner.LAST_NAME;
-                landModel.ownerModel.Gender = owner.GENDER == "M" ? "Male" : "Female";
-                landModel.ownerModel.Email = owner.EMAIL;
-                landModel.ownerModel.Cell = owner.CELL;
-            }
-
-            LInfo.Add(landModel);
-
-            return Json(LInfo, JsonRequestBehavior.AllowGet);
-        }*/
     }
-
 }

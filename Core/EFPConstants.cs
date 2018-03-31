@@ -61,11 +61,17 @@ namespace SS.Core
 
         public enum RoleNames
         {
+            Admin,
             Landlord,
             Realtor,
           //  Tennant,
             Basic,
            // Consumer
+        }
+
+        public static class Application
+        {
+            public static readonly String Host = System.Net.Dns.GetHostEntry("").HostName;
         }
 
     }

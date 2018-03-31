@@ -56,5 +56,23 @@ namespace SS.Models.Repositories
                 .OrderByDescending(x => x.DateTCreated)
                 .ToList();
         }
+
+        public IEnumerable<User> GetRequestedPropertyUsersByOwnerId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.Property.OwnerID.Equals(Id)
+                && x.ExpiryDate > DateTime.Now)
+                .Select(x => x.User)
+                .Distinct();
+        }
+
+        public IEnumerable<User> GetRequestedPropertyUsers(Guid RequesteeUserId)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.UserID.Equals(RequesteeUserId)
+                && x.ExpiryDate > DateTime.Now)
+                .Select(x => x.Property.Owner.User)
+                .Distinct();
+        }
     }
 }

@@ -1,362 +1,258 @@
 ﻿@model SS.ViewModels.AdvertisePropertyViewModel
 
 <!--TODO Generate all property information from database-->
-<h2 class="ctnr-headers">Advertise Your Property</h2>
-<div class="container-fluid ctnr-info" id="advertisePropertyDiv">
-    <div>
-        <form id="ad-submission" enctype="multipart/form-data" method="post">
-            <div class="row prop-upload-info-top">
-                <div class="row"><div style="display:none;" class="col-xs-12 error-container"></div></div>
-                <div class="col-xs-12 prop-upload-advertisement-info">
-                    <div class="row"><div class="col-xs-12 content-heading">Select the property category</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div id="property-category" class="row">
-                        <div class="col-xs-12">
-                            <div class="col-xs-4" data-toggle="popover" data-content="Property that provides living accommodations for individuals">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="RealEstate" class="clickable-box">Real Estate</div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Land spaces on which can be used to create buildings or farming etc.">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Lot" class="clickable-box">Lot</div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties that can be used to reduce manual labour">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Machinery" class="clickable-box">Machinery</div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Select the purpose of the property</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div id="property-purpose" class="row">
-                        <div class="col-xs-12">
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties that are used for living purposes">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Residential" class="clickable-box">Residential</div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties that are used to generate a profit">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Commercial" class="clickable-box">Commercial</div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties that are used for the manufactoring of goods">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Industrial" class="clickable-box">Industrial</div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Select the type of property you want to advertise</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-6" data-toggle="popover">
-                            <select disabled class="form-control" id="property-type" name="propertytype"></select>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Select the advertisment type</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div id="advertisment-type" class="row">
-                        <div class="col-xs-12">
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties being sold">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Sale" class="clickable-box">Sale</div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties being rented">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Rent" class="clickable-box">Rent</div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Properties being leased">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Lease" class="clickable-box">Lease</div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Select the advertisment priority</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div id="advertisment-priority" class="row">
-                        <div class="col-xs-12">
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Property advertisments will be shown after high priority advertisments are displayed">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Regular" class="clickable-box">Regular - <em>$0 JMD Monthly</em></div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Property advertisments will be given high priority, therefore displaying them first in the result set (Featured List)">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="AdPro" class="clickable-box">AdPro - <em>$1000 JMD Monthly</em></div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Property advertisments will be given high priority, therefore displaying them first in the result set (Featured List).
+<div class="ctnr-headers">Advertise Your Property</div>
+<form id="ad-submission" enctype="multipart/form-data" method="post">
+    <div class="prop-upload-info">
+        <div style="display:none;" class="error-container"></div>
+        <div class="row">
+            <div class="col-md-4" id="property-category">
+                <div class="content-heading">Select the property category</div>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Property that provides living accommodations for individuals">
+                    <div id="RealEstate" class="clickable-box">Real Estate</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Land spaces on which can be used to create buildings or farming etc.">
+                    <div id="Lot" class="clickable-box">Lot</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties that can be used to reduce manual labour">
+                    <div id="Machinery" class="clickable-box">Machinery</div>
+                </a>
+            </div>
+            <div class="col-md-4" id="property-purpose">
+                <div class="content-heading">Select the purpose of the property</div>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties that are used for living purposes">
+                    <div id="Residential" class="clickable-box">Residential</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties that are used to generate a profit">
+                    <div id="Commercial" class="clickable-box">Commercial</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties that are used for the manufactoring of goods">
+                    <div id="Industrial" class="clickable-box">Industrial</div>
+                </a>
+            </div>
+            <div class="col-md-4" id="advertisment-type">
+                <div class="content-heading">Select the advertisment type</div>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties being sold">
+                    <div id="Sale" class="clickable-box">Sale</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties being rented">
+                    <div id="Rent" class="clickable-box">Rent</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties being leased">
+                    <div id="Lease" class="clickable-box">Lease</div>
+                </a>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-4" id="propertytype">
+                <div class="content-heading">Select the type of property you want to advertise</div>
+                <select disabled class="form-control" id="property-type" name="propertytype"></select>
+            </div>
+            <div class="col-md-4" id="advertisment-priority">
+                <div class="content-heading">Select the advertisment priority</div>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Property advertisments will be shown after high priority advertisments are displayed">
+                    <div id="Regular" class="clickable-box">Regular - $0 JMD Monthly</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Property advertisments will be given high priority, therefore displaying them first in the result set (Featured List)">
+                    <div id="AdPro" class="clickable-box">AdPro - $1000 JMD Monthly</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Property advertisments will be given high priority, therefore displaying them first in the result set (Featured List).
 		Properties having this Ad package will also be published on social media networks">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="AdPremium" class="clickable-box">AdPremium - <em>$4000 JMD Monthly</em></div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Select the subscription type</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div id="subscription-type" class="row">
-                        <div class="col-xs-12">
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Normal subsciption for advertisement of property">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Basic" class="clickable-box">Basic - <em>$1000 JMD Monthly</em></div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Subcription that can be used by realtors which provides access to the portal that can be used to advertise and modify unlimited amounts of properties for the months specified">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Realtor" class="clickable-box">Realtor - <em>$3000 JMD Monthly</em></div>
-                                </a>
-                            </div>
-                            <div class="col-xs-4 " data-toggle="popover" data-content="Subcription that can be used by landlords which provides access to the portal that can be used to advertise properties for the months specified
+                    <div id="AdPremium" class="clickable-box">AdPremium - $4000 JMD Monthly</div>
+                </a>
+            </div>
+            <div class="col-md-4" id="subscription-type">
+                <div class="content-heading">Select the subscription type</div>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Normal subsciption for advertisement of property">
+                    <div id="Basic" class="clickable-box">Basic - $1000 JMD Monthly</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Subcription that can be used by realtors which provides access to the portal that can be used to advertise and modify unlimited amounts of properties for the months specified">
+                    <div id="Realtor" class="clickable-box">Realtor - $3000 JMD Monthly</div>
+                </a>
+                <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Subcription that can be used by landlords which provides access to the portal that can be used to advertise properties for the months specified
 		as well as it allows tennants and landlords to communicate">
-                                <a href="#" class="clickable-box-link">
-                                    <div id="Landlord" class="clickable-box">Landlord - <em>$5000 JMD Monthly</em></div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Subscription Period</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-12" data-toggle="popover">
-                            <select disabled class="form-control" id="subscription-period" name="subscriptionperiod"></select>
-                        </div>
-                    </div>
-                </div>
+                    <div id="Landlord" class="clickable-box">Landlord - $5000 JMD Monthly</div>
+                </a>
             </div>
-            <div class="row prop-upload-info-bottom">
-                <div class="col-xs-12 prop-upload-advertiser-info">
-                    <div class="row"><div class="col-xs-12 content-heading">Enter your information</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <div class="input-group">
-                                <input id="firstname" readonly value="@Model.FirstName" type="text" class="form-control" name="firstname" placeholder="First Name" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="input-group">
-                                <input id="lastname" readonly value="@Model.LastName" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <input id="cellnum" readonly value="@Model.CellNum" type="number" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-phone"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <input id="email" readonly value="@Model.Email" type="email" class="form-control" name="email" placeholder="Email Address" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-envelope"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <input id="password" readonly value="@Model.Password" disabled type="text" class="form-control" name="password" placeholder="Password" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-lock"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <input id="ConfirmPassword" readonly value="@Model.ConfirmPassword" disabled type="text" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-lock"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><div class="col-xs-12 content-heading">Enter your property's information</div></div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <input id="StreetNumber" type="text" class="form-control" name="StreetNumber" placeholder="Street Number">
-                        </div>
-                        <div class="col-xs-9">
-                            <div class="input-group">
-                                <input id="StreetAddress" value="@Model.StreetAddress" onclick="initAutocomplete('StreetAddress'); geolocate();" type="text" class="form-control" name="streetaddress" placeholder="Street Address" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <select class="form-control" id="division" name="division"><option disabled selected value="na">Parish/State/Division</option></select>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="input-group">
-                                <input id="community" onfocusout="codeAddress(document.getElementById('community').value)" value="@Model.Community" type="text" class="form-control" name="community" placeholder="Community" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <div class="input-group">
-                                <input id="price" value="@Model.Price" type="number" class="form-control" name="price" placeholder="Price" required>
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="input-group">
-                                <input id="securitydeposit" value="@Model.SecurityDeposit" type="number" class="form-control" name="securitydeposit" placeholder="Security Deposit">
-                                <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-4">
-                            <input id="occupancy" value="@Model.Occupancy" disabled type="number" class="form-control" name="occupancy" placeholder="Occupancy" required>
-                        </div>
-                        <div class="col-xs-4">
-                            <select disabled class="form-control" id="GenderPreferenceCode" name="GenderPreferenceCode" required>
-                                <option disabled selected value="na">Gender Preference</option>
-                                <option value="B">Both</option>
-                                <option value="M">Male</option>
-                                <option value="F">Female</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-4">
-                            <input id="TotAvailableBathroom" value="@Model.TotAvailableBathroom" disabled type="number" class="form-control" name="TotAvailableBathroom" placeholder="Total Bathrooms" required>
-                        </div>
-                        <div class="row">&nbsp;</div><div class="row">&nbsp;</div>
-                        <div class="col-xs-4">
-                            <input id="TotRooms" value="@Model.TotRooms" disabled type="number" class="form-control" name="TotRooms" placeholder="Total Rooms" required>
-                        </div>
-                        <div class="col-xs-4">
-                            <input id="area" value="@Model.Area" disabled type="number" class="form-control" name="area" placeholder="Property Area">
-                        </div>
-                    </div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-xs-4">
-                            <select class="form-control" id="isReviewable" name="isReviewable" required>
-                                <option disabled selected value="na">Allow Reviews</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-xs-8">
-                    <textarea id="description" rows="5" class="form-control" name="description" placeholder="Property's Description" required>@Model.Description</textarea>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-xs-8">
-                    <textarea id="termsagreement" rows="5" class="form-control" name="termsagreement" placeholder="Terms and Agreement for you property">@Model.TermsAgreement</textarea>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row"><div class="col-xs-12 content-heading">Select the tags that best describes your property</div></div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div id="property-tags" class="col-xs-12"></div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row"><div class="col-xs-12 content-heading">Upload images of your property</div></div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-xs-6">
-                    <div class="input-group">
-                        <label class="input-group-btn">
-                            <span id="property-images" class="flPropertyPics-btn-file btn btn-default">
-                                Add Files <input id="flPropertyPics" accept="image/*" multiple name="flPropertyPics" type="file" style="display:none;" />
-                            </span>
-                        </label>
-                        <input id="flPropertyPicsFileNameOutput" type="text" class="form-control" readonly />
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-xs-9 flPropertyPicsImageOutput"></div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row"><div class="col-xs-12 content-heading">Total payment</div></div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-xs-8">
-                    <div class="shopping-cart-container"></div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-sm-offset-6 col-xs-2 AdvertisePropertyBtn">
-                    <button class="btn btn-accent" type="submit" id="AdvertisePropertyBtn">Advertise Property</button>
-                </div>
-            </div>
-            <input id="coordinateLat" type="hidden" name="coordinateLat" />
-            <input id="coordinateLng" type="hidden" name="coordinateLng" />
-        </form>
+        </div>
     </div>
-</div>
+    <br />
+    <div class="prop-upload-info">
+        <div class="content-heading">Enter your information</div>
+        <br/>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <label class="input-group-btn">
+                        <span id="property-images" class="flPropertyPics-btn-file btn btn-default">
+                            Company Logo <input id="organizationLogo" accept="image/*" name="organizationLogo" type="file" style="display:none;" />
+                        </span>
+                    </label>
+                    <input id="organizationFileNameOutput" type="text" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="prop-upload-info">
+        <div class="content-heading">Enter your property's information</div>
+        <div class="row">
+            <div class="col-md-12 prop-upload-advertiser-info">
+                <div class="input-group">
+                    <input id="title" type="text" class="form-control" name="title" placeholder="Property Title"
+                           data-toggle="popover" data-content="This is the heading that your property will display to viewers. Write in short, the property's key features ">
+                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-tag"></i></span>
+                </div>
+            </div>
+        </div>
+        <!--<div class="col-md-12">
+            <select class="form-control" id="country" name="country"><option disabled selected value="na">Country</option></select>
+        </div>-->
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+                <input id="StreetNumber" type="text" class="form-control" name="StreetNumber" placeholder="Street Number">
+            </div>
+            <div class="col-md-5">
+                <div class="input-group">
+                    <input id="StreetAddress" value="@Model.StreetAddress" onclick="initAutocomplete('StreetAddress'); geolocate();" type="text" class="form-control" name="streetaddress" placeholder="Street Address" required>
+                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="input-group">
+                    <input id="community" onclick="initAutocomplete('community'); geolocate();" value="@Model.Community" type="text" class="form-control" name="community" placeholder="Community" required>
+                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-3">
+                <select class="form-control" id="division" name="division"><option selected value="na">Parish</option></select>
+            </div>
+            <div class="col-md-9">
+                <div class="input-group">
+                    <input id="nearBy" onclick="initAutocomplete('nearBy'); geolocate();" type="text"
+                           class="form-control" name="nearBy" placeholder="Landmark Closest To" data-toggle="popover" data-content="Enter the name of an establishment that is close to your property">
+                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-map-marker"></i></span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input id="price" value="@Model.Price" type="text" class="form-control" name="price" placeholder="Price" required>
+                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input id="securitydeposit" value="@Model.SecurityDeposit" type="text" class="form-control" name="securitydeposit" placeholder="Security Deposit">
+                    <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-usd"></i></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <input id="occupancy" value="@Model.Occupancy" disabled type="text" class="form-control" name="occupancy" placeholder="Occupancy" required>
+            </div>
+            <div class="col-md-3">
+                <select disabled class="form-control" id="GenderPreferenceCode" name="GenderPreferenceCode" required>
+                    <option disabled selected value="na">Gender Preference</option>
+                    <option value="B">Both</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-3">
+                <input id="TotAvailableBathroom" value="" disabled type="text" class="form-control" name="TotAvailableBathroom" placeholder="Total Bathrooms" required>
+            </div>
+            <br /><br />
+            <div class="col-md-3">
+                <input id="TotRooms" value="" disabled type="text" class="form-control" name="TotRooms" placeholder="Total Rooms" required>
+            </div>
+            <div class="col-md-3">
+                <input id="area" value="" disabled type="text" class="form-control" name="area" placeholder="Property Area">
+            </div>
+            <div class="col-md-3">
+                <select class="form-control" id="isReviewable" name="isReviewable" required>
+                    <option disabled selected value="na">Allow Reviews</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <textarea id="description" rows="4" class="form-control" name="description" placeholder="Property's Description" required>@Model.Description</textarea>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <textarea id="termsagreement" rows="4" class="form-control" name="termsagreement" placeholder="Terms and Agreement for you property">@Model.TermsAgreement</textarea>
+            </div>
+        </div>
+        <br />
+        <div class="content-heading">Select the tags that best describes your property</div>
+        <div id="property-tags" class="row">
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="content-heading">Upload images of your property</div>
+                <div class="input-group">
+                    <label class="input-group-btn">
+                        <span id="property-images" class="flPropertyPics-btn-file btn btn-default">
+                            Add Files <input id="flPropertyPics" accept="image/*" multiple name="flPropertyPics" type="file" style="display:none;" />
+                        </span>
+                    </label>
+                    <input id="flPropertyPicsFileNameOutput" type="text" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row flPropertyPicsImageOutput"></div>
+    </div>
+    <br />
+    <div class="payment-info">
+        <div class="content-heading">Total payment</div>
+        <div class="row shopping-cart-container"></div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12 AdvertisePropertyBtn">
+            <center>
+                <button class="btn btn-accent" type="submit" id="AdvertisePropertyBtn">Advertise Property</button>
+            </center>
+        </div>
+    </div>
+    <input id="saCoordinateLat" type="hidden" name="saCoordinateLat" />
+    <input id="saCoordinateLng" type="hidden" name="saCoordinateLng" />
+    <input id="cCoordinateLat" type="hidden" name="cCoordinateLat" />
+    <input id="cCoordinateLng" type="hidden" name="cCoordinateLng" />
+    <input id="nearByCoordinateLat" type="hidden" name="nearByCoordinateLat" />
+    <input id="nearByCoordinateLng" type="hidden" name="nearByCoordinateLng" />
+</form>
+    
+
 <script src="~/Scripts/GoogleMapJsScript.js"></script>
 <script type="text/javascript">
-    (function(){
-    $.getScript('/Scripts/MainScript.js', function()
-    {
-    setActiveNavigation('home');
-    showJumbotrun();
-    setJumbotRunContent('How To Advertise');
-    //setJumbotrunActionBtnText('I Understand');
-    setIsCollapsable(true);
-    loadAdvertisePropertySubscriptionPeriod();
+    (function () {
+        $.getScript('/Scripts/MainScript.js', function () {
+            //initialization of bootstrap popover
+            $('[data-toggle="popover"]').popover({
+                trigger: 'click',
+                container: 'body'
+            });
 
-    //initializing html content
-    $('#ad-placement').hide();
-    $('#ad-promotion').hide();
+        });
 
-    //initialization of bootstrap popover
-    $('[data-toggle="popover"]').popover({
-    trigger : 'hover click',
-    container: 'body'
-    });
-
-    });
-
-    $.getScript('/Scripts/PropertiesScript.js',function(){
-
-    });
 
     })();
 </script>

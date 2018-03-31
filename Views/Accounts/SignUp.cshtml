@@ -17,7 +17,7 @@
 
     //initialization of bootstrap popover
     $('[data-toggle="popover"]').popover({
-    trigger : 'hover click',
+    trigger : 'hover',
     container: 'body'
     });
 
@@ -28,51 +28,64 @@
 
 @Html.Partial("_ModalUserCreated")
 
-<h2>Register</h2>
+<style>
+    .jumbotron-container {
+        display: none;
+    }
+</style>
 
+<a href="#" onclick="goBack();" class="badge badge-primary"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back</a>
+<br /><br />
+<div class="ctnr-headers">Sign Up</div>
 <form id="signUpUser" method="post">
 <div class="row">
-    <div class="col-xs-8">
-        <div class="row"><div style="display:none;" class="col-xs-12 error-container"></div></div>
-        <div class="row"><div class="col-xs-12 content-heading">Enter your information</div></div>
-        <div class="row">&nbsp;</div>
+    <div class="col-md-8">
+        <div class="row"><div style="display:none;" class="col-md-12 error-container"></div></div>
+        <div class="row"><div class="col-md-12 content-heading">Enter your information</div></div>
+        <br/>
         <div class="row">
-            <div class="col-xs-6">
-                <input id="firstname" value="" type="text" class="form-control" name="firstname" placeholder="First Name" required>
+            <div class="col-md-6">
+                <label for="firstname">First Name</label>
+                <input id="firstname" value="" type="text" class="form-control" name="firstname" required>
             </div>
-            <div class="col-xs-6">
-                <input id="lastname" value="" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
-            </div>
-        </div>
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-xs-12">
-                <input id="cellnum" value="" type="text" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
+            <div class="col-md-6">
+                <label for="lastname">Last Name</label>
+                <input id="lastname" value="" type="text" class="form-control" name="lastname" required>
             </div>
         </div>
-        <div class="row">&nbsp;</div>
+        <br />
         <div class="row">
-            <div class="col-xs-12">
-                <input id="email" value="" type="email" class="form-control" name="email" placeholder="Email Address" required>
+            <div class="col-md-12">
+                <label for="cellnum">Cell Number</label>
+                <input id="cellnum" value="" type="text" class="form-control" name="cellnum" required>
             </div>
         </div>
-        <div class="row">&nbsp;</div>
+        <br />
         <div class="row">
-            <div class="col-xs-12">
-                <input id="password" value="" type="password" class="form-control" name="password" placeholder="Password" required>
+            <div class="col-md-12">
+                <label for="email">Email</label>
+                <input id="email" value="" type="email" class="form-control" name="email" required>
             </div>
         </div>
-        <div class="row">&nbsp;</div>
+        <br />
         <div class="row">
-            <div class="col-xs-12">
-                <input id="ConfirmPassword" value="" type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
+            <div class="col-md-12">
+                <label for="password">Password</label>
+                <input id="password" value="" type="password" class="form-control" name="password" required>
             </div>
         </div>
-        <div class="row">&nbsp;</div>
+        <br />
         <div class="row">
-            <div class="col-xs-3">
+            <div class="col-md-12">
+                <label for="ConfirmPassword">Confirm Password</label>
+                <input id="ConfirmPassword" value="" type="password" class="form-control" name="ConfirmPassword" required>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
                 <div class="signUpBtn">
-                    <button class="btn btn-accent" type="submit" id="signUpBtn">Sign Up <span class="glyphicon glyphicon-circle-arrow-up"></span></button>
+                    <button class="btn btn-primary btn-sm pull-right" type="submit" id="signUpBtn">Sign Up</button>
                 </div>
             </div>
         </div>

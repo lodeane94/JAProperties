@@ -30,5 +30,10 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.SubscriptionType.Find(Id).MonthlyCost;
         }
+
+        public SubscriptionType GetSubscriptionTypeByID(string ID)
+        {
+            return EasyFindPropertiesEntities.SubscriptionType.Where(x => x.ID.Equals(ID)).Single();
+        }
     }
 }

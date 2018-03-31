@@ -11,5 +11,6 @@ namespace SS.Models.Repositories
         String GetSubsciptionNameById(String Id);
         String GetSubsciptionDescriptionById(String Id);
         Decimal GetSubsciptionMonthlyCostById(String Id);
+        SubscriptionType GetSubscriptionTypeByID(String ID);
     }
 }

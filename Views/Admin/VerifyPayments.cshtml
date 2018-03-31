@@ -1,0 +1,17 @@
+﻿@model IEnumerable<SS.ViewModels.Management.PaymentViewModel>
+@{
+    ViewBag.Title = "VerifyPayments";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section pageScript
+{
+
+    (function(){
+    $('#verify-payments').attr('class','active');
+    initializePaymentPagination();
+    })();
+}
+
+@Html.Partial("_partialPayments",Model)
+

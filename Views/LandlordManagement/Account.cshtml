@@ -1,0 +1,61 @@
+﻿@model SS.ViewModels.Management.ProfileViewModel
+@{
+    ViewBag.Title = "Account";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+
+@section pageScript
+{
+
+    (function(){
+    $('#account').attr('class','active');
+    })();
+}
+@using SS.Code
+
+<div id="modal-displays">
+
+</div>
+
+<div class="dashboard">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="management-action">
+                <a href="profile" class="action active">
+                    <div class="img-circle img-circle-sm" id="profile">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="management-action-title">Profile</div>
+                </a>
+                @if (Session["isUserPropOwner"] != null && (bool)Session["isUserPropOwner"])
+                {
+                    <a href="subscription" class="action">
+                        <div class="img-circle img-circle-sm" id="subscription">
+                            <i class="fa fa-address-book"></i>
+                        </div>
+                        <div class="management-action-title">Subscription</div>
+                    </a>
+                }
+                @if (Session["isUserPropOwner"] != null && (bool)Session["isUserPropOwner"])
+                {
+                    <a href="payments" class="action">
+                        <div class="img-circle img-circle-sm" id="payments">
+                            <i class="fa fa-money"></i>
+                        </div>
+                        <div class="management-action-title">Payments</div>
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="col-md-10">
+            <br />
+            <div class="management-main-content">
+                @Html.Partial("_partialProfile", Model)
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="userId" name="userId" value="@ViewBag.userId" />
+
+

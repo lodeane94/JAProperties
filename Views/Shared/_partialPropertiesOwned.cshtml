@@ -1,0 +1,40 @@
+﻿<div class="properties-owned jumbotron-container">
+    <div class="ctnr-headers">Properties Owned</div>
+    <div class="card" style="width:100%;">
+        <div class="card-body">
+            <h6 class="card-title">Manage Your Property</h6>
+            <div id="management-prop-images-container">
+                @{
+                    String propertyID = "", imageURL = "", propertyTitle = "";
+                }
+                @if (ViewBag.propertyImages != null)
+            {
+                foreach (var imgInfo in ViewBag.propertyImages)
+                {
+                    if (imgInfo != null
+                            && imgInfo.TryGetValue("propertyID", out propertyID)
+                            && imgInfo.TryGetValue("imageURL", out imageURL)
+                            && imgInfo.TryGetValue("propertyTitle", out propertyTitle))
+                    {
+                            <div class="management-prop-images" data-toggle="popover" data-content="Update Property">
+                                <a class="property-image" id="@propertyID" href="@propertyID">
+                                    <img id="@propertyID" src="~/Uploads/@imageURL" />
+                                    <div class="management-prop-title">@propertyTitle</div>
+                                </a>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div class="management-prop-container">
+                        <div class="ctnr-info">No Properties Found</div>
+                    </div>
+                }
+            </div>
+            <div id="management-add-prop-container">
+                <a href="~/landlordmanagement/advertiseproperty" style="float:right;" id="add-new-property" class="btn btn-accent"><span class="glyphicon glyphicon-plus-sign"></span> Add New Property</a>
+            </div>
+        </div>
+    </div>    
+</div>

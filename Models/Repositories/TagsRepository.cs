@@ -20,5 +20,19 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.Tags.Where(x => x.PropertyID.Equals(id)).Select(x => x.TagType.Name).ToList();
         }
+
+        public List<string> GetTagNamesByProperties(IEnumerable<Property> properties)
+        {
+            List<Guid> propertyIDs = new List<Guid>();
+
+            foreach (var property in properties)
+            {
+                propertyIDs.Add(property.ID);
+            }
+
+            return EasyFindPropertiesEntities.Tags
+                .Where(x => propertyIDs.Contains(x.PropertyID))
+                .Select(x => x.TagType.Name).Distinct().ToList();
+        }
     }
 }

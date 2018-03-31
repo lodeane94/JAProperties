@@ -51,5 +51,11 @@ namespace SS.Models
         public virtual DbSet<MessageTrash> MessageTrash { get; set; }
         public virtual DbSet<MeetingMembers> MeetingMembers { get; set; }
         public virtual DbSet<Meeting> Meeting { get; set; }
+        public virtual DbSet<SavedProperties> SavedProperties { get; set; }
+        public virtual DbSet<Payment> Payment { get; set; }
+        public virtual DbSet<PaymentMethod> PaymentMethod { get; set; }
+        public virtual DbSet<SubscriptionExtension> SubscriptionExtension { get; set; }
+        public virtual DbSet<Division> Division { get; set; }
+        public virtual DbSet<PasswordRecoveryRequest> PasswordRecoveryRequest { get; set; }
     }
 }

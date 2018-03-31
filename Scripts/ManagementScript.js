@@ -7,19 +7,22 @@ function initializeSockets() {
     var dashboardHub = $.connection.notificationHub;
 
     $.connection.hub.logging = true;
-    
+
     $.connection.hub.start().done(function () {
         console.log('Connection establised');
     });
 
     dashboardHub.client.updateUserMessages = function () {
-        alert('message updated');
         loadMessagesView();
     }
 
     dashboardHub.client.updateMeeting = function () {
         alert('A meeting has been updated on your portal');
         loadMeetingCalender();
+    }
+
+    dashboardHub.client.newRequisitionAlert = function () {
+        alert('A new property requisition was just made');
     }
 }
 
@@ -33,6 +36,10 @@ function pointToSelectedAction(position) {
 //decides which view to load based on the action id
 function loadView(actionId) {
     switch (actionId) {
+        case 'owned-properties':
+        case 'saved-properties':
+            loadPropertiesView(actionId);
+            break;
         case 'messages':
             currentMsgIdSelected = null;//clear current message selected 
             currentUserNameSelected = null;
@@ -47,6 +54,12 @@ function loadView(actionId) {
         case 'bills': loadBillsView();
             break;
         case 'tennants': loadTennantsView();
+            break;
+        case 'profile': loadProfileView();
+            break;
+        case 'subscription': loadSubscriptionView();
+            break;
+        case 'payments': loadPaymentsView();
             break;
     }
 
@@ -63,7 +76,7 @@ function loadMessagesView() {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
-            $('.management-action-content-holder').html(data);
+            $('.management-main-content').html(data);
 
             loadMsgList();
 
@@ -90,7 +103,7 @@ function loadRequisitionsView() {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
-            $('.management-action-content-holder').html(data);
+            $('.management-main-content').html(data);
         },
         error: function () {
             alert('An error occurred while loading requisitions');
@@ -118,7 +131,7 @@ function loadMeetingCalender() {
         select: function (start, end, jsEvent, view) {
 
             var startDate = moment(start).format('LL');
-            
+
             loadMeetingRequestView(startDate, null);
         }, // End select callback
         // Make events editable, globally
@@ -137,17 +150,17 @@ function populateMeetingTime() {
     //meeting hour
     for (var i = 1; i <= 12; i++) {
         $('#meetingHour').append($('<option></option>')
-                    .attr('id', i)
-                    .attr('value', i)
-                    .text(i));
+            .attr('id', i)
+            .attr('value', i)
+            .text(i));
     }
 
     //meeting minute
     for (var i = 1; i <= 59; i++) {
         $('#meetingMinute').append($('<option></option>')
-                    .attr('id', i)
-                    .attr('value', i)
-                    .text(i));
+            .attr('id', i)
+            .attr('value', i)
+            .text(i));
     }
 }
 
@@ -194,7 +207,7 @@ function loadMeetingsView() {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
-            $('.management-action-content-holder')
+            $('.management-main-content')
                 .html(data).promise().done(function () {
                     loadMeetingCalender();
                     populateMeetingCalender();
@@ -202,6 +215,32 @@ function loadMeetingsView() {
         },
         error: function () {
             alert('An error occurred while loading calender');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function loadPropertiesView(viewId) {
+    var url = '';
+
+    if (viewId == 'owned-properties')
+        url = '/landlordmanagement/GetManagementPropertiesView';
+    else
+        url = '/landlordmanagement/GetSavedPropertiesView';
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-main-content').html(data);
+        },
+        error: function () {
+            alert('An error occurred while loading view');
         },
         complete: function () {
             $('#modal-loading').fadeOut();
@@ -269,7 +308,7 @@ function getMeeting(Id) {
         },
         success: function (data) {
             var date = moment(data.MeetingDate).format('LL');//removes time from the date
-            
+
             $('#id').val(data.ID);
             $('#meetingTitle').val(data.MeetingTitle);
             $('#meetingDate').val(date);
@@ -300,14 +339,14 @@ function getMeeting(Id) {
                     $(this).prop('selected', true);
                 }
             });
-            
+
             //select the invitees which were originally selected within the meeting
             $("#meetingMembers option").each(function (i) {
                 var inviteeUserID = $(this).attr('id');
-                
+
                 $.each(data.MeetingMemberUserIDs, function (index, value) {
                     if (inviteeUserID == value) {
-                        $('#meetingMembers option[id="'+value+'"').prop("selected", true);
+                        $('#meetingMembers option[id="' + value + '"').prop("selected", true);
                     }
                 });
             });
@@ -364,13 +403,13 @@ function loadMsgList() {
             $.each(data, function (index, value) {
                 var seenVal = value.Seen ? "seen" : "not-seen";
                 var activeVal = currentUserNameSelected != null
-                                && value.From == currentUserNameSelected ? "active" : "";                
+                    && value.From == currentUserNameSelected ? "active" : "";
 
                 $('#dashboard-messages').append(
                     '<li class="msg">'
                     + '<a class="' + seenVal + ' ' + activeVal + '" href="' + value.ID + '" id="' + value.ID + '">'
                     + '<div>'
-                    + '<span class="glyphicon glyphicon-user img-circle img-circle-sm" style="margin-right:25px; font-size:25px;"> </span><strong id="from-user-name" style="font-size:14px; margin-right:10px;">' + value.From + '</strong> <em><span class="glyphicon glyphicon-calendar"> </span> ' + value.DateTCreated + '</em>'
+                    + '<span class="fa fa-user-o fa-2x img-circle img-circle-sm" style="margin-right:10px; font-size:25px;"></span><span id="from-user-name" style="font-size:14px; margin-right:1px;">' + value.From + '</span> <em><span class="glyphicon glyphicon-calendar"> </span> ' + value.DateTCreated + '</em>'
                     + '<div class="txt-holder txt">' + value.Msg + '</div></div></a></li>'
                 );
             });
@@ -401,9 +440,9 @@ function getMsgThread() {
                 //then dispaly it to the right and it should not have any glyphicon to it
                 $.each(data, function (index, value) {
                     if (userId == value.From) {
-                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg user">' + value.Msg + ' <span class="img-circle img-circle-sm" style="font-size:14px;">You</span></div>');
+                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg user">' + value.Msg + ' <span class="fa fa-user fa-2x" style="font-size:14px;">You</span></div>');
                     } else {
-                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg not-user"><span class="glyphicon glyphicon-user img-circle img-circle-sm" style="font-size:25px;"> </span> ' + value.Msg + '</div>');
+                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg not-user"><span class="fa fa-user   fa-2x img-circle img-circle-sm" style="font-size:25px;"> </span> ' + value.Msg + '</div>');
                     }
                 });
                 //TODO update seen message
@@ -426,12 +465,12 @@ function loadTennantsView() {
             $('#modal-loading').fadeIn();
         },
         success: function (data) {
-            $('.management-action-content-holder').html(data).promise().done(function () {
+            $('.management-main-content').html(data).promise().done(function () {
                 $('#accordion').accordion({ header: "h5", collapsible: true, active: false });
 
                 //initialization of bootstrap popover
                 $('[data-toggle="popover"]').popover({
-                    trigger: 'hover click',
+                    trigger: 'hover',
                     container: '#accordion'
                 });
             });
@@ -446,7 +485,7 @@ function loadTennantsView() {
 }
 
 function updateRent(tennantId, updateVal) {
-    
+
     $.ajax({
         url: '/landlordmanagement/updateRent',
         type: 'GET',
@@ -470,7 +509,7 @@ function unenrollTennant(tennantId) {
     $.ajax({
         url: '/landlordmanagement/unenrollTennant',
         type: 'GET',
-        data: { id: tennantId},
+        data: { id: tennantId },
         beforeSend: function () {
             $('#modal-loading').fadeIn();
         },
@@ -485,6 +524,94 @@ function unenrollTennant(tennantId) {
             $('#modal-loading').fadeOut();
         }
     });
+}
+
+function loadProfileView() {
+    $.ajax({
+        url: '/landlordmanagement/GetProfileView',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-main-content').html(data);
+        },
+        error: function () {
+            alert('An error occurred while loading view');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function loadSubscriptionView() {
+    $.ajax({
+        url: '/landlordmanagement/GetSubscriptionView',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-main-content').html(data);
+        },
+        error: function () {
+            alert('An error occurred while loading view');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+
+function loadPaymentsView(pgNo) {
+    $.ajax({
+        url: '/landlordmanagement/GetPaymentsView',
+        data: { pgNo: pgNo },
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('.management-main-content').html(data).promise().done(function () {
+                initializePaymentPagination();
+            });
+        },
+        error: function () {
+            alert('An error occurred while loading view');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+    });
+}
+//creates the functionality that is necessary for the payment pagination
+function initializePaymentPagination() {
+    var itemsCount = $('#itemsCount').val();
+    var pgNo = Number($('#pgNo').val());
+
+    if (itemsCount < 2) {
+        $('.page-item').addClass('disabled');
+        $('.page-link').attr('disabled', true);
+        $('.page-link').attr('tabindex', -1);
+    } else if (itemsCount > 1 && (pgNo + 1) == 1) {//at the beginning
+        $('.previous').addClass('disabled');
+        $('.previous').attr('disabled', true);
+        $('#previous').attr('tabindex', -1);
+    }
+    else if (itemsCount > 1 && (pgNo + 1) != itemsCount) {//somewhere in the middle
+        $('.page-item').removeClass('disabled');
+        $('.page-link').attr('disabled', false);
+        $('.page-link').removeAttr('tabindex');
+    } else if (itemsCount > 1 && (pgNo + 1) == itemsCount) {//at the end
+        $('.next').addClass('disabled');
+        $('.next').attr('disabled', true);
+        $('#next').attr('tabindex', -1);
+
+        $('.previous').removeClass('disabled');
+        $('.previous').attr('disabled', false);
+        $('.previous').removeAttr('tabindex');
+    }
 }
 /*TODO later if necessary
 function sendNotice(tennantId) {
@@ -515,7 +642,7 @@ $(document).ready(function () {
 
     //initialization of bootstrap popover
     $('[data-toggle="popover"]').popover({
-        trigger: 'hover click',
+        trigger: 'hover',
         container: 'body'
     });
 
@@ -538,31 +665,6 @@ $(document).ready(function () {
     }
 
     var sys = new system();
-    /*
-    */
-    (function () {
-        $.ajax({
-            url: '/Landlordmanagement/getAllPropertyImages',
-            type: 'GET',
-            success: function (data) {
-                if (!$.isEmptyObject(data) && !data.hasErrors) {
-                    $.each(data, function (index, value) {
-                        $('#rooms-collection')
-                             .append('<a class="property-image" href="' + value.propertyID + '"><img title="click to manage property" id="' + value.propertyID + '" src="/Uploads/' + value.imageURL + '"/></a>');
-                    });
-                } else {
-                    alert('An unexpected error occurred!, Contact system administrator');
-                }
-            },
-            beforeSend: function () {
-                $('#modal-loading').fadeIn();
-            },
-            complete: function () {
-                $('#modal-loading').fadeOut();
-            }
-
-        });
-    })();
 
     //generates modal to compose a new message
     $(document.body).on('click', '#new-msg-btn', function (event) {
@@ -576,35 +678,38 @@ $(document).ready(function () {
     //sends a message to a user
     $(document.body).on('click', '#send-new-message', function (event) {
         event.preventDefault();
-        
+
         var msgRecipientIds = [];
         var msg = $('#new-message').val();
 
-        $("#messageRecipients option").each(function (i) {
-            msgRecipientIds.push($(this).attr('id'));
-            alert($(this).attr('id'));
-        });
+        if (msg != null && msg != '') {
 
-        $.ajax({
-            url: '/landlordmanagement/sendMessage',
-            type: 'POST',
-            data: { msgRecipients: msgRecipientIds, msg: msg },
-            beforeSend: function () {
-                $('#modal-loading').fadeIn();
-            },
-            success: function () {
-                $('#close-modal').click();
+            $("#messageRecipients option").each(function (i) {
+                msgRecipientIds.push($(this).attr('id'));
+            });
 
-                alert('Message sent');
-                loadMessagesView();
-            },
-            error: function () {
-                alert('An error occurred while sending message');
-            },
-            complete: function () {
-                $('#modal-loading').fadeOut();
-            }
-        });
+            $.ajax({
+                url: '/landlordmanagement/sendMessage',
+                type: 'POST',
+                data: { msgRecipients: msgRecipientIds, msg: msg },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function () {
+                    $('#new-message').val('');
+                    $('#close-modal').click();
+                    loadMessagesView();
+                },
+                error: function () {
+                    alert('An error occurred while sending message');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                }
+            });
+        } else {
+            alert('Cannot send blank message');
+        }
     });
 
     $(document.body).on('click', '#removeProperty', function () {
@@ -620,29 +725,6 @@ $(document).ready(function () {
         });
     });
 
-    //adds new property to a customer's account
-    $(document.body).on('click', '#add-new-property', function (event) {
-        event.preventDefault();
-
-        $.ajax({
-            url: '/servicer/GetAdvertisePropertyView',
-            type: 'GET',
-            success: function (data) {
-                //displays the modal whenever an image is selected
-                $('#action-header').html('<span class="glyphicon glyphicon-plus"></span> Add Property');
-                $('#action-body').html(data);
-
-                sys.showModal('#managementModal');
-            },
-            beforeSend: function () {
-                $('#modal-loading').fadeIn();
-            },
-            complete: function () {
-                $('#modal-loading').fadeOut();
-            }
-
-        });
-    });
     //sends acceptance mail to requestee 
     $(document.body).on('click', '.btnAcceptRequest', function (event) {
         var reqID = $(this).attr('id');
@@ -667,7 +749,7 @@ $(document).ready(function () {
     $(document.body).on('click', '.btnDenyRequest', function (event) {
         var reqID = $(this).attr('id');
         var isUserPropOwner = $('#isUserPropOwner').val();
-        
+
         $.ajax({
             url: '/landlordmanagement/cancelrequest',
             type: 'POST',
@@ -677,7 +759,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 alert(data);
-               // window.location = "/landlordmanagement/dashboard";
+                // window.location = "/landlordmanagement/dashboard";
             },
             complete: function () {
                 $('#modal-loading').fadeOut();
@@ -700,7 +782,7 @@ $(document).ready(function () {
                     $('#property-registration-container').html(data);
 
                     $('form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
-                    + '<input class="btn btn-primary" type="submit" value="Add Property" id="add-property" /></div>');
+                        + '<input class="btn btn-primary" type="submit" value="Add Property" id="add-property" /></div>');
 
                     $('form').removeData('validator');
                     $.validator.unobtrusive.parse($('form'));
@@ -719,7 +801,7 @@ $(document).ready(function () {
                 success: function (data) {
                     $('#property-registration-container').html(data);
                     $('form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
-                    + '<input class="btn btn-primary" type="submit" value="Add Property" id="add-property" /></div>');
+                        + '<input class="btn btn-primary" type="submit" value="Add Property" id="add-property" /></div>');
 
                     $('form').removeData('validator');
                     $.validator.unobtrusive.parse($('form'));
@@ -738,7 +820,7 @@ $(document).ready(function () {
                 success: function (data) {
                     $('#property-registration-container').html(data);
                     $('form').append('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
-                    + '<input class="btn btn-primary" type="submit" value="Add Property" id="add-property" /></div>');
+                        + '<input class="btn btn-primary" type="submit" value="Add Property" id="add-property" /></div>');
 
                     $('form').removeData('validator');
                     $.validator.unobtrusive.parse($('form'));
@@ -824,7 +906,7 @@ $(document).ready(function () {
     //upon mouse enter
     $(document.body).on('mouseenter', '.msg', function () {
         var singleMsgMenu = '<div id="delete-all-msgs" class="delete-msg-bar">'
-                            + 'Delete All <span class="glyphicon glyphicon-trash"></span></div>';
+            + 'Delete All <span class="glyphicon glyphicon-trash"></span></div>';
 
         $(this).append(singleMsgMenu);
     });
@@ -839,7 +921,7 @@ $(document).ready(function () {
     //upon mouse enter
     $(document.body).on('mouseenter', '.single-msg', function () {
         var singleMsgMenu = '<div id="delete-msg" class="single-msg-menu">'
-                            + 'Delete <span class="glyphicon glyphicon-trash"></span></div>';
+            + 'Delete <span class="glyphicon glyphicon-trash"></span></div>';
 
         $(this).prepend(singleMsgMenu);
     });
@@ -871,14 +953,14 @@ $(document).ready(function () {
     //delete all messages from the message thread
     $(document.body).on('click', '#delete-all-msgs', function () {
         var id = $(this).prev().attr('id');
-     
+
         if (confirm("Are you sure ?") == true) {//prompt user before deleting the message thread
             $.ajax({
                 url: '/landlordmanagement/deleteMsgThread',
                 type: 'GET',
                 data: { id: id },
                 success: function () {
-                    alert('Message Thread Deleted');
+                    //alert('Message Thread Deleted');
                 },
                 error: function () {
                     alert('An error occurred while deleting the selected message');
@@ -938,8 +1020,8 @@ $(document).ready(function () {
         var tennantId = $(this).attr('id');
         var price = $(this).parent().find('.price');
         var rentCtnr = $(this).parent();
-        
-        
+
+
         if (btnAction == 'Update') {
             orRentCntrDataContent = rentCtnr.attr('data-content');
 
@@ -979,13 +1061,496 @@ $(document).ready(function () {
         $(this).addClass('active');
 
         var position = $(this).position();
-        pointToSelectedAction(position);
+        //pointToSelectedAction(position);
         loadView(actionId);
     });
 
-    $(window).resize(function () {
-        var position = $('.management-action .active').position();
-        pointToSelectedAction(position);
+    $(document.body).on('click', '.property-image', function (event) {
+        event.preventDefault();
+
+        var href = $(this).attr('href');
+
+        $.ajax({
+            url: '/servicer/GetModalUpdatePropertyView',
+            type: 'Get',
+            data: { ID: href },
+            beforeSend: function () {
+                $('#modal-loading').fadeIn();
+            },
+            success: function (data) {
+
+                $('#updatePropertyModalContainer').remove();
+                $('#modal-displays').append(data);
+
+                sys.showModal('#updatePropertyModal');
+
+                //initialization of bootstrap popover
+                $('[data-toggle="popover"]').popover({
+                    trigger: 'hover',
+                    container: 'body'
+                });
+            },
+            error: function () {
+                alert('An error occurred while retrieving property\'s information');
+            },
+            complete: function () {
+                $('#modal-loading').fadeOut();
+            }
+        });
     });
+
+    //fades out temporary alerts after they are displayed
+    $('.temp-alert').fadeIn("slow", function () {
+        $(this).fadeOut(10000);
+    });
+
+    //stops propagation on the dropdown menu
+    $(document.body).on('click', '.dd-primary-img .dropdown-menu', function (e) {
+        e.stopPropagation();
+    });
+
+    $(document.body).on('click', '.select-as-primary', function (event) {
+        event.preventDefault();
+
+        var isDisabled = $(this).hasClass('disabled');
+
+        if (!isDisabled) {
+            var propertyId = $('#ID').val();
+            var imgId = $(this).parent().prev('.dropdown-item').find('img').attr('id');
+            var imgUrl = $(this).parent().prev('.dropdown-item').find('img').attr('src');
+
+            $.ajax({
+                url: '/landlordmanagement/UpdatePropertyPrimaryImg',
+                type: 'Put',
+                data: { imgId: imgId, propertyId: propertyId },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data != '' && data != null) {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-success temp-alert">Property Updated Successfully</div> ')
+                            .hide()
+                            .fadeIn('slow');
+
+                        //updating modal primary image
+                        $('#primary-property-img').hide().fadeIn(1000).attr('src', imgUrl);
+
+                        //updating dashboard primary image 
+                        $('.property-image#' + propertyId + ' img').attr('src', imgUrl);
+
+                        $('.upd-property-images-ctnr').html(data);
+
+                    } else {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-danger temp-alert">Property Was Not Update - Contact Administrator</div> ')
+                            .hide()
+                            .fadeIn('slow');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while retrieving property\'s information');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                    $('.temp-alert').fadeOut(10000);
+                }
+            });
+        } else {
+            alert("Image already is already primary");
+        }
+    });
+
+    $(document.body).on('click', '.delete-img', function (event) {
+        event.preventDefault();
+
+        var isDisabled = $(this).hasClass('disabled');
+
+        if (!isDisabled) {
+            var propertyId = $('#ID').val();
+            var imageId = $(this).parent().prev('.dropdown-item').find('img').attr('id');
+
+            $.ajax({
+                url: '/landlordmanagement/DeletePropertyImage',
+                type: 'Put',
+                data: { propertyId: propertyId, imageId: imageId },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data != '' && data != null) {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-success temp-alert">Property Deleted Successfully</div> ')
+                            .hide()
+                            .fadeIn('slow');
+
+                        $('.upd-property-images-ctnr').html(data);
+                        $('.upd-property-images-ctnr').fadeOut().fadeIn('10000');
+                    } else {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-danger temp-alert">Property Was Not Update - Contact Administrator</div> ')
+                            .hide()
+                            .fadeIn('slow');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while retrieving property\'s information');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                    $('.temp-alert').fadeOut(10000);
+                }
+            });
+        } else {
+            alert('Cannot delete primary image');
+        }
+    });
+
+    $(document.body).on('click', '#add-image', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData();
+        var file = $('#flPropertyImg')[0].files[0];
+
+        if (file != undefined && file != null) {
+            var propertyId = $('#ID').val();
+
+            formData.append('propertyImgUpload', file);
+            formData.append('ID', propertyId);
+
+            $.ajax({
+                url: '/landlordmanagement/AddPropertyImage',
+                type: 'Post',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data != '' && data != null) {
+
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-success temp-alert">Property Image Added Successfully</div> ')
+                            .hide()
+                            .fadeIn('slow');
+
+                        $('.upd-property-images-ctnr').fadeOut().fadeIn('10000');
+                        $('.upd-property-images-ctnr').html(data);
+                        $('#flPropertyImg').val('');//clearing file
+
+                    } else {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-danger temp-alert">Property Image Was Not Added - Contact Administrator</div> ')
+                            .hide()
+                            .fadeIn('slow');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while retrieving property\'s information');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                    $('.temp-alert').fadeOut(10000);
+                }
+            });
+        } else {
+            alert('Select an image first');
+        }
+
+    });
+
+    $(document.body).on('click', '#edit-profile-btn', function (event) {
+        event.preventDefault();
+
+        var action = $(this).text();
+
+        if (action == 'Edit') {
+            $('input').removeAttr('disabled');
+            $('#updateProfileBtn').removeClass('disabled');
+            $(this).text('Cancel');
+        } else {
+            $('input').attr('disabled', true);
+            $('#updateProfileBtn').addClass('disabled');
+            $(this).text('Edit');
+        }
+    });
+
+    $(document.body).on('click', '#updateProfileBtn', function (event) {
+        event.preventDefault();
+
+        var form = $('#updateProfileForm');
+        var validator = form.validate();
+
+        var isValid = validator.form();
+
+        if (isValid) {
+            var formData = new FormData($('#updateProfileForm')[0]);
+            $.ajax({
+                url: '/landlordmanagement/UpdateProfile',
+                data: formData,
+                type: 'POST',
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data == true) {
+                        $('.management-main-content').prepend('' +
+                            '<div class="alert-success temp-alert">Profile Updated Successfully</div>');
+                    } else {
+                        $('.management-main-content').prepend('' +
+                            '<div class="alert-warning temp-alert">A error was encountered while updating your profile</div>');
+                    }
+
+                    $('.temp-alert').fadeOut(10000);
+                },
+                error: function () {
+                    alert('An error occurred while loading view');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+
+                    $('input').attr('disabled', true);
+                    $('#updateProfileBtn').addClass('disabled');
+                    $('#edit-profile-btn').text('Edit');
+                }
+            });
+        }
+    });
+
+    $(document.body).on('change', '#subscription-period', function () {
+        var period = $(this).val();
+        var price = $('#monthlyCost').text();
+        var total = price * period;
+
+        $('#sub-ext-price-cal').html('Price | &#36; ' + total + '.00' + ' ');
+        $('#sub-ext-price-cal').append('<button id="make-payment" class="btn btn-sm btn-outline-success">Make Payment</button>');
+    });
+
+    $(document.body).on('click', '#make-payment', function (event) {
+        event.preventDefault();
+
+        var subscriptionID = $('#subscriptionID').val();
+        var period = $('#subscription-period').val() == '' ? 1 : $('#subscription-period').val();
+        var price = $('#monthlyCost').text();
+        var total = price * period;
+        var isExtension = period > 1 ? true : false;
+
+        $.ajax({
+            url: '/landlordmanagement/GetModalMakePayment',
+            type: 'Get',
+            data: { Period: period, Amount: total, SubscriptionID: subscriptionID, isExtension: isExtension },
+            beforeSend: function () {
+                $('#modal-loading').fadeIn();
+            },
+            success: function (data) {
+                $('#paymentModalContainer').remove();
+                $('#modal-displays').append(data);
+
+                sys.showModal('#paymentModal');
+
+                //initialization of bootstrap popover
+                $('[data-toggle="popover"]').popover({
+                    container: 'body'
+                });
+            },
+            error: function () {
+                alert('An error occurred while retrieving property\'s information');
+            },
+            complete: function () {
+                $('#modal-loading').fadeOut();
+            }
+        });
+    });
+
+    $(document.body).on('change', '#PaymentMethodID', function (event) {
+        var method = $(this).val();
+
+        $('#soon-feature').remove();
+
+        if (method == 'D' || method == 'F') {//D - Digicel | F - Flow
+            $('#soon-feature').remove();
+            $('#voucher').slideToggle();
+            $('#submit-payment').removeAttr('disabled');
+            $('#submit-payment').removeAttr('tabindex');
+            $('#submit-payment').removeClass('disabled');
+        } else {
+            if (!$('#submit-payment').hasClass('disabled')) {
+
+                $('#voucher').slideToggle();
+                $('#submit-payment').attr('disabled', true);
+                $('#submit-payment').attr('tabindex', -1);
+                $('#submit-payment').addClass('disabled');
+            }
+
+            $('.payment-method').append('<center id="soon-feature">Feature Coming Soon</center>');
+        }
+    });
+
+    $(document.body).on('click', '#extend-subscription', function (event) {
+        event.preventDefault();
+
+        $('.extend-subsciption-container').slideToggle();
+
+        if (!$(this).hasClass('active')) {
+            $(this).addClass('active');
+        } else {
+            $(this).removeClass('active');
+        }
+    });
+
+    //ensures that only numbers are entered into the voucherNumber input
+    $(document.body).on('keypress', '#voucherNumber', function (e) {
+        //if the letter is not digit then display error and don't type anything
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    });
+
+    //prevent pasting within the voucherNumber field
+    //TODO allow pasting only if it is numbers
+    $(document.body).on('paste', '#voucherNumber', function (e) {
+        e.preventDefault();
+    });
+
+    $(document.body).on('click', '#submit-payment', function (event) {
+        event.preventDefault();
+        /*
+        var subscriptionID = $('#subscriptionID').val();
+        var period = $('#period').val();
+        var total = $('#amount').val();*/
+        var voucherNumber = $('#voucherNumber').val();
+
+        var form = $('#form-make-payment');
+
+        var validator = form.validate();
+
+        var isValid = validator.form();
+
+        if (isValid) {
+            var formData = new FormData($('#form-make-payment')[0]);
+            $.ajax({
+                url: '/landlordmanagement/makepayment',
+                type: 'post',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data != '' && data != null && data == true) {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-success temp-alert">Your payment has been submitted for verification. ' +
+                            'A email was sent to your email address with additional information</div > ')
+                            .hide()
+                            .fadeIn('slow');
+                    } else {
+                        $('.modal-body').prepend('' +
+                            '<div class="alert-danger temp-alert">Payment submission failed - Contact Administrator</div> ')
+                            .hide()
+                            .fadeIn('slow');
+                    }
+
+                },
+                error: function () {
+                    alert('An error occurred while submiting your payment');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                    $('.temp-alert').fadeOut(10000);
+                    $('#voucherNumber').val('');
+                }
+            });
+        }
+    });
+
+    $(document.body).on('click', '.page-link', function (event) {
+        event.preventDefault();
+
+        var direction = $(this).attr('id');
+        var pgNo = $('#pgNo').val();
+
+        if (direction == 'next') {
+            pgNo += 1;
+        } else {
+            pgNo -= 1;
+        }
+
+        loadPaymentsView(pgNo);
+    });
+
+    $('.verify').click(function (event) {
+        event.preventDefault();
+
+        var element = $(this);
+        var paymentID = $(this).attr('id');
+        alert(paymentID);
+        if (confirm("Are you sure ?")) {
+            $.ajax({
+                url: '/admin/VerifyPayment',
+                type: 'Post',
+                data: { PaymentID: paymentID },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data != '' && data != null && data == true) {
+
+                        var child = element.children();
+                        child.removeClass('badge-danger');
+                        child.addClass('badge-primary');
+                        child.text('Verified');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while verifying payment');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                }
+            });
+        }
+    });
+
+    $(document.body).on('click', '.remove-saved-prop', function (event) {
+        event.preventDefault();
+
+        var propID = $(this).attr('id');
+
+        if (confirm("Are you sure ?")) {
+            $.ajax({
+                url: '/landlordmanagement/RemoveSavedProperty',
+                type: 'Delete',
+                data: { propertyID: propID },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data != '' && data != null && data == true) {
+                        loadPropertiesView('saved-properties');
+                    } else {
+                        alert('An error occurred while removing saved property');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while removing saved property');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                }
+            });
+        }
+    });
+
+    /* $(window).resize(function () {
+         var position = $('.management-action .active').position();
+       //  pointToSelectedAction(position);
+     });*/
 
 });

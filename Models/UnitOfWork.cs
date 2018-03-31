@@ -32,6 +32,12 @@ namespace SS.Models
         public IMessageTrashRepository MessageTrash { get; private set; }
         public IMeetingRepository Meeting { get; private set; }
         public IMeetingMembersRepository MeetingMembers { get; private set; }
+        public ISavedPropertiesRepository SavedProperties { get; private set; }
+        public IPaymentRepository Payment { get; private set; }
+        public IPaymentMethodRepository PaymentMethod { get; private set; }
+        public ISubscriptionExtensionRepository SubscriptionExtension { get; private set; }
+        public IDivisionRepository Division { get; private set; }
+        public IPasswordRecoveryRequestRepository PasswordRecoveryRequest { get; private set; }
 
         public UnitOfWork(EasyFindPropertiesEntities dbCtx)
         {
@@ -59,6 +65,12 @@ namespace SS.Models
             MessageTrash = new MessageTrashRepository(_dbCtx);
             Meeting = new MeetingRepository(_dbCtx);
             MeetingMembers = new MeetingMembersRepository(_dbCtx);
+            SavedProperties = new SavedPropertiesRepository(_dbCtx);
+            Payment = new PaymentRepository(_dbCtx);
+            PaymentMethod = new PaymentMethodRepository(_dbCtx);
+            SubscriptionExtension = new SubscriptionExtensionRepository(_dbCtx);
+            Division = new DivisionRepository(_dbCtx);
+            PasswordRecoveryRequest = new PasswordRecoveryRepository(_dbCtx);
         }
 
         public int save()

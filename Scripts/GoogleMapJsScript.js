@@ -30,6 +30,15 @@ var componentForm = {
 //if it is called by the searchterm element then it should filter results by establishments
 //otherwise it should filter by address
 function initAutocomplete(calledBy) {
+
+    //clear element first before any operation
+   // $('#' + elementCalledBy).val('');
+
+    if (autocomplete != null) {
+        google.maps.event.clearInstanceListeners(autocomplete);
+        $(".pac-container").remove();
+    }
+
     elementCalledBy = calledBy;
 
     searchType = $('#searchType:checked').val();
@@ -39,7 +48,7 @@ function initAutocomplete(calledBy) {
 
         autocomplete = new google.maps.places.Autocomplete((document.getElementById(elementCalledBy)), { types: ['establishment'] });
         autocomplete.addListener('place_changed', fillInAddress);
-    } else if (elementCalledBy == 'StreetAddress' || elementCalledBy == 'community' || elementCalledBy == 'nearBy') {
+    } else if (elementCalledBy == 'StreetAddress' || elementCalledBy == 'community') {
 
         autocomplete = new google.maps.places.Autocomplete((document.getElementById(elementCalledBy)), { types: ['address'] });
         autocomplete.addListener('place_changed', fillInAddress);
@@ -84,16 +93,14 @@ function fillInAddress() {
 
     if (!isEstablishmentSearch) {
         setLocation(address, lat, lng);
-        //clear element first
-        element.val('');
         element.val(address);
     } else {
         var output = element.val();
         setLocation(output, lat, lng);
         //remove string starting from the first comma location in the result
-        var firstCommaIndex = output.indexOf(',');
-        var newOutput = output.substring(0, firstCommaIndex);
-        element.val(newOutput);
+       // var firstCommaIndex = output.indexOf(',');
+       // var newOutput = output.substring(0, firstCommaIndex);
+       // element.val(newOutput);
     }
 }
 
@@ -154,15 +161,19 @@ function setLocation(address, lat, lng) {
 function setLocationComponents() {   
     // Get the place details from the autocomplete object.
     var place = autocomplete.getPlace();
-    console.log(place.address_components);
-    // Get each component of the address from the place details
-    // and fill the corresponding field on the form.
-    for (var i = 0; i < place.address_components.length; i++) {
-        var addressType = place.address_components[i].types[0];
+    ///console.log(place);
+    if (place != undefined) {
+        // Get each component of the address from the place details
+        // and fill the corresponding field on the form.
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
 
-        if (addressType == 'route') {
-            var val = place.address_components[i][componentForm[addressType]];
-            address = val;
+            if (addressType == 'route') {
+                var val = place.address_components[i][componentForm[addressType]];
+                address = val;
+            }
         }
+    } else {
+        alert('Unable to identify coordinates for that location');
     }
 }

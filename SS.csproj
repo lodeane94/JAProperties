@@ -172,6 +172,7 @@
     <Content Include="Content\normalize.css" />
     <Content Include="Content\safe-state.png" />
     <Content Include="Content\Site.css" />
+    <Content Include="Content\sunset.jpg" />
     <Content Include="Content\twitter.svg" />
     <Content Include="Content\user.svg" />
     <Content Include="Global.asax" />
@@ -237,6 +238,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ServicerController.cs" />
     <Compile Include="Core\EFPConstants.cs" />
     <Compile Include="Core\ErrorModel.cs" />
@@ -264,6 +266,9 @@
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Complaint.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Division.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\EasyFindProperties.Context.cs">
@@ -299,6 +304,15 @@
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PartialClasses.cs" />
+    <Compile Include="Models\PasswordRecoveryRequest.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Payment.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PaymentMethod.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Property.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
@@ -325,13 +339,18 @@
     </Compile>
     <Compile Include="Models\Repositories\AdPriorityRepository.cs" />
     <Compile Include="Models\Repositories\AdTypeRepository.cs" />
+    <Compile Include="Models\Repositories\DivisionRepository.cs" />
     <Compile Include="Models\Repositories\IAdPriorityRepository.cs" />
     <Compile Include="Models\Repositories\IAdTypeRepository.cs" />
+    <Compile Include="Models\Repositories\IDivisionRepository.cs" />
     <Compile Include="Models\Repositories\IMeetingMembersRepository.cs" />
     <Compile Include="Models\Repositories\IMeetingRepository.cs" />
     <Compile Include="Models\Repositories\IMessageRepository.cs" />
     <Compile Include="Models\Repositories\IMessageTrashRepository.cs" />
     <Compile Include="Models\Repositories\IOwnerRepository.cs" />
+    <Compile Include="Models\Repositories\IPasswordRecoveryRequestRepository.cs" />
+    <Compile Include="Models\Repositories\IPaymentMethodRepository.cs" />
+    <Compile Include="Models\Repositories\IPaymentRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyCategoryRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyConditionRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyImageRepository.cs" />
@@ -341,6 +360,8 @@
     <Compile Include="Models\Repositories\IPropertyRequisitionRepository.cs" />
     <Compile Include="Models\Repositories\IPropertyTypeRepository.cs" />
     <Compile Include="Models\Repositories\IRepository.cs" />
+    <Compile Include="Models\Repositories\ISavedPropertiesRepository.cs" />
+    <Compile Include="Models\Repositories\ISubscriptionExtensionRepository.cs" />
     <Compile Include="Models\Repositories\ISubscriptionRepository.cs" />
     <Compile Include="Models\Repositories\ISubscriptionTypeRepository.cs" />
     <Compile Include="Models\Repositories\ITagsRepository.cs" />
@@ -354,6 +375,9 @@
     <Compile Include="Models\Repositories\MessageRepository.cs" />
     <Compile Include="Models\Repositories\MessageTrashRepository.cs" />
     <Compile Include="Models\Repositories\OwnerRepository.cs" />
+    <Compile Include="Models\Repositories\PasswordRecoveryRepository.cs" />
+    <Compile Include="Models\Repositories\PaymentMethodRepository.cs" />
+    <Compile Include="Models\Repositories\PaymentRepository.cs" />
     <Compile Include="Models\Repositories\PropertyCategoryRepository.cs" />
     <Compile Include="Models\Repositories\PropertyConditionRepository.cs" />
     <Compile Include="Models\Repositories\PropertyImageRepository.cs" />
@@ -363,6 +387,8 @@
     <Compile Include="Models\Repositories\PropertyRequisitionRepository.cs" />
     <Compile Include="Models\Repositories\PropertyTypeRepository.cs" />
     <Compile Include="Models\Repositories\Repository.cs" />
+    <Compile Include="Models\Repositories\SavedPropertiesRepository.cs" />
+    <Compile Include="Models\Repositories\SubscriptionExtensionRepository.cs" />
     <Compile Include="Models\Repositories\SubscriptionRepository.cs" />
     <Compile Include="Models\Repositories\SubscriptionTypeRepository.cs" />
     <Compile Include="Models\Repositories\TagsRepository.cs" />
@@ -371,7 +397,13 @@
     <Compile Include="Models\Repositories\UserRepository.cs" />
     <Compile Include="Models\Repositories\UserTypeAssocRepository.cs" />
     <Compile Include="Models\Repositories\UserTypeRepository.cs" />
+    <Compile Include="Models\SavedProperties.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Subscription.cs">
+      <DependentUpon>EasyFindProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubscriptionExtension.cs">
       <DependentUpon>EasyFindProperties.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubscriptionType.cs">
@@ -415,11 +447,16 @@
     <Compile Include="ViewModels\Home\FeaturedProperty.cs" />
     <Compile Include="ViewModels\Home\HomePageViewModel.cs" />
     <Compile Include="ViewModels\InviteeViewModel.cs" />
+    <Compile Include="ViewModels\Management\PaymentViewModel.cs" />
+    <Compile Include="ViewModels\Management\ProfileViewModel.cs" />
+    <Compile Include="ViewModels\Management\SubscriptionViewModel.cs" />
+    <Compile Include="ViewModels\Management\UpdatePropertyViewModel.cs" />
     <Compile Include="ViewModels\MeetingViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\NearbyPropertySearchViewModel.cs" />
     <Compile Include="ViewModels\Properties\SelectedPropertyViewModel.cs" />
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
+    <Compile Include="ViewModels\RazorHelperModels\PropertyViewHelper.cs" />
     <Compile Include="ViewModels\RequisitionViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -469,6 +506,21 @@
     <Content Include="Views\Shared\_Tennants.cshtml" />
     <Content Include="Views\Shared\_ModalCreateNewMessage.cshtml" />
     <Content Include="Views\Home\_FeaturedProperties.cshtml" />
+    <Content Include="Views\Shared\_PropertyRatings.cshtml" />
+    <Content Include="Views\Shared\_PropertyThumbnailInformation.cshtml" />
+    <Content Include="Views\Shared\_partialModalUpdateProperty.cshtml" />
+    <Content Include="Views\Shared\_partialUpdatePropertyImage.cshtml" />
+    <Content Include="Views\Shared\_partialPropertiesOwned.cshtml" />
+    <Content Include="Views\Shared\_partialPropertiesSaved.cshtml" />
+    <Content Include="Views\LandlordManagement\Account.cshtml" />
+    <Content Include="Views\Shared\_partialProfile.cshtml" />
+    <Content Include="Views\Shared\_partialSubscription.cshtml" />
+    <Content Include="Views\Shared\_partialModalPayment.cshtml" />
+    <Content Include="Views\Shared\_partialPayments.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Admin\VerifyPayments.cshtml" />
+    <Content Include="Views\Accounts\RecoverPassword.cshtml" />
+    <Content Include="Views\Accounts\ResetPassword.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

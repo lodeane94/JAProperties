@@ -20,7 +20,7 @@ namespace SS.Models.Repositories
 
         public IEnumerable<Property> GetPropertiesByOwnerId(Guid Id)
         {
-            return EasyFindPropertiesEntities.Property.Where(x => x.ID.Equals(Id)).ToList();
+            return EasyFindPropertiesEntities.Property.Where(x => x.OwnerID.Equals(Id)).ToList();
         }
 
         public IEnumerable<Property> GetFeaturedProperties(int take)
@@ -87,14 +87,16 @@ namespace SS.Models.Repositories
                 .Skip(pgNo * take)
                 .ToList();
             }
-            
+
         }
 
-        public IEnumerable<Property> FindPropertiesBySearchTerm(string searchTerm, int take = 0, int pgNo = 0)
+        public IEnumerable<Property> FindPropertiesBySearchTerm(string searchTerm, String propertyCategory, int take = 0, int pgNo = 0)
         {
-            if (take > 0)
+            IEnumerable<Property> properties = null;
+
+            if (!string.IsNullOrEmpty(propertyCategory))
             {
-                var properties = (from p in EasyFindPropertiesEntities.Property
+                properties = (from p in EasyFindPropertiesEntities.Property
                                   join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
                                   from t in g.DefaultIfEmpty()
                                   where p.Availability.Equals(true)
@@ -108,18 +110,13 @@ namespace SS.Models.Repositories
                                           || p.Country.Contains(searchTerm)
                                           || p.Description.Contains(searchTerm)
                                           || t.TagType.Name.Contains(searchTerm))
+                                          && p.CategoryCode.Equals(propertyCategory)
                                   orderby p.AdPriority.Value, p.DateTCreated
-                                  select p
-                                  )
-                                  .Skip(pgNo * take)
-                                  .Take(take)
-                                  .Distinct()
-                                  .ToList();
-                return properties;
+                                  select p);
             }
             else
             {
-                var properties = (from p in EasyFindPropertiesEntities.Property
+                properties = (from p in EasyFindPropertiesEntities.Property
                                   join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
                                   from t in g.DefaultIfEmpty()
                                   where p.Availability.Equals(true)
@@ -134,13 +131,19 @@ namespace SS.Models.Repositories
                                           || p.Description.Contains(searchTerm)
                                           || t.TagType.Name.Contains(searchTerm))
                                   orderby p.AdPriority.Value, p.DateTCreated
-                                  select p
-                                  )
-                                  .Skip(pgNo * take)
-                                  .Distinct()
-                                  .ToList();
-                return properties;
+                                  select p);
             }
+
+            if (take > 0)
+            {
+                return properties.Skip(pgNo * take)
+                    .Distinct().Take(take)
+                    .ToList();
+            }
+            else
+                return properties.Skip(pgNo * take)
+                    .Distinct()
+                    .ToList();
         }
 
         public Owner GetPropertyOwnerByPropID(Guid Id)
@@ -170,6 +173,7 @@ namespace SS.Models.Repositories
 
         public IEnumerable<Property> FindPropertiesByStreetAddress(List<NearbyPropertySearchModel> model, int take = 16, int pgNo = 0)
         {
+            //TODO use another alternative to AsEnumerable as this re
             var properties = (from p in EasyFindPropertiesEntities.Property.AsEnumerable()
                               where model.Select(x => x.StreetAddress).Contains(p.StreetAddress)
                               select p
@@ -181,6 +185,20 @@ namespace SS.Models.Repositories
                               .ToList();
 
             return properties;
+        }
+
+        public IEnumerable<Property> FilterPropertiesByTagNames(IEnumerable<Property> properties, IEnumerable<String> tags)
+        {
+            List<Property> taggedProperties = new List<Property>();
+
+            foreach (var property in properties)
+            {
+                bool hasTags = property.Tags.Any(x => tags.Contains(x.TagType.Name));
+                if (hasTags)
+                    taggedProperties.Add(property);
+            }
+
+            return taggedProperties;
         }
     }
 }

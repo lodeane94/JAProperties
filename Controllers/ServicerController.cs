@@ -1,6 +1,7 @@
 ﻿using SS.Core;
 using SS.Models;
 using SS.ViewModels;
+using SS.ViewModels.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,5 +178,24 @@ namespace SS.Controllers
             return PartialView("_partialAdvertiseProperty", newModel);
         }
 
+        /// <summary>
+        /// Returns the _partialModalUpdateProperty view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetModalUpdatePropertyView(Guid ID)
+        {
+            return PartialView("_partialModalUpdateProperty", PropertyHelper.GetUpdatePropertyVM(ID));
+        }
+
+        /// <summary>
+        /// retrieves the names of the divisions
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetDivisionNames()
+        {
+            return Json(PropertyHelper.GetDivisionNames(), JsonRequestBehavior.AllowGet);
+        }
     }
 }

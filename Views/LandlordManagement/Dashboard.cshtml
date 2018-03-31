@@ -8,438 +8,110 @@
 
     (function(){
     $('#dashboard').attr('class','active');
-
-    //initialization of bootstrap popover
-    $('[data-toggle="popover"]').popover({
-    trigger : 'hover click',
-    container: 'body'
-    });
     })();
 }
 @using SS.Code
-@Html.Partial("_ModelManagement")
-@Html.Partial("_ModalPropertyAdvertised")
-@Html.Partial("_ModalCreateNewMessage")
+
+<div id="modal-displays">
+    @Html.Partial("_ModelManagement")
+    @Html.Partial("_ModalPropertyAdvertised")
+    @Html.Partial("_ModalCreateNewMessage")
+</div>
 @{
-    //displays the message for property removal error
-    if (Session["propertyRemovedMesssage"] != null)
+    if (TempData["PropertyUpdated"] != null && (bool)TempData["PropertyUpdated"])
     {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>@Session["propertyRemovedMesssage"]</strong>
-                    </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert-success temp-alert">
+                    Property Updated Successfully
                 </div>
             </div>
-            <div class="row">&nbsp;</div>
         </div>
-        Session["propertyRemovedMesssage"] = null;
-    }
-    //displays registration error
-    if (Session["userSignedInCheck"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>@Session["userSignedInCheck"]</strong>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["userSignedInCheck"] = null;
-    }
-    //displays registration error
-    if (Session["registrationErrorMessage"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>@Session["registrationErrorMessage"]</strong> <span class="glyphicon glyphicon-check"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["registrationErrorMessage"] = null;
-    }
-    //displays registration success
-    if (Session["propertyUpdateSuccess"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>@Session["propertyUpdateSuccess"]</strong> <span class="glyphicon glyphicon-check"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["propertyUpdateSuccess"] = null;
-    }
-    //displays registration success
-    if (Session["isRegistrationComplete"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>Your property has been uploaded successfully</strong> <span class="glyphicon glyphicon-check"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["isRegistrationComplete"] = null;
-    }
-    //displays cancelled request success
-    if (Session["cancelRequestCheck"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>@Session["cancelRequestCheck"]</strong> <span class="glyphicon glyphicon-check"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["cancelRequestCheck"] = null;
-    }
-    //displays acceptance success
-    if (Session["acceptedRequestCheck"] != null)
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="registration-success" class="alert-success" style="display:none;">
-                        <strong>@Session["acceptedRequestCheck"]</strong> <span class="glyphicon glyphicon-check"></span>
-                        <em>View history to see the requestee information. Call requestee if necessary.</em>
-                    </div>
-                </div>
-            </div>
-            <div class="row">&nbsp;</div>
-        </div>
-        Session["acceptedRequestCheck"] = null;
+        <br />
     }
 }
-<div class="row">
-    <!-- <div class="col-xs-3">
-         <aside id="quick-action">
-             <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-pushpin"></span>Quick Actions</div>
-             <ul>
-                 <li>
-                     <a id="messages" href="~/messages">
-                         <span class="glyph-style glyphicon glyphicon-inbox"></span>Messages
-                         <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
-                     </a>
-                     <ul>
-                         <li>
-                             <a id="new-message" href="">
-                                 <span class="glyph-style glyphicon glyphicon-pencil"></span>Compose New
-                             </a>
-                         </li>
-                         <li>
-                             <a id="broadcast-message" href="~/broadcast-message">
-                                 <span class="glyph-style glyphicon glyphicon-export"></span>Broadcast New
-                             </a>
-                         </li>
-                         <li>
-                             <a id="view-all-messages" href="~/view-all-messages">
-                                 <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
-                             </a>
-                         </li>
-                     </ul>
-                 </li>
-                 @if (ViewBag.hasAccommodation != 0)
-                 {
-                     <li>
-                         <a id="utility-bills" href="~/utility-bills">
-                             <span class="glyph-style glyphicon glyphicon-flash"></span>Utility Bills
-                             <span style="float:right;" class="glyph-style glyphicon glyphicon-chevron-right"></span>
-                         </a>
-                         <ul>
-                             <li>
-                                 <a id="new-bill" href="~/new-bill">
-                                     <span class="glyph-style glyphicon glyphicon-plus-sign"></span>Add New
-                                 </a>
-                             </li>
-                             <li>
-                                 <a id="view-all-bills" href="~/view-all-bills">
-                                     <span class="glyph-style glyphicon glyphicon-eye-open"></span>View All
-                                 </a>
-                             </li>
-                         </ul>
-                     </li>
-                 }
-             </ul>
-         </aside>
-         <div class="row">&nbsp;</div>
-         <aside id="quick-action">
-             <div class="quick-action-header"><span class="glyph-style glyphicon glyphicon-user"></span><lab>Tennants</div>
-             <ul>
-                 @{
-                     /*foreach (var tennant in UtilityHelper.loadTennants(HttpContext.Current.User.Identity.Name))
-                     {
-                         <li>
-                             <a id="tennant-management" href="@tennant.ID">
-                                 @tennant.FirstName
-                             </a>
-                         </li>
-                     }*/
-                 }
-             </ul>
-             <h3>Coming Soon ....</h3>
-         </aside>
-     </div>-->
-    <div class="dashboard col-xs-12">
-        <div class="jumbotron-container" style="display:block;">
-            <div class="dashboard-info-headers">
-                Properties Owned
-            </div>
-            <div id="housing-container">
-                <div id="rooms-collection">
-                    <!--Ajax content-->
-                </div>
-            </div>
-            <div id="housing-container-options-container">
-                <div id="housing-container-options">
-                    <button style="float:right;" id="add-new-property" class="btn btn-accent"><span class="glyphicon glyphicon-plus-sign"></span> Add New Property</button>
-                </div>
-            </div>
-        </div>
-        <!--
-        <br /><br />
-        <div class="jumbotron-container" style="display:block;">
-            <div id="d-messages">
-                <div class="dashboard-info-headers">
-                    Messages <span class="glyphicon glyphicon-envelope"></span>
-                </div>
-                <div class="dashboard-info">
-                    <ul id="dashboard-messages">
-                        @{
-                            int count = 0;
-                            if (ViewBag.latestMessages != null)
-                            {
-                                foreach (var msg in ViewBag.latestMessages)
-                                {
-                                    for (int i = 0; i < 4; i++)
-                                    {
-                                        count++;
-                                        <li class="msg @(count > 2 ? "hide" : "show") @(msg.Seen ? "seen" : "")">
-                                            <a href="@msg.ID" id="@msg.ID">
-                                                <div>
-                                                    <span class="glyphicon glyphicon-user img-circle" style="margin-right:25px; font-size:25px;"> </span><strong style="font-size:16px; margin-right:10px;">@msg.From</strong> <em><span class="glyphicon glyphicon-calendar"> </span> @msg.DateTCreated</em>
-                                                    <div class="txt-holder txt">
-                                                        @msg.Msg in this this this this this this this this this this this this v this this this this this v v v this this this this
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <div class="txt-btns-container hide">
-                                                <button id="@msg.ID" class="delete-msg btn btn-search"><span class="glyphicon glyphicon-remove-circle"> </span> Delete</button>
-                                                <button id="@msg.ID" class="reply-to-msg btn btn-search">Reply <i class="fa fa-reply" aria-hidden="true"> </i></button>
-                                            </div>
-                                        </li>
-                                    }
-                                }
-                                if (count > 2)
-                                {
-                                    <li><div><button id="view-all-msgs-btn" class="btn btn-accent" style="float:right;margin-top:10px;">View All</button></div></li>
-                                }
-                            }
-                            else
-                            {
-                                <li><div class="contact-info-content" colspan="8"><center>No Messages Found</center></div></li>
-                            }
-                        }
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="row">&nbsp;</div>
-        <div id="d-requisitions">
-            <div class="dashboard-info-headers">
-                Requisitions
-            </div>
-            <div class="dashboard-info">
-                <div id="dashboard-requisitions" class="table-responsive">
-                    <table id="tblRequisitions" width="100%">
-                        @{
-                            count = 0;
-                            bool hasHistory = false;
 
-                            if (ViewBag.requisitions != null)
-                            {
-                                <thead>
-                                    <tr>
-                                        <th>Property Image</th>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Email</th>
-                                        <th>Cell</th>
-                                        <th>Date</th>
-                                        <th>&nbsp;</th>
-                                        <th>&nbsp;</th>
-                                    </tr>
-                                </thead>
-                                foreach (var req in ViewBag.requisitions)
-                                {
-                                    if (!req.PropertyRequisition.IsAccepted)
-                                    {
-                                        <tr>
-                                            <td class="property_image"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></td>
-                                            <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
-                                            <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
-                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
-                                            <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
-                                            <td class="date"> @req.PropertyRequisition.DateTCreated</td>
-                                            <td><input id="@req.PropertyRequisition.PropertyID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
-                                            <td><input id="@req.PropertyRequisition.PropertyID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
-                                        </tr>
-                                        if (req.PropertyRequisition.Msg != null)
-                                        {
-                                            <tr>
-                                                <td colspan="10"><div class="contact-info-header" style="overflow:auto;">@req.PropertyRequisition.Msg</div></td>
-                                            </tr>
-                                        }
-                                        count++;
-                                        if (count > 3)
-                                        {
-                                            <tr><td colspan="8"><button id="view-all-req-btn" class="btn btn-accent" style="position:relative;float:right;">View All</button></td></tr>
-                                            break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
-                                        hasHistory = true;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
-                            }
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-        <hr />
-        <div id="d-requisitions">
-            <div class="dashboard-info-headers">
-                Requisitions Acceptance History
-            </div>
-            <div class="dashboard-info">
-                <div id="dashboard-requisitions-history">
-                    <table id="tblRequisitionsHistory" class="table table-condensed table-striped">
-                        @{
-                            count = 0;
-                            if (ViewBag.requisitions != null && hasHistory)
-                            {
-                                <thead>
-                                    <tr>
-                                        <th>Property Image</th>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Email</th>
-                                        <th>Cell</th>
-                                        <th>Date</th>
-                                        <th>&nbsp;</th>
-                                        <th>&nbsp;</th>
-                                    </tr>
-                                </thead>
-                                foreach (var req in ViewBag.requisitions)
-                                {
-                                    if (req.PropertyRequisition.IsAccepted)
-                                    {
-                                        <tr>
-                                            <td class="property_image"><img style="width:100px;height:100px" src="~/Uploads/@req.ImageUrl" /></td>
-                                            <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
-                                            <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
-                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
-                                            <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
-                                            <td class="date"> @req.PropertyRequisition.DateTCreated</td>
-                                            <td>&nbsp;</td>
-                                            <td>&nbsp;</td>
-                                        </tr>
-                                        count++;
-                                        if (count > 0)
-                                        {
-                                            <tr><td class="contact-info-content" colspan="8"><button id="view-all-req-hist-btn" class="btn btn-accent right">View All</button></td></tr>
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <tr><td class="contact-info-content" colspan="8"><center>No Requisition History Records Found</center></td></tr>
-                            }
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>-->
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-xs-12">
-        <div class="dashboard-info-headers">
-            Actions
-        </div>
-        <div class="management-action">
-            <a  href="messages" class="col-xs-2 action">
-                <div id="messages">
-                    <span class="glyphicon glyphicon-envelope img-circle img-circle-md" style="margin-right:25px;"></span>
+<div class="dashboard">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="management-action">
+                @if (ViewBag.isUserPropOwner != null && ViewBag.isUserPropOwner)
+                {
+                    <a href="properties" class="action active">
+                        <div class="img-circle img-circle-sm" id="owned-properties">
+                            <i class="fa fa-globe"></i>
+                        </div>
+                        <div class="management-action-title">Properties</div>
+                    </a>
+                }
+                else
+                {
+                    <a href="saved-properties" class="action active">
+                        <div class="img-circle img-circle-sm" id="saved-properties">
+                            <i class="fa fa-thumbs-up"></i>
+                        </div>
+                        <div class="management-action-title">Liked Properties</div>
+                    </a>
+                }
+                <a href="messages" class="action">
+                    <div class="img-circle img-circle-sm" id="messages">
+                        <i class="fa fa-envelope-o"></i>
+                    </div>
                     <div class="management-action-title">Messages</div>
-                </div>
-            </a>
-            <a href="requisitions" class="col-xs-2 action">
-                <div id="requisitions">
-                    <span class="glyphicon glyphicon-inbox img-circle img-circle-md" style="margin-right:25px;"> </span>
+                </a>
+                <a href="requisitions" class="action">
+                    <div class="img-circle img-circle-sm" id="requisitions">
+                        <i class="fa fa-hand-paper-o"></i>
+                    </div>
                     <div class="management-action-title">Requisitions</div>
-                </div>
-            </a>
-            <a href="meetings" class="col-xs-2 action">
-                <div id="meetings">
-                    <span class="glyphicon glyphicon-link img-circle img-circle-md" style="margin-right:25px;"> </span>
+                </a>
+                <!--
+                <a href="meetings" class="action">
+                    <div class="img-circle img-circle-sm" id="meetings">
+                        <i class="fa fa-handshake-o"></i>
+                    </div>
                     <div class="management-action-title">Meetings</div>
-                </div>
-            </a>
-            <a href="complaints" class="col-xs-2 action">
-                <div id="complaints">
-                    <span class="glyphicon glyphicon-warning-sign img-circle img-circle-md" style="margin-right:25px;"> </span>
-                    <div class="management-action-title">Complaints</div>
-                </div>
-            </a>
-            <a href="bills" class="col-xs-2 action">
-                <div id="bills">
-                    <span class="glyphicon glyphicon-credit-card img-circle img-circle-md" style="margin-right:25px;"> </span>
-                    <div class="management-action-title">Bills</div>
-                </div>
-            </a>
-            <a href="tennants" class="col-xs-2 action">
-                <div id="tennants">
-                    <span class="glyphicon glyphicon-user img-circle img-circle-md" style="margin-right:25px;"> </span>
-                    <div class="management-action-title">Tennants</div>
-                </div>
-            </a>
+                </a>
+                
+                <a href="complaints" class="action">
+                    <div class="img-circle img-circle-sm" id="complaints">
+                        <i class="fa fa-newspaper-o"></i>
+                    </div>
+                    <div class="management-action-title">complaints</div>
+                </a>
+                <a href="bills" class="action">
+                    <div class="img-circle img-circle-sm" id="bills">
+                        <i class="fa fa-usd"></i>
+                    </div>
+                    <div class="management-action-title">bills</div>
+                </a>
+                    -->
+                @*
+                    @if (ViewBag.isUserPropOwner != null && ViewBag.isUserPropOwner)
+                    {
+                        <a href="tennants" class="action">
+                            <div class="img-circle img-circle-sm" id="tennants">
+                                <i class="fa  fa-users"></i>
+                            </div>
+                            <div class="management-action-title">tennants</div>
+                        </a>
+                    }
+                *@
+            </div>
+        </div>
+        <div class="col-md-10">
+            <br />
+            <div class="management-main-content">
+                @if (ViewBag.isUserPropOwner != null && ViewBag.isUserPropOwner)
+                {
+                    @Html.Partial("_partialPropertiesOwned")
+                }
+                else
+                {
+                    @Html.Partial("_partialPropertiesSaved")
+                }
+            </div>
         </div>
     </div>
+    <input type="hidden" id="userId" value="@ViewBag.userId" />
 </div>
-<br/>
-<br />
-<div class="row">
-    <div class="col-xs-12 management-action-container hide">
-        <div class="arrow-top hide"></div>
-        <div class="management-action-content-holder"><!--Dynamic content will be placed here--></div>
-    </div>
-</div>
-<input type="hidden" id="userId" value="@ViewBag.userId" />

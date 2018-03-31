@@ -1,25 +1,30 @@
 ﻿@model SS.Models.Message
 
-<section class="management-action-content">
-    <aside class="management-action-aside">
-        <div class="dashboard-info msg-container">
-            <ul id="dashboard-messages"></ul>
-        </div>
-        <br />
-        <div id="new-message" class="msg-box-container" style="width:97%;">
-            <button id="new-msg-btn" class="btn btn-block btn-accent">Create New <span class="glyphicon glyphicon-plus-sign"></span></button>
-        </div>
-    </aside>
-    <section class="management-action-section">
-        <div class="dashboard-info msg-container">
-            <!--Dynamic content-->
+<div class="management-action-container">
+    <div class="management-action-content-holder">
+        <div class="ctnr-headers">Messages</div>
+        <section class="management-action-content">
+            <aside class="management-action-aside">
+                <div class="dashboard-info msg-container">
+                    <ul id="dashboard-messages"></ul>
+                </div>
+                <br />
+                <div id="new-message" class="msg-box-container" style="width:97%;">
+                    <button id="new-msg-btn" class="btn btn-block btn-accent">Create New <span class="glyphicon glyphicon-plus-sign"></span></button>
+                </div>
+            </aside>
+            <section class="management-action-section">
+                <div class="dashboard-info msg-container">
+                    <!--Dynamic content-->
 
-        </div>
-        <form id="send-msg-form">
-            <div class="msg-box-container">
-                <input type="text" id="msg-box" class="form-control msg-box" placeholder="Type your message" />
-                <button disabled id="send-msg-btn" type="submit" class="btn btn-accent">Send Message <span class="glyphicon glyphicon-send"></span></button>
-            </div>
-        </form>
-    </section>
-</section>
+                </div>
+                <form id="send-msg-form">
+                    <div class="msg-box-container">
+                        <input type="text" id="msg-box" class="form-control msg-box" placeholder="Type your message" />
+                        <button disabled id="send-msg-btn" type="submit" class="btn btn-accent">Send Message <span class="glyphicon glyphicon-send"></span></button>
+                    </div>
+                </form>
+            </section>
+        </section>
+    </div>
+</div>

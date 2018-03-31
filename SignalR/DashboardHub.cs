@@ -31,5 +31,16 @@ namespace SS.SignalR
             IHubContext context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
             context.Clients.User(identity).updateMeeting();
         }
+
+        /// <summary>
+        /// Updates a property owner of a new requisition
+        /// </summary>
+        /// <param name="identity"></param>
+        [HubMethodName("alertRequisition")]
+        public static void alertRequisition(String identity)
+        {
+            IHubContext context = GlobalHost.ConnectionManager.GetHubContext<DashboardHub>();
+            context.Clients.User(identity).newRequisitionAlert();
+        }
     }
 }

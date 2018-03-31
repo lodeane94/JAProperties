@@ -13,43 +13,62 @@
     });
     })();
 }
-<script type="text/javascript">
-    var jumbotrun = document.getElementById('jumbotron-container');
-    jumbotrun.style.display = 'none';
-</script>
+<style>
+    .jumbotron-container {
+        display: none;
+    }
+</style>
 @{
     if (Session["invalidUser"] != null)
     {
-        <div class="col-md-12">
-            <div id="fadedAnnouncment" class="error" style="display:none; color:#FFFFFF;">
-                <strong>Login Failed</strong> <span class="glyphicon glyphicon-exclamation-sign"></span>
-                <br /><br /><em>@Session["invalidUser"]</em>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="fadedAnnouncment" class="error" style="display:none; color:#FFFFFF;">
+                    <strong>Login Failed</strong> <span class="glyphicon glyphicon-exclamation-sign"></span>
+                    <br />@Html.Raw(Session["invalidUser"])
+                </div>
             </div>
         </div>
         Session["invalidUser"] = null;
+        <br/>
     }
 }
-<br />
-<div class="col-md-12">
+
     @using (Html.BeginForm("SignIn", "Accounts", FormMethod.Post))
             {
 
         <div class="ctnr-headers"><label>Sign in</label></div>
-        <table class="table-condensed registration-form" width="100%">
-            <tr>
-                <td>Username</td>
-                <td>@Html.TextBox("username", "", new { @required = "true", @class = "form-control" })</td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td>@Html.Password("password", "", new { @required = "true", @class = "form-control" })</td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" class="btn btn-accent pull-right" value="Sign in"></td>
-            </tr>
-            <tr>
-                <td colspan="3"><label>Not a registered user ? </label> @Html.ActionLink("Sign Up Here", "signup", "Accounts")</td>
-            </tr>
-        </table>
+        <div class="registration-form">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="username">Username</label>
+                    @Html.TextBox("username", "", new { @required = "true", @class = "form-control" })
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="password">Password</label>
+                    @Html.Password("password", "", new { @required = "true", @class = "form-control" })
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-7">
+                    <input type="submit" class="btn btn-primary btn-sm pull-right" value="Sign in">
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="badge badge-light"><label>Not a registered user ? </label> @Html.ActionLink("Sign Up Here", "signup", "accounts")</div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="badge badge-light"><label>Forgot your passsword ? </label> @Html.ActionLink("Reset Your Password", "recoverPassword", "accounts")</div>
+                </div>
+            </div>
+        </div>
     }
-</div>

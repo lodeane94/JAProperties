@@ -1,0 +1,84 @@
+﻿@model IEnumerable<SS.ViewModels.Management.PaymentViewModel>
+
+<div class="payments-container jumbotron-container">
+    <div class="ctnr-headers">Payments</div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-1">
+                <div class="card-header text-white bg-secondary">All Payments</div>
+                <div class="card-body">
+                    <div class="card-title">
+                        @if (Model.Count() > 0)
+                        {
+                            <div class="rTable">
+                                <div class="rTableHeading">
+                                    <div class="rTableRow">
+                                        <div class="rTableHead">&nbsp;</div>
+                                        <div class="rTableHead"><strong>Date</strong></div>
+                                        <div class="rTableHead"><strong>Paid</strong></div>
+                                        <div class="rTableHead"><strong>Payment Method</strong></div>
+                                        <div class="rTableHead"><strong>Voucher</strong></div>
+                                        <div class="rTableHead">&nbsp;</div>
+                                    </div>
+                                </div>
+
+                                @{int count = 0; }
+                                @foreach (var payment in Model)
+                                {
+                                    count++;
+                                    <div class="rTableRow">
+                                        <div class="rTableCell">@count</div>
+                                        <div class="rTableCell">@payment.DateTCreated.ToShortDateString()</div>
+                                        <div class="rTableCell">&#36 @payment.Amount</div>
+                                        <div class="rTableCell">@payment.PaymentMethod</div>
+                                        <div class="rTableCell">@payment.VoucherNumber</div>
+                                        <div class="rTableCell">
+                                            @if (payment.IsVerified)
+                                            {
+                                                <a class="verified" href="#"><span class="badge badge-primary">Verified <small>@payment.DateTModified</small></span></a>
+                                            }
+                                            else
+                                            {
+                                                if (ViewBag.isAdmin != null && ViewBag.isAdmin)
+                                                {
+                                                    <a class="verify" id="@payment.ID" href="#"><span class="badge badge-danger">Verify</span></a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="not-verified" href="#"><span class="badge badge-danger">Not Verified</span></a>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="ctnr-headers">You have not made any payment or your payment has not been verified </div>
+                                    }
+                    </div>
+                    @if (ViewBag.itemsCount > 0)
+                    {
+                        <div class="card-subtitle float-right">@(ViewBag.pgNo + 1)  of @(Math.Ceiling((decimal)(ViewBag.itemsCount / ViewBag.pgTake)))</div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-end ">
+                            <li class="page-item previous disabled">
+                                <a class="page-link" id="previous" href="previous">Previous</a>
+                            </li>
+                            <li class="page-item next">
+                                <a class="page-link" id="next" href="next">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <input type="hidden" id="pgNo" name="pgNo" value="@ViewBag.pgNo" />
+                    <input type="hidden" id="pgTake" name="pgTake" value="@ViewBag.pgTake" />
+                    <input type="hidden" id="itemsCount" value="@ViewBag.itemsCount" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

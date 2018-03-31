@@ -19,18 +19,16 @@ namespace SS.Core
         public static ErrorModel PopulateErrorModel(ModelStateDictionary modelStateErrorMsgs, List<String> addtlErrorMsgs = null)
         {
             ErrorModel errorModel = new ErrorModel();
-            errorModel.ErrorMessages = new List<string>();
-
-            errorModel.hasErrors = true;
-            errorModel.ErrorMessages.Add("An unexpected error occurred");
+            
+            errorModel.AddErrorMessage("An unexpected error occurred");
 
             if (modelStateErrorMsgs != null)
             {
                 var modelStateErrors = modelStateErrorMsgs.Values.SelectMany(m => m.Errors);
-                errorModel.ErrorMessages.AddRange(modelStateErrors.Select(x => x.ErrorMessage));
+                errorModel.AddErrorMessages(modelStateErrors.Select(x => x.ErrorMessage));
             }
 
-            if(addtlErrorMsgs !=null) errorModel.ErrorMessages.AddRange(addtlErrorMsgs.Select(x => x.ToString()));
+            if(addtlErrorMsgs !=null) errorModel.AddErrorMessages(addtlErrorMsgs.Select(x => x.ToString()));
 
             return errorModel;
         }

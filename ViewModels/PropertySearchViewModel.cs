@@ -1,8 +1,4 @@
-﻿using SS.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 
 namespace SS.ViewModels
 {
@@ -22,11 +18,12 @@ namespace SS.ViewModels
         public Decimal MinPrice { get; set; }
         public Decimal MaxPrice { get; set; }
         public String SearchTerm { get; set; }
-        public String[] Tags { get; set; }
+        public System.Collections.Generic.Dictionary<String, Boolean> Tags { get; set; }
         public int PgNo { get; set; }
-        public int take { get; set; }
+        public int take { get; set; } = 16;
         public String coordinateLat { get; set; }
         public String coordinateLng { get; set; }
         public String SearchType { get; set; }
+        public Boolean IsStudentAccommodationCat { get; set; }
     }
 }

@@ -4,16 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SS.Models;
-using SS.Code;
-using System.Net.Mail;
-using System.IO;
-using System.Web.Script.Serialization;
-using System.Collections;
-using Newtonsoft.Json;
-using static SS.Code.PropertyConstants.PropertyType;
 using SS.Core;
 using SS.ViewModels;
 using SS.SignalR;
+using SS.ViewModels.Management;
 
 namespace SS.Controllers
 {
@@ -28,28 +22,31 @@ namespace SS.Controllers
         //loads dashboard page
         public ActionResult Dashboard()
         {
-            try
+            if (Session["username"] != null && Session["userId"] != null)
             {
-                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                var userId = (Guid)Session["userId"];//unitOfWork.User.GetUserByEmail(HttpContext.User.Identity.Name).ID;
+                                                     // var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
+                                                     // bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
+                var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
+
+                ViewBag.userId = Session["userId"];
+                ViewBag.isUserPropOwner = isUserPropOwner;
+                ViewBag.isUserConsumer = Session["isUserConsumer"] != null ? (bool)Session["isUserConsumer"] : false;
+                ViewBag.isUserTennant = Session["isUserTennant"] != null ? (bool)Session["isUserTennant"] : false;
+
+                if (isUserPropOwner)
                 {
-                    if (HttpContext.User.Identity.Name != null)
-                    {
-                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                        /*
-                         * upon entrance of the dashboard, put the id of the current signed in user into a session
-                         * so that it may be used if a new property is being added*/
-
-                        var userId = unitOfWork.User.GetUserByEmail(HttpContext.User.Identity.Name).ID;
-
-                        Session["userId"] = userId;
-                        ViewBag.userId = userId;
-                    }
+                    ViewBag.propertyImages = PropertyHelper.GetAllPropertyImages(userId);
                 }
-            }
-            catch (Exception ex)
-            { }
+                else
+                {
+                    ViewBag.propertyImages = PropertyHelper.GetAllSavedPropertyImages(userId);
+                }
 
-            return View();
+                return View();
+            }
+            else
+                return RedirectToAction("signin", "accounts");
         }
 
         [HttpPost]
@@ -100,86 +97,7 @@ namespace SS.Controllers
 
             return Content("Request Cancelled");
         }
-        /*
-        [HttpPost]
-        [Authorize]
-        public ActionResult removeProperty(Guid id)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-            ACCOMMODATIONS accommodation;
-            HOUSE house;
-            LAND land;
 
-            try
-            {
-                switch (PropertiesDAO.getPropertyType(id))
-                {
-                    case PropertyConstants.PropertyType.accommodation:
-                        accommodation = dbCtx.ACCOMMODATIONS.Single(x => x.ID == id);
-                        dbCtx.ACCOMMODATIONS.Remove(accommodation);
-                        break;
-                    case PropertyConstants.PropertyType.house:
-                        house = dbCtx.HOUSE.Single(x => x.ID == id);
-                        dbCtx.HOUSE.Remove(house);
-                        break;
-                    case PropertyConstants.PropertyType.land:
-                        land = dbCtx.LAND.Single(x => x.ID == id);
-                        dbCtx.LAND.Remove(land);
-                        break;
-                }
-
-                dbCtx.SaveChanges();
-                Session["propertyRemovedMesssage"] = "Property removed successfully";
-            }
-            catch (Exception ex)
-            {
-                Session["propertyRemovedMesssage"] = "There was an error removing your property";
-            }
-
-            return Content("");
-        }
-        */
-
-        //returns all properties owned by the current user that is signed in in json format
-        [Authorize]
-        public JsonResult getAllPropertyImages()
-        {
-            ErrorModel errorModel = new ErrorModel();
-
-            IEnumerable<PropertyImage> propertyImage;
-            List<IEnumerable> pImageInfo = new List<IEnumerable>();
-            try
-            {
-                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-                {
-                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                    //checking if the landlord id was saved in the session
-                    if (Session["userId"] != null)
-                    {
-                        var userId = (Guid)Session["userId"];
-                        var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
-                        propertyImage = unitOfWork.PropertyImage.GetAllPrimaryPropertyImageByOwnerId(owner.ID);
-
-                        foreach (var image in propertyImage)
-                        {
-                            //adding properties to dictionary to display image to the user
-                            Dictionary<String, String> imageInfo = new Dictionary<string, string>();
-                            imageInfo.Add("propertyID", image.PropertyID.ToString());
-                            imageInfo.Add("imageURL", image.ImageURL);
-                            pImageInfo.Add(imageInfo);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                errorModel = MiscellaneousHelper.PopulateErrorModel(null);
-
-                return Json(errorModel, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json(pImageInfo, JsonRequestBehavior.AllowGet);
-        }
 
         /// <summary>
         /// returns latest 5 messages for a specific user
@@ -366,74 +284,7 @@ namespace SS.Controllers
 
             return 1;
         }
-        /*
-        /*
-        //loads all bills for the current user
-        [Authorize]
-        public JsonResult getAllBills()
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
 
-            List<BillsModel> billsList = new List<BillsModel>();
-
-            var landlordID = (Guid)Session["landlord_id"];
-
-            var bills = dbCtx.BILLS.Where(b => b.ACCOMMODATIONS.OWNER == landlordID)
-                            .Select(b => new { b.B_AMOUNT, b.B_TYPE, b.BILL_URL, b.DATE_DUE, b.DATE_ISSUED, b.DESCRIPTION, b.ID });
-
-            foreach (var bill in bills)
-            {
-                BillsModel billsModel = new BillsModel();
-
-                billsModel.BAmount = bill.B_AMOUNT.ToString();
-                billsModel.BType = bill.B_TYPE;
-                billsModel.DateDue = bill.DATE_DUE.ToString();
-                billsModel.DateIssued = bill.DATE_ISSUED.ToString();
-                billsModel.Description = bill.DESCRIPTION;
-                billsModel.ID = bill.ID.ToString();
-
-                billsList.Add(billsModel);
-            }
-
-            return Json(billsList, JsonRequestBehavior.AllowGet);
-        }
-        [HttpPost]
-        public ActionResult BillSubmission(string bill_type, DateTime date_issued, DateTime date_due, decimal bill_amount,
-                                            string tennats_message, HttpPostedFileBase bill_image, Guid[] room_selection)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            for (int count = 0; count < room_selection.Length; count++)
-            {
-                dbCtx.sp_insert_bill(bill_type, bill_amount, tennats_message, date_issued, date_due, room_selection[count]);
-
-                uploadBillPicture(bill_image, room_selection[count]);
-            }
-
-            ViewBag.BillRegistered = true;
-
-            return RedirectToAction("Dashboard");
-        }
-        //updates bill picture url
-        [HttpPost]
-        [Authorize]
-        public void uploadBillPicture(HttpPostedFileBase file, Guid room_selection)
-        {
-            JWorldPropertiesEntities dbCtx = new JWorldPropertiesEntities();
-
-            string fileName = string.Empty;
-            //ensures file is not empty and is a valid image
-            if (file.ContentLength > 0 && file.ContentType.Contains("image"))
-            {
-                fileName = Path.GetFileName(file.FileName);
-
-                string path = Path.Combine(Server.MapPath("~/Uploads/UtilityBills"), fileName);
-
-                dbCtx.sp_update_bill_pic_url(room_selection, fileName);
-
-                file.SaveAs(path);
-            }
-        }*/
         /// <summary>
         /// returns requition information for the user
         /// </summary>
@@ -449,7 +300,6 @@ namespace SS.Controllers
 
                 if (Session["userId"] != null)
                 {
-
                     var userId = (Guid)Session["userId"];
 
                     var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
@@ -473,7 +323,8 @@ namespace SS.Controllers
         }
 
         /// <summary>
-        /// returns the users which the user can set meetings for
+        /// returns the users which the user can set meetings for and 
+        /// send messages to
         /// </summary>
         /// <returns></returns>
         public JsonResult getInvitees()
@@ -488,16 +339,8 @@ namespace SS.Controllers
                 {
                     var userId = (Guid)Session["userId"];
 
-                    /*
-                    *   If user is a property owner, then he/she should be able to set meetings 
-                    *   with the tennants or property requestees
-                    *   Tennants should be able to set meetings with the property owner
-                    *   as well as the other tennants
-                    */
-                    //var user = unitOfWork.User.Get(userId);
-                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
-                    bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
-                    bool isUserTennant = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Tennant);
+                    bool isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
+                    bool isUserTennant = Session["isUserTennant"] != null ? (bool)Session["isUserTennant"] : false;
 
                     if (isUserPropOwner)
                     {
@@ -570,14 +413,14 @@ namespace SS.Controllers
         /// <param name="invitees"></param>
         private void setInviteeVMForPropertyRequestors(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
         {
-            var requisitions = unitOfWork.PropertyRequisition.GetRequestsMadeByUserId(userId);
+            var users = unitOfWork.PropertyRequisition.GetRequestedPropertyUsers(userId);
 
-            foreach (var req in requisitions)
+            foreach (var user in users)
             {
                 InviteeViewModel inviteeViewModel = new InviteeViewModel()
                 {
-                    UserID = req.Property.Owner.UserID,
-                    FullName = req.Property.Owner.User.FirstName + " " + req.Property.Owner.User.LastName,
+                    UserID = user.ID,
+                    FullName = user.FirstName + " " + user.LastName,
                     ImageUrl = "",
                     inviteeType = "R"
                 };
@@ -598,7 +441,7 @@ namespace SS.Controllers
         {
             var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
             var tennants = unitOfWork.Tennant.GetTennantsByOwnerId(owner.ID);
-            var requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
+            var userRequestees = unitOfWork.PropertyRequisition.GetRequestedPropertyUsersByOwnerId(owner.ID);
 
             //populate invitee model with each ienumerable items
             foreach (var tennant in tennants)
@@ -614,17 +457,18 @@ namespace SS.Controllers
                 invitees.Add(inviteeViewModel);
             }
 
-            foreach (var req in requisitions)
+            foreach (var user in userRequestees)
             {
                 InviteeViewModel inviteeViewModel = new InviteeViewModel()
                 {
-                    UserID = req.User.ID,
-                    FullName = req.User.FirstName + " " + req.User.LastName,
+                    UserID = user.ID,
+                    FullName = user.FirstName + " " + user.LastName,
                     ImageUrl = "",
                     inviteeType = "R"
                 };
 
-                invitees.Add(inviteeViewModel);
+                if(!invitees.Contains(inviteeViewModel))
+                    invitees.Add(inviteeViewModel);
             }
         }
 
@@ -878,6 +722,31 @@ namespace SS.Controllers
             return PartialView("_Tennants", tennants);
         }
 
+        [HttpGet]
+        public ActionResult GetManagementPropertiesView()
+        {
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+
+                ViewBag.propertyImages = PropertyHelper.GetAllPropertyImages(userId);
+            }
+
+            return PartialView("_partialPropertiesOwned");
+        }
+
+        [HttpGet]
+        public ActionResult GetSavedPropertiesView()
+        {
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+
+                ViewBag.propertyImages = PropertyHelper.GetAllSavedPropertyImages(userId);
+            }
+
+            return PartialView("_partialPropertiesSaved");
+        }
         /// <summary>
         /// Updates the rent amount for the selected tennant
         /// </summary>
@@ -920,7 +789,207 @@ namespace SS.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates the property
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateProperty(UpdatePropertyViewModel model)
+        {
+            var isUpdated = PropertyHelper.UpdateProperty(model);
+            TempData["PropertyUpdated"] = isUpdated;
 
+            return RedirectToAction("dashboard");
+        }
+
+        /// <summary>
+        /// Updates the propert's primary image flag
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public ActionResult UpdatePropertyPrimaryImg(Guid propertyId, Guid imgId)
+        {
+            PropertyHelper.UpdatePropertyPrimaryImg(propertyId, imgId);
+
+            return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
+        }
+
+        /// <summary>
+        /// Deletes property image
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public ActionResult DeletePropertyImage(Guid propertyId, Guid imageId)
+        {
+            PropertyHelper.DeletePropertyImage(imageId);
+
+            return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
+        }
+
+        /// <summary>
+        /// Adds property image
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddPropertyImage(HttpPostedFileBase propertyImgUpload, Guid ID)
+        {
+            PropertyHelper.AssociateImageWithProperty(propertyImgUpload, ID);
+
+            return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(ID));
+        }
+
+        //loads advertise property view
+        public ActionResult AdvertiseProperty()
+        {
+            TempData["layout"] = "~/Views/Shared/_ManagementLayout.cshtml";
+            TempData["calledByManagement"] = true;
+
+            return RedirectToAction("advertiseproperty", "accounts");
+        }
+
+        /// <summary>
+        /// Forwards the 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult GetProperty(Guid id)
+        {
+            return RedirectToAction("getproperty", "properties", new { id = id });
+        }
+
+        /// <summary>
+        /// returns the account view with it's data model
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Account()
+        {
+            ProfileViewModel profileVM = null;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
+
+                profileVM = PropertyHelper.PopulateProfileViewModel(userId,isUserPropOwner);
+
+                ViewBag.userId = userId;
+                return View(profileVM);
+            }
+            else
+                return RedirectToAction("signin", "accounts");
+        }
+
+        /// <summary>
+        /// return profile view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetProfileView()
+        {
+            ProfileViewModel profileVM = null;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
+
+                profileVM = PropertyHelper.PopulateProfileViewModel(userId, isUserPropOwner);
+            }
+
+            return PartialView("_partialProfile", profileVM);
+        }
+
+        /// <summary>
+        /// return profile view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetSubscriptionView()
+        {
+            SubscriptionViewModel subscriptionVM = null;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                subscriptionVM = PropertyHelper.PopulateSubscriptionViewModel(userId);
+            }
+
+            return PartialView("_partialSubscription", subscriptionVM);
+        }
+
+        /// <summary>
+        /// return profile view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetPaymentsView(int pgTake = 16, int pgNo = 0)
+        {
+            IEnumerable<PaymentViewModel> payments = null;
+            pgTake = 1;
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                payments = PropertyHelper.GetPayments(pgTake, pgNo, userId);
+
+                ViewBag.pgNo = pgNo;
+                ViewBag.pgTake = pgTake;
+                ViewBag.itemsCount = PropertyHelper.GetPaymentsCount(userId);
+            }
+
+            return PartialView("_partialPayments", payments);
+        }
+
+        /// <summary>
+        /// Updates user profile
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult UpdateProfile(ProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                return Json(PropertyHelper.UpdateProfile(model), JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Gets the _partialModalPayment view to make payments towards a subscription
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetModalMakePayment(PaymentViewModel model)
+        {
+            return PartialView("_partialModalPayment", model);
+        }
+
+        [HttpPost]
+        public JsonResult MakePayment(PaymentViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                return Json(PropertyHelper.MakePayment(model));
+            }
+            else
+            {
+                return Json(false);
+            }
+        }
+
+        [HttpDelete]
+        public JsonResult RemoveSavedProperty(Guid propertyID)
+        {
+            bool result = false;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                result = PropertyHelper.RemoveSavedProperty(userId, propertyID);
+            }
+
+            return Json(result);
+        }
     }
 
 }

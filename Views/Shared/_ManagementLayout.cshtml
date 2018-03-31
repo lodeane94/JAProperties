@@ -4,19 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
-    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-theme.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
-    <script src="~/Scripts/modernizr-2.6.2.js"></script>
-    <script src="~/Scripts/jquery-2.1.4.js"></script>
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
     <script src="https://use.fontawesome.com/9172b7147e.js"></script>
-    <script src="~/Scripts/moment.min.js"></script>
-    <script src="~/Scripts/fullcalendar.min.js"></script>
     <link href="~/Content/fullcalendar.min.css" rel="stylesheet" />
     <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery-ui.min.js"></script>
 </head>
 <body>
     <div id="modal-loading">
@@ -25,53 +18,77 @@
         </span>
     </div>
     <div id="page-container">
-        <div id="top-header">
-            <div class="container-fluid">
-                <!--TODO put image at the top of the page as well as change the color theme-->
-                <div class="row">
-                    <div class="col-md-3">
-
+        <div id="top-header"></div>
+        <nav id="header" class="navbar navbar-expand-md navbar-light header-content">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!--<div class="col-md-2">
+                    logo placement
+                    <div class="logo">
+                        <a href="~/">JamProps</a>
                     </div>
-                    <div class="col-md-6">
-                        <div class="sign-register">
-                            <ul>
-                                <li>
-                                    <a id="dashboard" href="~/LandlordManagement/Dashboard">
-                                        <span class="glyph-style glyphicon glyphicon-dashboard"></span>Dashboard
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="~/LandlordManagement/Help" id="help">
-                                        <span class="glyph-style glyphicon glyphicon-question-sign"></span>Help
-                                    </a>
-                                </li>
-                                <li><a href="~/webinfo/contact">Contact Website Admin</a></li>
-                            </ul>
+
+                </div>-->
+                <!--main menu list-->
+                <div id="main-menu" class="collapse navbar-collapse main-menu">
+                    <div class="navbar-nav mr-auto">
+                        <a class="logo" href="~/">Jm<span style="color:#007bff;">Props</span></a>
+                        <div>
+                            <a id="dashboard" href="~/LandlordManagement/Dashboard">
+                                <i class="fa fa-area-chart fa-2x" aria-hidden="true"></i> Dashboard
+                            </a>
+                        </div>
+                        <div>
+                            <a id="account" href="~/LandlordManagement/Account">
+                                <i class="fa fa-cogs fa-2x" aria-hidden="true"></i> Account
+                            </a>
+                        </div>
+                        <div>
+                            <a href="~/LandlordManagement/Help" id="help">
+                                <i class="fa fa-question fa-2x" aria-hidden="true"></i> Help
+                            </a>
+                        </div>
+                        <div>
+                            <a id="contact" href="~/webinfo/contact">
+                                <i class="fa fa-comments-o fa-2x" aria-hidden="true"></i> Contact Website Admin
+                            </a>
                         </div>
                     </div>
-                    <div class="col-md-3 social-icons">
-                        <ul>
-                            <li>@Html.ActionLink("Sign Out", "SignOut", "Accounts") </li>
-                        </ul>
+                    <div class="navbar-nav ml-auto">
+                        <div class="sign-inout">
+                            <div>
+                                <a href="~/"><i class="fa fa-external-link fa-2x" aria-hidden="true"></i> Exit</a>
+                            </div>
+                            @if (HttpContext.Current.User.Identity.IsAuthenticated)
+                            {
+                                <div>@Html.ActionLink("Sign Out", "SignOut", "Accounts") </div>
+                            }
+                            else
+                            {
+                                <div>@Html.ActionLink("Sign In", "signin", "Accounts")</div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </nav>
         <!--------------Body Content------------------------>
-        <div id="body">
-            <div class="container-fluid">
+        <div class="container">
+            <div id="body">
                 <div class="row">
-                    <br />
-                    <div class="col-md-1">
-
-                    </div>
-                    <div class="col-md-10">
+                    <div class="col-md-9">
+                        <br />
                         <!--retrieved is an ajax content-->
                         <div id="retrieved"></div>
                         @RenderBody()
+                        <div id="map" style="display:none;"></div>
                     </div>
-                    <div class="col-md-1">
-
+                    <div class="col-md-3">
+                        <div class="advertisment-section">
+                            AD Space
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,15 +119,23 @@
         </div>
     </div>
     <!-------------------------------------------------->
-    <script src="~/Scripts/ManagementScript.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
-    <script src="~/Scripts/MainScript.js"></script>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
     <script src="~/Scripts/jquery.signalR-2.2.2.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/popper.min.js"></script>
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/fullcalendar.min.js"></script>
+    <script src="~/Scripts/ManagementScript.js"></script>
+    <!--<script src="~/Scripts/PropertiesScript.js"></script>-->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places,geometry"></script>
+    <script src="~/Scripts/GoogleMapJsScript.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
         @RenderSection("pageScript",false)
     </script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places"></script>
 </body>
 </html>

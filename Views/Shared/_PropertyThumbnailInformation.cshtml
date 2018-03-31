@@ -4,12 +4,12 @@
     @if (Model.TotRooms.HasValue)
     {
         <div><label>@(Model.TotRooms.Value > 1 ? Model.TotRooms.Value + " Bedrooms" : Model.TotRooms.Value + " Bedroom" )</label></div>
-            <div><label>@(Model.TotAvailableBathroom.Value > 1 ? Model.TotAvailableBathroom.Value + " Bathrooms" : Model.TotAvailableBathroom.Value + " Bathroom" )</label></div>
+        <div><label>@(Model.TotAvailableBathroom.Value > 1 ? Model.TotAvailableBathroom.Value + " Bathrooms" : Model.TotAvailableBathroom.Value + " Bathroom" )</label></div>
             <div><label>@(Model.FurnishedValue != null ? "Furnished" : "Not Furnished" )</label></div>
     }
     else
     {
         <div><label>@(Model.Area > 1 ? Model.Area + " Acres" : Model.Area + "Acre" )</label></div>
-            <div><label>@Model.PropertyPurpose.Name</label></div>
+        <div><label>@Model.PropertyPurpose.Name</label></div>
     }
 </div>

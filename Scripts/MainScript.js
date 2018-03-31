@@ -1,5 +1,6 @@
 ﻿//Defining Global Variables
 var isCollapsable = false;
+var isClickableContentValid = true;
 var lastSelectedClickablePropertyCategory = null;
 var lastSelectedClickablePropertyPurpose = null;
 var lastSelectedClickableAdvertismentType = null;
@@ -11,8 +12,8 @@ var errMessages = [];//array of error messages related to the submission of a pr
 
 //used to display a loading element
 var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
-                     + '<img src="/Content/ajax-loader-dark.gif" />'
-                     + '</div>';
+    + '<img src="/Content/ajax-loader-dark.gif" />'
+    + '</div>';
 
 //enable bootstrap tooptip display
 (function () {
@@ -24,6 +25,10 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
 })();
 
 /***GENERAL FUNCTIONS*/
+//go back to previous page
+function goBack() {
+    window.history.back();
+}
 //highlights navigation link curRently active
 function setActiveNavigation(id) {
     if (id != null && id != '')
@@ -79,53 +84,53 @@ $('#jumbotron-button').click(function () {
 //updates the shopping cart with the selected items
 //TODO remove hard coding
 function updateShoppingCart() {
-    if (lastSelectedClickableAdvertismentPriority != null
-        && lastSelectedClickableSubscriptionType != null
-        && $('#subscription-period').val()) {
-        var advertismentPriorityItemCost = { Regular: 0, AdPro: 1000, AdPremium: 4000 };
+   // alert(lastSelectedClickableSubscriptionType)
+   // alert($('#subscription-period').val())
+
+    if (lastSelectedClickableSubscriptionType != null && $('#subscription-period').val()) {
+        //var advertismentPriorityItemCost = { Regular: 0, AdPro: 1000, AdPremium: 4000 };
         var subscriptionItemCost = { Basic: 1000, Realtor: 3000, Landlord: 5000 };
         var period = $('#subscription-period').val();
         var totalCost = 0.00;
 
         $('.shopping-cart-container').empty();
 
-        $('.shopping-cart-container').append('<br />'
-                                + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Product</b></span></div>'
-                                + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Period</b></span></div>'
-                                + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Price</b></span></div>'
-                                );
+        $('.shopping-cart-container').append('<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Product</b></span></div>'
+            + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Period</b></span></div>'
+            + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Price</b></span></div>'
+        );
 
-        $.each(advertismentPriorityItemCost, function (index, value) {
+       /* $.each(advertismentPriorityItemCost, function (index, value) {
             switch (index) {
                 case lastSelectedClickableAdvertismentPriority.attr('id'):
                     $('.shopping-cart-container')
                         .append('<br />'
-                                + '<div class="col-md-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
-                                + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
-                                + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
-                                );
+                        + '<div class="col-md-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                        );
                     totalCost += value;
                     break;
             }
-        });
+        });*/
 
         $.each(subscriptionItemCost, function (index, value) {
             switch (index) {
                 case lastSelectedClickableSubscriptionType.attr('id'):
                     $('.shopping-cart-container')
                         .append('<br />'
-                                + '<div class="col-md-4"><span class="ctnr-info">' + 'Subscription : ' + index + '</span></div>'
-                                + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
-                                + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
-                                );
+                        + '<div class="col-md-4"><span class="ctnr-info">' + 'Subscription : ' + index + '</span></div>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                        );
                     totalCost += value;
                     break;
             }
         });
 
         $('.shopping-cart-container').append('<hr />'
-                                + '<div class="offset-8 col-md-2 cart-headings"><span class="ctnr-info"><b>Total</b></span></div>'
-                                + '<div class="col-md-2">' + '$' + (totalCost * period) + '.00 JMD' + '</div>');
+            + '<div class="offset-8 col-md-2 cart-headings"><span class="ctnr-info"><b>Total</b></span></div>'
+            + '<div class="col-md-2">' + '$' + (totalCost * period) + '.00 JMD' + '</div>');
     }
 }
 
@@ -179,6 +184,11 @@ function returnToHome() {
 //navigates browser to the sign in page of the application
 function returnToSignInPage() {
     window.location.href = window.location.protocol + '//' + window.location.host + '/' + 'accounts/signin';
+}
+
+//navigates browser to the sign in page of the application
+function returnToDashboardPage() {
+    window.location.href = window.location.protocol + '//' + window.location.host + '/' + 'landlordManagement/dashboard';
 }
 
 //navigates browser to the URL passed into the URL
@@ -285,16 +295,16 @@ function loadPropertyTags(selectedItem) {
     }
 
     //displays animated tool tip when a clickable box is hovered
-    /* $('.clickable-box-link a').hover(function () {
-         var html = '<div class="tooltip-container">'
-                     + '<div class="arrow-top"></div></div>';
- 
-         $(html).insertAfter(this).hide().slideDown('fast');
-     }, function () {
-         $('.tooltip-container').slideUp('fast', function () {
-             $(this).remove();
-         });
-     });*/
+    /*  $('.clickable-box-link a').hover(function () {
+          var html = '<div class="tooltip-container">'
+                      + '<div class="arrow-top"></div></div>';
+  
+          $(html).insertAfter(this).hide().slideDown('fast');
+      }, function () {
+          $('.tooltip-container').slideUp('fast', function () {
+              $(this).remove();
+          });
+      });*/
 
     //makes the clickable box active when clicked and handles the shift and loads the tags for the appropriate property categories
     //property type category
@@ -324,7 +334,7 @@ function loadPropertyTags(selectedItem) {
         var elements = ['#GenderPreferenceCode', '#TotAvailableBathroom', '#TotRooms', '#occupancy'];
         if (lastSelectedClickableAdvertismentType != null && selectedItem == 'RealEstate'
             && (lastSelectedClickableAdvertismentType.attr('id') == 'Rent'
-            || lastSelectedClickableAdvertismentType.attr('id') == 'Lease'))
+                || lastSelectedClickableAdvertismentType.attr('id') == 'Lease'))
             enableElements(elements);
         else if (lastSelectedClickableAdvertismentType != null && selectedItem == 'RealEstate'
             && lastSelectedClickableAdvertismentType.attr('id') == 'Sale') {
@@ -430,7 +440,7 @@ function loadPropertyTags(selectedItem) {
          else
              disableElements(elements);*/
 
-        updateShoppingCart();
+        //updateShoppingCart();
 
         var field = $('#subscription-type');
         removeErrorField(field);
@@ -449,7 +459,7 @@ function loadPropertyTags(selectedItem) {
             lastSelectedClickableAdvertismentPriority = $(this);
         }
 
-        updateShoppingCart();
+        //updateShoppingCart();
 
         var field = $('#advertisment-priority');
         removeErrorField(field);
@@ -477,8 +487,8 @@ function loadPropertyTags(selectedItem) {
     //validates populates subscription period drop down list element with the appropriate options
     $('#subscription-period').click(function () {
         if (lastSelectedClickablePropertyCategory != null
-           || lastSelectedClickableAdvertismentType != null
-           || lastSelectedClickableSubscriptionType != null) {
+            || lastSelectedClickableAdvertismentType != null
+            || lastSelectedClickableSubscriptionType != null) {
 
             updateShoppingCart();
 
@@ -516,9 +526,9 @@ function loadPropertyTags(selectedItem) {
 
             //outputing images
             $('.flPropertyPicsImageOutput').append(''
-              + '<div class="col-xs-3 flPropertyPics">'
-              + '<a href="#"><img id="' + value.name + '"/></a>'
-              + '</div>').hide().fadeIn('slow');
+                + '<div class="col-xs-3 flPropertyPics">'
+                + '<a href="#"><img id="' + value.name + '"/></a>'
+                + '</div>').hide().fadeIn('slow');
 
             var img = document.getElementById(value.name);//$('#' + value.name)[0];
             img.file = value;
@@ -689,15 +699,84 @@ function loadPropertyTags(selectedItem) {
     $('#AdvertisePropertyBtn').click(function (event) {
         event.preventDefault();
         //TODO create better error handlers for clickable contents
-        var isClickableContentValid = true;
-        var genderPreferenceCode = $('#GenderPreferenceCode');
-        var isReviewable = $('#isReviewable');
+        //var genderPreferenceCode = $('#GenderPreferenceCode');
+        //var isReviewable = $('#isReviewable');
+
+        //adds hidden fields containing the selected tags
+        if (propertyTagsSelected != null) {
+            $.each(propertyTagsSelected, function (index, value) {
+                addHiddenInputToForm('selectedTags', value);
+            });
+        }
+
         var uploadedFiles = $('#flPropertyPics')[0].files;
+
+        validateSection3(uploadedFiles);
+        /*
+        if (lastSelectedClickableAdvertismentPriority != null) {
+            addHiddenInputToForm('advertismentpriority', lastSelectedClickableAdvertismentPriority.attr('id'));
+        } else {
+            //       alert('Select advertisment priority');
+            isClickableContentValid = false;
+
+            var field = $('#advertisment-priority');
+            highlightErrorField(field);
+        }*/
+
+        if (isClickableContentValid && isAddPropertyFormInputsValid) {
+            loadingGifLocation = $('.AdvertisePropertyBtn');
+            var formData = new FormData($('#ad-submission')[0]);
+            alert('Submission Valid');
+            $.ajax({
+                url: '/accounts/advertiseproperty',
+                type: 'Post',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+                success: function (data) {
+                    if (data.hasErrors) {
+                        alert('Error encountered while uploading property. Contact Website Administrator');
+                        $.each(data.ErrorMessages, function (index, value) {
+                            addErrorMessage(value);
+                        });
+
+                        displayErrorMessages();
+
+                        $('html, body').animate({
+                            scrollTop: $('.error-container').offset().top
+                        }, 'fast');
+                    } else {
+                        sys.showModal('#propertyModal');
+                    }
+                },
+                error: function (data) { alert('Error encountered while uploading property. Contact Website Administrator'); },
+                complete: function () { $('#loading-gif').remove(); },
+            });
+        } else {
+            var errMessage = 'Highlight fields are required';
+            
+            if (errMessages != null && errMessages.length > 0)
+                addErrorMessage('<br>');
+
+            displayErrorMessages();
+
+            $('html, body').animate({
+                scrollTop: $('.error-container').offset().top
+            }, 'fast');
+        }
+    });
+
+    var isAddPropertyFormInputsValid = false;
+
+    function validateSection1() {
+        isClickableContentValid = true;
+        isAddPropertyFormInputsValid = true;//set to true on section 1 since there are no form inputs there
 
         if (lastSelectedClickablePropertyCategory != null) {
             addHiddenInputToForm('propertycategory', lastSelectedClickablePropertyCategory.attr('id'));
         } else {
-            //   alert('Select property category');
             isClickableContentValid = false;
 
             var field = $('#property-category');
@@ -707,7 +786,6 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickablePropertyPurpose != null) {
             addHiddenInputToForm('propertypurpose', lastSelectedClickablePropertyPurpose.attr('id'));
         } else {
-            //   alert('Select property purpose');
             isClickableContentValid = false;
 
             var field = $('#property-purpose');
@@ -717,54 +795,165 @@ function loadPropertyTags(selectedItem) {
         if (lastSelectedClickableAdvertismentType != null) {
             addHiddenInputToForm('advertismenttype', lastSelectedClickableAdvertismentType.attr('id'));
         } else {
-            //     alert('Select advertisment type');
             isClickableContentValid = false;
 
             var field = $('#advertisment-type');
             highlightErrorField(field);
         }
+    }
+
+    function validateSection2() {
+        var validator = null;
+        isAddPropertyFormInputsValid = false;
+        //TODO write rule messages
+        var passwordCheck = $('#password').attr('id');
+
+        if (passwordCheck != null && passwordCheck != undefined) {
+            validator = $('#ad-submission').validate({
+                rules: {
+                    password: {
+                        minlength: 5
+                    },
+                    ConfirmPassword: {
+                        minlength: 5,
+                        equalTo: password
+                    }
+                },
+
+                messages: {
+                    password: {
+                        minlength: 'Password should be at least 5 characters long',
+                        equalTo: 'Password and Confirm Password values must be the same value'
+                    },
+                    ConfirmPassword: {
+                        minlength: 'Password should be at least 5 characters long',
+                        equalTo: 'Password and Confirm Password values must be the same value'
+                    }
+                },
+
+               // onfocusout: false,
+               // onkeyup: false,
+
+                errorPlacement: function (error, element) { },
+
+                showErrors: function (errorMap, errorList) {
+                    $.each(errorList, function () {
+                        //if (this.message != 'This field is required.')
+                            addErrorMessage(this.message);
+                    });
+
+                    displayErrorMessages();
+
+                    this.defaultShowErrors();
+                }
+            });
+        } else {
+            validator = $('#ad-submission').validate();
+        }
+
+        isAddPropertyFormInputsValid = validator.form();
+    }
+
+    function validateSection3(uploadedFiles) {
+        var validator = null;
+        isAddPropertyFormInputsValid = false;
 
         if (lastSelectedClickableSubscriptionType != null) {
             addHiddenInputToForm('subscriptiontype', lastSelectedClickableSubscriptionType.attr('id'));
         } else {
-            //     alert('Select subscription type');
-            isClickableContentValid = false;
+            //subscription type is not necessary if new property is being added from the management controller
+            //hence do not do the following if that is the case
+            var isCalledByManagement = $('#calledByManagement').val();
+            if (!isCalledByManagement) {
+                isClickableContentValid = false;
 
-            var field = $('#subscription-type');
-            highlightErrorField(field);
-        }
-
-        if (lastSelectedClickableAdvertismentPriority != null) {
-            addHiddenInputToForm('advertismentpriority', lastSelectedClickableAdvertismentPriority.attr('id'));
-        } else {
-            //       alert('Select advertisment priority');
-            isClickableContentValid = false;
-
-            var field = $('#advertisment-priority');
-            highlightErrorField(field);
-        }
-
-        //adds hidden fields containing the selected tags
-        if (propertyTagsSelected != null) {
-            $.each(propertyTagsSelected, function (index, value) {
-                addHiddenInputToForm('selectedTags', value);
-            });
+                var field = $('#subscription-type');
+                highlightErrorField(field);
+            }
         }
 
         if (uploadedFiles.length == 0) {
-            alert('Upload at least one property image');
+            //alert('Upload at least one property image');
             isClickableContentValid = false;
 
-            var field = $('#flPropertyPicsFileNameOutput');
+            var field = $('#flPropertyPics');
             highlightErrorField(field);
         }
-        //TODO write rule messages
-        var validator = $('#ad-submission').validate({
+
+        validator = $('#ad-submission').validate();
+        isAddPropertyFormInputsValid = validator.form();
+    }
+
+    $('.previous-advertise-section').click(function () {
+        var sectionId = $(this).parents('.prop-upload-info').attr('id');
+
+        var nextId = Number(sectionId) - 1;
+
+        $('.prop-upload-info#' + sectionId).slideUp(400, function () {
+            $(this).addClass('hide')
+
+            $('.prop-upload-info#' + nextId).slideDown(400, function () {
+                $(this).removeClass('hide');
+
+                $('html, body').animate({
+                    scrollTop: $('.error-container').offset().top
+                }, 'fast');
+            });
+        });
+    });
+
+    $('.next-advertise-section').click(function () {
+        //clear error messages upon each advancement
+        errMessages = [];
+        $('.error-container').html('');
+        $('.error-container').css({ 'display': 'none' });
+
+        var sectionId = Number($(this).parents('.prop-upload-info').attr('id'));
+
+        switch (sectionId) {
+            case 1: validateSection1();
+                break;
+            case 2: validateSection2();
+                break;
+        }
+
+        if (isClickableContentValid && isAddPropertyFormInputsValid) {
+            var nextId = sectionId + 1;
+
+            $('.prop-upload-info#' + sectionId).slideUp(400, function () {
+                $(this).addClass('hide')
+
+                $('.prop-upload-info#' + nextId).slideDown(400, function () {
+                    $(this).removeClass('hide');
+                });
+            });
+        } else {
+            $('html, body').animate({
+                scrollTop: $('.error-container').offset().top
+            }, 'fast');
+        }
+    });
+
+    $('#resetPassword').click(function (event) {
+        event.preventDefault();
+
+        var form = $('#resetPasswordForm');
+
+        var validator = validatePasswordForm();
+        var isFormValid = validator.form();
+
+        if (isFormValid) {
+            form.submit();
+        }
+    });
+
+    function validatePasswordForm() {
+        return $('#resetPasswordForm').validate({
             rules: {
                 password: {
                     minlength: 5
                 },
-                ConfirmPassword: {
+                confirmPassword: {
                     minlength: 5,
                     equalTo: password
                 }
@@ -772,9 +961,10 @@ function loadPropertyTags(selectedItem) {
 
             messages: {
                 password: {
-                    minlength: 'Password should be at least 5 characters long'
+                    minlength: 'Password should be at least 5 characters long',
+                    equalTo: 'Password and Confirm Password values must be the same value'
                 },
-                ConfirmPassword: {
+                confirmPassword: {
                     minlength: 'Password should be at least 5 characters long',
                     equalTo: 'Password and Confirm Password values must be the same value'
                 }
@@ -784,6 +974,7 @@ function loadPropertyTags(selectedItem) {
 
             showErrors: function (errorMap, errorList) {
                 $.each(errorList, function () {
+                    //if (this.message != 'This field is required.')
                     addErrorMessage(this.message);
                 });
 
@@ -792,53 +983,7 @@ function loadPropertyTags(selectedItem) {
                 this.defaultShowErrors();
             }
         });
-
-        var isValid = validator.form();
-
-        if (isClickableContentValid) {
-            if (isValid) {
-                loadingGifLocation = $('.AdvertisePropertyBtn');
-                var formData = new FormData($('#ad-submission')[0]);
-
-                $.ajax({
-                    url: '/accounts/advertiseproperty',
-                    type: 'Post',
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
-                    success: function (data) {
-                        if (data.hasErrors) {
-                            alert('Error encountered while uploading property. Contact Website Administrator');
-                            $.each(data.ErrorMessages, function (index, value) {
-                                addErrorMessage(value);
-                            });
-
-                            displayErrorMessages();
-
-                            $('html, body').animate({
-                                scrollTop: $('.error-container').offset().top
-                            }, 'fast');
-                        } else {
-                            sys.showModal('#propertyModal');
-                        }
-                    },
-                    error: function (data) { alert('Error encountered while uploading property. Contact Website Administrator'); },
-                    complete: function () { $('#loading-gif').remove(); },
-                });
-            }
-        } else {
-            var errMessage = 'Select an option from the highlighted items' + '<br>';
-            addErrorMessage(errMessage);
-            displayErrorMessages();
-
-            $('html, body').animate({
-                scrollTop: $('.error-container').offset().top
-            }, 'fast');
-        }
-    });
-
+    }
 
 })();
 /***ADVERTISEPROPERTY FUNCTIONS*/

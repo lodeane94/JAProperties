@@ -12,5 +12,7 @@ namespace SS.Models.Repositories
         IEnumerable<PropertyRequisition> GetRequestsByOwnerId(Guid Id);
         IEnumerable<PropertyRequisition> GetRequestsMadeByUserId(Guid Id);
         IEnumerable<PropertyRequisition> GetAcceptedRequestsByOwnerId(Guid Id);
+        IEnumerable<User> GetRequestedPropertyUsersByOwnerId(Guid Id);
+        IEnumerable<User> GetRequestedPropertyUsers(Guid RequesteeUserId);
     }
 }

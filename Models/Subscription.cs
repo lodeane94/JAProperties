@@ -14,6 +14,12 @@ namespace SS.Models
     
     public partial class Subscription
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Subscription()
+        {
+            this.Payment = new HashSet<Payment>();
+        }
+    
         public System.Guid ID { get; set; }
         public System.Guid OwnerID { get; set; }
         public string TypeCode { get; set; }
@@ -26,5 +32,7 @@ namespace SS.Models
     
         public virtual Owner Owner { get; set; }
         public virtual SubscriptionType SubscriptionType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Payment> Payment { get; set; }
     }
 }

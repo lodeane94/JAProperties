@@ -1,0 +1,42 @@
+﻿@model SS.ViewModels.Management.PaymentViewModel
+@using SS.ViewModels.RazorHelperModels
+
+<div id="paymentModalContainer" class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="paymentModal" class="modal fade">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form id="form-make-payment" action="~/landlordmanagement/MakePayment" method="post">
+                            <div class="modal-header">
+                                <div id="action-header">
+                                    <span class="fa fa-credit-card"></span> Make Payment | <small>Subscription for @Model.Period Months | &#36; @Model.Amount</small>
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                @Html.DropDownListFor(m => m.PaymentMethodID, PropertyViewHelper.GetPaymentMethods(), new { @class = "custom-select", @required = true })
+                                <br/><br />
+                                <div class="payment-method">
+                                    <div style="display:none;" id="voucher" class="form-group">
+                                        <small class="text-muted text-sm-center">Enter a credit voucher number valuing <b>&#36; @Model.Amount</b></small>
+                                        <br/>
+                                        <input type="text" required class="form-control" id="voucherNumber" name="voucherNumber" aria-describedby="voucherNumber" placeholder="Enter voucher number">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                @Html.Hidden("SubscriptionID", Model.SubscriptionID)
+                                @Html.Hidden("Period", Model.Period)
+                                @Html.Hidden("Amount", Model.Amount)
+                                @Html.Hidden("IsExtension", Model.IsExtension)
+                                <button id="submit-payment" tabindex="-1" disabled type="submit" class="btn btn-sm btn-outline-success disabled">Make Payment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

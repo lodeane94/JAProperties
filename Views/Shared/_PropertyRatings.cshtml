@@ -1,22 +1,21 @@
-﻿@model SS.ViewModels.FeaturedProperty
+﻿@model int
 
-@if (Model.ShowRating)
-            {
-    <div class="property-ratings">
-        @if (Model.AverageRating > 0)
+
+<div class="property-ratings">
+    @if (Model > 0)
+    {
+        for (int ratingCount = 1; ratingCount <= Model; ratingCount++)
         {
-            for (int ratingCount = 1; ratingCount <= Model.AverageRating; ratingCount++)
-            {
-                <div class="ratings"><span class="fa fa-star"></span></div>
-            }
+            <div class="ratings"><span class="fa fa-star"></span></div>
         }
-        else
+    }
+    else
+    {
+        int maxRating = 5;
+        for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
         {
-            int maxRating = 5;
-            for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
-            {
-                <div title="Not Rated" class="ratings"><span class="empty fa fa-star"></span></div>
-            }
+            <div title="Not Rated" class="ratings"><span class="empty fa fa-star"></span></div>
         }
-    </div>
-}
+    }
+</div>
+

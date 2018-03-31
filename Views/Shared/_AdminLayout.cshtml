@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <script src="https://use.fontawesome.com/9172b7147e.js"></script>
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="modal-loading">
+        <span style="margin: 0 auto; display: block; width: 150px; margin-top: 30%; ">
+            <img src="~/Content/ajax-loader.gif" />
+        </span>
+    </div>
+    <div id="page-container">
+        <div id="top-header"></div>
+        <nav id="header" class="navbar navbar-expand-md navbar-light header-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div id="main-menu" class="collapse navbar-collapse main-menu">
+                            <ul class="navbar-nav mr-auto">
+                                <li>
+                                    <a id="verify-payments" href="~/admin/verifypayments">
+                                        <i class="fa fa-area-chart fa-2x" aria-hidden="true"></i> Verify Payments
+                                    </a>
+                                </li>
+                                <li class="sign-inout">
+                                    <ul class="sign-register">
+                                        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+                                        {
+                                            <li>@Html.ActionLink("Sign Out", "SignOut", "Accounts") </li>
+                                        }
+                                        else
+                                        {
+                                            <li>@Html.ActionLink("Sign In", "signin", "Accounts")</li>
+                                        }
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!--------------Body Content------------------------>
+        <div class="container">
+            <div id="body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <!--retrieved is an ajax content-->
+                        <div id="retrieved"></div>
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------->
+    <!-------------------Footer-------------------------->
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <hr />
+                    <label>Disclaimer &copy;Jamprops.net</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------->
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.2.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ManagementScript.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script type="text/javascript">
+        @RenderSection("pageScript",false)
+    </script>
+</body>
+</html>

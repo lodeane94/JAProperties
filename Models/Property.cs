@@ -24,6 +24,7 @@ namespace SS.Models
             this.PropertyRequisition = new HashSet<PropertyRequisition>();
             this.Tags = new HashSet<Tags>();
             this.Tennant = new HashSet<Tennant>();
+            this.SavedProperties = new HashSet<SavedProperties>();
         }
     
         public System.Guid ID { get; set; }
@@ -82,5 +83,7 @@ namespace SS.Models
         public virtual ICollection<Tags> Tags { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Tennant> Tennant { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SavedProperties> SavedProperties { get; set; }
     }
 }

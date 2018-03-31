@@ -20,5 +20,10 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.Subscription.Where(x => x.TypeCode.Equals(code)).ToList();
         }
+
+        public Subscription GetSubscriptionByOwnerID(Guid ID)
+        {
+            return EasyFindPropertiesEntities.Subscription.Where(x => x.OwnerID.Equals(ID)).Single();
+        }
     }
 }

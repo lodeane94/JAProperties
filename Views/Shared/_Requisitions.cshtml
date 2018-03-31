@@ -1,85 +1,93 @@
 ﻿@model List<SS.ViewModels.RequisitionViewModel>
 
-<section class="management-action-content">
-    <section class="management-action-section req">
-        <div class="dashboard-info msg-container req">
-            <div id="dashboard-requisitions" class="table-responsive">
-                <table id="tblRequisitions" width="100%">
-                    @{
-                        int notAcceptedCount = 0;//keeps count of the accepted requisitions
-                                                 // bool hasHistory = false;
-                        int headerCount = 0;
+<div class="ctnr-headers">Requisitions</div>
+<div class="card">
+    <div class="card-body">
+        <div style="overflow-x:auto;">
+            <div class="rTable">
+                @{
+                    int notAcceptedCount = 0;//keeps count of the accepted requisitions
+                                             // bool hasHistory = false;
+                    int count = 0;
 
-                        if (Model != null)
+                    if (Model != null)
+                    {
+                        foreach (var req in Model)
                         {
-                            foreach (var req in Model)
+                            if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value)
                             {
-                                if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value)
+                                count++;
+                                notAcceptedCount++;
+                                //display header only once
+                                if (count < 2)
                                 {
-                                    headerCount++;
-                                    notAcceptedCount++;
-                                    //display header only once
-                                    if (headerCount < 2)
-                                    {
-                                        <thead>
-                                            <tr>
-                                                <th>Property Image</th>
-                                                <th>First Name</th>
-                                                <th>Last Name</th>
-                                                @if (req.isUserPropOwner)
-                                                {
-                                                    <th>Email</th>
-                                                }
-                                                <th>Cell</th>
-                                                <th>Date</th>
-                                                <th>&nbsp;</th>
-                                                <th>&nbsp;</th>
-                                            </tr>
-                                        </thead>
-                                        <input id="isUserPropOwner" type="hidden" value="@Html.Raw(req.isUserPropOwner)" />
-                                        
-                                    }
-                                    <tr>
-                                        <td class="property_image"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></td>
-                                        <td class="first_name"> @req.PropertyRequisition.User.FirstName</td>
-                                        <td class="last_name"> @req.PropertyRequisition.User.LastName</td>
-                                        @if (req.isUserPropOwner)
-                                        {
-                                            <td class="email"> @req.PropertyRequisition.User.Email</td>
-                                        }
-                                        <td class="cell"> @req.PropertyRequisition.User.CellNum</td>
-                                        <td class="date"> @req.PropertyRequisition.DateTCreated</td>
-                                        @if (req.isUserPropOwner)
-                                        {
-                                            <td><input id="@req.PropertyRequisition.ID" class="btnAcceptRequest btn btn-accent" type="button" value="Accept"></td>
-                                            <td><input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-accent" type="button" value="Deny"></td>
-                                        }
-                                        else
-                                        {
-                                            <td><em>Awaiting response ...</em></td>
-                                            <td><input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-accent" type="button" value="Cancel"></td>
-                                        }
-                                    </tr>
-                                    if (req.PropertyRequisition.Msg != null)
-                                    {
-                                        <tr>
-                                            <td colspan="10"><div class="contact-info-header" style="overflow:auto;">@req.PropertyRequisition.Msg</div></td>
-                                        </tr>
-                                    }
+                                    <div class="rTableHeading">
+                                        <div class="rTableRow">
+                                            <div class="rTableHead"></div>
+                                            <div class="rTableHead">Property Image</div>
+                                            <div class="rTableHead">Name</div>
+                                            @if (req.isUserPropOwner)
+                                            {
+                                                <div class="rTableHead">Email</div>
+                                            }
+                                            <div class="rTableHead">Cell</div>
+                                            <div class="rTableHead">Date</div>
+                                            <div class="rTableHead"></div>
+                                        </div>
+                                    </div>
+                                    <input id="isUserPropOwner" type="hidden" value="@Html.Raw(req.isUserPropOwner)" />
+
                                 }
-                                else
+                                <div class="rTableRow">
+                                    <div class="rTableCell" style="font-size:12px;">@count</div>
+                                    <div class="rTableCell"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></div>
+                                    <div class="rTableCell first_name"> @req.PropertyRequisition.User.FirstName &nbsp; @req.PropertyRequisition.User.LastName</div>
+                                    @if (req.isUserPropOwner)
+                                    {
+                                        <div class="rTableCell email"> @req.PropertyRequisition.User.Email</div>
+                                    }
+                                    <div class="rTableCell cell"> @req.PropertyRequisition.User.CellNum</div>
+                                    <div class="rTableCell date"> @req.PropertyRequisition.DateTCreated.ToShortDateString()</div>
+                                    @if (req.isUserPropOwner)
+                                    {
+                                        <div class="rTableCell">
+                                            <div style="display:inline-flex;">
+                                                <input style="margin-right:3px;" id="@req.PropertyRequisition.ID" class="btnAcceptRequest btn btn-outline-primary btn-sm" type="button" value="Accept">
+                                                <input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-outline-danger btn-sm" type="button" value="Deny">
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="rTableCell">
+                                            <div style="display:inline-flex;">
+                                                <em style="margin-right:3px;">Awaiting response ...</em>
+                                                <input id="@req.PropertyRequisition.ID" class="btnDenyRequest btn btn-outline-danger btn-sm" type="button" value="Cancel">
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                if (req.PropertyRequisition.Msg != null)
                                 {
-                                    //hasHistory = true;
+                                    @*
+                                        <div class="rTableRow">
+                                            <div class="rTableCell"><div class="reqMsg contact-info-header" style="overflow:auto;">@req.PropertyRequisition.Msg</div></div>
+                                        </div>
+                                    *@
                                 }
                             }
-                            if (Model != null && notAcceptedCount < 1)
+                            else
                             {
-                                <tr><td class="contact-info-content" colspan="8"><center>No Requisition Records Found</center></td></tr>
+                                //hasHistory = true;
                             }
                         }
+                        if (Model != null && notAcceptedCount < 1)
+                        {
+                            <div class="rTableRow"><div class="rTableCell contact-info-content" colspan="8"><center>No Requisition Records Found</center></div></div>
+                        }
                     }
-                </table>
+                }
             </div>
         </div>
-    </section>
-</section>
+    </div>
+</div>

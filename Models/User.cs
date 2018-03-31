@@ -24,6 +24,8 @@ namespace SS.Models
             this.MessageTrash = new HashSet<MessageTrash>();
             this.MeetingMembers = new HashSet<MeetingMembers>();
             this.Meeting = new HashSet<Meeting>();
+            this.SavedProperties = new HashSet<SavedProperties>();
+            this.PasswordRecoveryRequest = new HashSet<PasswordRecoveryRequest>();
         }
     
         public System.Guid ID { get; set; }
@@ -48,5 +50,9 @@ namespace SS.Models
         public virtual ICollection<MeetingMembers> MeetingMembers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Meeting> Meeting { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SavedProperties> SavedProperties { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PasswordRecoveryRequest> PasswordRecoveryRequest { get; set; }
     }
 }

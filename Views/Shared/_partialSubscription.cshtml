@@ -1,0 +1,100 @@
+﻿@model SS.ViewModels.Management.SubscriptionViewModel
+
+<div class="subscription-container jumbotron-container">
+    <div class="ctnr-headers">Subscription</div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-1">
+                <div class="card-header text-white bg-secondary">
+                    @{ var dateFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat;}
+                    @Model.Name Subscription | &#36; <span id="monthlyCost">@Model.MonthlyCost</span> monthly
+                    @{bool isPaymentDue = false;}
+                    @if (Model.ExpiryDate > DateTime.Now)
+                    {
+                        <span class="badge-primary" style="position:relative; float:right;">
+                            1 Month Subscription - Last Payment Verified
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge-danger" style="position:relative; float:right;">
+                            1 Month Subscription - Last Payment Not Verified
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        </span>
+                        isPaymentDue = true;
+                    }
+                </div>
+                <div class="card-body">
+                    <div class="card" style="width:100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">Payment Details</h5>
+                            <h6 class="card-subtitle mb-2 text-muted small">
+                                @if (isPaymentDue)
+                                {
+                                    <span>Payment of &#36; @Model.MonthlyCost is now due</span>
+                                }
+                                else
+                                {
+                                    <span>Subscription has been paid up to @Model.ExpiryDate.ToShortDateString()</span>
+                                    <br />
+                                    <span>Next payment is due @dateFormat.GetMonthName(Model.ExpiryDate.Month) @Model.ExpiryDate.Day, @Model.ExpiryDate.Year</span>
+                                }
+                            </h6>
+                            <p class="card-text">
+                                @if (!isPaymentDue)
+                                {
+                                    <span>
+                                        Your property(s) will be displayed from
+                                        <b>
+                                            @dateFormat.GetMonthName(Model.StartDate.Month)
+                                            @Model.StartDate.Day, @Model.StartDate.Year
+                                        </b>
+                                        to
+                                        <b>
+                                            @dateFormat.GetMonthName(Model.ExpiryDate.Month) @Model.ExpiryDate.Day, @Model.ExpiryDate.Year
+                                        </b>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>Your property(s) will not be displayed until payment is received</span>
+                                }
+                            </p>
+                            <a href="#" id="make-payment" class="card-link float-right">Make Payment</a>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="ctnr-aside">Subscription Description</div>
+                    <br />
+                    @Model.Description
+                </div>
+                <div class="card-footer">
+                    <h5 class="card-title"><a href="#" class="btn btn-outline-primary btn-sm" id="extend-subscription">Extend Subscription</a></h5>
+                    <div class="extend-subsciption-container">
+                        <select class="custom-select" id="subscription-period" name="subscriptionperiod">
+                            <option selected value="">Subscription Period</option>
+                            <option value="1">1 Month</option>
+                            <option value="2">2 Months</option>
+                            <option value="3">3 Months</option>
+                            <option value="4">4 Months</option>
+                            <option value="5">5 Months</option>
+                            <option value="6">6 Months</option>
+                            <option value="7">7 Months</option>
+                            <option value="8">8 Months</option>
+                            <option value="9">9 Months</option>
+                            <option value="10">10 Months</option>
+                        </select>
+                        <br />
+                        <div class="clearfix" id="sub-ext-price-cal-container">
+                            <span id="sub-ext-price-cal" style="float:right;"></span>
+                        </div>
+                    </div>
+                    <br />
+                    @Html.Hidden("subscriptionID", Model.ID)
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

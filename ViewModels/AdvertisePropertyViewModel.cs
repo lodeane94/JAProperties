@@ -7,7 +7,7 @@ namespace SS.ViewModels
 {
     public class AdvertisePropertyViewModel
     {
-        public String Title { get; set; }//n
+        public String Title { get; set; }
         public String PropertyCategory { get; set; }
         public String PropertyPurpose { get; set; }
         public String PropertyType { get; set; }
@@ -19,14 +19,14 @@ namespace SS.ViewModels
         public String LastName { get; set; }
         public String CellNum { get; set; }
         public String Email { get; set; }
-        public String Organization { get; set; }//n
+        public String Organization { get; set; }
         public String Password { get; set; }
         public String ConfirmPassword { get; set; }
         public String StreetAddress { get; set; }
         public String Country { get; set; }
         public String Division { get; set; }
         public String Community { get; set; }
-        public String NearBy { get; set; } //n
+        public String NearBy { get; set; }
         public decimal Price { get; set; }
         public decimal SecurityDeposit { get; set; }
         public int Occupancy { get; set; }
@@ -40,15 +40,16 @@ namespace SS.ViewModels
         public String TermsAgreement { get; set; }
         public String[] selectedTags { get; set; }
         //street address location
-        public String saCoordinateLat { get; set; }//n
-        public String saCoordinateLng { get; set; }//n
+        public String saCoordinateLat { get; set; }
+        public String saCoordinateLng { get; set; }
         //community location
-        public String cCoordinateLat { get; set; }//n
-        public String cCoordinateLng { get; set; }//n
+        public String cCoordinateLat { get; set; }
+        public String cCoordinateLng { get; set; }
         //establishment near by location
-        public String nearByCoordinateLat { get; set; }//n
-        public String nearByCoordinateLng { get; set; }//n
-        public HttpPostedFileBase organizationLogo { get; set; }//n
+        public String nearByCoordinateLat { get; set; }
+        public String nearByCoordinateLng { get; set; }
+        public HttpPostedFileBase organizationLogo { get; set; }
         public HttpPostedFileBase[] flPropertyPics { get; set; }
+        public List<Models.SubscriptionType> SubscriptionTypes;
     }
 }

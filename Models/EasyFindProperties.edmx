@@ -63,6 +63,15 @@
           <Property Name="DateResolved" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Division">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CountryCode" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Meeting">
           <Key>
             <PropertyRef Name="ID" />
@@ -117,6 +126,41 @@
           <Property Name="LogoUrl" Type="varchar" MaxLength="255" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="PasswordRecoveryRequest">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AccessCode" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="Processed" Type="bit" Nullable="false" />
+          <Property Name="ExpiryDate" Type="datetime" />
+          <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SubscriptionID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PaymentMethodID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="VoucherNumber" Type="varchar" MaxLength="255" />
+          <Property Name="IsVerified" Type="bit" Nullable="false" />
+          <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PaymentMethod">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="PaymentApplicationInstructions" Type="varchar" MaxLength="255" />
+          <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Property">
           <Key>
             <PropertyRef Name="ID" />
@@ -154,7 +198,7 @@
           <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
-          <Property Name="StreetNumber" Type="varchar" MaxLength="20" />
+          <Property Name="StreetNumber" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -225,6 +269,15 @@
           <Property Name="CategoryCode" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="SavedProperties">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Subscription">
           <Key>
             <PropertyRef Name="ID" />
@@ -237,6 +290,15 @@
           <Property Name="ExpiryDate" Type="date" />
           <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
           <Property Name="DateTModified" Type="datetime" />
+          <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubscriptionExtension">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PaymentID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Period" Type="int" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="SubscriptionType">
@@ -482,6 +544,44 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_payment_payment_type">
+          <End Role="PaymentMethod" Type="Self.PaymentMethod" Multiplicity="1" />
+          <End Role="Payment" Type="Self.Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PaymentMethod">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="PaymentMethodID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_payment_subscription_type">
+          <End Role="Subscription" Type="Self.Subscription" Multiplicity="1" />
+          <End Role="Payment" Type="Self.Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subscription">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="SubscriptionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_properties_sp">
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SavedProperties" Type="Self.SavedProperties" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SavedProperties">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_property_ad_priority_code">
           <End Role="AdPriority" Type="Self.AdPriority" Multiplicity="1" />
           <End Role="Property" Type="Self.Property" Multiplicity="*" />
@@ -634,6 +734,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_pswd_recvry_user_id">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PasswordRecoveryRequest" Type="Self.PasswordRecoveryRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PasswordRecoveryRequest">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_subscription_owner_id">
           <End Role="Owner" Type="Self.Owner" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -657,6 +771,18 @@
             </Principal>
             <Dependent Role="Subscription">
               <PropertyRef Name="TypeCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_subscriptionext_payment">
+          <End Role="Payment" Type="Self.Payment" Multiplicity="1" />
+          <End Role="SubscriptionExtension" Type="Self.SubscriptionExtension" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Payment">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SubscriptionExtension">
+              <PropertyRef Name="PaymentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -724,6 +850,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_user_sp">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="SavedProperties" Type="Self.SavedProperties" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SavedProperties">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_userTypeAssoc_user_id">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="UserTypeAssoc" Type="Self.UserTypeAssoc" Multiplicity="*" />
@@ -754,11 +892,15 @@
           <EntitySet Name="Bill" EntityType="Self.Bill" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BillType" EntityType="Self.BillType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Complaint" EntityType="Self.Complaint" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Division" EntityType="Self.Division" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Meeting" EntityType="Self.Meeting" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MeetingMembers" EntityType="Self.MeetingMembers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MessageTrash" EntityType="Self.MessageTrash" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Owner" EntityType="Self.Owner" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PasswordRecoveryRequest" EntityType="Self.PasswordRecoveryRequest" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Payment" EntityType="Self.Payment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PaymentMethod" EntityType="Self.PaymentMethod" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Property" EntityType="Self.Property" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PropertyCategory" EntityType="Self.PropertyCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PropertyCondition" EntityType="Self.PropertyCondition" Schema="dbo" store:Type="Tables" />
@@ -767,7 +909,9 @@
           <EntitySet Name="PropertyRating" EntityType="Self.PropertyRating" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PropertyRequisition" EntityType="Self.PropertyRequisition" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PropertyType" EntityType="Self.PropertyType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SavedProperties" EntityType="Self.SavedProperties" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subscription" EntityType="Self.Subscription" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubscriptionExtension" EntityType="Self.SubscriptionExtension" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubscriptionType" EntityType="Self.SubscriptionType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tags" EntityType="Self.Tags" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TagType" EntityType="Self.TagType" Schema="dbo" store:Type="Tables" />
@@ -827,6 +971,18 @@
             <End Role="User" EntitySet="User" />
             <End Role="Owner" EntitySet="Owner" />
           </AssociationSet>
+          <AssociationSet Name="fk_payment_payment_type" Association="Self.fk_payment_payment_type">
+            <End Role="PaymentMethod" EntitySet="PaymentMethod" />
+            <End Role="Payment" EntitySet="Payment" />
+          </AssociationSet>
+          <AssociationSet Name="fk_payment_subscription_type" Association="Self.fk_payment_subscription_type">
+            <End Role="Subscription" EntitySet="Subscription" />
+            <End Role="Payment" EntitySet="Payment" />
+          </AssociationSet>
+          <AssociationSet Name="fk_properties_sp" Association="Self.fk_properties_sp">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="SavedProperties" EntitySet="SavedProperties" />
+          </AssociationSet>
           <AssociationSet Name="fk_property_ad_priority_code" Association="Self.fk_property_ad_priority_code">
             <End Role="AdPriority" EntitySet="AdPriority" />
             <End Role="Property" EntitySet="Property" />
@@ -875,6 +1031,10 @@
             <End Role="PropertyType" EntitySet="PropertyType" />
             <End Role="Property" EntitySet="Property" />
           </AssociationSet>
+          <AssociationSet Name="fk_pswd_recvry_user_id" Association="Self.fk_pswd_recvry_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="PasswordRecoveryRequest" EntitySet="PasswordRecoveryRequest" />
+          </AssociationSet>
           <AssociationSet Name="fk_subscription_owner_id" Association="Self.fk_subscription_owner_id">
             <End Role="Owner" EntitySet="Owner" />
             <End Role="Subscription" EntitySet="Subscription" />
@@ -882,6 +1042,10 @@
           <AssociationSet Name="fk_subscription_type_code" Association="Self.fk_subscription_type_code">
             <End Role="SubscriptionType" EntitySet="SubscriptionType" />
             <End Role="Subscription" EntitySet="Subscription" />
+          </AssociationSet>
+          <AssociationSet Name="fk_subscriptionext_payment" Association="Self.fk_subscriptionext_payment">
+            <End Role="Payment" EntitySet="Payment" />
+            <End Role="SubscriptionExtension" EntitySet="SubscriptionExtension" />
           </AssociationSet>
           <AssociationSet Name="fk_tag_type_property_category_id" Association="Self.fk_tag_type_property_category_id">
             <End Role="PropertyCategory" EntitySet="PropertyCategory" />
@@ -902,6 +1066,10 @@
           <AssociationSet Name="fk_tennant_user_id" Association="Self.fk_tennant_user_id">
             <End Role="User" EntitySet="User" />
             <End Role="Tennant" EntitySet="Tennant" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_sp" Association="Self.fk_user_sp">
+            <End Role="User" EntitySet="User" />
+            <End Role="SavedProperties" EntitySet="SavedProperties" />
           </AssociationSet>
           <AssociationSet Name="fk_userTypeAssoc_user_id" Association="Self.fk_userTypeAssoc_user_id">
             <End Role="User" EntitySet="User" />
@@ -1079,6 +1247,36 @@
             <End Role="User" EntitySet="User" />
             <End Role="Meeting" EntitySet="Meeting" />
           </AssociationSet>
+          <EntitySet Name="SavedProperties" EntityType="EasyFindPropertiesModel.SavedProperties" />
+          <AssociationSet Name="fk_properties_sp" Association="EasyFindPropertiesModel.fk_properties_sp">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="SavedProperties" EntitySet="SavedProperties" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_sp" Association="EasyFindPropertiesModel.fk_user_sp">
+            <End Role="User" EntitySet="User" />
+            <End Role="SavedProperties" EntitySet="SavedProperties" />
+          </AssociationSet>
+          <EntitySet Name="Payment" EntityType="EasyFindPropertiesModel.Payment" />
+          <EntitySet Name="PaymentMethod" EntityType="EasyFindPropertiesModel.PaymentMethod" />
+          <AssociationSet Name="fk_payment_payment_type" Association="EasyFindPropertiesModel.fk_payment_payment_type">
+            <End Role="PaymentMethod" EntitySet="PaymentMethod" />
+            <End Role="Payment" EntitySet="Payment" />
+          </AssociationSet>
+          <AssociationSet Name="fk_payment_subscription_type" Association="EasyFindPropertiesModel.fk_payment_subscription_type">
+            <End Role="Subscription" EntitySet="Subscription" />
+            <End Role="Payment" EntitySet="Payment" />
+          </AssociationSet>
+          <EntitySet Name="SubscriptionExtension" EntityType="EasyFindPropertiesModel.SubscriptionExtension" />
+          <AssociationSet Name="fk_subscriptionext_payment" Association="EasyFindPropertiesModel.fk_subscriptionext_payment">
+            <End Role="Payment" EntitySet="Payment" />
+            <End Role="SubscriptionExtension" EntitySet="SubscriptionExtension" />
+          </AssociationSet>
+          <EntitySet Name="Division" EntityType="EasyFindPropertiesModel.Division" />
+          <EntitySet Name="PasswordRecoveryRequest" EntityType="EasyFindPropertiesModel.PasswordRecoveryRequest" />
+          <AssociationSet Name="fk_pswd_recvry_user_id" Association="EasyFindPropertiesModel.fk_pswd_recvry_user_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="PasswordRecoveryRequest" EntitySet="PasswordRecoveryRequest" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AdPriority">
           <Key>
@@ -1214,7 +1412,8 @@
           <NavigationProperty Name="PropertyType" Relationship="EasyFindPropertiesModel.fk_property_type_id" FromRole="Property" ToRole="PropertyType" />
           <NavigationProperty Name="Tags" Relationship="EasyFindPropertiesModel.fk_tags_property_id" FromRole="Property" ToRole="Tags" />
           <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
-          <Property Name="StreetNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="StreetNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="SavedProperties" Relationship="EasyFindPropertiesModel.fk_properties_sp" FromRole="Property" ToRole="SavedProperties" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -1311,6 +1510,7 @@
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_subscription_owner_id" FromRole="Subscription" ToRole="Owner" />
           <NavigationProperty Name="SubscriptionType" Relationship="EasyFindPropertiesModel.fk_subscription_type_code" FromRole="Subscription" ToRole="SubscriptionType" />
+          <NavigationProperty Name="Payment" Relationship="EasyFindPropertiesModel.fk_payment_subscription_type" FromRole="Subscription" ToRole="Payment" />
         </EntityType>
         <EntityType Name="SubscriptionType">
           <Key>
@@ -1723,6 +1923,8 @@
           <NavigationProperty Name="MessageTrash" Relationship="EasyFindPropertiesModel.fk_msg_trash_user_id" FromRole="User" ToRole="MessageTrash" />
           <NavigationProperty Name="MeetingMembers" Relationship="EasyFindPropertiesModel.fk_meeting_members_invitee_id" FromRole="User" ToRole="MeetingMembers" />
           <NavigationProperty Name="Meeting" Relationship="EasyFindPropertiesModel.fk_meeting_user_id" FromRole="User" ToRole="Meeting" />
+          <NavigationProperty Name="SavedProperties" Relationship="EasyFindPropertiesModel.fk_user_sp" FromRole="User" ToRole="SavedProperties" />
+          <NavigationProperty Name="PasswordRecoveryRequest" Relationship="EasyFindPropertiesModel.fk_pswd_recvry_user_id" FromRole="User" ToRole="PasswordRecoveryRequest" />
         </EntityType>
         <Association Name="fk_owner_user_id">
           <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1">
@@ -1888,6 +2090,152 @@
             </Principal>
             <Dependent Role="Meeting">
               <PropertyRef Name="InviterUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SavedProperties">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="PropertyID" Type="Guid" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_properties_sp" FromRole="SavedProperties" ToRole="Property" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_user_sp" FromRole="SavedProperties" ToRole="User" />
+        </EntityType>
+        <Association Name="fk_properties_sp">
+          <End Type="EasyFindPropertiesModel.Property" Role="Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EasyFindPropertiesModel.SavedProperties" Role="SavedProperties" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SavedProperties">
+              <PropertyRef Name="PropertyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_user_sp">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.SavedProperties" Role="SavedProperties" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SavedProperties">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="SubscriptionID" Type="Guid" Nullable="false" />
+          <Property Name="PaymentMethodID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="VoucherNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="IsVerified" Type="Boolean" Nullable="false" />
+          <Property Name="DateTModified" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PaymentMethod" Relationship="EasyFindPropertiesModel.fk_payment_payment_type" FromRole="Payment" ToRole="PaymentMethod" />
+          <NavigationProperty Name="Subscription" Relationship="EasyFindPropertiesModel.fk_payment_subscription_type" FromRole="Payment" ToRole="Subscription" />
+          <NavigationProperty Name="SubscriptionExtension" Relationship="EasyFindPropertiesModel.fk_subscriptionext_payment" FromRole="Payment" ToRole="SubscriptionExtension" />
+        </EntityType>
+        <EntityType Name="PaymentMethod">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PaymentApplicationInstructions" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateTModified" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Payment" Relationship="EasyFindPropertiesModel.fk_payment_payment_type" FromRole="PaymentMethod" ToRole="Payment" />
+        </EntityType>
+        <Association Name="fk_payment_payment_type">
+          <End Type="EasyFindPropertiesModel.PaymentMethod" Role="PaymentMethod" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Payment" Role="Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PaymentMethod">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="PaymentMethodID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_payment_subscription_type">
+          <End Type="EasyFindPropertiesModel.Subscription" Role="Subscription" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.Payment" Role="Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subscription">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="SubscriptionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SubscriptionExtension">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="PaymentID" Type="Guid" Nullable="false" />
+          <Property Name="Period" Type="Int32" Nullable="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Payment" Relationship="EasyFindPropertiesModel.fk_subscriptionext_payment" FromRole="SubscriptionExtension" ToRole="Payment" />
+        </EntityType>
+        <Association Name="fk_subscriptionext_payment">
+          <End Type="EasyFindPropertiesModel.Payment" Role="Payment" Multiplicity="1" />
+          <End Type="EasyFindPropertiesModel.SubscriptionExtension" Role="SubscriptionExtension" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Payment">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SubscriptionExtension">
+              <PropertyRef Name="PaymentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Division">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CountryCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="PasswordRecoveryRequest">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="AccessCode" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_pswd_recvry_user_id" FromRole="PasswordRecoveryRequest" ToRole="User" />
+          <Property Name="Processed" Type="Boolean" Nullable="false" />
+          <Property Name="DateTModified" Type="DateTime" Precision="3" />
+        </EntityType>
+        <Association Name="fk_pswd_recvry_user_id">
+          <End Type="EasyFindPropertiesModel.User" Role="User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EasyFindPropertiesModel.PasswordRecoveryRequest" Role="PasswordRecoveryRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PasswordRecoveryRequest">
+              <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2226,6 +2574,74 @@
                 <ScalarProperty Name="MeetingTitle" ColumnName="MeetingTitle" />
                 <ScalarProperty Name="Location" ColumnName="Location" />
                 <ScalarProperty Name="InviterUserID" ColumnName="InviterUserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SavedProperties">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.SavedProperties">
+              <MappingFragment StoreEntitySet="SavedProperties">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="PropertyID" ColumnName="PropertyID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Payment">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Payment">
+              <MappingFragment StoreEntitySet="Payment">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="IsVerified" ColumnName="IsVerified" />
+                <ScalarProperty Name="VoucherNumber" ColumnName="VoucherNumber" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="PaymentMethodID" ColumnName="PaymentMethodID" />
+                <ScalarProperty Name="SubscriptionID" ColumnName="SubscriptionID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PaymentMethod">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PaymentMethod">
+              <MappingFragment StoreEntitySet="PaymentMethod">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="PaymentApplicationInstructions" ColumnName="PaymentApplicationInstructions" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubscriptionExtension">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.SubscriptionExtension">
+              <MappingFragment StoreEntitySet="SubscriptionExtension">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PaymentID" ColumnName="PaymentID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Division">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.Division">
+              <MappingFragment StoreEntitySet="Division">
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="CountryCode" ColumnName="CountryCode" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PasswordRecoveryRequest">
+            <EntityTypeMapping TypeName="EasyFindPropertiesModel.PasswordRecoveryRequest">
+              <MappingFragment StoreEntitySet="PasswordRecoveryRequest">
+                <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
+                <ScalarProperty Name="Processed" ColumnName="Processed" />
+                <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="AccessCode" ColumnName="AccessCode" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
