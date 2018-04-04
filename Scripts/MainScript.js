@@ -19,7 +19,8 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
 (function () {
     //initialization of bootstrap popover
     $('[data-toggle="popover"]').popover({
-        trigger: 'hover',
+        trigger: 'hover focus',
+        placement:'top',
         container: 'body'
     });
 })();
@@ -925,6 +926,10 @@ function loadPropertyTags(selectedItem) {
 
                 $('.prop-upload-info#' + nextId).slideDown(400, function () {
                     $(this).removeClass('hide');
+
+                    $('html, body').animate({
+                        scrollTop: $('.error-container').offset().top
+                    }, 'fast');
                 });
             });
         } else {

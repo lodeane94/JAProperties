@@ -84,6 +84,7 @@
                 <div class="@(count > 1 ? "offset-md-3 offset-sm-0" : "") col-md-9">
                     <div class="image-container">
                         <div class="image-link">
+                            <div class="image-link-banner">@item.AdType</div>
                             <a href="~/properties/getProperty/@item.ID">
                                 <div class="image">
                                     <img id="@item.ID" src="~/Uploads/@item.PropertyPrimaryImageURL" />
@@ -99,8 +100,9 @@
                                         </a>
                                         @item.PropertyType | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.Price) </span>
                                     </div>
+                                    <div class="date-added">Added @item.DateAddedModified</div>
                                     <div class="property-address">
-                                        Located at : <em>@( (!String.IsNullOrEmpty(item.StreetNumber) ? item.StreetNumber + ", " : "") + item.StreetAddress + ", " + item.Division + ", " + item.Country )</em>
+                                        Located at : @( (!String.IsNullOrEmpty(item.StreetNumber) ? item.StreetNumber + ", " : "") + item.StreetAddress + ", " + item.Division + ", " + item.Country )
                                     </div>
                                     <div class="property-owner-contact"><span>Contact Owner At @item.User.CellNum</span></div>
                                     <div class="property-desc">@item.Description</div>

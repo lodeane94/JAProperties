@@ -287,6 +287,8 @@ namespace SS.Core
                     propertyModel.PropertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID);
                     propertyModel.PropertyAverageRatings = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
                     propertyModel.IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false;
+                    propertyModel.AdType = property.AdType.Name;
+                    propertyModel.DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString();
 
                     if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
                     {
@@ -340,6 +342,8 @@ namespace SS.Core
                     model.PropertyPrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID);
                     model.PropertyAverageRatings = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
                     model.IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false;
+                    model.AdType = property.AdType.Name;
+                    model.DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString();
 
                     if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
                     {
@@ -431,7 +435,8 @@ namespace SS.Core
                         PropertyType = property.PropertyType,
                         OwnerContactNum = property.Owner.User.CellNum,
                         AverageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0,
-                        IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false
+                        IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false,
+                        DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString()
                     };
 
                     if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
@@ -1117,6 +1122,7 @@ namespace SS.Core
                 ViewModel.PropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
                 ViewModel.PropertyAverageRatings = ViewModel.PropRatings.Count() > 0 ? (int)ViewModel.PropRatings.Select(x => x.Ratings).Average() : 0;
                 ViewModel.Tags = unitOfWork.Tags.GetTagNamesByPropertyId(id);
+                ViewModel.DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString();
 
                 return ViewModel;
             }
@@ -1570,19 +1576,26 @@ namespace SS.Core
         /// <param name="selectedTags"></param>
         private static void associateTagsWithProperty(UnitOfWork unitOfWork, Guid propertyID, string[] selectedTags)
         {
+            List<String> distinctTags = new List<String>();
+
             if (selectedTags != null)
             {
-                foreach (var tag in selectedTags)
+                foreach (var tagName in selectedTags)
                 {
-                    Tags tags = new Tags
+                    if (!distinctTags.Contains(tagName))//added to prevent the same tags from being associated with one property || BUG unkown
                     {
-                        ID = Guid.NewGuid(),
-                        PropertyID = propertyID,
-                        TypeID = unitOfWork.TagType.GetTagTypeIDByTagName(tag),
-                        DateTCreated = DateTime.Now
-                    };
+                        distinctTags.Add(tagName);
 
-                    unitOfWork.Tags.Add(tags);
+                        Tags tag = new Tags
+                        {
+                            ID = Guid.NewGuid(),
+                            PropertyID = propertyID,
+                            TypeID = unitOfWork.TagType.GetTagTypeIDByTagName(tagName),
+                            DateTCreated = DateTime.Now
+                        };
+
+                        unitOfWork.Tags.Add(tag);
+                    }
                 }
             }
         }
@@ -2142,7 +2155,7 @@ namespace SS.Core
             body += EFPConstants.Application.Host + "/accounts/resetPassword?" + userId.ToString();
             body += "<br/><small>Your access code will expire 30 minutes after recieving this mail</small>";
 
-            if (1==1)//sendMail(emailTo, body, subject))
+            if (1 == 1)//sendMail(emailTo, body, subject))
             {
                 return true;
             }
@@ -2212,7 +2225,7 @@ namespace SS.Core
                 }
                 catch (MembershipPasswordException e)
                 {
-                    string errMessage = "Unable to reset your password : "+e.Message;
+                    string errMessage = "Unable to reset your password : " + e.Message;
                     errorModel.AddErrorMessage(errMessage);
                     return false;
                 }

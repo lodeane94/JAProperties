@@ -1038,6 +1038,17 @@ select {
         color: #AD0051;
     }
 
+.image-link-banner {
+    position:absolute;  
+    padding: 5px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 13px;
+    background-color: #007bff; 
+    color:#FFFFFF;
+    width:auto;
+    opacity:0.9;
+} 
+
 .image-information-container {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 11px;
@@ -1084,10 +1095,21 @@ select {
     color: #007bff;
 }
 
+.date-added {
+    line-height: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 8px;
+    font-style: normal;
+    font-weight: 600;
+    color: #6B6B6B;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
 .image-information-content .property-address {
     line-height: 20px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-style: normal;
     font-weight: 500;
     color: #6B6B6B;
@@ -1311,7 +1333,6 @@ label {
 
 .modal-header {
     background-color: #AD0051;
-    color: #FFFFFF;
 }
 
 #modal-loading {

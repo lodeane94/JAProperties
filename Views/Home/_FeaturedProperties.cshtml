@@ -20,6 +20,7 @@
                             </a>
                             @item.PropertyType.Name | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.Price) </span>
                         </div>
+                        <div class="date-added">Added @item.DateAddedModified</div>
                         <div class="property-address">
                             Located at : <em>@( (!String.IsNullOrEmpty(item.StreetNumber) ? item.StreetNumber + ", " : "") + item.StreetAddress + ", " + item.Division + ", " + item.Country )</em>
                         </div>

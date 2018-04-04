@@ -10,5 +10,6 @@ namespace SS.ViewModels
         public bool isFurnished { get; set; }
         public string OwnerContactNum { get; set; }
         public bool IsPropertySaved { get; set; }
+        public string DateAddedModified { get; set; }
     }
 }

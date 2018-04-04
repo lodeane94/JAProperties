@@ -39,5 +39,7 @@ namespace SS.ViewModels
         public String DuratiionFromSearchedAddress { get; set; }
         public bool IsPropertySaved { get; set; }
         public List<string> tags { get; set; }
+        public string AdType { get; set; }
+        public string DateAddedModified { get; set; }
     }
 }

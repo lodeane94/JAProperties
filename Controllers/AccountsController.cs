@@ -56,7 +56,7 @@ namespace SS.Controllers
             {
                 MembershipUser user = Membership.GetUser(username);
 
-                if (user.IsLockedOut)
+                if (user != null && user.IsLockedOut)
                 {
                     string errMessage = "You have exceeded the maximum number of failed attempts <br /> User account has been locked";
                     errMessage += " Reset your password using the link below";
