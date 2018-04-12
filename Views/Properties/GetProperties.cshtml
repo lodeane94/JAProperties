@@ -30,6 +30,10 @@
     populatePropertyTypeByCategoryName('@ViewBag.category','@ViewBag.isStudentAccommodationCat');
     }
     });
+
+    window.onpopstate = function() {
+   alert("clicked back button");
+    }; 
     })();
 
 }
@@ -44,14 +48,14 @@
     @if (ViewBag.tags != null && ViewBag.tags.Count > 0)
     {
         <div class="col-md-3" style="margin-bottom:10px;">
-            <div style="position:relative;">
+            <div class="filter-tags">
                 <div class="card">
                     <div class="card-header">Filter <i class="fa fa-filter" aria-hidden="true"></i></div>
                     <div class="card-body" id="property-tags">
                         @if (ViewBag.SearchType != null && ViewBag.SearchType.Equals("nearByPlaces"))
                         {
                             <div class="slidecontainer">
-                                <div class="ctnr-info" style="font-size:12px;">Distance Radius</div>
+                                <div class="ctnr-info" style="font-size:12px;">Properties Distance</div>
                                 <input type="range" min="1" max="100" value="@(ViewBag.DistanceRadius != null ? ViewBag.DistanceRadius : 20)" class="slider" id="range-distance-radius">
                                 &nbsp;<span class="ctnr-info" style="font-size:11px;float:right;" id="range-distance-radius-val"></span>
                             </div>
@@ -61,7 +65,7 @@
                         {
                             <div style="width:100%;" class="details-col-header">
                                 @tag.Key
-                                <span style="position:static;" class="details-col-det">
+                                <span class="details-col-det">
                                     <input type="checkbox" value="@tag.Value.ToString()" id="@tag.Key" name="@("Tags[" + tag.Key + "]")"
                                            @(tag.Value ? "checked" : "") class="chkTags" 
                                            @(ViewBag.activeNavigation != null && ViewBag.activeNavigation == "isStudentAccommodationCat" && tag.Key == "For Student" ? "disabled" : "") />

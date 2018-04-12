@@ -115,49 +115,34 @@
         {
             <div class="row">
                 <div class="col-md-4">
-                    <div class="input-group">
-                        <input id="firstname" value="" type="text" class="form-control" name="firstname" placeholder="First Name" required>
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
-                    </div>
+                    <input id="firstname" style="margin-right:10px;" value="" type="text" class="form-control" name="firstname" placeholder="First Name" required>
                 </div>
+                <br /><br />
                 <div class="col-md-4">
-                    <div class="input-group">
-                        <input id="lastname" value="" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-user"></i></span>
-                    </div>
+                    <input id="lastname" value="" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
                 </div>
+                <br /><br />
                 <div class="col-md-4">
-                    <div class="input-group">
-                        <input id="organization" type="text" class="form-control" name="organization" placeholder="Organization">
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-globe"></i></span>
-                    </div>
+                    <input id="organization" type="text" class="form-control" name="organization" placeholder="Organization">
                 </div>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-3">
-                    <div class="input-group">
-                        <input id="cellnum" value="" type="text" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-phone"></i></span>
-                    </div>
+                    <input id="cellnum" value="" type="text" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
                 </div>
+                <br /><br />
                 <div class="col-md-3">
-                    <div class="input-group">
-                        <input id="email" value="" type="email" class="form-control" name="email" placeholder="Email Address" required>
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-envelope"></i></span>
-                    </div>
+                    <input id="email" value="" type="email" class="form-control" name="email" placeholder="Email Address" required>
                 </div>
+                <br /><br />
                 <div class="col-md-3">
-                    <div class="input-group">
-                        <input id="password" value="" type="password" class="form-control" name="password" placeholder="Password" required>
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-lock"></i></span>
-                    </div>
+
+                    <input id="password" value="" type="password" class="form-control" name="password" placeholder="Password" required>
                 </div>
+                <br /><br />
                 <div class="col-md-3">
-                    <div class="input-group">
-                        <input id="ConfirmPassword" value="" type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
-                        <span class="input-group-addon glyphicon-color"><i class="glyphicon glyphicon-lock"></i></span>
-                    </div>
+                    <input id="ConfirmPassword" value="" type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
                 </div>
             </div>
             <br />
@@ -194,9 +179,11 @@
             <div class="col-md-2">
                 <input id="StreetNumber" type="text" class="form-control" name="StreetNumber" placeholder="Street Number">
             </div>
+            <br /><br />
             <div class="col-md-5">
                 <input id="StreetAddress" value="" onclick="initAutocomplete('StreetAddress'); geolocate();" type="text" class="form-control" name="streetaddress" placeholder="Street Address" data-toggle="popover" data-content="If your address is not visible don't worry just enter the street address" required>
             </div>
+            <br /><br />
             <div class="col-md-5">
                 <input id="community" onclick="initAutocomplete('community'); geolocate();" value="" type="text" class="form-control" name="community" placeholder="Community" data-toggle="popover" data-content="If your address is not visible don't worry just enter your community address" required>
             </div>
@@ -206,6 +193,7 @@
             <div class="col-md-3">
                 <select class="form-control" id="division" name="division" required><option selected disabled value="na">Parish</option></select>
             </div>
+            <br /><br />
             <div class="col-md-9">
                 <input id="nearBy" onclick="initAutocomplete('nearBy'); geolocate();" type="text"
                        class="form-control" name="nearBy" placeholder="Landmark Closest To" data-toggle="popover" data-content="Enter and select the name of an establishment that is close to your property" />
@@ -216,12 +204,15 @@
             <div class="col-md-3">
                 <input id="price" value="" type="text" class="form-control" name="price" placeholder="Price" required>
             </div>
+            <br /><br />
             <div class="col-md-3">
                 <input id="securitydeposit" value="" type="text" class="form-control" name="securitydeposit" placeholder="Security Deposit">
             </div>
+            <br /><br />
             <div class="col-md-3">
                 <input id="occupancy" value="" disabled type="text" class="form-control" name="occupancy" placeholder="Occupancy" required>
             </div>
+            <br /><br />
             <div class="col-md-3">
                 <select disabled class="form-control" id="GenderPreferenceCode" name="GenderPreferenceCode" required>
                     <option disabled selected value="na">Gender Preference</option>
@@ -230,6 +221,7 @@
                     <option value="F">Female</option>
                 </select>
             </div>
+            <br /><br />
         </div>
         <br />
         <div class="row">
@@ -240,9 +232,11 @@
             <div class="col-md-3">
                 <input id="TotRooms" value="" disabled type="text" class="form-control" name="TotRooms" placeholder="Total Rooms" required>
             </div>
+            <br /><br />
             <div class="col-md-3">
                 <input id="area" value="" disabled type="text" class="form-control" name="area" placeholder="Property Area">
             </div>
+            <br /><br />
             <div class="col-md-3">
                 <select class="form-control" id="isReviewable" name="isReviewable">
                     <option disabled selected value="na">Allow Reviews</option>
@@ -276,12 +270,12 @@
                     @foreach (var subTypes in Model.SubscriptionTypes)
                     {
                         <a href="#" class="clickable-box-link" data-toggle="popover" data-content="@subTypes.Description">
-                            <div id="@subTypes.Name" class="clickable-box">@subTypes.Name - $@subTypes.MonthlyCost JMD Monthly</div>
+                            <div id="@subTypes.Name" class="clickable-box">@subTypes.Name - $<span class="monthly-cost">@subTypes.MonthlyCost</span> JMD Monthly</div>
                         </a>
                     }
                 </div>
                 <div class="col-md-4">
-                    <div class="content-heading">Subscription Period</div>
+                    <div class="content-heading">Subscription Period</div>                    
                     <div class="" data-toggle="popover">
                         <select disabled class="form-control" id="subscription-period" name="subscriptionperiod" required>
                             <option selected disabled value="">Subscription Period</option>
@@ -289,19 +283,21 @@
                     </div>
                 </div>
             }
-
+            <br />
             <div class="col-md-4">
                 <div class="content-heading">Upload images of your property</div>
                 <input id="flPropertyPics" accept="image/*" multiple name="flPropertyPics" type="file" class="form-control" />
             </div>
         </div>
         <br />
-        <div class="row flPropertyPicsImageOutput"></div>
-        <br />
-        <div class="payment-info">
-            <div class="content-heading">Total payment</div>
-            <div class="row shopping-cart-container"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="flPropertyPicsImageOutput"></div>
+            </div>
         </div>
+        <br />
+        <div class="content-heading">Total payment</div>
+        <div class="row shopping-cart-container"></div>
         <br />
         <button type="button" class="btn btn-sm btn-primary previous-advertise-section"><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous Section</button>
         <div class="flex-md-wrap" style="float:right;">

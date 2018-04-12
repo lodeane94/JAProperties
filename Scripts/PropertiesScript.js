@@ -481,7 +481,7 @@ function setRangeDistanceRadius() {
     var element = $('#range-distance-radius');
 
     if (element != null && element.length) {
-        rangeDistanceRadius = element.val();
+        rangeDistanceRadius = element.val(); 
         $("#range-distance-radius-val").text(rangeDistanceRadius + ' KM');
     }
 }
@@ -862,14 +862,15 @@ $(document).ready(function () {
         $('.btn-search').click();
     });
 
-    $("#range-distance-radius").on("input", function (e) {
+    $(document).on("input","#range-distance-radius", function (e) {
         rangeDistanceRadius = $(e.target).val();
         $("#range-distance-radius-val").text(rangeDistanceRadius + ' KM');
     });
 
-    //filters near by properties by the distance specified
-    $("#range-distance-radius").on("mouseup", function (e) {
+    $('#range-distance-radius').on('change keyup', function () {
         searchNearByProperties();
     });
+    
+         
 
 });

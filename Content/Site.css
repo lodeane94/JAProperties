@@ -1,6 +1,10 @@
 ﻿
 @import url(http://fonts.googleapis.com/css?family=Raleway);
 
+#action-header {
+    color:#FFFFFF;
+} 
+
 .ad-rules-container {
     border: 1px solid #E0E0E0;
     margin-bottom: 10px;
@@ -143,6 +147,9 @@ html, body {
     flex-flow: row wrap;
 }
 
+.close {
+    color:#FFFFFF;
+}
 /* Declare heights because of positioning of img element 
 .carousel .item {
     min-height: 400px;
@@ -247,6 +254,7 @@ html, body {
 
 a.clickable-box-link {
     text-decoration: none;
+    margin-right:1px;
 }
 
 .ctnr {
@@ -402,7 +410,6 @@ a.clickable-box-link {
 
 .details-col-det {
     background-color: #FFFFFF;
-    float: right;
     position: relative;
     right: 20px;
     padding-left: 5px;
@@ -415,6 +422,16 @@ a.clickable-box-link {
     background-color: #FFFFFF;
     padding: 10px;
     display: none;
+}
+
+.filter-tags {
+    position: absolute;
+}
+
+@media screen and (max-width:992px) {
+    .filter-tags {
+        position: relative;
+    }
 }
 
 .not-seen {
@@ -1246,6 +1263,13 @@ label {
 #loading-gif img {
     height: 35px;
     width: 35px;
+}
+
+
+@media screen and (max-width:480px) {
+    .collapse-logo {
+        display: none;
+    }
 }
 
 .logo {

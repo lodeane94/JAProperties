@@ -20,7 +20,7 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
     //initialization of bootstrap popover
     $('[data-toggle="popover"]').popover({
         trigger: 'hover focus',
-        placement:'top',
+        placement: 'top',
         container: 'body'
     });
 })();
@@ -82,47 +82,63 @@ $('#jumbotron-button').click(function () {
     }
 });
 
+function getSubscriptionCosts() {
+    var subscriptions = $('#subscription-type .clickable-box-link .clickable-box');
+    var subscriptionItemCosts = { Basic: 0, Realtor: 0, Landlord: 0 };
+
+    subscriptions.each(function (index, value) {
+        var subscriptionName = $(this).attr('id');
+        var subscriptionCost = $(this).children('.monthly-cost').html();
+
+        switch (subscriptionName) {
+            case 'Basic': subscriptionItemCosts.Basic = subscriptionCost;
+                break;
+            case 'Realtor': subscriptionItemCosts.Realtor = subscriptionCost;
+                break;
+            case 'Landlord': subscriptionItemCosts.Landlord = subscriptionCost;
+                break;
+        }
+    });
+
+    return subscriptionItemCosts;
+}
+
 //updates the shopping cart with the selected items
-//TODO remove hard coding
 function updateShoppingCart() {
-   // alert(lastSelectedClickableSubscriptionType)
-   // alert($('#subscription-period').val())
+    // alert(lastSelectedClickableSubscriptionType)
+    // alert($('#subscription-period').val())
 
     if (lastSelectedClickableSubscriptionType != null && $('#subscription-period').val()) {
         //var advertismentPriorityItemCost = { Regular: 0, AdPro: 1000, AdPremium: 4000 };
-        var subscriptionItemCost = { Basic: 1000, Realtor: 3000, Landlord: 5000 };
+        var subscriptionItemCost = getSubscriptionCosts();
         var period = $('#subscription-period').val();
         var totalCost = 0.00;
+        var monthsTerm = period > 1 ? 'Months' : 'Month';
 
         $('.shopping-cart-container').empty();
 
-        $('.shopping-cart-container').append('<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Product</b></span></div>'
-            + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Period</b></span></div>'
-            + '<div class="col-md-4 cart-headings"><span class="ctnr-info"><b>Price</b></span></div>'
-        );
-
-       /* $.each(advertismentPriorityItemCost, function (index, value) {
-            switch (index) {
-                case lastSelectedClickableAdvertismentPriority.attr('id'):
-                    $('.shopping-cart-container')
-                        .append('<br />'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
-                        );
-                    totalCost += value;
-                    break;
-            }
-        });*/
+        /* $.each(advertismentPriorityItemCost, function (index, value) {
+             switch (index) {
+                 case lastSelectedClickableAdvertismentPriority.attr('id'):
+                     $('.shopping-cart-container')
+                         .append('<br />'
+                         + '<div class="col-md-4"><span class="ctnr-info">' + 'Priority : ' + index + '</span></div>'
+                         + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
+                         + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                         );
+                     totalCost += value;
+                     break;
+             }
+         });*/
 
         $.each(subscriptionItemCost, function (index, value) {
             switch (index) {
                 case lastSelectedClickableSubscriptionType.attr('id'):
                     $('.shopping-cart-container')
                         .append('<br />'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + 'Subscription : ' + index + '</span></div>'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + period + '</span></div>'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + '$' + value + '.00 JMD' + '</span></div>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Subscription</b> : ' + index + '</span></div><br/>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Period</b> : ' + period + ' ' + monthsTerm + '</span></div><br/>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Price</b> : ' + '$' + value + '.00 JMD' + '</span></div><br/> '
                         );
                     totalCost += value;
                     break;
@@ -130,8 +146,8 @@ function updateShoppingCart() {
         });
 
         $('.shopping-cart-container').append('<hr />'
-            + '<div class="offset-8 col-md-2 cart-headings"><span class="ctnr-info"><b>Total</b></span></div>'
-            + '<div class="col-md-2">' + '$' + (totalCost * period) + '.00 JMD' + '</div>');
+            + '<div class="col-md-12"><div class="float-md-right" style="border-bottom:1px solid #000000"><b>Total</b></div></div>'
+            + '<br/><div class="col-md-12"><div class="float-md-right"> ' + '$' + (totalCost * period) + '.00 JMD' + '</div></div>');
     }
 }
 
@@ -431,7 +447,6 @@ function loadPropertyTags(selectedItem) {
         }
 
         $('#subscription-period').prop('disabled', false);
-
         //accounts should only be created for the subscription type of a realtor/landlord
         //2017-03-11 : removed as decision was made to allow every one to have an account
         /* var elements = ['#password', '#ConfirmPassword'];
@@ -441,7 +456,7 @@ function loadPropertyTags(selectedItem) {
          else
              disableElements(elements);*/
 
-        //updateShoppingCart();
+        updateShoppingCart();
 
         var field = $('#subscription-type');
         removeErrorField(field);
@@ -757,7 +772,7 @@ function loadPropertyTags(selectedItem) {
             });
         } else {
             var errMessage = 'Highlight fields are required';
-            
+
             if (errMessages != null && errMessages.length > 0)
                 addErrorMessage('<br>');
 
@@ -832,15 +847,15 @@ function loadPropertyTags(selectedItem) {
                     }
                 },
 
-               // onfocusout: false,
-               // onkeyup: false,
+                // onfocusout: false,
+                // onkeyup: false,
 
                 errorPlacement: function (error, element) { },
 
                 showErrors: function (errorMap, errorList) {
                     $.each(errorList, function () {
                         //if (this.message != 'This field is required.')
-                            addErrorMessage(this.message);
+                        addErrorMessage(this.message);
                     });
 
                     displayErrorMessages();
