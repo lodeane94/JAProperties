@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SS.Quartz;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,6 +18,8 @@ namespace SS
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            //start quartz job
+            JobScheduler.ScheduleJobs().GetAwaiter().GetResult();
         }
     }
 }

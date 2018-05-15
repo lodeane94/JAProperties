@@ -22,12 +22,20 @@ namespace SS.Controllers
         [HttpPost]
         public JsonResult VerifyPayment(Guid paymentID)
         {
+            Core.ErrorModel errorModel;
+
             if (Session["userId"] != null)
             {
                 var userId = (Guid)Session["userId"];
-                return Json(Core.PropertyHelper.VerifyPayment(paymentID, userId));
+
+                errorModel = Core.PropertyHelper.VerifyPayment(paymentID, userId);
+                return Json(errorModel);
             }
-            return Json(false);
+
+            errorModel = new Core.ErrorModel();
+            errorModel.AddErrorMessage("Session timed out. Please repeat signin process");
+
+            return Json(errorModel);
         }
     }
 }

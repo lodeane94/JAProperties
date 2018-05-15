@@ -12,6 +12,8 @@ namespace SS.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class EasyFindPropertiesEntities : DbContext
     {
@@ -57,5 +59,10 @@ namespace SS.Models
         public virtual DbSet<SubscriptionExtension> SubscriptionExtension { get; set; }
         public virtual DbSet<Division> Division { get; set; }
         public virtual DbSet<PasswordRecoveryRequest> PasswordRecoveryRequest { get; set; }
+    
+        public virtual int Sp_UpdatePropertiesAvailability()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Sp_UpdatePropertiesAvailability");
+        }
     }
 }

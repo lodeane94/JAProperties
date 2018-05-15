@@ -46,11 +46,11 @@
                                 <i class="fa fa-cogs fa-2x" aria-hidden="true"></i> Account
                             </a>
                         </div>
-                        <div>
+                      <!--  <div>
                             <a href="~/LandlordManagement/Help" id="help">
                                 <i class="fa fa-question fa-2x" aria-hidden="true"></i> Help
                             </a>
-                        </div>
+                        </div> REMOVED UNTIL IMPLEMENTED -->
                         <div>
                             <a id="contact" href="~/webinfo/contact">
                                 <i class="fa fa-comments-o fa-2x" aria-hidden="true"></i> Contact Website Admin
@@ -86,11 +86,11 @@
                         @RenderBody()
                         <div id="map" style="display:none;"></div>
                     </div>
-                    <div class="col-md-3">
+                    <!--<div class="col-md-3">
                         <div class="advertisment-section">
                             AD Space
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -134,6 +134,7 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkscrDmY_ngoabLcmg6yJuAZio7-Tjf3w&libraries=places,geometry"></script>
     <script src="~/Scripts/GoogleMapJsScript.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/MainScript.js"></script>
     <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
         @RenderSection("pageScript",false)

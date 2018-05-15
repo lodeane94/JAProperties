@@ -433,7 +433,7 @@ function loadPropertyTags(selectedItem) {
 
     //makes the clickable box active when clicked and handles the shift 
     //subscription type category
-    $('#subscription-type .clickable-box').click(function (event) {
+    $(document.body).on('click', '#subscription-type .clickable-box', function (event) {
         event.preventDefault();
         var selectedItem = $(this).attr('id');
 
@@ -742,7 +742,7 @@ function loadPropertyTags(selectedItem) {
         if (isClickableContentValid && isAddPropertyFormInputsValid) {
             loadingGifLocation = $('.AdvertisePropertyBtn');
             var formData = new FormData($('#ad-submission')[0]);
-            alert('Submission Valid');
+            
             $.ajax({
                 url: '/accounts/advertiseproperty',
                 type: 'Post',
@@ -1003,6 +1003,7 @@ function loadPropertyTags(selectedItem) {
                 this.defaultShowErrors();
             }
         });
+
     }
 
 })();

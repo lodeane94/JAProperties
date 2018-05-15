@@ -589,29 +589,50 @@ function loadPaymentsView(pgNo) {
 function initializePaymentPagination() {
     var itemsCount = $('#itemsCount').val();
     var pgNo = Number($('#pgNo').val());
+    var take = $('#pgTake').val();
 
     if (itemsCount < 2) {
         $('.page-item').addClass('disabled');
         $('.page-link').attr('disabled', true);
         $('.page-link').attr('tabindex', -1);
-    } else if (itemsCount > 1 && (pgNo + 1) == 1) {//at the beginning
+    }
+
+    if (itemsCount > 1 && (pgNo + 1) == 1) {//at the beginning
         $('.previous').addClass('disabled');
         $('.previous').attr('disabled', true);
         $('#previous').attr('tabindex', -1);
     }
-    else if (itemsCount > 1 && (pgNo + 1) != itemsCount) {//somewhere in the middle
-        $('.page-item').removeClass('disabled');
-        $('.page-link').attr('disabled', false);
-        $('.page-link').removeAttr('tabindex');
-    } else if (itemsCount > 1 && (pgNo + 1) == itemsCount) {//at the end
+
+    if (itemsCount > 1 && (pgNo + 1) > 1 && ((pgNo + 1) * take) < itemsCount) {//somewhere in the middle
+        /*  $('.page-item').removeClass('disabled');
+          $('.page-link').attr('disabled', false);
+          $('.page-link').removeAttr('tabindex');*/
+    }
+
+    if (itemsCount > 1 && ((pgNo + 1) * take) >= itemsCount) {//at the end
         $('.next').addClass('disabled');
         $('.next').attr('disabled', true);
         $('#next').attr('tabindex', -1);
 
-        $('.previous').removeClass('disabled');
-        $('.previous').attr('disabled', false);
-        $('.previous').removeAttr('tabindex');
+        /*    $('.previous').removeClass('disabled');
+            $('.previous').attr('disabled', false);
+            $('.previous').removeAttr('tabindex');*/
     }
+}
+//computes and display the subscription changing price
+function computeSubChgPrice() {
+    var clickedSubCost = $('#clickedSubscriptionCost').html();
+    var isSubPeriodChgActive = $('#subscription-period-chg').prop('disabled');
+    var price = 0;
+
+    if (!isSubPeriodChgActive) {
+        var period = $('#subscription-period-chg').val();
+        price = clickedSubCost * period;
+    } else
+        price = clickedSubCost;
+
+    $('#chg-sub-price').html(price);
+    $('.chg-sub-price-container').removeClass('hide');
 }
 /*TODO later if necessary
 function sendNotice(tennantId) {
@@ -1335,10 +1356,13 @@ $(document).ready(function () {
         event.preventDefault();
 
         var subscriptionID = $('#subscriptionID').val();
-        var period = $('#subscription-period').val() == '' ? 1 : $('#subscription-period').val();
+        var subPeriod = $('#subscription-period').val();
+        var period = (subPeriod == '' || subPeriod == undefined) ? 1 : $('#subscription-period').val();
         var price = $('#monthlyCost').text();
         var total = price * period;
-        var isExtension = period > 1 ? true : false;
+
+        //if an subscription expiry date exists then the subscription should be extended with this payment
+        var isExtension = $('#expiry-date').length ? true : false;
 
         $.ajax({
             url: '/landlordmanagement/GetModalMakePayment',
@@ -1447,7 +1471,7 @@ $(document).ready(function () {
                     if (data != '' && data != null && data == true) {
                         $('.modal-body').prepend('' +
                             '<div class="alert-success temp-alert">Your payment has been submitted for verification. ' +
-                            'A email was sent to your email address with additional information</div > ')
+                            'An email was sent to your email address with additional information</div > ')
                             .hide()
                             .fadeIn('slow');
                     } else {
@@ -1463,7 +1487,7 @@ $(document).ready(function () {
                 },
                 complete: function () {
                     $('#modal-loading').fadeOut();
-                    $('.temp-alert').fadeOut(10000);
+                    $('.temp-alert').fadeOut(100000);
                     $('#voucherNumber').val('');
                 }
             });
@@ -1474,7 +1498,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         var direction = $(this).attr('id');
-        var pgNo = $('#pgNo').val();
+        var pgNo = Number($('#pgNo').val());
 
         if (direction == 'next') {
             pgNo += 1;
@@ -1490,7 +1514,7 @@ $(document).ready(function () {
 
         var element = $(this);
         var paymentID = $(this).attr('id');
-        alert(paymentID);
+
         if (confirm("Are you sure ?")) {
             $.ajax({
                 url: '/admin/VerifyPayment',
@@ -1500,12 +1524,23 @@ $(document).ready(function () {
                     $('#modal-loading').fadeIn();
                 },
                 success: function (data) {
-                    if (data != '' && data != null && data == true) {
-
+                    if (data != null && data != '' && !data.hasErrors) {
                         var child = element.children();
                         child.removeClass('badge-danger');
                         child.addClass('badge-primary');
                         child.text('Verified');
+
+                        var html = '<div class="badgeMsg badge badge-success" style="width:100%;">Payment Verified </div>';
+                        $(html).insertAfter('.ctnr-headers').fadeOut().fadeIn(1000, function () {
+                            $('.badgeMsg').fadeOut(10000);
+                        });
+                    } else {
+                        $.each(data.ErrorMessages, function (idx, val) {
+                            var html = '<div class="badgeMsg badge badge-danger" style="width:100%;">Error Occurred <br/>' + val + '</div>';
+                            $(html).insertAfter('.ctnr-headers').fadeOut().fadeIn(1000, function () {
+                                $('.badgeMsg').fadeOut(10000);
+                            });
+                        });
                     }
                 },
                 error: function () {
@@ -1546,6 +1581,182 @@ $(document).ready(function () {
                 }
             });
         }
+    });
+
+    $(document).on('click', '.property-availability-badge', function (event) {
+        event.preventDefault();
+
+        var propertyID = $(this).attr('id');
+
+        if (confirm("Are you sure ?")) {
+            $.ajax({
+                url: '/landlordmanagement/TogglePropertyAvailability',
+                type: 'put',
+                data: { propertyID: propertyID },
+                success: function (data) {
+                    if (data.hasErrors == false) {
+                        loadPropertiesView('owned-properties');
+                    } else {
+                        $.each(data.ErrorMessages, function (inx, val) {
+                            var html = '<div class="badge badge-danger" style="width:100%;">' + val + '</div> <br/>';
+                            $(html).insertAfter('.ctnr-headers').hide().fadeIn(1000, function () {
+                                $(this).fadeOut(10000);
+                            });
+                        });
+                    }
+                },
+                error: function () {
+                    alert('Error occurred while saving your liked property, contact system administrator');
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.remove-prop', function (event) {
+        event.preventDefault();
+
+        var propertyID = $(this).attr('id');
+
+        if (confirm("Are you sure ?")) {
+            $.ajax({
+                url: '/landlordmanagement/RemoveProperty',
+                type: 'delete',
+                data: { propertyID: propertyID },
+                success: function (data) {
+                    if (data == true) {
+                        loadPropertiesView('owned-properties');
+                    } else {
+                        alert('Error occurred while removing your property, contact system administrator');
+                    }
+                },
+                error: function () {
+                    alert('Error occurred while saving your liked property, contact system administrator');
+                }
+            });
+        }
+    });
+
+    $(document.body).on('click', '#change-subscription-modal-btn', function (event) {
+        event.preventDefault();
+        var subscriptionID = $('#subscriptionID').val();
+
+        $.ajax({
+            url: '/landlordmanagement/GetModalSubscriptionChange',
+            type: 'Get',
+            data: { subscriptionID: subscriptionID },
+            beforeSend: function () {
+                $('#modal-loading').fadeIn();
+            },
+            success: function (data) {
+                $('#subscriptionChangeModal').remove();
+                $('#modal-displays').append(data);
+
+                sys.showModal('#subscriptionChangeModal');
+
+                var currentSubName = $('#activeSubscriptionName').val();
+                var clickableBox = $('.clickable-box' + '#' + currentSubName).parent();
+                clickableBox.remove();
+                //initialization of bootstrap popover
+                $('[data-toggle="popover"]').popover({
+                    trigger: 'hover focus',
+                    placement: 'top',
+                    container: 'body'
+                });
+            },
+            error: function () {
+                alert('An error occurred while retrieving data');
+            },
+            complete: function () {
+                $('#modal-loading').fadeOut();
+            }
+        });
+    });
+
+    $(document).on('click', '#change-subscription-btn', function (event) {
+        event.preventDefault();
+
+        var newSubscriptionType = lastSelectedClickableSubscriptionType.attr('id');
+        var subscriptionID = $('#subscriptionID').val();
+        var period = null;
+
+        if ($('#subscription-period').length)
+            period = $('#subscription-period').val();
+
+        if (newSubscriptionType != null) {
+            if (confirm("Are you sure ?")) {
+                $.ajax({
+                    url: '/landlordmanagement/changeSubscription',
+                    type: 'post',
+                    data: { subscriptionId: subscriptionID, subscriptionType: newSubscriptionType, period: period },
+                    success: function (data) {
+                        if (data.HasMessage) {
+                            $.each(data.ReturnedMessages, function (inx, val) {
+                                var html = '<div class="badge badge-success" style="width:100%;">' + val + '</div> <br/>';
+                                $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
+                                    $(this).fadeOut(10000, function () {
+                                        loadSubscriptionView();
+                                    });
+                                });
+                            });
+                        } else if (data.HasErrors) {
+                            $.each(data.ErrorMessages, function (inx, val) {
+                                var html = '<div class="badge badge-danger" style="width:100%;">' + val + '</div> <br/>';
+                                $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
+                                    $(this).fadeOut(90000, function () {
+                                        loadSubscriptionView();
+                                    });
+                                });
+                            });
+                        }
+                    },
+                    error: function () {
+                        alert('Error occurred while changing your subscription, contact system administrator');
+                    },
+                    complete: function () {
+                        $('.modal-body').html('');
+                        $('.modal-footer').html('');
+                        $('.close').click();
+                    }
+                });
+            }
+        } else {
+            alert('Select a subscription type first');
+        }
+    });
+
+    $(document.body).on('click', '#subscription-type .clickable-box', function (event) {
+        event.preventDefault();
+        var currentSubCost = $('#activeSubscriptionCost').val();
+        var clickedSubCost = $(this).find(".monthly-cost").html();
+
+        $('#subscription-period-chg option[value="0"]').prop('selected', true);
+        $('#subscription-period-chg').prop('disabled', true);
+        $('#chg-subscription-period').prop('checked', false);
+
+        if (clickedSubCost > currentSubCost)
+            $('#chg-sub-fc').removeClass('hide');
+        else
+            $('#chg-sub-fc').addClass('hide');
+
+        $('#clickedSubscriptionCost').html(clickedSubCost);
+
+        computeSubChgPrice();
+    });
+
+    $(document.body).on('change', '#chg-subscription-period', function (event) {
+
+        var isChecked = $(this).prop('checked');
+
+        if (isChecked)
+            $('#subscription-period-chg').prop('disabled', false);
+        else {
+            $('#subscription-period-chg').prop('disabled', true);
+            computeSubChgPrice();
+        }
+    });
+
+    $(document.body).on('change', '#subscription-period-chg', function (event) {
+        computeSubChgPrice();
     });
 
     /* $(window).resize(function () {

@@ -199,6 +199,7 @@
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
           <Property Name="StreetNumber" Type="varchar" MaxLength="10" />
+          <Property Name="AvailabilityModifiedBy" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -291,6 +292,7 @@
           <Property Name="ModifiedBy" Type="varchar" MaxLength="40" />
           <Property Name="DateTModified" Type="datetime" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SubscriptionExtension">
           <Key>
@@ -886,6 +888,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="Sp_UpdatePropertiesAvailability" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="EasyFindPropertiesModelStoreContainer">
           <EntitySet Name="AdPriority" EntityType="Self.AdPriority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AdType" EntityType="Self.AdType" Schema="dbo" store:Type="Tables" />
@@ -1277,6 +1280,7 @@
             <End Role="User" EntitySet="User" />
             <End Role="PasswordRecoveryRequest" EntitySet="PasswordRecoveryRequest" />
           </AssociationSet>
+          <FunctionImport Name="Sp_UpdatePropertiesAvailability" />
           </EntityContainer>
         <EntityType Name="AdPriority">
           <Key>
@@ -1414,6 +1418,7 @@
           <NavigationProperty Name="Tennant" Relationship="EasyFindPropertiesModel.fk_tennant_property_id" FromRole="Property" ToRole="Tennant" />
           <Property Name="StreetNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="SavedProperties" Relationship="EasyFindPropertiesModel.fk_properties_sp" FromRole="Property" ToRole="SavedProperties" />
+          <Property Name="AvailabilityModifiedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PropertyCategory">
           <Key>
@@ -1511,6 +1516,7 @@
           <NavigationProperty Name="Owner" Relationship="EasyFindPropertiesModel.fk_subscription_owner_id" FromRole="Subscription" ToRole="Owner" />
           <NavigationProperty Name="SubscriptionType" Relationship="EasyFindPropertiesModel.fk_subscription_type_code" FromRole="Subscription" ToRole="SubscriptionType" />
           <NavigationProperty Name="Payment" Relationship="EasyFindPropertiesModel.fk_payment_subscription_type" FromRole="Subscription" ToRole="Payment" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SubscriptionType">
           <Key>
@@ -2322,6 +2328,7 @@
           <EntitySetMapping Name="Property">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Property">
               <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="AvailabilityModifiedBy" ColumnName="AvailabilityModifiedBy" />
                 <ScalarProperty Name="StreetNumber" ColumnName="StreetNumber" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
@@ -2438,6 +2445,7 @@
           <EntitySetMapping Name="Subscription">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Subscription">
               <MappingFragment StoreEntitySet="Subscription">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="DateTModified" ColumnName="DateTModified" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -2646,6 +2654,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Sp_UpdatePropertiesAvailability" FunctionName="EasyFindPropertiesModel.Store.Sp_UpdatePropertiesAvailability" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

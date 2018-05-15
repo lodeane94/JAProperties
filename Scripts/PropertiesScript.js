@@ -486,6 +486,17 @@ function setRangeDistanceRadius() {
     }
 }
 
+//sets the body's height which is determine by it's contents 
+function setBodyHeight() {
+    var filterTagsHeight = $('.filter-tags').outerHeight();
+    var propertyListingHeight = $('.property-listing').outerHeight();
+
+    if (propertyListingHeight > filterTagsHeight)
+        $('#body').height(propertyListingHeight);
+    else
+        $('#body').height(filterTagsHeight);
+}
+
 //displays previous and next signs depending on the number of properties returned
 $(function () {
     var noOfPages = $('#noOfPages').val();
@@ -870,7 +881,7 @@ $(document).ready(function () {
     $('#range-distance-radius').on('change keyup', function () {
         searchNearByProperties();
     });
-    
-         
+
+            
 
 });

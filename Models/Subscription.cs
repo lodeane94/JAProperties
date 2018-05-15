@@ -29,6 +29,7 @@ namespace SS.Models
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> DateTModified { get; set; }
         public System.DateTime DateTCreated { get; set; }
+        public bool IsActive { get; set; }
     
         public virtual Owner Owner { get; set; }
         public virtual SubscriptionType SubscriptionType { get; set; }

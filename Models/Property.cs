@@ -61,6 +61,7 @@ namespace SS.Models
         public Nullable<System.DateTime> DateTModified { get; set; }
         public System.DateTime DateTCreated { get; set; }
         public string StreetNumber { get; set; }
+        public string AvailabilityModifiedBy { get; set; }
     
         public virtual AdPriority AdPriority { get; set; }
         public virtual AdType AdType { get; set; }

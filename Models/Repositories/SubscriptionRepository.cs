@@ -18,12 +18,29 @@ namespace SS.Models.Repositories
 
         public IEnumerable<Subscription> GetSubscriptionsByTypeCode(string code)
         {
-            return EasyFindPropertiesEntities.Subscription.Where(x => x.TypeCode.Equals(code)).ToList();
+            return EasyFindPropertiesEntities.Subscription
+                .Where(x => x.TypeCode.Equals(code)).ToList();
+        }
+
+        public Subscription GetActiveSubscriptionByOwnerID(Guid ID)
+        {
+            return EasyFindPropertiesEntities.Subscription
+                .Where(x => x.OwnerID.Equals(ID) && x.IsActive == true).SingleOrDefault();
         }
 
         public Subscription GetSubscriptionByOwnerID(Guid ID)
         {
-            return EasyFindPropertiesEntities.Subscription.Where(x => x.OwnerID.Equals(ID)).Single();
+            return EasyFindPropertiesEntities.Subscription
+                .Where(x => x.OwnerID.Equals(ID))
+                .OrderByDescending(x => x.DateTCreated)
+                .FirstOrDefault();
+        }
+
+        public bool IsSubscriptionActive(Guid ID)
+        {
+            return EasyFindPropertiesEntities.Subscription
+                .Where(x => x.ID.Equals(ID) && x.IsActive == true)
+                .Any();
         }
     }
 }

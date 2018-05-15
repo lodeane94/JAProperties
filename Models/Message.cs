@@ -28,8 +28,8 @@ namespace SS.Models
         public bool Seen { get; set; }
         public System.DateTime DateTCreated { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         [ScriptIgnore(ApplyToOverrides = true)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MessageTrash> MessageTrash { get; set; }
     }
 }

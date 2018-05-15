@@ -4,10 +4,11 @@
     <div class="ctnr-headers">Subscription</div>
     <div class="row">
         <div class="col-md-12">
-            <div class="card mb-1">
+            <div class="card mb-1 subscription-container">
                 <div class="card-header text-white bg-secondary">
                     @{ var dateFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat;}
-                    @Model.Name Subscription | &#36; <span id="monthlyCost">@Model.MonthlyCost</span> monthly
+                    <span id="subscription-name">@Model.Name</span>
+                    Subscription | &#36; <span id="monthlyCost">@Model.MonthlyCost</span> monthly
                     @{bool isPaymentDue = false;}
                     @if (Model.ExpiryDate > DateTime.Now)
                     {
@@ -25,10 +26,13 @@
                         isPaymentDue = true;
                     }
                 </div>
-                <div class="card-body">
+                <div class="card-body subscription-container-main">
                     <div class="card" style="width:100%;">
                         <div class="card-body">
-                            <div class="float-md-right text-muted small">Subscription expires @Model.ExpiryDate.ToShortDateString()</div>
+                            @if (!Model.ExpiryDate.Equals(DateTime.MinValue))
+                            {
+                                <div id="expiry-date" class="float-md-right text-muted small">Subscription expires @Model.ExpiryDate.ToShortDateString()</div>
+                            }
                             <h5 class="card-title">Payment Details</h5>
                             <h6 class="card-subtitle mb-2 text-muted small">
                                 @if (isPaymentDue)
@@ -39,7 +43,7 @@
                                 {
                                     <span>Subscription has been paid up to @Model.ExpiryDate.ToShortDateString()</span>
                                     <br />
-                                    <span>Next payment is due @dateFormat.GetMonthName(Model.ExpiryDate.Month) @Model.ExpiryDate.Day, @Model.ExpiryDate.Year</span>
+                                    <span>Next payment is due by @dateFormat.GetMonthName(Model.ExpiryDate.Month) @Model.ExpiryDate.Day, @Model.ExpiryDate.Year</span>
                                 }
                             </h6>
                             <p class="card-text">
@@ -66,34 +70,38 @@
                         </div>
                     </div>
                     <br />
-                    <div class="ctnr-aside">Subscription Description</div>
+                    <div class="ctnr-aside">Subscription Description </div>
                     <br />
                     @Model.Description
                 </div>
                 <div class="card-footer">
-                    <h5 class="card-title"><a href="#" class="btn btn-outline-primary btn-sm" id="extend-subscription">Extend Subscription</a></h5>
-                    <div class="extend-subsciption-container">
-                        <select class="custom-select" id="subscription-period" name="subscriptionperiod">
-                            <option selected value="">Subscription Period</option>
-                            <option value="1">1 Month</option>
-                            <option value="2">2 Months</option>
-                            <option value="3">3 Months</option>
-                            <option value="4">4 Months</option>
-                            <option value="5">5 Months</option>
-                            <option value="6">6 Months</option>
-                            <option value="7">7 Months</option>
-                            <option value="8">8 Months</option>
-                            <option value="9">9 Months</option>
-                            <option value="10">10 Months</option>
-                        </select>
-                        <br />
-                        <div class="clearfix" id="sub-ext-price-cal-container">
-                            <span id="sub-ext-price-cal" style="float:right;"></span>
+                    @if (!Model.ExpiryDate.Equals(DateTime.MinValue))
+                    {
+                        <h5 class="card-title"><a href="#" class="btn btn-outline-primary btn-sm" id="extend-subscription">Extend Subscription</a></h5>
+                        <div class="extend-subsciption-container">
+                            <select class="custom-select" id="subscription-period" name="subscriptionperiod">
+                                <option selected value="">Subscription Period</option>
+                                <option value="1">1 Month</option>
+                                <option value="2">2 Months</option>
+                                <option value="3">3 Months</option>
+                                <option value="4">4 Months</option>
+                                <option value="5">5 Months</option>
+                                <option value="6">6 Months</option>
+                                <option value="7">7 Months</option>
+                                <option value="8">8 Months</option>
+                                <option value="9">9 Months</option>
+                                <option value="10">10 Months</option>
+                            </select>
+                            <br />
+                            <div class="clearfix" id="sub-ext-price-cal-container">
+                                <span id="sub-ext-price-cal" style="float:right;"></span>
+                            </div>
                         </div>
-                    </div>
-                    <br />
-                    @Html.Hidden("subscriptionID", Model.ID)
+                        <br />
+                    }
                 </div>
+                <button id="change-subscription-modal-btn" class="btn btn-sm btn-outline-info">Change Subscription</button>
+                @Html.Hidden("subscriptionID", Model.ID)
             </div>
         </div>
     </div>

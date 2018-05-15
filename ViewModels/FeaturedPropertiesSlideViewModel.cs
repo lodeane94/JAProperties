@@ -34,6 +34,7 @@ namespace SS.ViewModels
         public int TotalBathrooms { get; set; }
         public String Occupancy { get; set; }
         public bool isFurnished { get; set; }
+        public bool isAvailable { get; set; }
         public decimal Area { get; set; }
         public String DistanceFromSearchedAddress { get; set; }
         public String DuratiionFromSearchedAddress { get; set; }

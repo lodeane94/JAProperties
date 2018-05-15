@@ -467,7 +467,7 @@ namespace SS.Controllers
                     inviteeType = "R"
                 };
 
-                if(!invitees.Contains(inviteeViewModel))
+                if (!invitees.Contains(inviteeViewModel))
                     invitees.Add(inviteeViewModel);
             }
         }
@@ -869,7 +869,7 @@ namespace SS.Controllers
                 var userId = (Guid)Session["userId"];
                 var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
 
-                profileVM = PropertyHelper.PopulateProfileViewModel(userId,isUserPropOwner);
+                profileVM = PropertyHelper.PopulateProfileViewModel(userId, isUserPropOwner);
 
                 ViewBag.userId = userId;
                 return View(profileVM);
@@ -924,7 +924,7 @@ namespace SS.Controllers
         public ActionResult GetPaymentsView(int pgTake = 16, int pgNo = 0)
         {
             IEnumerable<PaymentViewModel> payments = null;
-            pgTake = 1;
+
             if (Session["userId"] != null)
             {
                 var userId = (Guid)Session["userId"];
@@ -986,6 +986,52 @@ namespace SS.Controllers
             {
                 var userId = (Guid)Session["userId"];
                 result = PropertyHelper.RemoveSavedProperty(userId, propertyID);
+            }
+
+            return Json(result);
+        }
+
+        [HttpPut]
+        public JsonResult TogglePropertyAvailability(Guid propertyID)
+        {
+            ErrorModel errorModel = new ErrorModel();
+
+            if (Session["userId"] != null)
+                errorModel = PropertyHelper.TogglePropertyAvailability(propertyID);
+
+            return Json(errorModel);
+        }
+
+        [HttpDelete]
+        public JsonResult RemoveProperty(Guid propertyID)
+        {
+            bool result = false;
+
+            if (Session["userId"] != null)
+                result = PropertyHelper.RemoveProperty(propertyID);
+
+            return Json(result);
+        }
+
+        [HttpGet]
+        public ActionResult GetModalSubscriptionChange(Guid subscriptionID)
+        {
+            if (Session["userId"] != null)
+            {
+                ViewBag.currentSubType = PropertyHelper.GetSubscriptionTypeByUserSubId(subscriptionID);
+                ViewBag.subscriptionTypes = PropertyHelper.GetSubscriptionTypes();
+            }
+            return PartialView("_partialModalSubscriptionChange");
+        }
+
+        [HttpPost]
+        public JsonResult changeSubscription(Guid subscriptionID, String subscriptionType, int ? period)
+        {
+            var result = new RequestModel();
+
+            if (Session["userId"] != null)
+            {
+                result = PropertyHelper.ChangeSubscription(subscriptionID, subscriptionType, period);
             }
 
             return Json(result);

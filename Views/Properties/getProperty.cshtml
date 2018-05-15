@@ -29,199 +29,209 @@
     })();
 }
 
-@Html.Partial("_ModalPropertyRequisitionSuccess")
-<a href="#" onclick="goBack();" class="badge badge-primary"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back</a>
-<br /><br />
-<div class="row">
-    <div class="col-md-12">
-        <div class="ctnr-headers">
-            @{
-                String adTypeName = "";
-                if (Model.AdType.Equals("Rent"))
-                { adTypeName = "Rented"; }
-                else if (Model.AdType.Equals("Sale")) { adTypeName = "Sold"; } else { adTypeName = "Leased"; }
-            }
-            <label>
-                <strong>Properties being @adTypeName in @Model.Community, @Model.Division, @Model.Country</strong>
-                <a href="#" title=""><i class="fa fa-map-marker" aria-hidden="true"></i></a>
-            </label>
-            <div class="date-added float-md-right">Added @Model.DateAddedModified</div>
-        </div>
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-md-12 bg-lighter">
-        <div class="fotorama" data-nav="thumbs" data-allowfullscreen="true" data-width="100%" data-height="40%">
-            @{
-                foreach (var propImageUrl in Model.PropertyImageURLs)
-                {
-                    <a href="~/Uploads/@propImageUrl">
-                        <img src="~/Uploads/@propImageUrl" />
-                    </a>
+@if (!Model.isAvailable)
+{
+    <div class="ctnr-headers">This property is no longer available</div>
+}
+else
+{
+    @Html.Partial("_ModalPropertyRequisitionSuccess")
+    <a href="#" onclick="goBack();" class="badge badge-primary"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back</a>
+    <br /><br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="ctnr-headers">
+                @{
+                    String adTypeName = "";
+                    if (Model.AdType.Equals("Rent"))
+                    {
+                        adTypeName = "Rented";
+                    }
+                    else if (Model.AdType.Equals("Sale")) { adTypeName = "Sold"; } else { adTypeName = "Leased"; }
                 }
-
-            }
+                <label>
+                    <strong>Properties being @adTypeName in @Model.Community, @Model.Division, @Model.Country</strong>
+                    <a href="#" title=""><i class="fa fa-map-marker" aria-hidden="true"></i></a>
+                </label>
+                <div class="date-added float-md-right">Added @Model.DateAddedModified</div>
+            </div>
         </div>
     </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">Property Details</div>
-            <div class="card-body">
-                <div>
-                    <div class="details-col-header">Price <span class="details-col-det">&#36; @Model.Price</span></div>
-                    <div class="details-col-header">Security Deposit <span class="details-col-det">&#36; @Model.SecurityDeposit</span></div>
-                    <br />
-                    <p>@Model.Description</p>
-                </div>
-                <div class="card" style="width:70%;">
-                    <div class="card-header bg-transparent">Owner Contact</div>
-                    <div class="card-body">
-                        <div><i class="fa fa-user-o fa-2x" aria-hidden="true"></i> <span>@Model.OwnerFirstName @Model.OwnerLastName </span></div>
-                        <div><i class="fa fa-mobile fa-2x" aria-hidden="true"></i> <span>@Model.OwnerCellNumber</span></div>
-                        <br />
-                        <div><button id="requestPropertyProxyBtn" class="btn btn-outline-primary btn-sm">Request Property</button></div>
-                    </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12 bg-lighter">
+                <div class="fotorama" data-nav="thumbs" data-allowfullscreen="true" data-width="100%" data-height="40%">
+                    @{
+                        foreach (var propImageUrl in Model.PropertyImageURLs)
+                        {
+                            <a href="~/Uploads/@propImageUrl">
+                                <img src="~/Uploads/@propImageUrl" />
+                            </a>
+                        }
+
+                    }
                 </div>
             </div>
         </div>
         <br />
-        <div class="card">
-            <div class="card-header">Property's Key Features</div>
-            <div class="card-body">
-                @{
-                    if (Model.PropertyCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
-                    {
-                        <div class="details-col-header">Total Bedroom Amount <span class="details-col-det">@Model.TotalBedrooms</span></div>
-                        <div class="details-col-header">Total Bathroom Amount <span class="details-col-det">@Model.TotalBathrooms</span></div>
-                        <div class="details-col-header">Occupancy <span class="details-col-det">@Model.Occupancy</span></div>
-                        <div class="details-col-header">Property Area <span class="details-col-det">@Model.Area</span></div>
-                    }
-                    else if (Model.PropertyCategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
-                    {
-                        <div class="details-col-header">Property Area <span class="details-col-det">@Model.Area</span></div>
-                    }
-                    else
-                    {
-                        <div class="details-col-header">Condition <span class="details-col-det">@Model.PropertyCondition</span></div>
-                    }
-                    foreach (var tag in Model.Tags)
-                    {
-                        <div class="details-col-header">@tag <span class="details-col-det">Yes</span></div>
-                    }
-                }
-            </div>
-        </div>
-        <!--@*
-        <ul class="property-ratings">
-            <a href="#" title="property ratings">
-                @if (Model.PropertyAverageRatings > 0)
-                {
-                    for (int ratingCount = 1; ratingCount <= Model.PropertyAverageRatings; ratingCount++)
-                    {
-                        <li><span class="glyphicon glyphicon-star"></span></li>
-                    }
-                }
-                else
-                {
-                    int maxRating = 5;
-                    for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
-                    {
-                        <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
-                    }
-                }
-            </a>
-            <!---
-            <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
-            <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
-            <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
-        </ul>*@-->
-    </div>
-</div>
-<hr />@* TODO - implement property reviews
-    <div class="row">
-        <div id="property-reviews" class="col-md-12">
-            <div class="ctnr-info"><strong>Property Reviews</strong></div>
-            @{
-                if (Model.PropRatings != null && Model.PropRatings.Count() > 0)
-                {
-                    foreach (var review in Model.PropRatings)
-                    {
-                        <div class="row">&nbsp;</div>
-                        for (int i = 1; i < 5; i++)
-                        {
-                            <div class="row">&nbsp;</div>
-                            <ul class="property-ratings">
-                                <a href="#" title="@review.Ratings out of 5 stars">
-                                    @for (int ratingCount = 1; ratingCount <= review.Ratings; ratingCount++)
-                                    {
-                                        <li><span class="glyphicon glyphicon-star"></span></li>
-                                    }
-                                </a>
-                                <li><span class="ctnr-info" style="font-size13px;"><em>By @review.CritqueBy</em></span></li>
-                                <li><span class="ctnr-info" style="font-size13px;"><em>On @review.DateTCreated.ToShortDateString()</em></span></li>
-                            </ul>
-                            <br />
-                            <div class="contact-info-container" style="width100%">
-                                <div class="contact-info-content">@review.Comments property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere</div>
-                            </div>
-                            <br />
-                        }
-                        <div class="row">&nbsp;</div>
-                    }
-                }
-                else
-                {
-                    <br />
-                    <div class="contact-info-container" style="width:100%">
-                        <center>
-                            <div class="contact-info-header ctnr-info">Property has not yet been reviewed</div>
-                        </center>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-    <br />*@
-<div class="row" id="property-requisition-question">
-    <div id="property-requisition" class="col-md-12">
-        @if (Session["userId"] != null)
-        {
-            using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
-            {
-                <div style="display:none;" class="col-md-12 error-container"></div>
-                <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
-                <br />
+        <div class="row">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label class="contactPurpose btn btn-secondary active">
-                                @Html.RadioButton("contactPurpose", "requisition", true, new { autocomplete = "off", id = "contact-purpose-req" }) Request Property
-                            </label>
-                            <label class="contactPurpose btn btn-secondary">
-                                @Html.RadioButton("contactPurpose", "message", new { autocomplete = "off", id = "contact-purpose-msg" }) Ask Question
-                            </label>
-                        </div>
-                    </div>
+                    <div class="card-header">Property Details</div>
                     <div class="card-body">
-                        <textarea id="msg" cols="5" class="form-control" name="msg" placeholder="Optional message to the property owner"></textarea>
-                        <br />
-                        <div id="mvcCaptcha">@Html.Partial("_PartialMvcCaptcha")</div>
-                        <br />
-                        <div class="requestPropertySec float-right">
-                            <button id="requestPropertyBtn" type="submit" class="btn btn-sm btn-accent">Submit</button>
+                        <div>
+                            <div class="details-col-header">Price <span class="details-col-det">&#36; @Model.Price</span></div>
+                            <div class="details-col-header">Security Deposit <span class="details-col-det">&#36; @Model.SecurityDeposit</span></div>
+                            <br />
+                            <p>@Model.Description</p>
+                        </div>
+                        <div class="card" style="width:70%;">
+                            <div class="card-header bg-transparent">Owner Contact</div>
+                            <div class="card-body">
+                                <div><i class="fa fa-user-o fa-2x" aria-hidden="true"></i> <span>@Model.OwnerFirstName @Model.OwnerLastName </span></div>
+                                <div><i class="fa fa-mobile fa-2x" aria-hidden="true"></i> <span>@Model.OwnerCellNumber</span></div>
+                                <br />
+                                <div><button id="requestPropertyProxyBtn" class="btn btn-outline-primary btn-sm">Request Property</button></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                @Html.Hidden("PropertyID", Model.ID)
-            }
-        }
-        else
-        {
-            <div class="ctnr-info"><strong><a href="~/accounts/signin">Sign In</a> to Request Property or Ask a Question</strong></div>
-        }
-    </div>
-</div>
+                <br />
+                <div class="card">
+                    <div class="card-header">Property's Key Features</div>
+                    <div class="card-body">
+                        @{
+                            if (Model.PropertyCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
+                            {
+                                <div class="details-col-header">Total Bedroom Amount <span class="details-col-det">@Model.TotalBedrooms</span></div>
+                                <div class="details-col-header">Total Bathroom Amount <span class="details-col-det">@Model.TotalBathrooms</span></div>
+                                <div class="details-col-header">Occupancy <span class="details-col-det">@Model.Occupancy</span></div>
+                                <div class="details-col-header">Property Area <span class="details-col-det">@Model.Area</span></div>
+                            }
+                            else if (Model.PropertyCategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
+                            {
+                                <div class="details-col-header">Property Area <span class="details-col-det">@Model.Area</span></div>
+                            }
+                            else
+                            {
+                                <div class="details-col-header">Condition <span class="details-col-det">@Model.PropertyCondition</span></div>
+                            }
+                            foreach (var tag in Model.Tags)
+                            {
+                                <div class="details-col-header">@tag <span class="details-col-det">Yes</span></div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!--@*
+                <ul class="property-ratings">
+                    <a href="#" title="property ratings">
+                        @if (Model.PropertyAverageRatings > 0)
+                        {
+                            for (int ratingCount = 1; ratingCount <= Model.PropertyAverageRatings; ratingCount++)
+                            {
+                                <li><span class="glyphicon glyphicon-star"></span></li>
+                            }
+                        }
+                        else
+                        {
+                            int maxRating = 5;
+                            for (int ratingCount = 1; ratingCount <= maxRating; ratingCount++)
+                            {
+                                <li><span class="empty glyphicon glyphicon-star-empty"></span></li>
+                            }
+                        }
+                    </a>
+                    <!---
+                    <li><a href=""><img src="~/Content/facebook.svg" /></a></li>
+                    <li><a href=""><img src="~/Content/twitter.svg" /></a></li>
+                    <li><a href=""><img src="~/Content/google-plus.svg" /></a></li>
+                </ul>*@-->
+            </div>
+        </div>
+        <hr />@* TODO - implement property reviews
+            <div class="row">
+                <div id="property-reviews" class="col-md-12">
+                    <div class="ctnr-info"><strong>Property Reviews</strong></div>
+                    @{
+                        if (Model.PropRatings != null && Model.PropRatings.Count() > 0)
+                        {
+                            foreach (var review in Model.PropRatings)
+                            {
+                                <div class="row">&nbsp;</div>
+                                for (int i = 1; i < 5; i++)
+                                {
+                                    <div class="row">&nbsp;</div>
+                                    <ul class="property-ratings">
+                                        <a href="#" title="@review.Ratings out of 5 stars">
+                                            @for (int ratingCount = 1; ratingCount <= review.Ratings; ratingCount++)
+                                            {
+                                                <li><span class="glyphicon glyphicon-star"></span></li>
+                                            }
+                                        </a>
+                                        <li><span class="ctnr-info" style="font-size13px;"><em>By @review.CritqueBy</em></span></li>
+                                        <li><span class="ctnr-info" style="font-size13px;"><em>On @review.DateTCreated.ToShortDateString()</em></span></li>
+                                    </ul>
+                                    <br />
+                                    <div class="contact-info-container" style="width100%">
+                                        <div class="contact-info-content">@review.Comments property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere property has a warming atmosphere</div>
+                                    </div>
+                                    <br />
+                                }
+                                <div class="row">&nbsp;</div>
+                            }
+                        }
+                        else
+                        {
+                            <br />
+                            <div class="contact-info-container" style="width:100%">
+                                <center>
+                                    <div class="contact-info-header ctnr-info">Property has not yet been reviewed</div>
+                                </center>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <br />*@
+                            <div class="row" id="property-requisition-question">
+                                <div id="property-requisition" class="col-md-12">
+                                    @if (Session["userId"] != null)
+                {
+                    using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
+                    {
+                                            <div style="display:none;" class="col-md-12 error-container"></div>
+                                            <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
+                                            <br />
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                        <label class="contactPurpose btn btn-secondary active">
+                                                            @Html.RadioButton("contactPurpose", "requisition", true, new { autocomplete = "off", id = "contact-purpose-req" }) Request Property
+                                                        </label>
+                                                        <label class="contactPurpose btn btn-secondary">
+                                                            @Html.RadioButton("contactPurpose", "message", new { autocomplete = "off", id = "contact-purpose-msg" }) Ask Question
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <textarea id="msg" cols="5" class="form-control" name="msg" placeholder="Optional message to the property owner"></textarea>
+                                                    <br />
+                                                    <div id="mvcCaptcha">@Html.Partial("_PartialMvcCaptcha")</div>
+                                                    <br />
+                                                    <div class="requestPropertySec float-right">
+                                                        <button id="requestPropertyBtn" type="submit" class="btn btn-sm btn-accent">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @Html.Hidden("PropertyID", Model.ID)
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="ctnr-info"><strong><a href="~/accounts/signin">Sign In</a> to Request Property or Ask a Question</strong></div>
+                                    }
+                                </div>
+                            </div>
+                            }

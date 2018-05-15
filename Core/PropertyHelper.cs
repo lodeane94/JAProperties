@@ -16,6 +16,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Security;
+using static SS.Core.EFPConstants;
 
 namespace SS.Core
 {
@@ -618,6 +619,20 @@ namespace SS.Core
                     filters.Add(filter);
                 }
 
+                //only include the availability filter unless it is accompanied by other filters
+                if (filters.Count > 0)
+                {
+                    //availability
+                    Core.Filter availabilityFilter = new Core.Filter()
+                    {
+                        PropertyName = "Availability",
+                        Operation = Op.Equals,
+                        Value = true
+                    };
+
+                    filters.Add(availabilityFilter);
+                }
+
                 return filters;
             }
         }
@@ -1122,6 +1137,7 @@ namespace SS.Core
                 ViewModel.PropRatings = unitOfWork.PropertyRating.GetPropertyRatingsByPropertyId(id);
                 ViewModel.PropertyAverageRatings = ViewModel.PropRatings.Count() > 0 ? (int)ViewModel.PropRatings.Select(x => x.Ratings).Average() : 0;
                 ViewModel.Tags = unitOfWork.Tags.GetTagNamesByPropertyId(id);
+                ViewModel.isAvailable = property.Availability;
                 ViewModel.DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString();
 
                 return ViewModel;
@@ -1515,7 +1531,8 @@ namespace SS.Core
                 Occupancy = model.Occupancy,
                 GenderPreferenceCode = model.GenderPreferenceCode,
                 Description = model.Description,
-                Availability = true,
+                Availability = false,
+                AvailabilityModifiedBy = EFPConstants.Audit.System,
                 EnrolmentKey = model.EnrolmentKey,
                 TermsAgreement = model.TermsAgreement,
                 TotAvailableBathroom = model.TotAvailableBathroom,
@@ -1533,6 +1550,7 @@ namespace SS.Core
                     OwnerID = ownerID,
                     TypeCode = mapPropertySubscriptionTypeToCode(model.SubscriptionType),
                     Period = model.SubscriptionPeriod,
+                    IsActive = false,
                     DateTCreated = DateTime.Now
                 };
 
@@ -1644,6 +1662,7 @@ namespace SS.Core
                     imageInfo.Add("propertyTitle", unitOfWork.Property.Get(image.PropertyID).Title);
                     imageInfo.Add("propertyID", image.PropertyID.ToString());
                     imageInfo.Add("imageURL", image.ImageURL);
+                    imageInfo.Add("availability", unitOfWork.Property.IsPropertyAvailable(image.PropertyID).ToString());
 
                     imageList.Add(imageInfo);
                 }
@@ -1937,7 +1956,7 @@ namespace SS.Core
                 try
                 {
                     unitOfWork.Payment.Add(payment);
-
+                    //TODO determine if it is an extension
                     if (model.IsExtension)
                     {
                         var subscriptionExtension = new SubscriptionExtension()
@@ -1991,42 +2010,76 @@ namespace SS.Core
         /// <param name="paymentID"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static bool VerifyPayment(Guid paymentID, Guid userId)
+        public static ErrorModel VerifyPayment(Guid paymentID, Guid userId)
         {
+            ErrorModel errorModel = new ErrorModel();
+
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                var userName = unitOfWork.User.Get(userId).Email;
-                var payment = unitOfWork.Payment.Get(paymentID);
-                var propertyOwnerID = payment.Subscription.Owner.ID;
-
-                payment.IsVerified = true;
-                payment.DateTModified = DateTime.Now;
-
-                startSubscription(unitOfWork, payment, userName);
-                extendSubscription(unitOfWork, payment, userName);//extending subscription date if necessary
-                makePropertiesAvailableForOwner(unitOfWork, propertyOwnerID); //make properties available after payment
-
                 try
                 {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var userName = unitOfWork.User.Get(userId).Email;
+                    var payment = unitOfWork.Payment.Get(paymentID);
+                    var propertyOwnerID = payment.Subscription.Owner.ID;
+
+                    payment.IsVerified = true;
+                    payment.DateTModified = DateTime.Now;
+
+                    var subscription = startSubscription(unitOfWork, payment, userName);
+                    extendSubscription(unitOfWork, payment, userName);//extending subscription date if necessary
+                    makePropertiesAvailableForOwner(unitOfWork, subscription, propertyOwnerID, userName); //make properties available after payment
+
                     unitOfWork.save();
-                    return true;
+                    return errorModel;
                 }
                 catch (Exception ex)
                 {
-                    return false;//indicating failure
+                    errorModel.AddErrorMessage(ex.Message);
+                    return errorModel;
                 }
             }
         }
-
-        private static void makePropertiesAvailableForOwner(UnitOfWork unitOfWork, Guid propertyOwnerID)
+        /// <summary>
+        /// Allows owner's properties to be now available
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="propertyOwnerID"></param>
+        private static void makePropertiesAvailableForOwner(UnitOfWork unitOfWork, Subscription subscription, Guid propertyOwnerID, String userName)
         {
+            RequestModel requestModel = new RequestModel();
+            String errMsg = String.Empty;
             var properties = unitOfWork.Property.GetPropertiesByOwnerId(propertyOwnerID);
 
-            foreach (var property in properties)
+            if(subscription == null)
+                subscription = unitOfWork.Subscription.GetActiveSubscriptionByOwnerID(propertyOwnerID);
+
+            if (subscription == null || (subscription != null && !subscription.IsActive))
             {
-                property.Availability = true;
+                errMsg = "No active subscription found for property owner";
+                requestModel.AddErrorMessage(errMsg);
+                throw new Exception(errMsg);
+            }
+
+            if (subscription.ExpiryDate.HasValue && subscription.ExpiryDate.Value > DateTime.Now)
+            {
+                foreach (var property in properties)
+                {
+                    //Not modifying properties that the user already set to not available
+                    if ( ( property.AvailabilityModifiedBy != null && property.AvailabilityModifiedBy.Equals(EFPConstants.Audit.System) )
+                        || String.IsNullOrEmpty(property.AvailabilityModifiedBy) )
+                    {
+                        property.Availability = true;
+                        property.AvailabilityModifiedBy = EFPConstants.Audit.System;
+                    }
+                }
+            }
+            else
+            {
+                errMsg = "Properties cannot be available if user subscription is expired";
+                requestModel.AddErrorMessage(errMsg);
+                throw new Exception(errMsg);
             }
         }
         /// <summary>
@@ -2044,10 +2097,24 @@ namespace SS.Core
                 var subscriptionExt = unitOfWork.SubscriptionExtension.GetSubscriptionExtByPaymentID(payment.ID);
                 var subscription = unitOfWork.Subscription.Get(payment.SubscriptionID);
 
-                subscription.Period = subscription.Period + subscriptionExt.Period;
-                subscription.ExpiryDate = subscription.ExpiryDate.Value.AddMonths(subscriptionExt.Period).AddDays(-1);
-                subscription.DateTModified = DateTime.Now;
-                subscription.ModifiedBy = userName;
+                if (subscription.IsActive && subscription.ExpiryDate.HasValue)
+                {
+                    if (subscription.ExpiryDate.Value < DateTime.Now)
+                    {
+                        subscription.ExpiryDate = DateTime.Now.AddMonths(subscription.Period).AddDays(-1);
+                        subscription.Period = subscriptionExt.Period;
+                    }
+                    else
+                    {
+                        subscription.ExpiryDate = subscription.ExpiryDate.Value.AddMonths(subscription.Period).AddDays(-1);
+                        subscription.Period = subscription.Period + subscriptionExt.Period;
+                    }
+
+                    subscription.DateTModified = DateTime.Now;
+                    subscription.ModifiedBy = userName;
+                }
+                else
+                    throw new Exception("Cannot extend a non-active subscription");
             }
         }
         /// <summary>
@@ -2056,7 +2123,7 @@ namespace SS.Core
         /// <param name="unitOfWork"></param>
         /// <param name="payment"></param>
         /// <param name="userName"></param>
-        private static void startSubscription(UnitOfWork unitOfWork, Payment payment, string userName)
+        private static Subscription startSubscription(UnitOfWork unitOfWork, Payment payment, string userName)
         {
             var subscription = unitOfWork.Subscription.Get(payment.SubscriptionID);
 
@@ -2064,9 +2131,12 @@ namespace SS.Core
             {
                 subscription.StartDate = DateTime.Now;
                 subscription.ExpiryDate = DateTime.Now.AddMonths(subscription.Period).AddDays(-1);
+                subscription.IsActive = true;
                 subscription.DateTModified = DateTime.Now;
                 subscription.ModifiedBy = userName;
             }
+
+            return subscription;
         }
         /// <summary>
         /// returns the names of the divisions
@@ -2099,6 +2169,86 @@ namespace SS.Core
                     unitOfWork.SavedProperties.Remove(savedProperty);
 
                     unitOfWork.save();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    //log exceptiion
+                    return false;
+                }
+            }
+        }
+        /// <summary>
+        /// Toggles the availability of a property
+        /// </summary>
+        /// <param name="propertyID"></param>
+        /// <returns></returns>
+        public static ErrorModel TogglePropertyAvailability(Guid propertyID)
+        {
+            ErrorModel errorModel = new ErrorModel();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                try
+                {
+                    var property = unitOfWork.Property.Get(propertyID);
+
+                    if (!property.Availability)
+                    {
+                        var subscription = unitOfWork.Subscription.GetActiveSubscriptionByOwnerID(property.OwnerID);
+
+                        if (subscription == null 
+                            || (subscription != null && !subscription.StartDate.HasValue))
+                        {
+                            var errMsg = "No active subscription found for property owner";
+                            errorModel.AddErrorMessage(errMsg);
+                            throw new Exception(errMsg);
+                        }
+                            
+                        //don't allow property availability if subscription expiry date is past
+                        if (DateTime.Now <= subscription.ExpiryDate.Value)
+                        {
+                            var username = unitOfWork.Property.GetPropertyOwnerByPropID(propertyID).User.Email;
+                            property.Availability = true;
+                            property.AvailabilityModifiedBy = username;
+                        }
+                        else
+                        {
+                            var errMsg = "Your subscription expired on " + subscription.ExpiryDate.Value.ToShortDateString();
+                            errMsg += "</br> <b>Extend your subscription to make your property available </b>";
+                            errorModel.AddErrorMessage(errMsg);
+                        }
+                    }
+                    else
+                        property.Availability = false;
+
+                    unitOfWork.save();
+
+                    return errorModel;
+                }
+                catch (Exception ex)
+                {
+                    return errorModel;
+                    //log exceptiion
+                }
+            }
+        }
+
+        public static bool RemoveProperty(Guid propertyID)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                try
+                {
+                    var property = unitOfWork.Property.Get(propertyID);
+                    unitOfWork.Property.Remove(property);
+
+                    unitOfWork.save();
+
                     return true;
                 }
                 catch (Exception ex)
@@ -2264,6 +2414,120 @@ namespace SS.Core
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
                 return unitOfWork.SubscriptionType.GetAll().ToList();
+            }
+        }
+        /// <summary>
+        /// Changes the user's subscription 
+        /// Compare subsciption prices to determine if a payment will be required 
+        /// for subscription change i.e. if it is an upgrade
+        /// </summary>
+        /// <param name="subscriptionID"></param>
+        /// <param name="subscriptionType"></param>
+        /// <returns></returns>
+        public static RequestModel ChangeSubscription(Guid subscriptionID, String subscriptionTypeName, int? period)
+        {
+            var requestModel = new RequestModel();
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                try
+                {
+                    var subscription = unitOfWork.Subscription.Get(subscriptionID);
+                    subscription.IsActive = false;
+
+                    var newSubscriptionType = unitOfWork.SubscriptionType
+                    .GetSubscriptionTypeByID(mapPropertySubscriptionTypeToCode(subscriptionTypeName));
+
+                    Subscription newSubscription = new Subscription()
+                    {
+                        ID = Guid.NewGuid(),
+                        OwnerID = subscription.OwnerID,
+                        TypeCode = mapPropertySubscriptionTypeToCode(subscriptionTypeName),
+                        DateTCreated = DateTime.Now
+                    };
+
+                    //ensure that users who have not subscribed can cahnge their subsc
+
+                    if (newSubscriptionType.MonthlyCost < subscription.SubscriptionType.MonthlyCost)
+                    {
+                        var msg = "Subscription was changed successfully. You are now on the <b>" + newSubscriptionType.Name + "</b> subscription";
+
+                        newSubscription.Period = DateDiff(Intervals.Months, DateTime.Now, subscription.ExpiryDate.Value);
+                        newSubscription.StartDate = DateTime.Now;
+                        newSubscription.ExpiryDate = subscription.ExpiryDate.Value;
+                        newSubscription.IsActive = true;
+
+                        requestModel.AddMessage(msg);
+                    }
+                    else
+                    {
+                        if (period.HasValue)
+                        {
+                            var msg = "A payment of " + newSubscriptionType.MonthlyCost + " is required to activate your subscription. <br />";
+                            msg += "Your properties will not be displayed until payment is confirmed";
+
+                            newSubscription.Period = period.Value;
+                            newSubscription.IsActive = false;
+
+                            requestModel.AddMessage(msg);
+                        }
+                        else
+                        {
+                            String errMessage = "Period must have a value for successful subscription change from ";
+                            errMessage += subscription.SubscriptionType.Name + " to " + newSubscriptionType.Name;
+
+                            requestModel.AddErrorMessage(errMessage);
+
+                            throw new Exception(errMessage);
+                        }
+                    }
+
+                    unitOfWork.Subscription.Add(newSubscription);
+                    unitOfWork.save();
+                }
+                catch (Exception ex)
+                {
+                    //print error log
+                    var msg = "An error occurred while changing the subscription type. Please contact system administrator";
+                    requestModel.AddErrorMessage(msg);
+
+                    return requestModel;
+                }
+
+                return requestModel;
+            }
+        }
+
+        public static int DateDiff(Intervals eInterval, DateTime dtInit, DateTime dtEnd)
+        {
+            if (dtEnd < dtInit)
+                throw new ArithmeticException("Init date should be previous to End date.");
+
+            switch (eInterval)
+            {
+                //case Intervals.Days:
+                //     return (dtEnd - dtInit).TotalDays;
+                case Intervals.Months:
+                    return ((dtEnd.Year - dtInit.Year) * 12) + dtEnd.Month - dtInit.Month;
+                case Intervals.Years:
+                    return dtEnd.Year - dtInit.Year;
+                default:
+                    throw new ArgumentException("Incorrect interval code.");
+            }
+        }
+        /// <summary>
+        /// Gets the subscription type of a user
+        /// </summary>
+        /// <param name="subscriptionID"></param>
+        /// <returns></returns>
+        public static SubscriptionType GetSubscriptionTypeByUserSubId(Guid subscriptionID)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                var subscription = unitOfWork.Subscription.Get(subscriptionID);
+
+                return subscription.SubscriptionType;
             }
         }
     }

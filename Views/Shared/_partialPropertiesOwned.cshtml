@@ -5,7 +5,7 @@
             <h6 class="card-title">Manage Your Property</h6>
             <div id="management-prop-images-container">
                 @{
-                    String propertyID = "", imageURL = "", propertyTitle = "";
+                    String propertyID = "", imageURL = "", propertyTitle = "", availability = "";
                 }
                 @if (ViewBag.propertyImages != null)
             {
@@ -14,12 +14,20 @@
                     if (imgInfo != null
                             && imgInfo.TryGetValue("propertyID", out propertyID)
                             && imgInfo.TryGetValue("imageURL", out imageURL)
-                            && imgInfo.TryGetValue("propertyTitle", out propertyTitle))
+                            && imgInfo.TryGetValue("propertyTitle", out propertyTitle)
+                            && imgInfo.TryGetValue("availability", out availability))
                     {
                             <div class="management-prop-images" data-toggle="popover" data-content="Update Property">
-                                <a class="property-image" id="@propertyID" href="@propertyID">
+                                <a href="#" id="@propertyID" class="badge badge-light property-availability-badge">
+                                    @(availability.Equals("True") ? "Make Property Unavailable" : "Make Property Available")
+                                </a>
+                                <a class="property-image" id="@propertyID" href="@propertyID"
+                                   style=" @(availability.Equals("False") ? "opacity:0.3" : "") ">
                                     <img id="@propertyID" src="~/Uploads/@imageURL" />
                                     <div class="management-prop-title">@propertyTitle</div>
+                                    <div style="float:right; padding:5px;">
+                                        <div id="@propertyID" class="btn btn-sm btn-outline-warning remove-prop">Remove</div>
+                                    </div>
                                 </a>
                             </div>
                         }
@@ -36,5 +44,5 @@
                 <a href="~/landlordmanagement/advertiseproperty" style="float:right;" id="add-new-property" class="btn btn-accent"><span class="glyphicon glyphicon-plus-sign"></span> Add New Property</a>
             </div>
         </div>
-    </div>    
+    </div>
 </div>

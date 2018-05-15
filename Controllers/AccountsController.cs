@@ -105,16 +105,17 @@ namespace SS.Controllers
                 if (String.IsNullOrEmpty(username))
                 {
                     userId = unitOfWork.User.GetUserByEmail(HttpContext.User.Identity.Name).ID;
+                    Session["username"] = HttpContext.User.Identity.Name;
                 }
                 else
                 {
                     userId = unitOfWork.User.GetUserByEmail(username).ID;
+                    Session["username"] = username;
                 }
 
                 var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
 
                 Session["userId"] = userId;
-                Session["username"] = HttpContext.User.Identity.Name;
                 Session["isUserPropOwner"] = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
                 Session["isUserConsumer"] = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Consumer);
                 Session["isUserTennant"] = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Tennant);

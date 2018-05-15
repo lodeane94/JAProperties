@@ -7,8 +7,8 @@ namespace SS.Core
 {
     public class ErrorModel
     {
-        private bool hasErrors;
-        private List<String> ErrorMessages;
+        public bool hasErrors;
+        public List<String> ErrorMessages;
 
         public ErrorModel()
         {

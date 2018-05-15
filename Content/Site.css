@@ -99,6 +99,7 @@ html, body {
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
+    
 }
 
 .btn-accent {
@@ -411,7 +412,6 @@ a.clickable-box-link {
 .details-col-det {
     background-color: #FFFFFF;
     position: relative;
-    right: 20px;
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -423,6 +423,7 @@ a.clickable-box-link {
     padding: 10px;
     display: none;
 }
+
 
 .filter-tags {
     position: absolute;
@@ -784,11 +785,14 @@ button.jumbotron-button {
     width: 100%;
 }
 
-.management-action {
-    display: block;
-    background-color: #f7f7f7;
-    padding-top: 15px;
-    padding-left: 20px;
+@media only screen and (max-width : 768px) {
+    .management-action {
+        display: flex;
+    }
+
+    .management-action > a {
+        margin-right: 10%;
+    }
 }
 
     .management-action > a {

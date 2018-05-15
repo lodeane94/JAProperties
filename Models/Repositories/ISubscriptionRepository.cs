@@ -10,5 +10,7 @@ namespace SS.Models.Repositories
     {
         IEnumerable<Subscription> GetSubscriptionsByTypeCode(String code);
         Subscription GetSubscriptionByOwnerID(Guid ID);
+        Subscription GetActiveSubscriptionByOwnerID(Guid ID);
+        bool IsSubscriptionActive(Guid ID);
     }
 }

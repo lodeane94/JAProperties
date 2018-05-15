@@ -60,13 +60,13 @@
                     </div>
                     @if (ViewBag.itemsCount > 0)
                     {
-                        <div class="card-subtitle float-right">@(ViewBag.pgNo + 1)  of @(Math.Ceiling((decimal)(ViewBag.itemsCount / ViewBag.pgTake)))</div>
+                        <div class="card-subtitle float-right">@(ViewBag.pgNo + 1)  of @(Math.Ceiling(((decimal)ViewBag.itemsCount / (decimal)ViewBag.pgTake)))</div>
                     }
                 </div>
                 <div class="card-footer">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-end ">
-                            <li class="page-item previous disabled">
+                            <li class="page-item previous">
                                 <a class="page-link" id="previous" href="previous">Previous</a>
                             </li>
                             <li class="page-item next">

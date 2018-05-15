@@ -29,11 +29,8 @@
     else{
     populatePropertyTypeByCategoryName('@ViewBag.category','@ViewBag.isStudentAccommodationCat');
     }
+    setBodyHeight();
     });
-
-    window.onpopstate = function() {
-   alert("clicked back button");
-    }; 
     })();
 
 }
@@ -44,139 +41,140 @@
         <div class="ctnr-headers">@ViewBag.runningHeader</div>
     </div>
 </div>
-<div class="row" id="properties-container">
-    @if (ViewBag.tags != null && ViewBag.tags.Count > 0)
-    {
-        <div class="col-md-3" style="margin-bottom:10px;">
-            <div class="filter-tags">
-                <div class="card">
-                    <div class="card-header">Filter <i class="fa fa-filter" aria-hidden="true"></i></div>
-                    <div class="card-body" id="property-tags">
-                        @if (ViewBag.SearchType != null && ViewBag.SearchType.Equals("nearByPlaces"))
-                        {
-                            <div class="slidecontainer">
-                                <div class="ctnr-info" style="font-size:12px;">Properties Distance</div>
-                                <input type="range" min="1" max="100" value="@(ViewBag.DistanceRadius != null ? ViewBag.DistanceRadius : 20)" class="slider" id="range-distance-radius">
-                                &nbsp;<span class="ctnr-info" style="font-size:11px;float:right;" id="range-distance-radius-val"></span>
-                            </div>
-                            <div class="horizontal-separator"></div>
-                        }
-                        @foreach (var tag in ViewBag.tags)
-                        {
-                            <div style="width:100%;" class="details-col-header">
-                                @tag.Key
-                                <span class="details-col-det">
-                                    <input type="checkbox" value="@tag.Value.ToString()" id="@tag.Key" name="@("Tags[" + tag.Key + "]")"
-                                           @(tag.Value ? "checked" : "") class="chkTags" 
-                                           @(ViewBag.activeNavigation != null && ViewBag.activeNavigation == "isStudentAccommodationCat" && tag.Key == "For Student" ? "disabled" : "") />
-                                </span>
-                            </div>
-                        }
+<div class="property-listing">
+    <div class="row" id="properties-container">
+        @if (ViewBag.tags != null && ViewBag.tags.Count > 0)
+        {
+            <div class="col-md-3" style="margin-bottom:10px;">
+                <div class="filter-tags">
+                    <div class="card">
+                        <div class="card-header">Filter <i class="fa fa-filter" aria-hidden="true"></i></div>
+                        <div class="card-body" id="property-tags">
+                            @if (ViewBag.SearchType != null && ViewBag.SearchType.Equals("nearByPlaces"))
+                            {
+                                <div class="slidecontainer">
+                                    <div class="ctnr-info" style="font-size:12px;">Properties Distance</div>
+                                    <input type="range" min="1" max="100" value="@(ViewBag.DistanceRadius != null ? ViewBag.DistanceRadius : 20)" class="slider" id="range-distance-radius">
+                                    &nbsp;<span class="ctnr-info" style="font-size:11px;float:right;" id="range-distance-radius-val"></span>
+                                </div>
+                                <div class="horizontal-separator"></div>
+                            }
+                            @foreach (var tag in ViewBag.tags)
+                            {
+                                <div style="width:100%;" class="details-col-header">
+                                    @tag.Key
+                                    <span class="details-col-det">
+                                        <input type="checkbox" value="@tag.Value.ToString()" id="@tag.Key" name="@("Tags[" + tag.Key + "]")"
+                                               @(tag.Value ? "checked" : "") class="chkTags"
+                                               @(ViewBag.activeNavigation != null && ViewBag.activeNavigation == "isStudentAccommodationCat" && tag.Key == "For Student" ? "disabled" : "") />
+                                    </span>
+                                </div>
+                            }
 
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    @{
-        if (Model != null && Model.Count > 0)
-        {
-            int count = 0;
-            foreach (var item in Model)
+        }
+        @{
+            if (Model != null && Model.Count > 0)
             {
-                count++;
-                <div class="@(count > 1 ? "offset-md-3 offset-sm-0" : "") col-md-9">
-                    <div class="image-container">
-                        <div class="image-link">
-                            <div class="image-link-banner">@item.AdType</div>
-                            <a href="~/properties/getProperty/@item.ID">
-                                <div class="image">
-                                    <img id="@item.ID" src="~/Uploads/@item.PropertyPrimaryImageURL" />
-                                </div>
-                            </a>
-                        </div>
-                        <div class="image-information-container">
-                            <div class="image-information">
-                                <div class="image-information-content">
-                                    <div class="property-type-banner @(item.IsPropertySaved ? "saved" : "")">
-                                        <a id="@item.ID" data-toggle="popover" data-content="@(item.IsPropertySaved ? "Already Saved" : "I'm Interested")" class="save-property">
-                                            <i class="fa fa-heart fa-2x"></i>
-                                        </a>
-                                        @item.PropertyType | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.Price) </span>
+                int count = 0;
+                foreach (var item in Model)
+                {
+                    count++;
+                    <div class="offset-md-3 offset-sm-0 col-md-9">
+                        <div class="image-container">
+                            <div class="image-link">
+                                <div class="image-link-banner">@item.AdType</div>
+                                <a href="~/properties/getProperty/@item.ID">
+                                    <div class="image">
+                                        <img id="@item.ID" src="~/Uploads/@item.PropertyPrimaryImageURL" />
                                     </div>
-                                    <div class="date-added">Added @item.DateAddedModified</div>
-                                    <div class="property-address">
-                                        Located at : @( (!String.IsNullOrEmpty(item.StreetNumber) ? item.StreetNumber + ", " : "") + item.StreetAddress + ", " + item.Division + ", " + item.Country )
-                                    </div>
-                                    <div class="property-owner-contact"><span>Contact Owner At @item.User.CellNum</span></div>
-                                    <div class="property-desc">@item.Description</div>
-                                    <!--<div class="property-ratings-container">
-                                        @Html.Partial("_PropertyRatings", item.PropertyAverageRatings)
-                                        <div class="social-icons">
-                                            <div><a href=""><img src="~/Content/facebook.svg" /></a></div>
-                                            <div><a href=""><img src="~/Content/twitter.svg" /></a></div>
-                                            <div><a href=""><img src="~/Content/google-plus.svg" /></a></div>
+                                </a>
+                            </div>
+                            <div class="image-information-container">
+                                <div class="image-information">
+                                    <div class="image-information-content">
+                                        <div class="property-type-banner @(item.IsPropertySaved ? "saved" : "")">
+                                            <a id="@item.ID" data-toggle="popover" data-content="@(item.IsPropertySaved ? "Already Saved" : "I'm Interested")" class="save-property">
+                                                <i class="fa fa-heart fa-2x"></i>
+                                            </a>
+                                            @item.PropertyType | &nbsp; <span style="font-size:16px;"> @String.Format("{0:C}", item.Price) </span>
                                         </div>
-                                    </div>-->
+                                        <div class="date-added">Added @item.DateAddedModified</div>
+                                        <div class="property-address">
+                                            Located at : @( (!String.IsNullOrEmpty(item.StreetNumber) ? item.StreetNumber + ", " : "") + item.StreetAddress + ", " + item.Division + ", " + item.Country )
+                                        </div>
+                                        <div class="property-owner-contact"><span>Contact Owner At @item.User.CellNum</span></div>
+                                        <div class="property-desc">@item.Description</div>
+                                        <!--<div class="property-ratings-container">
+                                            @Html.Partial("_PropertyRatings", item.PropertyAverageRatings)
+                                            <div class="social-icons">
+                                                <div><a href=""><img src="~/Content/facebook.svg" /></a></div>
+                                                <div><a href=""><img src="~/Content/twitter.svg" /></a></div>
+                                                <div><a href=""><img src="~/Content/google-plus.svg" /></a></div>
+                                            </div>
+                                        </div>-->
+                                    </div>
+                                    <a href="~/properties/getProperty/@item.ID" class="view-property-banner" data-toggle="popover" data-content="Click to view details"><i class="fa fa-sign-in fa-2x"></i></a>
                                 </div>
-                                <a href="~/properties/getProperty/@item.ID" class="view-property-banner" data-toggle="popover" data-content="Click to view details"><i class="fa fa-sign-in fa-2x"></i></a>
-                            </div>
-                            <div class="secondary-info-container">
-                                @if (item.TotalBedrooms > 0)
-                                {
-                                    <div><label>@(item.TotalBedrooms > 1 ? item.TotalBedrooms + " Bedrooms" : item.TotalBedrooms + " Bedroom" )</label></div>
-                                    <div><label>@(item.TotalBathrooms > 1 ? item.TotalBathrooms + " Bathrooms" : item.TotalBathrooms + " Bathroom" )</label></div>
-                                    <div><label>@(item.isFurnished ? "Furnished" : "Not Furnished" )</label></div>
-                                }
-                                else
-                                {
-                                    <div><label>@(item.Area > 1 ? item.Area + " Acres " : item.Area + " Acre" )</label></div>
-                                    <div><label>@item.PropertyPurpose</label></div>
-                                }
+                                <div class="secondary-info-container">
+                                    @if (item.TotalBedrooms > 0)
+                                    {
+                                        <div><label>@(item.TotalBedrooms > 1 ? item.TotalBedrooms + " Bedrooms" : item.TotalBedrooms + " Bedroom" )</label></div>
+                                        <div><label>@(item.TotalBathrooms > 1 ? item.TotalBathrooms + " Bathrooms" : item.TotalBathrooms + " Bathroom" )</label></div>
+                                        <div><label>@(item.isFurnished ? "Furnished" : "Not Furnished" )</label></div>
+                                    }
+                                    else
+                                    {
+                                        <div><label>@(item.Area > 1 ? item.Area + " Acres " : item.Area + " Acre" )</label></div>
+                                        <div><label>@item.PropertyPurpose</label></div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    @if (item.DistanceFromSearchedAddress != null && item.DuratiionFromSearchedAddress != null && ViewBag.SearchTerm != null)
+                        @if (item.DistanceFromSearchedAddress != null && item.DuratiionFromSearchedAddress != null && ViewBag.SearchTerm != null)
                     {
-                        <div class="tertiary-info-container">
-                            <div class="horizontal-separator">@ViewBag.SearchTerm</div>
-                            <div>Approximately @item.DistanceFromSearchedAddress KM away</div>
-                            <div>Approximately @item.DuratiionFromSearchedAddress away</div>
-                        </div>
-                    }
-                    <br />
+                            <div class="tertiary-info-container">
+                                <div class="horizontal-separator">@ViewBag.SearchTerm</div>
+                                <div>Approximately @item.DistanceFromSearchedAddress KM away</div>
+                                <div>Approximately @item.DuratiionFromSearchedAddress away</div>
+                            </div>
+                        }
+                        <br />
+                    </div>
+                }
+                <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
+            }
+            else
+            {
+                <div class="col-md-12">
+                    <div class="ctnr-headers">
+                        <label><strong>No Results Found</strong></label>
+                    </div>
                 </div>
             }
-            <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
         }
-        else
-        {
-            <div class="col-md-12">
-                <div class="ctnr-headers">
-                    <label><strong>No Results Found</strong></label>
-                </div>
-            </div>
-        }
-    }
-</div>
-<br />
-<div class="row">
-    <div class="col-md-12">
-        <div class="ctnr-options">
-            <ul class="pagination pagination-sm">
-                @{
-                    double noOfPages = Math.Ceiling((Convert.ToDouble(Model.Count) / Convert.ToDouble(ViewBag.fetchAmount)));
-                    for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
-                    {
-                        <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="ctnr-options">
+                <ul class="pagination pagination-sm">
+                    @{
+                        double noOfPages = Math.Ceiling((Convert.ToDouble(Model.Count) / Convert.ToDouble(ViewBag.fetchAmount)));
+                        for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
+                        {
+                            <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
+                        }
                     }
-                }
-            </ul>
-            <span class="previous-page" style="float: left; display:none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
-            <span class="next-page" style="float:right; display:none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
-            <input type="hidden" id="noOfPages" value="@noOfPages" />
-            <input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
+                </ul>
+                <span class="previous-page" style="float: left; display:none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
+                <span class="next-page" style="float:right; display:none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
+                <input type="hidden" id="noOfPages" value="@noOfPages" />
+                <input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
+            </div>
         </div>
     </div>
 </div>
-

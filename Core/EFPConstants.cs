@@ -74,5 +74,17 @@ namespace SS.Core
             public static readonly String Host = System.Net.Dns.GetHostEntry("").HostName;
         }
 
+        public static class Audit
+        {
+            public static readonly String System = "System";
+        }
+
+        public enum Intervals
+        {
+            Days,
+            Months,
+            Years
+        }
+
     }
 }

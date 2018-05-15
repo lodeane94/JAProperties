@@ -97,41 +97,41 @@ namespace SS.Models.Repositories
             if (!string.IsNullOrEmpty(propertyCategory))
             {
                 properties = (from p in EasyFindPropertiesEntities.Property
-                                  join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
-                                  from t in g.DefaultIfEmpty()
-                                  where p.Availability.Equals(true)
-                                      && (p.PropertyPurpose.Name.Contains(searchTerm)
-                                          || p.AdType.Name.Contains(searchTerm)
-                                          || p.PropertyType.Name.Contains(searchTerm)
-                                          || p.PropertyCategory.Name.Contains(searchTerm)
-                                          || p.StreetAddress.Contains(searchTerm)
-                                          || p.Division.Contains(searchTerm)
-                                          || p.Community.Contains(searchTerm)
-                                          || p.Country.Contains(searchTerm)
-                                          || p.Description.Contains(searchTerm)
-                                          || t.TagType.Name.Contains(searchTerm))
-                                          && p.CategoryCode.Equals(propertyCategory)
-                                  orderby p.AdPriority.Value, p.DateTCreated
-                                  select p);
+                              join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
+                              from t in g.DefaultIfEmpty()
+                              where p.Availability.Equals(true)
+                                  && (p.PropertyPurpose.Name.Contains(searchTerm)
+                                      || p.AdType.Name.Contains(searchTerm)
+                                      || p.PropertyType.Name.Contains(searchTerm)
+                                      || p.PropertyCategory.Name.Contains(searchTerm)
+                                      || p.StreetAddress.Contains(searchTerm)
+                                      || p.Division.Contains(searchTerm)
+                                      || p.Community.Contains(searchTerm)
+                                      || p.Country.Contains(searchTerm)
+                                      || p.Description.Contains(searchTerm)
+                                      || t.TagType.Name.Contains(searchTerm))
+                                      && p.CategoryCode.Equals(propertyCategory)
+                              orderby p.AdPriority.Value, p.DateTCreated
+                              select p);
             }
             else
             {
                 properties = (from p in EasyFindPropertiesEntities.Property
-                                  join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
-                                  from t in g.DefaultIfEmpty()
-                                  where p.Availability.Equals(true)
-                                      && (p.PropertyPurpose.Name.Contains(searchTerm)
-                                          || p.AdType.Name.Contains(searchTerm)
-                                          || p.PropertyType.Name.Contains(searchTerm)
-                                          || p.PropertyCategory.Name.Contains(searchTerm)
-                                          || p.StreetAddress.Contains(searchTerm)
-                                          || p.Division.Contains(searchTerm)
-                                          || p.Community.Contains(searchTerm)
-                                          || p.Country.Contains(searchTerm)
-                                          || p.Description.Contains(searchTerm)
-                                          || t.TagType.Name.Contains(searchTerm))
-                                  orderby p.AdPriority.Value, p.DateTCreated
-                                  select p);
+                              join t in EasyFindPropertiesEntities.Tags on p.ID equals t.PropertyID into g
+                              from t in g.DefaultIfEmpty()
+                              where p.Availability.Equals(true)
+                                  && (p.PropertyPurpose.Name.Contains(searchTerm)
+                                      || p.AdType.Name.Contains(searchTerm)
+                                      || p.PropertyType.Name.Contains(searchTerm)
+                                      || p.PropertyCategory.Name.Contains(searchTerm)
+                                      || p.StreetAddress.Contains(searchTerm)
+                                      || p.Division.Contains(searchTerm)
+                                      || p.Community.Contains(searchTerm)
+                                      || p.Country.Contains(searchTerm)
+                                      || p.Description.Contains(searchTerm)
+                                      || t.TagType.Name.Contains(searchTerm))
+                              orderby p.AdPriority.Value, p.DateTCreated
+                              select p);
             }
 
             if (take > 0)
@@ -167,13 +167,14 @@ namespace SS.Models.Repositories
             else
             {
                 return EasyFindPropertiesEntities.Property
+                    .Where(x => x.Availability == true)
                    .Select(x => new { x.Latitude, x.Longitude }).ToArray();
             }
         }
 
         public IEnumerable<Property> FindPropertiesByStreetAddress(List<NearbyPropertySearchModel> model, int take = 16, int pgNo = 0)
         {
-            //TODO use another alternative to AsEnumerable as this re
+            //TODO use another alternative to AsEnumerable as this will execute slowly
             var properties = (from p in EasyFindPropertiesEntities.Property.AsEnumerable()
                               where model.Select(x => x.StreetAddress).Contains(p.StreetAddress)
                               select p
@@ -199,6 +200,12 @@ namespace SS.Models.Repositories
             }
 
             return taggedProperties;
+        }
+
+        public bool IsPropertyAvailable(Guid Id)
+        {
+            return EasyFindPropertiesEntities.Property
+                .Any(x => x.ID.Equals(Id) && x.Availability.Equals(true));
         }
     }
 }
