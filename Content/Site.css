@@ -599,7 +599,6 @@ textarea:-ms-input-placeholder {
 .footer {
     position: relative;
     bottom: 0px;
-    height: 140px;
     width: 100%;
     clear: both;
     background-color: #AD0051;

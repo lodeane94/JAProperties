@@ -1,4 +1,5 @@
 ﻿using BotDetect.Web.Mvc;
+using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SS.Code;
@@ -19,6 +20,7 @@ namespace SS.Controllers
 {
     public class PropertiesController : Controller
     {
+        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string filterString = string.Empty;
         private string conditionToBeRemoved = string.Empty;
 

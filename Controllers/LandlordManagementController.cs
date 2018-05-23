@@ -808,21 +808,23 @@ namespace SS.Controllers
         [HttpPut]
         public ActionResult UpdatePropertyPrimaryImg(Guid propertyId, Guid imgId)
         {
-            PropertyHelper.UpdatePropertyPrimaryImg(propertyId, imgId);
+            if ( PropertyHelper.UpdatePropertyPrimaryImg(propertyId, imgId) )
+                return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
 
-            return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
+            return null;
         }
 
         /// <summary>
         /// Deletes property image
         /// </summary>
         /// <returns></returns>
-        [HttpPut]
+        [HttpDelete]
         public ActionResult DeletePropertyImage(Guid propertyId, Guid imageId)
         {
-            PropertyHelper.DeletePropertyImage(imageId);
+            if ( PropertyHelper.DeletePropertyImage(imageId) )
+                return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
 
-            return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
+            return null;
         }
 
         /// <summary>
@@ -832,9 +834,10 @@ namespace SS.Controllers
         [HttpPost]
         public ActionResult AddPropertyImage(HttpPostedFileBase propertyImgUpload, Guid ID)
         {
-            PropertyHelper.AssociateImageWithProperty(propertyImgUpload, ID);
+            if ( !String.IsNullOrEmpty( PropertyHelper.AssociateImageWithProperty(propertyImgUpload, ID)) )
+                return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(ID));
 
-            return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(ID));
+            return null;
         }
 
         //loads advertise property view

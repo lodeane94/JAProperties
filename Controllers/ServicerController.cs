@@ -126,6 +126,13 @@ namespace SS.Controllers
 
             return Json(results, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult GetVisitorsCount()
+        {
+            return Json((int)HttpContext.Application["TotalOnlineUsers"], JsonRequestBehavior.AllowGet);
+        }
+
         /// <summary>
         /// Returns the _partialMvcCaptcha view
         /// </summary>

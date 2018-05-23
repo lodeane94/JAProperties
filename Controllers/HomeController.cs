@@ -14,11 +14,13 @@ using SS.ViewModels;
 using System.Net;
 using System.IO;
 using SS.Core;
+using log4net;
 
 namespace SS.Controllers
 {
     public class HomeController : Controller
     {
+        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public ActionResult Home()
         {
             var userId = Guid.Empty;
@@ -29,7 +31,7 @@ namespace SS.Controllers
             }
 
             int take = 8; //amount of featured properties to be retieved per category
-
+            
             return View(PropertyHelper.PopulateHomePageViewModel(take, userId));
         }        
         

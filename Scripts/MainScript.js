@@ -26,6 +26,36 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
 })();
 
 /***GENERAL FUNCTIONS*/
+//initialize functions to be called by SignalR
+function initializeSockets() {
+    var applicationHub = $.connection.applicationHub;
+
+    $.connection.hub.logging = true;
+
+    $.connection.hub.start().done(function () {
+        console.log('Connection establised');
+    });
+
+    applicationHub.client.updateUserSessionCount = function (usersSessionCount) {
+        updateVisitorCount(usersSessionCount);
+    }
+}
+function getVisitorsCount() {
+    $.ajax({
+        url: '/servicer/GetVisitorsCount',
+        type: 'get',
+        success: function (data) {
+            updateVisitorCount(data);
+        },
+        error: function () {
+            alert('An error occurred while retrieving visitors count');
+        }
+    });
+}
+//updates the visitor-count field 
+function updateVisitorCount(usersSessionCount) {
+    $('#visitor-count').html(usersSessionCount);
+}
 //go back to previous page
 function goBack() {
     window.history.back();
@@ -297,6 +327,9 @@ function loadPropertyTags(selectedItem) {
 
 /***ADVERTISEPROPERTY FUNCTIONS*/
 (function () {
+    initializeSockets();
+    getVisitorsCount();
+
     //enables disabled elements
     function enableElements(elements) {
         $.each(elements, function (index, value) {

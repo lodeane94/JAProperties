@@ -1,14 +1,14 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
+using log4net;
+using Newtonsoft.Json;
 using SS.Code;
 using SS.Models;
 using SS.SignalR;
 using SS.ViewModels;
 using SS.ViewModels.Management;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Entity.Core.Objects;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -22,6 +22,7 @@ namespace SS.Core
 {
     public static class PropertyHelper
     {
+        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public static List<String> uploadedImageNames = new List<string>();//used to store names of uploaded images. Needed in the case of removing uploaded images during rollback
         private static List<String> searchResultPropertyTags = null;
         /// <summary>
@@ -412,6 +413,8 @@ namespace SS.Core
 
         public static HomePageViewModel PopulateHomePageViewModel(int take, Guid userId)
         {
+            log.Info("Populating home page");
+
             HomePageViewModel ViewModel = new HomePageViewModel();
 
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
@@ -420,58 +423,65 @@ namespace SS.Core
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
                 IEnumerable<int> avgPropRatings;
 
-                foreach (var property in unitOfWork.Property.GetFeaturedProperties(take))
+                try
                 {
-                    avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
-
-                    Temporary = new FeaturedProperty
+                    foreach (var property in unitOfWork.Property.GetFeaturedProperties(take))
                     {
-                        ID = property.ID,
-                        PrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
-                        Price = property.Price,
-                        StreetAddress = property.StreetAddress,
-                        Division = property.Division,
-                        Country = property.Country,
-                        Description = property.Description,
-                        PropertyType = property.PropertyType,
-                        OwnerContactNum = property.Owner.User.CellNum,
-                        AverageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0,
-                        IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false,
-                        DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString()
-                    };
+                        avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
 
-                    if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
-                    {
-                        Temporary.TotRooms = property.TotRooms.Value;
-                        Temporary.TotAvailableBathroom = property.TotAvailableBathroom.Value;
+                        Temporary = new FeaturedProperty
+                        {
+                            ID = property.ID,
+                            PrimaryImageURL = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(property.ID),
+                            Price = property.Price,
+                            StreetAddress = property.StreetAddress,
+                            Division = property.Division,
+                            Country = property.Country,
+                            Description = property.Description,
+                            PropertyType = property.PropertyType,
+                            OwnerContactNum = property.Owner.User.CellNum,
+                            AverageRating = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0,
+                            IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false,
+                            DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString()
+                        };
 
-                        string furnishedTagVal = unitOfWork.Tags.GetTagNamesByPropertyId(property.ID)
-                            .Where(x => x.ToString().Contains("Furnished")).SingleOrDefault();
+                        if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
+                        {
+                            Temporary.TotRooms = property.TotRooms.Value;
+                            Temporary.TotAvailableBathroom = property.TotAvailableBathroom.Value;
 
-                        Temporary.isFurnished = furnishedTagVal != null ? true : false;
+                            string furnishedTagVal = unitOfWork.Tags.GetTagNamesByPropertyId(property.ID)
+                                .Where(x => x.ToString().Contains("Furnished")).SingleOrDefault();
+
+                            Temporary.isFurnished = furnishedTagVal != null ? true : false;
+                        }
+
+                        if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
+                        {
+                            Temporary.Area = property.Area;
+                            Temporary.PropertyPurpose = property.PropertyPurpose;
+                        }
+
+                        if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Rent))
+                        {
+                            Temporary.ShowRating = true;
+                            ViewModel.FeaturedRental.Add(Temporary);
+                        }
+
+                        if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
+                        {
+                            ViewModel.FeaturedSale.Add(Temporary);
+                        }
+
+                        if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Lease))
+                        {
+                            ViewModel.FeaturedLease.Add(Temporary);
+                        }
                     }
-
-                    if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
-                    {
-                        Temporary.Area = property.Area;
-                        Temporary.PropertyPurpose = property.PropertyPurpose;
-                    }
-
-                    if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Rent))
-                    {
-                        Temporary.ShowRating = true;
-                        ViewModel.FeaturedRental.Add(Temporary);
-                    }
-
-                    if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Sale))
-                    {
-                        ViewModel.FeaturedSale.Add(Temporary);
-                    }
-
-                    if (property.AdTypeCode.Equals(EFPConstants.PropertyAdType.Lease))
-                    {
-                        ViewModel.FeaturedLease.Add(Temporary);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Error occurred while loading properties for home", ex);
                 }
             };
 
@@ -492,7 +502,7 @@ namespace SS.Core
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
+                log.Error("Http Request to " + Url + " failed", ex);
                 return null;
             }
         }
@@ -1034,7 +1044,7 @@ namespace SS.Core
             }
             catch (Exception ex)
             {
-                //log exception
+                log.Error("Error encountered while sending email", ex);
                 return false;
             }
         }
@@ -1177,8 +1187,8 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Update property failed", ex);
                     return false;
-                    //log exception
                 }
             }
         }
@@ -1202,8 +1212,8 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Update property primary image failed", ex);
                     return false;
-                    //log exception
                 }
             }
         }
@@ -1213,7 +1223,7 @@ namespace SS.Core
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static object DeletePropertyImage(Guid ID)
+        public static bool DeletePropertyImage(Guid ID)
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
@@ -1229,8 +1239,8 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Property deletion failed + " + img.ToString(), ex);
                     return false;
-                    //log exception
                 }
             }
         }
@@ -1296,15 +1306,15 @@ namespace SS.Core
                 {
                     unitOfWork.PropertyImage.Add(propertyImage);
                     UploadPropertyImages(file, fileName);
-
+                    
                     unitOfWork.save();
 
                     return fileName;
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Error occurred while adding image for property ID + " + propertyID, ex);
                     return null;
-                    //log exception
                 }
             }
         }
@@ -1417,7 +1427,11 @@ namespace SS.Core
                     try
                     {
                         if (model.Password != null && !model.Password.Equals(model.ConfirmPassword))
-                            throw new Exception("The fields Password and Confirm Password are not equal");
+                        {
+                            String errMsg = "The fields Password and Confirm Password are not equal";
+                            errorModel.AddErrorMessage(errMsg);
+                            throw new Exception(errMsg);
+                        }
 
                         PropertyHelper.createRolesIfNotExist();
 
@@ -1465,7 +1479,8 @@ namespace SS.Core
                             PropertyHelper.removeUploadedImages(PropertyHelper.uploadedImageNames);
                         }
 
-                        errorModel.AddErrorMessage(ex.Message);
+                        errorModel.AddErrorMessage("Error occurred - Property was not added");
+                        log.Error("Could not advertise property", ex);
                     }
                 }
             }
@@ -1722,6 +1737,7 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Cannot save liked property",ex);
                     return false;//indicate failure
                 }
             }
@@ -1816,6 +1832,7 @@ namespace SS.Core
                     {
                         PropertyHelper.removeUploadedImages(PropertyHelper.uploadedImageNames);
                     }
+                    log.Error("Profile update unsuccessful");
                     return false;//indicate failure
                 }
             }
@@ -1984,6 +2001,7 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Payment unsuccessful", ex);
                     return false; //indicating faliure
                 }
             }
@@ -2037,6 +2055,7 @@ namespace SS.Core
                 catch (Exception ex)
                 {
                     errorModel.AddErrorMessage(ex.Message);
+                    log.Error("Payment verification error", ex);
                     return errorModel;
                 }
             }
@@ -2173,7 +2192,7 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
-                    //log exceptiion
+                    log.Error("Error occurred while removing saved property", ex);
                     return false;
                 }
             }
@@ -2230,8 +2249,8 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
+                    log.Error("Unable to toggle property availability ", ex);
                     return errorModel;
-                    //log exceptiion
                 }
             }
         }
@@ -2253,7 +2272,7 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
-                    //log exceptiion
+                    log.Error("Error occurred while removing property", ex);
                     return false;
                 }
             }
@@ -2377,12 +2396,14 @@ namespace SS.Core
                 {
                     string errMessage = "Unable to reset your password : " + e.Message;
                     errorModel.AddErrorMessage(errMessage);
+                    log.Error(errMessage, e);
                     return false;
                 }
                 catch (Exception e)
                 {
                     string errMessage = "An unexpected error occurred - please contact system administrator or try again later";
                     errorModel.AddErrorMessage(errMessage);
+                    log.Error(errMessage, e);
                     return false;
                 }
             }
@@ -2487,10 +2508,9 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
-                    //print error log
                     var msg = "An error occurred while changing the subscription type. Please contact system administrator";
                     requestModel.AddErrorMessage(msg);
-
+                    log.Error(msg, ex);
                     return requestModel;
                 }
 

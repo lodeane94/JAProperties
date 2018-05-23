@@ -1164,7 +1164,7 @@ $(document).ready(function () {
 
                     } else {
                         $('.modal-body').prepend('' +
-                            '<div class="alert-danger temp-alert">Property Was Not Update - Contact Administrator</div> ')
+                            '<div class="alert-danger temp-alert">Property Was Not Updated - Contact Administrator</div> ')
                             .hide()
                             .fadeIn('slow');
                     }
@@ -1193,7 +1193,7 @@ $(document).ready(function () {
 
             $.ajax({
                 url: '/landlordmanagement/DeletePropertyImage',
-                type: 'Put',
+                type: 'Delete',
                 data: { propertyId: propertyId, imageId: imageId },
                 beforeSend: function () {
                     $('#modal-loading').fadeIn();
@@ -1209,7 +1209,7 @@ $(document).ready(function () {
                         $('.upd-property-images-ctnr').fadeOut().fadeIn('10000');
                     } else {
                         $('.modal-body').prepend('' +
-                            '<div class="alert-danger temp-alert">Property Was Not Update - Contact Administrator</div> ')
+                            '<div class="alert-danger temp-alert">Property Was Not Deleted - Contact Administrator</div> ')
                             .hide()
                             .fadeIn('slow');
                     }
