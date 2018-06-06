@@ -11,11 +11,13 @@ using System.Globalization;
 using System.Text;
 using SS.Core;
 using SS.ViewModels;
+using log4net;
 
 namespace SS.Controllers
 {
     public class AccountsController : Controller
     {
+        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ActionResult SignOut()
         {
@@ -87,7 +89,10 @@ namespace SS.Controllers
             }
             catch (Exception ex)
             {
-                Session["invalidUser"] = "An unexpected error occurred - please contact system administrator or try again later";
+                String errMessage = "An unexpected error occurred - please contact system administrator or try again later";
+                Session["invalidUser"] = errMessage;
+                log.Error(errMessage, ex);
+
                 return View();
             }
         }
@@ -143,40 +148,38 @@ namespace SS.Controllers
             {
                 using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    using (var dbCtxTran = dbCtx.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        if (!password.Equals(confirmPassword))
+                            throw new Exception("The fields Password and Confirm Password are not equal");
+
+                        var unitOfWork = new UnitOfWork(dbCtx);
+
+                        var doesUserExist = unitOfWork.User.DoesUserExist(user.Email);
+
+                        if (!doesUserExist)
                         {
-                            if (!password.Equals(confirmPassword))
-                                throw new Exception("The fields Password and Confirm Password are not equal");
+                            user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Consumer, "", user.Email, user.FirstName,
+                                   user.LastName, user.CellNum, DateTime.MinValue);
 
-                            PropertyHelper.createRolesIfNotExist();
+                            PropertyHelper.createUserAccount(user.Email, password);
+                        }
+                        else
+                            throw new Exception("This email address already exists");
 
-                            var unitOfWork = new UnitOfWork(dbCtx);
-
-                            var doesUserExist = unitOfWork.User.DoesUserExist(user.Email);
-
-                            if (!doesUserExist)
-                            {
-                                user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Consumer, "", user.Email, user.FirstName,
-                                       user.LastName, user.CellNum, DateTime.MinValue);
-
-                                PropertyHelper.createUserAccount(unitOfWork, user.Email, password);
-                            }
-
-                            else
-                                throw new Exception("This email address already exists");
-
+                        if (PropertyHelper.SendUserCreatedEmail(user))
+                        {
                             unitOfWork.save();
-                            dbCtxTran.Commit();
                         }
-                        catch (Exception ex)
-                        {
-                            dbCtxTran.Rollback();
-
-                            errorModel.AddErrorMessage(ex.Message);
-                        }
+                        else
+                            throw new Exception("Unable to send user created email");
                     }
+                    catch (Exception ex)
+                    {
+                        PropertyHelper.RemoveUserAccount(user.Email);
+                        errorModel.AddErrorMessage(ex.Message);
+                    }
+
                 }
             }
             else
@@ -372,7 +375,7 @@ namespace SS.Controllers
                 var user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Tennant, "", model.Email, model.FirstName,
                     model.LastName, model.CellNum, DateTime.Parse(model.DOB));
 
-                PropertyHelper.createUserAccount(unitOfWork, EFPConstants.UserType.Tennant, model.Password);
+                PropertyHelper.createUserAccount(EFPConstants.UserType.Tennant, model.Password);
 
                 var propertyPrice = unitOfWork.Property.Get(model.PropertyID).Price;
 
@@ -412,12 +415,12 @@ namespace SS.Controllers
             {
                 if (PropertyHelper.RecoverPassword(email, errorModel))
                 {
-                    TempData["success"] = "An email was sent to you containing a access code to reset your password";
+                    TempData["success"] = "An email was sent to you containing a access code to reset your password. Check your spam emails if you do not see our email";
                 }
             }
             else
                 errorModel.AddErrorMessage("Invalid form submitted");
-                
+
             if (errorModel.GetHasErrors())
                 TempData["errorMessage"] = errorModel.GetErrorMessages();
 
@@ -425,7 +428,7 @@ namespace SS.Controllers
         }
 
         [HttpGet]
-        public ActionResult ResetPassword(Guid ? userId)
+        public ActionResult ResetPassword(Guid? userId)
         {
             if (userId.HasValue)
             {
@@ -443,7 +446,7 @@ namespace SS.Controllers
 
             if (ModelState.IsValid)
             {
-                if (password.Equals(confirmPassword) )
+                if (password.Equals(confirmPassword))
                 {
                     if (password.Length > 4)
                     {
@@ -494,7 +497,7 @@ namespace SS.Controllers
                 TempData["errorMessage"] = errorModel.GetErrorMessages();
 
             ViewBag.userId = userId;
-            return RedirectToAction("resetPassword", "accounts", new { userId = userId});
+            return RedirectToAction("resetPassword", "accounts", new { userId = userId });
         }
     }
 }

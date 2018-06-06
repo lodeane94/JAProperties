@@ -86,5 +86,13 @@ namespace SS.Core
             Years
         }
 
+        public static class EmailTmplParams
+        {
+            public static readonly String Title = "{title}";
+            public static readonly String Fname = "{fname}";
+            public static readonly String Lname = "{lname}";
+            public static readonly String Body = "{body}";
+        }
+
     }
 }

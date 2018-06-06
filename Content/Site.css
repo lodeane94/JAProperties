@@ -881,19 +881,36 @@ button.jumbotron-button {
     overflow: auto;
 }
 
-    .management-action-section .msg-container .user {
-        display: block;
-        position: relative;
-        left: 78%;
-        margin-bottom: 15px;
-        width: 150px;
-        word-wrap: break-word;
-    }
+.msg-absolute-spacer {
+    margin-bottom:100px;
+    margin-top:200px;
+}
+.msg-left-ctnr {
+    display: block;
+    position: absolute;
+    left: 0;
+}
+.msg-right-ctnr {
+    display: block;
+    position:absolute;
+    right:0;
+}
+
+.msg-add-mrg {
+    margin-top:30px;
+}
+
+.management-action-section .msg-container .user {
+    display: block;
+    position: relative;
+    margin-bottom: 15px;
+    width: 150px;
+    word-wrap: break-word;
+}
 
     .management-action-section .msg-container .not-user {
         display: block;
         position: relative;
-        left: 0;
         margin-bottom: 15px;
         width: 150px;
         word-wrap: break-word;

@@ -434,18 +434,37 @@ function getMsgThread() {
             success: function (data) {
                 $(this).parent().removeClass('seen').addClass('seen');
                 var userId = $('#userId').val();
-                var msgBoxContainer = $('.management-action-section .msg-container');
-                msgBoxContainer.empty();
+                var msgBoxLeftContainer = $('.management-action-section .msg-container .msg-left-ctnr');
+                var msgBoxRightContainer = $('.management-action-section .msg-container .msg-right-ctnr');
+                var userCounter = 0;
+                var notUserCounter = 0;
+
+                msgBoxLeftContainer.empty();
+                msgBoxRightContainer.empty();
                 //if this message is sent from the current logged in user
                 //then dispaly it to the right and it should not have any glyphicon to it
                 $.each(data, function (index, value) {
                     if (userId == value.From) {
-                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg user">' + value.Msg + ' <span class="fa fa-user fa-2x" style="font-size:14px;">You</span></div>');
+                        var addMargin = shouldAddMargin(userCounter, notUserCounter, true);
+
+                        var html = `<div id=" ${value.ID} " class="single-msg user ${addMargin ? " msg-add-mrg" : ""}">`;
+                        html += '<span class="fa fa-user fa-2x" style="font-size:14px;"></span> ';
+                        html += value.Msg + '</div>';
+
+                        msgBoxRightContainer.append(html);
+                        userCounter++;
                     } else {
-                        msgBoxContainer.append('<div id="' + value.ID + '" class="single-msg not-user"><span class="fa fa-user   fa-2x img-circle img-circle-sm" style="font-size:25px;"> </span> ' + value.Msg + '</div>');
+                        var addMargin = shouldAddMargin(userCounter, notUserCounter, false);
+
+                        var html = `<div id=" ${value.ID} " class="single-msg not-user ${addMargin ? " msg-add-mrg" : ""}">`;
+                        html += '<span class="fa fa-user fa-2x img-circle img-circle-sm" style="font-size:25px;"> </span> ';
+                        html += value.Msg + '</div>';
+
+                        msgBoxLeftContainer.append(html);
+                        notUserCounter++;
                     }
                 });
-                //TODO update seen message
+                
                 $(".management-action-section .msg-container").animate({ scrollTop: $('.management-action-section .msg-container').prop("scrollHeight") }, 1000);
                 $('#send-msg-btn').prop('disabled', false);
             },
@@ -453,6 +472,24 @@ function getMsgThread() {
                 alert('An error occurred while loading the selected message');
             }
         });
+    }
+}
+//used to return the appropriate message tag i.e. with or without margin
+function shouldAddMargin(userCounter, notUserCounter, isUser) {
+
+    if (isUser) {
+        if (userCounter == notUserCounter)
+            return false;
+
+        if (userCounter > notUserCounter)
+            return false;
+        else
+            return true;
+    } else {
+        if (userCounter > notUserCounter)
+            return true;
+        else
+            return false;
     }
 }
 

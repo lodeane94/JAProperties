@@ -25,6 +25,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -120,6 +121,7 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -188,6 +190,7 @@
     <Content Include="Content\sunset.jpg" />
     <Content Include="Content\twitter.svg" />
     <Content Include="Content\user.svg" />
+    <Content Include="Content\EmailTemplate.html" />
     <Content Include="Global.asax" />
     <Content Include="Models\EasyFindProperties.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -242,10 +245,6 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\PropertiesScript.js" />
-    <Content Include="Uploads\01f3f419-eb94-4c74-9ae2-27345dd7ec5b.jpg" />
-    <Content Include="Uploads\0e61817b-b70f-4361-b828-41c81dba700b.jpg" />
-    <Content Include="Uploads\5282d459-7492-431d-9eeb-4e7f6d622b9f.jpg" />
-    <Content Include="Uploads\eb75fc5d-9c87-42c8-96b4-f081f932caee.jpg" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -256,6 +255,7 @@
     <Compile Include="Core\EFPConstants.cs" />
     <Compile Include="Core\ErrorModel.cs" />
     <Compile Include="Core\FilterHelper.cs" />
+    <Compile Include="Core\MailHelper.cs" />
     <Compile Include="Core\MailModel.cs" />
     <Compile Include="Core\MiscellaneousHelper.cs" />
     <Compile Include="Core\NearbyPropertySearchModel.cs" />
@@ -547,7 +547,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Uploads\UtilityBills\" />
+    <Folder Include="Uploads\" />
     <Folder Include="Views\Enrolment\" />
     <Folder Include="Views\Image\" />
     <Folder Include="Views\Mail\" />

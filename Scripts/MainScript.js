@@ -327,9 +327,6 @@ function loadPropertyTags(selectedItem) {
 
 /***ADVERTISEPROPERTY FUNCTIONS*/
 (function () {
-    initializeSockets();
-    getVisitorsCount();
-
     //enables disabled elements
     function enableElements(elements) {
         $.each(elements, function (index, value) {
@@ -1036,8 +1033,15 @@ function loadPropertyTags(selectedItem) {
                 this.defaultShowErrors();
             }
         });
-
     }
+
+    //ensures that only numbers are entered into the MinPrice and MaxPrice fields
+    $('#cellnum').keypress(function (e) {
+        //if the letter is not digit then display error and don't type anything
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    });
 
 })();
 /***ADVERTISEPROPERTY FUNCTIONS*/

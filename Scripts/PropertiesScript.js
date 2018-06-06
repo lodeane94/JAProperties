@@ -882,6 +882,7 @@ $(document).ready(function () {
         searchNearByProperties();
     });
 
-            
+    initializeSockets();
+    getVisitorsCount();
 
 });

@@ -1,8 +1,6 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
 using log4net;
-using Newtonsoft.Json;
-using SS.Code;
 using SS.Models;
 using SS.SignalR;
 using SS.ViewModels;
@@ -13,7 +11,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mail;
 using System.Web;
 using System.Web.Security;
 using static SS.Core.EFPConstants;
@@ -647,17 +644,14 @@ namespace SS.Core
             }
         }
 
-        //TODO every one should get an account only realtor and landlord can add unlimited amount of properties without paying the extra cost
         /// <summary>
         /// Creates a membership account for the property owner
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="userType"></param>
         /// <param name="model"></param>
-        public static void createUserAccount(UnitOfWork unitOfWork, String email, String password)
+        public static void createUserAccount(String email, String password)
         {
-            createRolesIfNotExist();
-
             MembershipCreateStatus status = new MembershipCreateStatus();
 
             MembershipUser newUser = Membership.CreateUser(email, password, email, "null", "null", true, out status);
@@ -666,6 +660,15 @@ namespace SS.Core
             {
                 throw new Exception(GetMembershipErrorMessage(status));
             }
+        }
+
+        /// <summary>
+        /// removes a membership account for the property owner
+        /// </summary>
+        /// <param name="email"></param>
+        public static bool RemoveUserAccount(String email)
+        {
+            return Membership.DeleteUser(email, true);
         }
 
         /// <summary>
@@ -740,6 +743,8 @@ namespace SS.Core
         /// <param name="subscriptionType"></param>
         public static void addUserToRespectedRole(string email, string subscriptionType)
         {
+            createRolesIfNotExist();
+
             if (subscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
             {
                 Roles.AddUserToRole(email, EFPConstants.RoleNames.Landlord.ToString());
@@ -931,7 +936,7 @@ namespace SS.Core
 
             //email address which acceptance letter should be sent to
             string emailTo = reqUser.Email;
-            string subject = "EasyFindProperties - Property Requisition Accepted";
+            string subject = "JProps - Property Requisition Accepted";
             //body of the email
             string body = string.Empty;
 
@@ -956,7 +961,9 @@ namespace SS.Core
             body += "<br/> Owner Information<br/> First Name:&nbsp;" + propertyUser.FirstName + "<br/>Last Name:&nbsp;" + propertyUser.LastName
                             + "<br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/>Email:&nbsp;" + propertyUser.Email;
 
-            if (sendMail(emailTo, body, subject))
+            MailHelper mail = new MailHelper(emailTo, subject, body, reqUser.FirstName);
+
+            if (mail.SendMail())
             {
                 //sets the accepted field of the requisition table to true for the accepted property request
                 requisition.IsAccepted = true;
@@ -965,7 +972,11 @@ namespace SS.Core
                 return true;
             }
             else
+            {
+                log.Error("Mail Exception - Unable to send out mail - Accept property requisition");
                 throw new Exception("Mail Exception");
+            }
+
         }
 
         /// <summary>
@@ -980,21 +991,27 @@ namespace SS.Core
             string emailTo = String.Empty;
 
             var requisition = unitOfWork.PropertyRequisition.Get(reqID);
+            var ownerUser = requisition.Property.Owner.User;
 
             if (isUserPropOwner)
             {
-                body = "The owner of the property have declined your requisition";
-                subject = "EasyFindProperties - Property Requisition Declined";
+                body = "<p> We are sorry to advise you that " +
+                        " the owner ( " + ownerUser.FirstName + " " + ownerUser.LastName + " ) of the property have declined your requisition." +
+                        " Please feel free to request more properties. <br /> http://jprops.net </p>";
+
+                subject = "JProps - Property Requisition Declined";
                 emailTo = requisition.User.Email;
             }
             else
             {
-                body = "The property requisition has been cancelled";
-                subject = "EasyFindProperties - Property Requisition Cancelled";
+                body = "<p> The property requisition for (" + requisition.User.FirstName + " " + requisition.User.LastName + " ) has been cancelled </p>";
+                subject = "JProps - Property Requisition Cancelled";
                 emailTo = requisition.Property.Owner.User.Email;
             }
 
-            if (sendMail(emailTo, body, subject))
+            MailHelper mail = new MailHelper(emailTo, subject, body, requisition.User.FirstName);
+
+            if (mail.SendMail())
             {
                 requisition.IsAccepted = null;
                 unitOfWork.save();
@@ -1002,50 +1019,9 @@ namespace SS.Core
                 return true;
             }
             else
+            {
+                log.Error("Mail Exception - Unable to send out mail - CancelOrDenyPropertyRequisition");
                 throw new Exception("Mail Exception");
-        }
-
-        /// <summary>
-        /// sends email from the application server
-        /// </summary>
-        /// <param name="emailTo"></param>
-        /// <param name="body"></param>
-        /// <param name="subject"></param>
-        /// <returns></returns>
-        public static bool sendMail(string emailTo, string body, string subject)
-        {
-            MailModel mailModel = new MailModel()
-            {
-                To = "jamprops@hotmail.com",//emailTo,
-                Subject = subject,
-                From = "jamprops@hotmail.com",
-                Body = body
-            };
-
-            //setting mail requirements
-            MailMessage mail = new MailMessage();
-            mail.To.Add(mailModel.To);
-            mail.From = new MailAddress(mailModel.From);
-            mail.Subject = mailModel.Subject;
-            mail.Body = mailModel.Body;
-            mail.IsBodyHtml = true;
-
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = "smtp-mail.outlook.com";
-            smtp.Port = 587;
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new System.Net.NetworkCredential("jamprops@hotmail.com", "iGiPmT88*");
-            smtp.EnableSsl = true;
-
-            try
-            {
-                smtp.Send(mail);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error encountered while sending email", ex);
-                return false;
             }
         }
 
@@ -1306,7 +1282,7 @@ namespace SS.Core
                 {
                     unitOfWork.PropertyImage.Add(propertyImage);
                     UploadPropertyImages(file, fileName);
-                    
+
                     unitOfWork.save();
 
                     return fileName;
@@ -1422,68 +1398,81 @@ namespace SS.Core
                 var doesUserExist = false;
                 User user = null;
 
-                using (var dbCtxTran = dbCtx.Database.BeginTransaction())
+                try
                 {
-                    try
+                    if (model.Password != null && !model.Password.Equals(model.ConfirmPassword))
                     {
-                        if (model.Password != null && !model.Password.Equals(model.ConfirmPassword))
-                        {
-                            String errMsg = "The fields Password and Confirm Password are not equal";
-                            errorModel.AddErrorMessage(errMsg);
-                            throw new Exception(errMsg);
-                        }
+                        String errMsg = "The fields Password and Confirm Password are not equal";
+                        errorModel.AddErrorMessage(errMsg);
+                        throw new Exception(errMsg);
+                    }
 
-                        PropertyHelper.createRolesIfNotExist();
+                    var unitOfWork = new UnitOfWork(dbCtx);
 
-                        var unitOfWork = new UnitOfWork(dbCtx);
+                    if (!userId.Equals(Guid.Empty))
+                    {
+                        user = unitOfWork.User.Get(userId);
+                    }
+                    else
+                    {
+                        doesUserExist = unitOfWork.User.DoesUserExist(model.Email);
+                        user = doesUserExist ? unitOfWork.User.GetUserByEmail(model.Email) : null;
+                    }
 
-                        if (!userId.Equals(Guid.Empty))
-                        {
-                            user = unitOfWork.User.Get(userId);
-                        }
-                        else
-                        {
-                            doesUserExist = unitOfWork.User.DoesUserExist(model.Email);
-                            user = doesUserExist ? unitOfWork.User.GetUserByEmail(model.Email) : null;
-                        }
+                    //if user already exists and they are not a property owner, then associate user with that user type as well
+                    //TODO: user's role will have to be manipulated as well
+                    if (user != null)
+                    {
+                        var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
+                        bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
 
-                        //if user already exists and they are not a property owner, then associate user with that user type as well
-                        //TODO: user's role will have to be manipulated as well
-                        if (user != null)
-                        {
-                            var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
-                            bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
+                        if (!isUserPropOwner)
+                            PropertyHelper.associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.PropertyOwner);
+                    }
+                    else
+                    {
+                        user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.PropertyOwner, model.SubscriptionType, model.Email, model.FirstName,
+                        model.LastName, model.CellNum, DateTime.MinValue);
 
-                            if (!isUserPropOwner)
-                                PropertyHelper.associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.PropertyOwner);
-                        }
-                        else
-                        {
-                            user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.PropertyOwner, model.SubscriptionType, model.Email, model.FirstName,
-                            model.LastName, model.CellNum, DateTime.MinValue);
+                        PropertyHelper.createUserAccount(model.Email, model.Password);
+                    }
 
-                            PropertyHelper.createUserAccount(unitOfWork, model.Email, model.Password);
-                        }
+                    insertProperty(model, unitOfWork, user);
 
-                        insertProperty(model, unitOfWork, user);
-
+                    if (SendUserCreatedEmail(user))
+                    {
                         unitOfWork.save();
-                        dbCtxTran.Commit();
                     }
-                    catch (Exception ex)
+                    else
+                        throw new Exception("Unable to send user created email");
+                }
+                catch (Exception ex)
+                {
+                    RemoveUserAccount(model.Email);
+
+                    if (PropertyHelper.uploadedImageNames != null && PropertyHelper.uploadedImageNames.Count > 0)
                     {
-                        dbCtxTran.Rollback();
-
-                        if (PropertyHelper.uploadedImageNames != null && PropertyHelper.uploadedImageNames.Count > 0)
-                        {
-                            PropertyHelper.removeUploadedImages(PropertyHelper.uploadedImageNames);
-                        }
-
-                        errorModel.AddErrorMessage("Error occurred - Property was not added");
-                        log.Error("Could not advertise property", ex);
+                        PropertyHelper.removeUploadedImages(PropertyHelper.uploadedImageNames);
                     }
+
+                    errorModel.AddErrorMessage("Error occurred - Property was not added");
+                    log.Error("Could not advertise property", ex);
                 }
             }
+        }
+
+        public static bool SendUserCreatedEmail(User user)
+        {
+            string subject = "JProps - Thank you for signing up";
+            string body = "<p>Your account was successfully created on <b>JProps</b></p>" +
+                "<p>You can now request properties, ask questions about a property and save properties to review later.</p>";
+
+            MailHelper mail = new MailHelper(user.Email, subject, body, user.FirstName);
+
+            if (mail.SendMail())
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -1737,7 +1726,7 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
-                    log.Error("Cannot save liked property",ex);
+                    log.Error("Cannot save liked property", ex);
                     return false;//indicate failure
                 }
             }
@@ -1973,7 +1962,7 @@ namespace SS.Core
                 try
                 {
                     unitOfWork.Payment.Add(payment);
-                    //TODO determine if it is an extension
+
                     if (model.IsExtension)
                     {
                         var subscriptionExtension = new SubscriptionExtension()
@@ -1987,9 +1976,9 @@ namespace SS.Core
                         unitOfWork.SubscriptionExtension.Add(subscriptionExtension);
                     }
 
-                    string userEmail = unitOfWork.Subscription.Get(model.SubscriptionID).Owner.User.Email;
+                    var user = unitOfWork.Subscription.Get(model.SubscriptionID).Owner.User;
 
-                    if (sendPaymentReviewEmail(userEmail))
+                    if (sendPaymentReviewEmail(user))
                     {
                         unitOfWork.save();
                         return true; //indicating success
@@ -2012,14 +2001,40 @@ namespace SS.Core
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        private static bool sendPaymentReviewEmail(string userEmail)
+        private static bool sendPaymentReviewEmail(User user)
         {
-            string subject = "EasyFindProperties - Your payment is being reviewed";
-            string body = "<p>Thank you for advertising your property on <b>EasyFindProperties</b></p>" +
+            string subject = "JProps - Your payment is being reviewed";
+            string body = "<p>Thank you for advertising your property on <b>JProps</b></p>" +
                 "<p>Your property will be displayed as soon as your payment has been verified.</p>" +
                 "<p>You will be notified after payment verification</p>";
 
-            return sendMail(userEmail, body, subject);
+            MailHelper mail = new MailHelper(user.Email, subject, body, user.FirstName);
+
+            if (mail.SendMail())
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sends an email to the property owner, indicating that their payment is
+        /// is verified
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <returns></returns>
+        private static bool sendPaymentVerifiedEmail(User user)
+        {
+            string subject = "JProps - Your payment was successful";
+            string body = "<p>Thank you for advertising your property on <b>JProps</b></p>" +
+                "<p>Your payment was successfully verified. Your properties are now visible to the public.</p>" +
+                "<p>Thank you</p>";
+
+            MailHelper mail = new MailHelper(user.Email, subject, body, user.FirstName);
+
+            if (mail.SendMail())
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -2049,7 +2064,16 @@ namespace SS.Core
                     extendSubscription(unitOfWork, payment, userName);//extending subscription date if necessary
                     makePropertiesAvailableForOwner(unitOfWork, subscription, propertyOwnerID, userName); //make properties available after payment
 
-                    unitOfWork.save();
+                    if (sendPaymentVerifiedEmail(unitOfWork.User.Get(userId)))
+                    {
+                        unitOfWork.save();
+                    }
+                    else
+                    {
+                        String errString = "Unable to send verification email";
+                        errorModel.AddErrorMessage(errString);
+                    }
+
                     return errorModel;
                 }
                 catch (Exception ex)
@@ -2071,7 +2095,7 @@ namespace SS.Core
             String errMsg = String.Empty;
             var properties = unitOfWork.Property.GetPropertiesByOwnerId(propertyOwnerID);
 
-            if(subscription == null)
+            if (subscription == null)
                 subscription = unitOfWork.Subscription.GetActiveSubscriptionByOwnerID(propertyOwnerID);
 
             if (subscription == null || (subscription != null && !subscription.IsActive))
@@ -2086,8 +2110,8 @@ namespace SS.Core
                 foreach (var property in properties)
                 {
                     //Not modifying properties that the user already set to not available
-                    if ( ( property.AvailabilityModifiedBy != null && property.AvailabilityModifiedBy.Equals(EFPConstants.Audit.System) )
-                        || String.IsNullOrEmpty(property.AvailabilityModifiedBy) )
+                    if ((property.AvailabilityModifiedBy != null && property.AvailabilityModifiedBy.Equals(EFPConstants.Audit.System))
+                        || String.IsNullOrEmpty(property.AvailabilityModifiedBy))
                     {
                         property.Availability = true;
                         property.AvailabilityModifiedBy = EFPConstants.Audit.System;
@@ -2218,14 +2242,14 @@ namespace SS.Core
                     {
                         var subscription = unitOfWork.Subscription.GetActiveSubscriptionByOwnerID(property.OwnerID);
 
-                        if (subscription == null 
+                        if (subscription == null
                             || (subscription != null && !subscription.StartDate.HasValue))
                         {
                             var errMsg = "No active subscription found for property owner";
                             errorModel.AddErrorMessage(errMsg);
                             throw new Exception(errMsg);
                         }
-                            
+
                         //don't allow property availability if subscription expiry date is past
                         if (DateTime.Now <= subscription.ExpiryDate.Value)
                         {
@@ -2290,10 +2314,11 @@ namespace SS.Core
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
                 var userExist = unitOfWork.User.DoesUserExist(email);
+                var fName = unitOfWork.User.GetUserByEmail(email).FirstName;
 
                 if (!userExist)
                 {
-                    string errMessage = "The email address is not recognised";
+                    string errMessage = "The email address was not recognised";
                     errorModel.AddErrorMessage(errMessage);
 
                     return false;
@@ -2304,7 +2329,7 @@ namespace SS.Core
 
                 savePasswordRecoveryRequest(unitOfWork, userId, uniqueKey);
 
-                return sendRecoverPasswordEmail(email, userId, uniqueKey, errorModel);
+                return sendRecoverPasswordEmail(email, userId, fName, uniqueKey, errorModel);
             }
         }
         /// <summary>
@@ -2315,16 +2340,18 @@ namespace SS.Core
         /// <param name="accessCode"></param>
         /// <param name="errorModel"></param>
         /// <returns></returns>
-        private static bool sendRecoverPasswordEmail(string email, Guid userId, string accessCode, ErrorModel errorModel)
+        private static bool sendRecoverPasswordEmail(string email, Guid userId, string fName, string accessCode, ErrorModel errorModel)
         {
             string emailTo = email;
-            string subject = "EasyFindProperties - Password Recovery";
+            string subject = "JProps - Password Recovery";
             string body = "Your access code to reset your password is <b>" + accessCode + "</b> ";
-            body += "Please click the link below to reset your password: <br/>";
-            body += EFPConstants.Application.Host + "/accounts/resetPassword?" + userId.ToString();
-            body += "<br/><small>Your access code will expire 30 minutes after recieving this mail</small>";
+            body += "Please click the link below or copy and paste it in a new browser window to reset your password: <br/><br/>";
+            body += "http://www." + EFPConstants.Application.Host + "/accounts/resetPassword?userId=" + userId.ToString();
+            body += "<br/><br/><small>Your access code will expire 10 minutes after recieving this mail</small>";
 
-            if (1 == 1)//sendMail(emailTo, body, subject))
+            MailHelper mail = new MailHelper(emailTo, subject, body, fName);
+
+            if (mail.SendMail())
             {
                 return true;
             }
@@ -2332,6 +2359,8 @@ namespace SS.Core
             {
                 string errMessage = "An unexpected error occurred while sending the recovery password <br /> Please try again later";
                 errorModel.AddErrorMessage(errMessage);
+
+                log.Error(errMessage);
 
                 return false;
             }
