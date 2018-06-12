@@ -23,9 +23,9 @@ namespace SS.Core
 
         public static class PropertySubscriptionType
         {
-            public static readonly String Basic = "B";
-            public static readonly String Landlord = "L";
-            public static readonly String Realtor = "R";
+            public const String Basic = "B";
+            public const String Landlord = "L";
+            public const String Realtor = "R";
         }
 
         public static class PropertyPurpose

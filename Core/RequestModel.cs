@@ -9,6 +9,8 @@ namespace SS.Core
     {
         public bool HasMessage;
         public bool HasErrors;
+        public bool HasBool;
+        public bool ReturnedBool;
         public List<String> ReturnedMessages;
         public List<String> ErrorMessages;
 
@@ -16,7 +18,15 @@ namespace SS.Core
         {
             this.ReturnedMessages = new List<string>();
             this.ErrorMessages = new List<string>();
-            HasMessage = false;
+            this.HasMessage = false;
+            this.HasErrors = false;
+            this.HasBool = false;
+        }
+
+        public void AddBool(bool returnedBool)
+        {
+            this.HasBool = true;
+            this.ReturnedBool = returnedBool;
         }
 
         public void AddMessage(string message)

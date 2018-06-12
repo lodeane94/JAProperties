@@ -10,21 +10,41 @@
                     <span id="subscription-name">@Model.Name</span>
                     Subscription | &#36; <span id="monthlyCost">@Model.MonthlyCost</span> monthly
                     @{bool isPaymentDue = false;}
-                    @if (Model.ExpiryDate > DateTime.Now)
-                    {
-                        <span class="badge-primary" style="position:relative; float:right;">
-                            1 Month Subscription - Last Payment Verified
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge-danger" style="position:relative; float:right;">
-                            1 Month Subscription - Last Payment Not Verified
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        isPaymentDue = true;
-                    }
+					@if(Model.Name.Equals("Basic"))
+					{
+						if (Model.ExpiryDate > DateTime.Now)
+						{
+							<span class="badge-primary" style="position:relative; float:right;">
+								@Model.Period @(Model.Period > 1 ? "Months" : "Month")  Subscription - No payment necessary
+								<i class="fa fa-check" aria-hidden="true"></i>
+							</span>
+						}
+						else
+						{
+							<span class="badge-danger" style="position:relative; float:right;">
+								@Model.Period @(Model.Period > 1 ? "Months" : "Month")  Subscription Expired - Renew your subscription
+								<i class="fa fa-times" aria-hidden="true"></i>
+							</span>
+						}
+					}
+					else
+					{
+						if (Model.ExpiryDate > DateTime.Now)
+						{
+							<span class="badge-primary" style="position:relative; float:right;">
+								@Model.Period @(Model.Period > 1 ? "Months" : "Month") Subscription - Last Payment Verified
+								<i class="fa fa-check" aria-hidden="true"></i>
+							</span>
+						}
+						else
+						{
+							<span class="badge-danger" style="position:relative; float:right;">
+								@Model.Period @(Model.Period > 1 ? "Months" : "Month") Subscription - Last Payment Not Verified
+								<i class="fa fa-times" aria-hidden="true"></i>
+							</span>
+							isPaymentDue = true;
+						}
+					}
                 </div>
                 <div class="card-body subscription-container-main">
                     <div class="card" style="width:100%;">
@@ -66,7 +86,10 @@
                                     <span>Your property(s) will not be displayed until payment is received</span>
                                 }
                             </p>
-                            <a href="#" id="make-payment" class="card-link float-right">Make Payment</a>
+							@if(!Model.Name.Equals("Basic"))
+							{
+								<a href="#" id="make-payment" class="card-link float-right">Make Payment</a>
+							}
                         </div>
                     </div>
                     <br />
@@ -75,30 +98,44 @@
                     @Model.Description
                 </div>
                 <div class="card-footer">
-                    @if (!Model.ExpiryDate.Equals(DateTime.MinValue))
-                    {
-                        <h5 class="card-title"><a href="#" class="btn btn-outline-primary btn-sm" id="extend-subscription">Extend Subscription</a></h5>
-                        <div class="extend-subsciption-container">
-                            <select class="custom-select" id="subscription-period" name="subscriptionperiod">
-                                <option selected value="">Subscription Period</option>
-                                <option value="1">1 Month</option>
-                                <option value="2">2 Months</option>
-                                <option value="3">3 Months</option>
-                                <option value="4">4 Months</option>
-                                <option value="5">5 Months</option>
-                                <option value="6">6 Months</option>
-                                <option value="7">7 Months</option>
-                                <option value="8">8 Months</option>
-                                <option value="9">9 Months</option>
-                                <option value="10">10 Months</option>
-                            </select>
-                            <br />
-                            <div class="clearfix" id="sub-ext-price-cal-container">
-                                <span id="sub-ext-price-cal" style="float:right;"></span>
-                            </div>
-                        </div>
-                        <br />
-                    }
+					@if(!Model.Name.Equals("Basic"))
+					{
+						if (!Model.ExpiryDate.Equals(DateTime.MinValue))
+						{
+							<h5 class="card-title"><a href="#" class="btn btn-outline-primary btn-sm" id="extend-subscription">Extend Subscription</a></h5>
+							<div class="extend-subsciption-container">
+								<select class="custom-select" id="subscription-period" name="subscriptionperiod">
+									<option selected value="">Subscription Period</option>
+									<option value="1">1 Month</option>
+									<option value="2">2 Months</option>
+									<option value="3">3 Months</option>
+									<option value="4">4 Months</option>
+									<option value="5">5 Months</option>
+									<option value="6">6 Months</option>
+									<option value="7">7 Months</option>
+									<option value="8">8 Months</option>
+									<option value="9">9 Months</option>
+									<option value="10">10 Months</option>
+								</select>
+								<br />
+								<div class="clearfix" id="sub-ext-price-cal-container">
+									<span id="sub-ext-price-cal" style="float:right;"></span>
+								</div>
+							</div>
+							<br />
+						}
+					}
+					else
+					{
+						if (Model.ExpiryDate < DateTime.Now)
+						{
+							<h5 class="card-title"><a href="#" class="btn btn-outline-primary btn-sm" id="renew-subscription">Renew Your Subscription</a></h5>
+						}
+						else
+						{
+							<h5 class="card-title"><a href="#" tabindex = "-1" class="btn btn-outline-primary btn-sm disabled" id="renew-subscription">Renew Your Subscription</a></h5>
+						}
+					}
                 </div>
                 <button id="change-subscription-modal-btn" class="btn btn-sm btn-outline-info">Change Subscription</button>
                 @Html.Hidden("subscriptionID", Model.ID)

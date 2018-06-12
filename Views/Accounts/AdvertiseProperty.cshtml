@@ -1,6 +1,6 @@
 ﻿@model SS.ViewModels.AdvertisePropertyViewModel
 @{
-    ViewBag.Title = "Advertise Property - Advertise your property here ";
+    ViewBag.Title = "JProps - Advertise your property here ";
     Layout = ViewBag.layout;
 }
 
@@ -167,7 +167,7 @@
         <div class="row">
             <div class="col-md-12 prop-upload-advertiser-info">
                 <input id="title" type="text" class="form-control" name="title" placeholder="Property Title"
-                       data-toggle="popover" data-content="This is the heading that your property will display to viewers. Write in short, the property's key features ">
+                       data-toggle="popover" data-content="This gives your property a name so you can easily identify it by name.">
             </div>
         </div>
         <input id="country" name="country" type="hidden" value="Jamaica" />
@@ -181,11 +181,11 @@
             </div>
             <br /><br />
             <div class="col-md-5">
-                <input id="StreetAddress" value="" onclick="initAutocomplete('StreetAddress'); geolocate();" type="text" class="form-control" name="streetaddress" placeholder="Street Address" data-toggle="popover" data-content="If your address is not visible don't worry just enter the street address" required>
+                <input id="StreetAddress" value="" onclick="geolocate('StreetAddress'); initAutocomplete('StreetAddress');" type="text" class="form-control" name="streetaddress" placeholder="Street Address" data-toggle="popover" data-content="If your address is not visible don't worry just enter the street address" required>
             </div>
             <br /><br />
             <div class="col-md-5">
-                <input id="community" onclick="initAutocomplete('community'); geolocate();" value="" type="text" class="form-control" name="community" placeholder="Community" data-toggle="popover" data-content="If your address is not visible don't worry just enter your community address" required>
+                <input id="community" onclick="geolocate('community'); initAutocomplete('community');" value="" type="text" class="form-control" name="community" placeholder="Community" data-toggle="popover" data-content="If your address is not visible don't worry just enter your community address" required>
             </div>
         </div>
         <br />
@@ -195,7 +195,7 @@
             </div>
             <br /><br />
             <div class="col-md-9">
-                <input id="nearBy" onclick="initAutocomplete('nearBy'); geolocate();" type="text"
+                <input id="nearBy" onclick="geolocate('nearBy'); initAutocomplete('nearBy');" type="text"
                        class="form-control" name="nearBy" placeholder="Landmark Closest To" data-toggle="popover" data-content="Enter and select the name of an establishment that is close to your property" />
             </div>
         </div>

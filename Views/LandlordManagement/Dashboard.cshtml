@@ -7,6 +7,14 @@
 {
 
     (function(){
+	$.getScript('/Scripts/MainScript.js', function () {
+            //initialization of bootstrap popover
+            $('[data-toggle="popover"]').popover({
+                trigger: 'click',
+                container: 'body'
+            });
+
+        });
     $('#dashboard').attr('class','active');
     })();
 }
@@ -24,6 +32,18 @@
             <div class="col-md-12">
                 <div class="alert-success temp-alert">
                     Property Updated Successfully
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+
+	if (TempData["errorMsg"] != null)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert-danger">
+                    @TempData["errorMsg"]
                 </div>
             </div>
         </div>

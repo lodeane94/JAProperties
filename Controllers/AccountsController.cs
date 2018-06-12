@@ -167,7 +167,7 @@ namespace SS.Controllers
                         else
                             throw new Exception("This email address already exists");
 
-                        if (PropertyHelper.SendUserCreatedEmail(user))
+                        if (PropertyHelper.SendUserCreatedEmail(user, false))
                         {
                             unitOfWork.save();
                         }
@@ -498,6 +498,14 @@ namespace SS.Controllers
 
             ViewBag.userId = userId;
             return RedirectToAction("resetPassword", "accounts", new { userId = userId });
+        }
+
+        [HttpGet]
+        public JsonResult SubscriptionCheck(String email)
+        {
+            var result = PropertyHelper.SubscriptionCheck(email);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

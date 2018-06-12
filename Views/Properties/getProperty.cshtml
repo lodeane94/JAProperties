@@ -80,8 +80,8 @@ else
                     <div class="card-header">Property Details</div>
                     <div class="card-body">
                         <div>
-                            <div class="details-col-header">Price <span class="details-col-det">&#36; @Model.Price</span></div>
-                            <div class="details-col-header">Security Deposit <span class="details-col-det">&#36; @Model.SecurityDeposit</span></div>
+                            <div class="details-col-header">Price <span class="details-col-det"> @String.Format("{0:C}", Model.Price)</span></div>
+                            <div class="details-col-header">Security Deposit <span class="details-col-det"> @String.Format("{0:C}", Model.SecurityDeposit) </span></div>
                             <br />
                             <p>@Model.Description</p>
                         </div>

@@ -25,13 +25,15 @@ namespace SS.Models.Repositories
         public Subscription GetActiveSubscriptionByOwnerID(Guid ID)
         {
             return EasyFindPropertiesEntities.Subscription
-                .Where(x => x.OwnerID.Equals(ID) && x.IsActive == true).SingleOrDefault();
+                .Where(x => x.OwnerID.Equals(ID) 
+                && x.IsActive == true
+                && x.Period > 0).SingleOrDefault();
         }
 
         public Subscription GetSubscriptionByOwnerID(Guid ID)
         {
             return EasyFindPropertiesEntities.Subscription
-                .Where(x => x.OwnerID.Equals(ID))
+                .Where(x => x.OwnerID.Equals(ID) && x.Period > 0)
                 .OrderByDescending(x => x.DateTCreated)
                 .FirstOrDefault();
         }

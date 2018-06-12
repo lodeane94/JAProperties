@@ -1796,6 +1796,94 @@ $(document).ready(function () {
         computeSubChgPrice();
     });
 
+    $(document.body).on('click', '#renew-subscription', function (event) {
+        event.preventDefault();
+
+        var subscriptionId = $('#subscriptionID').val();
+
+        if (confirm("Are you sure ?") == true) {
+            $.ajax({
+                url: '/LandlordManagement/RenewSubscription',
+                type: 'Post',
+                data: { subscriptionId: subscriptionId },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data.HasMessage) {
+                        $.each(data.ReturnedMessages, function (inx, val) {
+                            var html = '<div class="badge badge-success" style="width:100%;">' + val + '</div> <br/>';
+                            $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
+                                $(this).fadeOut(10000, function () {
+                                    loadSubscriptionView();
+                                });
+                            });
+                        });
+                    } else if (data.HasErrors) {
+                        $.each(data.ErrorMessages, function (inx, val) {
+                            var html = '<div class="badge badge-danger" style="width:100%;">' + val + '</div> <br/>';
+                            $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
+                                $(this).fadeOut(90000, function () {
+                                    loadSubscriptionView();
+                                });
+                            });
+                        });
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while updating subscription');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                }
+            });
+        }
+    });
+    //To be implemented
+    $(document.body).on('click', '#cancel-subscription-btn', function (event) {
+        event.preventDefault();
+
+        var subscriptionId = $('#subscriptionID').val();
+
+        if (confirm("Are you sure ?") == true) {
+            $.ajax({
+                url: '/LandlordManagement/CancelSubscription',
+                type: 'Post',
+                data: { subscriptionId: subscriptionId },
+                beforeSend: function () {
+                    $('#modal-loading').fadeIn();
+                },
+                success: function (data) {
+                    if (data.HasMessage) {
+                        $.each(data.ReturnedMessages, function (inx, val) {
+                            var html = '<div class="badge badge-success" style="width:100%;">' + val + '</div> <br/>';
+                            $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
+                                $(this).fadeOut(10000, function () {
+                                    loadSubscriptionView();
+                                });
+                            });
+                        });
+                    } else if (data.HasErrors) {
+                        $.each(data.ErrorMessages, function (inx, val) {
+                            var html = '<div class="badge badge-danger" style="width:100%;">' + val + '</div> <br/>';
+                            $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
+                                $(this).fadeOut(90000, function () {
+                                    loadSubscriptionView();
+                                });
+                            });
+                        });
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while cancelling subscription');
+                },
+                complete: function () {
+                    $('#modal-loading').fadeOut();
+                }
+            });
+        }
+    });
+
     /* $(window).resize(function () {
          var position = $('.management-action .active').position();
        //  pointToSelectedAction(position);

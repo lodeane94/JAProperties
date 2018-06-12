@@ -249,58 +249,16 @@ namespace SS.Controllers
             {
                 try
                 {
-                    using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                    if (Session["userId"] != null)
                     {
-                        if (Session["userId"] != null)
-                        {
-                            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                        Guid userId = (Guid)Session["userId"];
 
-                            Guid userId = (Guid)Session["userId"];
-
-                            if (contactPurpose.Equals("requisition"))
-                            {
-                                PropertyRequisition requisition = new PropertyRequisition()
-                                {
-                                    ID = Guid.NewGuid(),
-                                    UserID = userId,
-                                    PropertyID = request.PropertyID,
-                                    Msg = request.Msg,
-                                    IsAccepted = false,
-                                    ExpiryDate = DateTime.Now.AddDays(7),//requisition should last for a week
-                                    DateTCreated = DateTime.Now
-                                };
-
-                                unitOfWork.PropertyRequisition.Add(requisition);
-                                unitOfWork.save();
-
-                                var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
-                                DashboardHub.alertRequisition(userTo.Email);
-                            }
-                            else
-                            {
-                                var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
-
-                                Message message = new Message()
-                                {
-                                    ID = Guid.NewGuid(),
-                                    To = userTo.ID,
-                                    From = userId,
-                                    Msg = request.Msg,
-                                    Seen = false,
-                                    DateTCreated = DateTime.Now
-                                };
-
-                                unitOfWork.Message.Add(message);
-                                unitOfWork.save();
-
-                                DashboardHub.BroadcastUserMessages(userTo.Email);
-                            }
-                        }
+                        PropertyHelper.RequestProperty(request, contactPurpose, userId, errorModel);
                     }
                 }
                 catch (Exception ex)
                 {
-                    errorModel = MiscellaneousHelper.PopulateErrorModel(ModelState);
+                    log.Error(ex);
                 }
             }
             else

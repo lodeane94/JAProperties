@@ -22,6 +22,7 @@ namespace SS.Core
         private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public static List<String> uploadedImageNames = new List<string>();//used to store names of uploaded images. Needed in the case of removing uploaded images during rollback
         private static List<String> searchResultPropertyTags = null;
+        private static String adAccessErrMessage = String.Empty;
         /// <summary>
         /// Function maps property category name to property code
         /// </summary>
@@ -305,6 +306,114 @@ namespace SS.Core
             }
 
             return featuredPropertiesSlideViewModelList;
+        }
+        /// <summary>
+        /// Allows viewers to request the property or ask a question about the property
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="contactPurpose"></param>
+        public static void RequestProperty(PropertyRequisition request, string contactPurpose, Guid userId, ErrorModel errorModel)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                String errMsg = String.Empty;
+                User ownerUser = request.Property.Owner.User;
+
+                if (contactPurpose.Equals("requisition"))
+                {
+                    PropertyRequisition requisition = new PropertyRequisition()
+                    {
+                        ID = Guid.NewGuid(),
+                        UserID = userId,
+                        PropertyID = request.PropertyID,
+                        Msg = request.Msg,
+                        IsAccepted = false,
+                        ExpiryDate = DateTime.Now.AddDays(7),//requisition should last for a week
+                        DateTCreated = DateTime.Now
+                    };
+
+                    unitOfWork.PropertyRequisition.Add(requisition);
+
+                    MailHelper mail = new MailHelper(ownerUser.Email, "JProps - Your have a property requisition",
+                        createRequestEmail(request, true), ownerUser.FirstName);
+
+                    if (mail.SendMail())
+                    {
+                        unitOfWork.save();
+
+                        var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
+                        DashboardHub.alertRequisition(userTo.Email);
+                    }
+                    else
+                    {
+                        errMsg = "Unable to send request confirmation email";
+                        errorModel.AddErrorMessage(errMsg);
+
+                        throw new Exception(errMsg);
+                    }
+                }
+                else
+                {
+                    var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
+
+                    Message message = new Message()
+                    {
+                        ID = Guid.NewGuid(),
+                        To = userTo.ID,
+                        From = userId,
+                        Msg = request.Msg,
+                        Seen = false,
+                        DateTCreated = DateTime.Now
+                    };
+
+                    unitOfWork.Message.Add(message);
+
+                    MailHelper mail = new MailHelper(ownerUser.Email, "JProps - Your have a new message",
+                        createRequestEmail(request, false), ownerUser.FirstName);
+
+                    if (mail.SendMail())
+                    {
+                        unitOfWork.save();
+
+                        DashboardHub.BroadcastUserMessages(userTo.Email);
+                    }
+                    else
+                    {
+                        errMsg = "Unable to send message sent confirmation email";
+                        errorModel.AddErrorMessage(errMsg);
+
+                        throw new Exception(errMsg);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create the email that is send to alert a property owner
+        /// that a message / request came in
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="isRequisition"></param>
+        /// <returns></returns>
+        private static string createRequestEmail(PropertyRequisition req, bool isRequisition)
+        {
+            String body = String.Empty;
+
+            if (isRequisition)
+            {
+                body = "<p>" + req.User.FirstName + " " + req.User.LastName + "sent a request to your property</p>";
+                body += "<p>Click the following link to go to your portal";
+                body += "http://www." + EFPConstants.Application.Host + "/landlordManagement/Dashboard</p>";
+            }
+            else
+            {
+                body = "</p>" + req.User.FirstName + " " + req.User.LastName + "sent a message to your property</p>";
+                body += "Click the following link to go to your portal";
+                body += "http://www." + EFPConstants.Application.Host + "/landlordManagement/Dashboard</p>";
+            }
+
+            return body;
         }
 
         public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(List<NearbyPropertySearchModel> revisedModel, PropertySearchViewModel svModel, Guid userId)
@@ -1396,6 +1505,7 @@ namespace SS.Core
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
                 var doesUserExist = false;
+                var isUserCreated = false;
                 User user = null;
 
                 try
@@ -1435,20 +1545,26 @@ namespace SS.Core
                         model.LastName, model.CellNum, DateTime.MinValue);
 
                         PropertyHelper.createUserAccount(model.Email, model.Password);
+
+                        isUserCreated = true;
                     }
 
                     insertProperty(model, unitOfWork, user);
 
-                    if (SendUserCreatedEmail(user))
-                    {
+                    if (!isUserCreated)
                         unitOfWork.save();
-                    }
                     else
-                        throw new Exception("Unable to send user created email");
+                    {
+                        if (SendUserCreatedEmail(user, true))
+                            unitOfWork.save();
+                        else
+                            throw new Exception("Unable to send user created email");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    RemoveUserAccount(model.Email);
+                    if (!String.IsNullOrEmpty(model.Email))
+                        RemoveUserAccount(model.Email);
 
                     if (PropertyHelper.uploadedImageNames != null && PropertyHelper.uploadedImageNames.Count > 0)
                     {
@@ -1461,11 +1577,23 @@ namespace SS.Core
             }
         }
 
-        public static bool SendUserCreatedEmail(User user)
+        /// <summary>
+        /// Sends the email that informs the user that their
+        /// account was successfully created
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="isOwner"></param>
+        /// <returns></returns>
+        public static bool SendUserCreatedEmail(User user, bool isOwner)
         {
             string subject = "JProps - Thank you for signing up";
-            string body = "<p>Your account was successfully created on <b>JProps</b></p>" +
-                "<p>You can now request properties, ask questions about a property and save properties to review later.</p>";
+            string body = "<p>Your account was successfully created on <b>JProps</b></p>";
+
+            if (isOwner)
+                body += "<p>You can now upload properties, request properties, ask questions about a " +
+                    "property and save properties to review later.</p>";
+            else
+                body += "<p>You can now request properties, ask questions about a property and save properties to review later.</p>";
 
             MailHelper mail = new MailHelper(user.Email, subject, body, user.FirstName);
 
@@ -1483,13 +1611,16 @@ namespace SS.Core
         {
             bool doesOwnerExist = user != null && user.Owner.Select(x => x.ID).Count() > 0 ? true : false;
             Guid ownerID = doesOwnerExist ? user.Owner.Select(x => x.ID).Single() : Guid.NewGuid();
+            var currSubscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(ownerID);
 
             Guid propertyID = Guid.NewGuid();
             String lat = String.Empty;
             String lng = String.Empty;
 
             //generate enrolment key for users with Landlord subscription
-            if (!String.IsNullOrEmpty(model.SubscriptionType) && model.SubscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
+            if (currSubscription == null
+                && !String.IsNullOrEmpty(model.SubscriptionType)
+                && model.SubscriptionType.Equals(nameof(EFPConstants.PropertySubscriptionType.Landlord)))
             {
                 model.EnrolmentKey = getRandomKey(6);
             }
@@ -1546,8 +1677,22 @@ namespace SS.Core
                 DateTCreated = DateTime.Now
             };
 
-            if (!String.IsNullOrEmpty(model.SubscriptionType))
+            if (currSubscription != null
+                && currSubscription.SubscriptionType.ID.Equals(PropertySubscriptionType.Basic)
+                && currSubscription.ExpiryDate.HasValue
+                && currSubscription.ExpiryDate.Value > DateTime.Now)
             {
+                property.Availability = true;
+            }
+
+            if (currSubscription == null && !String.IsNullOrEmpty(model.SubscriptionType))
+            {
+                if (mapPropertySubscriptionTypeToCode(model.SubscriptionType)
+                               .Equals(PropertySubscriptionType.Basic))
+                {
+                    property.Availability = true;
+                }
+
                 Subscription subscription = new Subscription()
                 {
                     ID = Guid.NewGuid(),
@@ -1557,6 +1702,16 @@ namespace SS.Core
                     IsActive = false,
                     DateTCreated = DateTime.Now
                 };
+
+                //start subscription immediately if subscription type is BASIC
+                if (subscription.TypeCode.Equals(PropertySubscriptionType.Basic))
+                {
+                    subscription.StartDate = DateTime.Now;
+                    subscription.ExpiryDate = DateTime.Now.AddMonths(subscription.Period).AddDays(-1);
+                    subscription.IsActive = true;
+                    subscription.DateTModified = DateTime.Now;
+                    subscription.ModifiedBy = Audit.System;
+                }
 
                 unitOfWork.Subscription.Add(subscription);
             }
@@ -2006,7 +2161,12 @@ namespace SS.Core
             string subject = "JProps - Your payment is being reviewed";
             string body = "<p>Thank you for advertising your property on <b>JProps</b></p>" +
                 "<p>Your property will be displayed as soon as your payment has been verified.</p>" +
-                "<p>You will be notified after payment verification</p>";
+                "<p>You will be notified after payment verification</p>" +
+                "<p>To make payments, action the following instructions: <ol><li><b> Sign in</b> " +
+                "to your account using your recently created credentials</li> " +
+                "<li>Select the <b>Account</b> link at the top the screen</li> " +
+                "<li>Select the <b>Subscription link</b> </li> " +
+                "<li>Click the <b>Make Payment link</b></li></ol></p>";
 
             MailHelper mail = new MailHelper(user.Email, subject, body, user.FirstName);
 
@@ -2125,6 +2285,7 @@ namespace SS.Core
                 throw new Exception(errMsg);
             }
         }
+
         /// <summary>
         /// Extends the subscription period for a property owner
         /// </summary>
@@ -2577,6 +2738,213 @@ namespace SS.Core
                 var subscription = unitOfWork.Subscription.Get(subscriptionID);
 
                 return subscription.SubscriptionType;
+            }
+        }
+        /// <summary>
+        /// Renews the basic subscription for a user
+        /// </summary>
+        /// <param name="subscriptionID"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static RequestModel RenewSubscription(Guid subscriptionID, Guid userId)
+        {
+            var requestModel = new RequestModel();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                var msg = String.Empty;
+                try
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var userName = unitOfWork.User.Get(userId).Email;
+                    var subscription = unitOfWork.Subscription.Get(subscriptionID);
+                    var propertyOwnerID = subscription.OwnerID;
+
+                    subscription.ExpiryDate = DateTime.Now.AddMonths(1).AddDays(-1);
+                    subscription.Period = 1;
+                    subscription.DateTModified = DateTime.Now;
+                    subscription.ModifiedBy = userName;
+
+                    makePropertiesAvailableForOwner(unitOfWork, subscription, propertyOwnerID, userName);
+                    unitOfWork.save();
+
+                    msg = "<p>Your subscription was successfully renewed</p><p>Your property will now be visible to the public</p>";
+                    requestModel.AddMessage(msg);
+
+                    return requestModel;
+                }
+                catch (Exception ex)
+                {
+                    msg = "An error occurred while renewing your subscription. Please contact system administrator";
+                    requestModel.AddErrorMessage(msg);
+                    log.Error(msg, ex);
+
+                    return requestModel;
+                }
+            }
+        }
+
+        /// <summary>
+        /// checks for an active subscription that is associated with 
+        /// that email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public static RequestModel SubscriptionCheck(string email)
+        {
+            RequestModel requestModel = new RequestModel();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                try
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var doesUserExist = unitOfWork.User.DoesUserExist(email);
+
+                    if (!doesUserExist)
+                    {
+                        requestModel.AddBool(false);
+                    }
+                    else
+                    {
+                        var user = unitOfWork.User.GetUserByEmail(email);
+                        var OwnerId = unitOfWork.Owner.GetOwnerByUserID(user.ID).ID;
+
+                        var subscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(OwnerId);
+                        requestModel.AddBool(subscription != null ? true : false);
+                    }
+
+                    return requestModel;
+                }
+                catch (Exception ex)
+                {
+                    var msg = "An error occurred while checking subscription - Contact system administrator";
+                    requestModel.AddErrorMessage(msg);
+                    log.Error(msg, ex);
+
+                    return requestModel;
+                }
+            }
+        }
+        /// <summary>
+        /// validates the number of properties that can be published 
+        /// based on the subscription type
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static bool IsAdAccessValid(Guid userId)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                try
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var ownerId = unitOfWork.Owner.GetOwnerByUserID(userId).ID;
+                    var propertiesCount = unitOfWork.Property.GetCount(ownerId);
+                    var subscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(ownerId);
+
+                    switch (subscription.SubscriptionType.ID)
+                    {
+                        case PropertySubscriptionType.Basic:
+                            if ((propertiesCount + 1) > 1)
+                            {
+                                adAccessErrMessage = "Basic subscription is only limited to 1 properties <br/>"
+                                    + "Please upgrade your subscription to add more than 1 properties";
+                                return false;
+                            }
+                            break;
+
+                        case PropertySubscriptionType.Realtor:
+                            if ((propertiesCount + 1) > 5)
+                            {
+                                adAccessErrMessage = "Realtor subscription is only limited to 6 properties";
+                                return false;
+                            }
+                            break;
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    adAccessErrMessage = "An error occurred while validating ad access - Contact system administrator";
+                    log.Error(adAccessErrMessage, ex);
+
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// returns the ad access error message to the user
+        /// </summary>
+        /// <returns></returns>
+        public static String GetAdAccessErrMessage()
+        {
+            return adAccessErrMessage;
+        }
+        /// <summary>
+        /// Cancels a user's subscription and removes the associated properties
+        /// </summary>
+        /// <param name="subscriptionID"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static RequestModel CancelSubscription(Guid subscriptionID, Guid userId)
+        {
+            var requestModel = new RequestModel();
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                var msg = String.Empty;
+                try
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var userName = unitOfWork.User.Get(userId).Email;
+                    var subscription = unitOfWork.Subscription.Get(subscriptionID);
+                    var propertyOwnerID = subscription.OwnerID;
+
+                    subscription.ExpiryDate = DateTime.Now;
+                    subscription.Period = 0;
+                    subscription.IsActive = false;
+                    subscription.DateTModified = DateTime.Now;
+                    subscription.ModifiedBy = userName;
+
+                    removePropertiesForOwner(unitOfWork, propertyOwnerID);
+                    unitOfWork.save();
+
+                    msg = "<p>Your subscription was successfully cancelled</p><p>All properties have been removed from your account</p>";
+                    requestModel.AddMessage(msg);
+
+                    return requestModel;
+                }
+                catch (Exception ex)
+                {
+                    msg = "An error occurred while cancelling your subscription. Please contact system administrator";
+                    requestModel.AddErrorMessage(msg);
+                    log.Error(msg, ex);
+
+                    return requestModel;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove properties belonging to an owner
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="ownerId"></param>
+        private static void removePropertiesForOwner(UnitOfWork unitOfWork, Guid ownerId)
+        {
+            String errMsg = String.Empty;
+            var properties = unitOfWork.Property.GetPropertiesByOwnerId(ownerId);
+
+            foreach (var property in properties)
+            {
+                unitOfWork.Property.Remove(property);
             }
         }
     }

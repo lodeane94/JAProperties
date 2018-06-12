@@ -6,6 +6,7 @@ var lastSelectedClickablePropertyPurpose = null;
 var lastSelectedClickableAdvertismentType = null;
 var lastSelectedClickableSubscriptionType = null;
 var lastSelectedClickableAdvertismentPriority = null;
+var lastSelectedSubscriptionPeriod = null;
 var propertyTagsSelected = [];
 var loadingGifLocation = null;//element at which the loading gif will be displayed
 var errMessages = [];//array of error messages related to the submission of a property 
@@ -166,9 +167,9 @@ function updateShoppingCart() {
                 case lastSelectedClickableSubscriptionType.attr('id'):
                     $('.shopping-cart-container')
                         .append('<br />'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Subscription</b> : ' + index + '</span></div><br/>'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Period</b> : ' + period + ' ' + monthsTerm + '</span></div><br/>'
-                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Price</b> : ' + '$' + value + '.00 JMD' + '</span></div><br/> '
+                            + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Subscription</b> : ' + index + '</span></div><br/>'
+                            + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Period</b> : ' + period + ' ' + monthsTerm + '</span></div><br/>'
+                            + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Price</b> : ' + '$' + value + '.00 JMD' + '</span></div><br/> '
                         );
                     totalCost += value;
                     break;
@@ -320,6 +321,42 @@ function loadPropertyTags(selectedItem) {
             alert('An error occurred while retrieving property tags');
         },
         complete: function () { $('#loading-gif').remove(); }
+    });
+}
+
+//checks the email address for an active subscription
+function SubscriptionCheck(email) {
+    $.ajax({
+        url: '/accounts/SubscriptionCheck',
+        type: 'get',
+        data: { email: email },
+        beforeSend: function () {  },
+        success: function (data) {
+            if (data.HasErrors) {
+                $.each(data.ErrorMessages, function (inx, val) {
+                    alert(val);
+                });
+
+                throw "Error encountered";
+            } else if (data.HasBool) {
+                
+                if (data.ReturnedBool) {
+                    isAddPropertyFormInputsValid = false;
+                    var errMsg = 'This email address is already associated with a subscription <br/> Please ' +
+                        'log into your account, extend your subscription if necessary then click on the add property button ' +
+                        'on your dashboard';
+
+                    addErrorMessage(errMsg);
+                    displayErrorMessages();
+                    $('.next-advertise-section').addClass('disabled');
+                    $('.next-advertise-section').prop('disabled', true);
+                }
+            }
+        },
+        error: function () {
+            alert('An error occurred while checking subscription');
+        },
+        complete: function () {  }
     });
 }
 
@@ -476,7 +513,13 @@ function loadPropertyTags(selectedItem) {
             lastSelectedClickableSubscriptionType = $(this);
         }
 
+
         $('#subscription-period').prop('disabled', false);
+
+        //basic subscription should be free to advertise for one month
+        if (selectedItem == 'Basic')
+            $("select#subscription-period").prop('selectedIndex', 1);
+
         //accounts should only be created for the subscription type of a realtor/landlord
         //2017-03-11 : removed as decision was made to allow every one to have an account
         /* var elements = ['#password', '#ConfirmPassword'];
@@ -541,6 +584,23 @@ function loadPropertyTags(selectedItem) {
         } else {
             alert('Select a subscription type first');
         }
+    });
+
+    $('#subscription-period').change(function () {
+        var newPeriod = $(this).val();
+
+        if (lastSelectedSubscriptionPeriod == null)
+            lastSelectedSubscriptionPeriod = newPeriod;
+
+        if (lastSelectedClickableSubscriptionType.attr('id') == 'Basic') {
+            if (newPeriod != lastSelectedSubscriptionPeriod) {
+                alert('The basic subscription period cannot exceed 1 month');
+                $(this).prop('selectedIndex', 1);
+
+                lastSelectedSubscriptionPeriod = newPeriod;
+            }
+        } else
+            lastSelectedSubscriptionPeriod = newPeriod;
     });
 
     //outputs the name of the selected company logo image that were selected
@@ -772,7 +832,7 @@ function loadPropertyTags(selectedItem) {
         if (isClickableContentValid && isAddPropertyFormInputsValid) {
             loadingGifLocation = $('.AdvertisePropertyBtn');
             var formData = new FormData($('#ad-submission')[0]);
-            
+
             $.ajax({
                 url: '/accounts/advertiseproperty',
                 type: 'Post',
@@ -818,6 +878,7 @@ function loadPropertyTags(selectedItem) {
 
     function validateSection1() {
         isClickableContentValid = true;
+
         isAddPropertyFormInputsValid = true;//set to true on section 1 since there are no form inputs there
 
         if (lastSelectedClickablePropertyCategory != null) {
@@ -851,7 +912,7 @@ function loadPropertyTags(selectedItem) {
     function validateSection2() {
         var validator = null;
         isAddPropertyFormInputsValid = false;
-        //TODO write rule messages
+
         var passwordCheck = $('#password').attr('id');
 
         if (passwordCheck != null && passwordCheck != undefined) {
@@ -906,6 +967,7 @@ function loadPropertyTags(selectedItem) {
 
         if (lastSelectedClickableSubscriptionType != null) {
             addHiddenInputToForm('subscriptiontype', lastSelectedClickableSubscriptionType.attr('id'));
+
         } else {
             //subscription type is not necessary if new property is being added from the management controller
             //hence do not do the following if that is the case
@@ -919,15 +981,17 @@ function loadPropertyTags(selectedItem) {
         }
 
         if (uploadedFiles.length == 0) {
-            //alert('Upload at least one property image');
+            alert('Upload at least one property image');
             isClickableContentValid = false;
 
             var field = $('#flPropertyPics');
             highlightErrorField(field);
         }
 
+
         validator = $('#ad-submission').validate();
         isAddPropertyFormInputsValid = validator.form();
+
     }
 
     $('.previous-advertise-section').click(function () {
@@ -1040,6 +1104,16 @@ function loadPropertyTags(selectedItem) {
         //if the letter is not digit then display error and don't type anything
         if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
             return false;
+        }
+    });
+    //checks if user already has a subscription
+    $(document.body).on('blur', '#email', function (event) {
+        try {
+            var email = $(this).val();
+
+            SubscriptionCheck(email); 
+        } catch (err) {
+            alert(err);
         }
     });
 

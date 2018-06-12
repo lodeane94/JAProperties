@@ -9,6 +9,14 @@
 {
 
     (function(){
+	$.getScript('/Scripts/MainScript.js', function () {
+            //initialization of bootstrap popover
+            $('[data-toggle="popover"]').popover({
+                trigger: 'click',
+                container: 'body'
+            });
+
+        });
     $('#account').attr('class','active');
     })();
 }

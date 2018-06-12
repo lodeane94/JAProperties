@@ -202,7 +202,7 @@ function populateDistanceMatrixInformation(data) {
     $.each(data.destination_addresses, function (indx, val) {
 
         var distance, duration = '';
-        console.log(val);
+        //console.log(val);
 
         $.each(data.rows[0].elements, function (index, value) {
             if (value.status != null
@@ -275,7 +275,7 @@ function setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl) {
         type: 'get',
         data: { Url: distanceMatrixUrl },
         success: function (data) {
-             console.log(data);
+             //console.log(data);
 
             if (data.status == "OK") {
                 populateDistanceMatrixInformation(data);

@@ -808,7 +808,7 @@ namespace SS.Controllers
         [HttpPut]
         public ActionResult UpdatePropertyPrimaryImg(Guid propertyId, Guid imgId)
         {
-            if ( PropertyHelper.UpdatePropertyPrimaryImg(propertyId, imgId) )
+            if (PropertyHelper.UpdatePropertyPrimaryImg(propertyId, imgId))
                 return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
 
             return null;
@@ -821,7 +821,7 @@ namespace SS.Controllers
         [HttpDelete]
         public ActionResult DeletePropertyImage(Guid propertyId, Guid imageId)
         {
-            if ( PropertyHelper.DeletePropertyImage(imageId) )
+            if (PropertyHelper.DeletePropertyImage(imageId))
                 return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
 
             return null;
@@ -834,7 +834,7 @@ namespace SS.Controllers
         [HttpPost]
         public ActionResult AddPropertyImage(HttpPostedFileBase propertyImgUpload, Guid ID)
         {
-            if ( !String.IsNullOrEmpty( PropertyHelper.AssociateImageWithProperty(propertyImgUpload, ID)) )
+            if (!String.IsNullOrEmpty(PropertyHelper.AssociateImageWithProperty(propertyImgUpload, ID)))
                 return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(ID));
 
             return null;
@@ -843,10 +843,23 @@ namespace SS.Controllers
         //loads advertise property view
         public ActionResult AdvertiseProperty()
         {
-            TempData["layout"] = "~/Views/Shared/_ManagementLayout.cshtml";
-            TempData["calledByManagement"] = true;
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
 
-            return RedirectToAction("advertiseproperty", "accounts");
+                if (PropertyHelper.IsAdAccessValid(userId))
+                {
+                    TempData["layout"] = "~/Views/Shared/_ManagementLayout.cshtml";
+                    TempData["calledByManagement"] = true;
+
+                    return RedirectToAction("advertiseproperty", "accounts");
+                }
+                else TempData["errorMsg"] = PropertyHelper.GetAdAccessErrMessage();
+            }
+            else
+                TempData["errorMsg"] = "User session has ended. Please log out then log in";
+
+            return RedirectToAction("dashboard", "landlordmanagement");
         }
 
         /// <summary>
@@ -1028,13 +1041,41 @@ namespace SS.Controllers
         }
 
         [HttpPost]
-        public JsonResult changeSubscription(Guid subscriptionID, String subscriptionType, int ? period)
+        public JsonResult changeSubscription(Guid subscriptionID, String subscriptionType, int? period)
         {
             var result = new RequestModel();
 
             if (Session["userId"] != null)
             {
                 result = PropertyHelper.ChangeSubscription(subscriptionID, subscriptionType, period);
+            }
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult RenewSubscription(Guid subscriptionID)
+        {
+            var result = new RequestModel();
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                result = PropertyHelper.RenewSubscription(subscriptionID, userId);
+            }
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult CancelSubscription(Guid subscriptionID)
+        {
+            var result = new RequestModel();
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                result = PropertyHelper.CancelSubscription(subscriptionID, userId);
             }
 
             return Json(result);

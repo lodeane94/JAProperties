@@ -20,5 +20,6 @@ namespace SS.Models.Repositories
         String GetEnrolmentKeyByPropID(Guid Id);
         IEnumerable<Property> FilterPropertiesByTagNames(IEnumerable<Property> properties, IEnumerable<String> tags);
         bool IsPropertyAvailable(Guid Id);
+        int GetCount(Guid ownerId);
     }
 }

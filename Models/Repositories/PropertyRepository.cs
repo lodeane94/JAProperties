@@ -207,5 +207,12 @@ namespace SS.Models.Repositories
             return EasyFindPropertiesEntities.Property
                 .Any(x => x.ID.Equals(Id) && x.Availability.Equals(true));
         }
+
+        public int GetCount(Guid ownerId)
+        {
+            return EasyFindPropertiesEntities.Property
+                .Where(x => x.OwnerID.Equals(ownerId))
+                .Count();
+        }
     }
 }

@@ -106,9 +106,9 @@ function fillInAddress() {
 
 //geolocate function is used to bind results returned by the autocomplete list
 //within the specified country selected
-function geolocate() {
-    if ((searchType != null && searchType == 'nearByPlaces' && elementCalledBy == 'SearchTerm')
-        || (elementCalledBy == 'StreetAddress' || elementCalledBy == 'community' || elementCalledBy == 'nearBy')) {
+function geolocate(calledBy) {
+    if ((searchType != null && searchType == 'nearByPlaces' && calledBy == 'SearchTerm')
+        || (calledBy == 'StreetAddress' || calledBy == 'community' || calledBy == 'nearBy')) {
         var map = null;
         var country = 'Jamaica'//$('#country').find("option:selected").text();
 
