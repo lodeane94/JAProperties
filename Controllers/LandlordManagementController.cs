@@ -413,7 +413,9 @@ namespace SS.Controllers
         /// <param name="invitees"></param>
         private void setInviteeVMForPropertyRequestors(UnitOfWork unitOfWork, Guid userId, List<InviteeViewModel> invitees)
         {
-            var users = unitOfWork.PropertyRequisition.GetRequestedPropertyUsers(userId);
+            var rpUsers = unitOfWork.PropertyRequisition.GetRequestedPropertyUsers(userId);
+            var mUsers = unitOfWork.Message.GetMsgUsers(userId);
+            var users = rpUsers.Concat(mUsers).Distinct();
 
             foreach (var user in users)
             {
@@ -442,6 +444,8 @@ namespace SS.Controllers
             var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
             var tennants = unitOfWork.Tennant.GetTennantsByOwnerId(owner.ID);
             var userRequestees = unitOfWork.PropertyRequisition.GetRequestedPropertyUsersByOwnerId(owner.ID);
+            var mUsers = unitOfWork.Message.GetMsgUsers(userId);
+            var users = userRequestees.Concat(mUsers).Distinct();
 
             //populate invitee model with each ienumerable items
             foreach (var tennant in tennants)
@@ -457,7 +461,7 @@ namespace SS.Controllers
                 invitees.Add(inviteeViewModel);
             }
 
-            foreach (var user in userRequestees)
+            foreach (var user in users)
             {
                 InviteeViewModel inviteeViewModel = new InviteeViewModel()
                 {
@@ -1079,6 +1083,20 @@ namespace SS.Controllers
             }
 
             return Json(result);
+        }
+
+        [HttpGet]
+        public ActionResult GetRequisitionHistory()
+        {
+            IEnumerable<RequisitionViewModel> requisitions = null;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                requisitions = PropertyHelper.GetRequisitionHistory(userId);
+            }
+
+            return PartialView("_RequisitionHistory", requisitions);
         }
     }
 

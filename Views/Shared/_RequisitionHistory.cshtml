@@ -1,0 +1,78 @@
+﻿@model List<SS.ViewModels.RequisitionViewModel>
+
+<div style="overflow-x:auto;">
+    <div class="rTable">
+        @{
+            int count = 0;
+
+            if (Model != null)
+            {
+                foreach (var req in Model)
+                {
+
+                    count++;
+                    //display header only once
+                    if (count < 2)
+                    {
+                        <div class="rTableHeading">
+                            <div class="rTableRow">
+                                <div class="rTableHead"></div>
+                                <div class="rTableHead">Property Image</div>
+                                <div class="rTableHead">Name</div>
+                                <div class="rTableHead">Email</div>
+                                <div class="rTableHead">Cell</div>
+                                <div class="rTableHead">Date</div>
+                                <div class="rTableHead"></div>
+                            </div>
+                        </div>
+                    }
+                    <div class="rTableRow">
+                        <div class="rTableCell" style="font-size:12px;">@count</div>
+                        <div class="rTableCell">
+                            <a href="~/properties/getproperty/@req.PropertyRequisition.PropertyID">
+                                <img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" />
+                            </a>
+                        </div>
+                        <div class="rTableCell first_name"> @req.PropertyRequisition.User.FirstName &nbsp; @req.PropertyRequisition.User.LastName</div>
+                        <div class="rTableCell email"> @req.PropertyRequisition.User.Email</div>
+                        <div class="rTableCell cell"> @req.PropertyRequisition.User.CellNum</div>
+                        <div class="rTableCell date"> @req.PropertyRequisition.DateTCreated.ToShortDateString()</div>
+
+                        @if (req.PropertyRequisition.IsAccepted.HasValue && req.PropertyRequisition.IsAccepted.Value)
+                        {
+                            <div class="rTableCell">
+                                <div class="alert alert-info" style="display:inline-flex;"><label>Accepted</label></div>
+                            </div>
+                        }
+                        else if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value && req.PropertyRequisition.ExpiryDate < DateTime.Now)
+                        {
+                            <div class="rTableCell">
+                                <div class="alert alert-info" style="display:inline-flex;"><label>Expired</label></div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="rTableCell">
+                                <div class="alert alert-info" style="display:inline-flex;"><label>Cancelled / Denied</label></div>
+                            </div>
+                        }
+                    </div>
+                    if (req.PropertyRequisition.Msg != null)
+                    {
+                        @*
+                            <div class="rTableRow">
+                                <div class="rTableCell"><div class="reqMsg contact-info-header" style="overflow:auto;">@req.PropertyRequisition.Msg</div></div>
+                            </div>
+                        *@
+                    }
+                }
+            }
+            else
+            {
+                <div class="rTableRow"><div class="rTableCell contact-info-content" colspan="8"><center>No Requisition Records Found</center></div></div>
+            }
+        }
+    </div>
+</div>
+<br/>
+<button id="hide-req-his-btn" style="float:right" class="btn btn-outline-secondary">Close</button>

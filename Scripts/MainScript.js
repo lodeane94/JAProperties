@@ -167,9 +167,9 @@ function updateShoppingCart() {
                 case lastSelectedClickableSubscriptionType.attr('id'):
                     $('.shopping-cart-container')
                         .append('<br />'
-                            + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Subscription</b> : ' + index + '</span></div><br/>'
-                            + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Period</b> : ' + period + ' ' + monthsTerm + '</span></div><br/>'
-                            + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Price</b> : ' + '$' + value + '.00 JMD' + '</span></div><br/> '
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Subscription</b> : ' + index + '</span></div><br/>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Period</b> : ' + period + ' ' + monthsTerm + '</span></div><br/>'
+                        + '<div class="col-md-4"><span class="ctnr-info">' + '<b>Price</b> : ' + '$' + value + '.00 JMD' + '</span></div><br/> '
                         );
                     totalCost += value;
                     break;
@@ -330,7 +330,7 @@ function SubscriptionCheck(email) {
         url: '/accounts/SubscriptionCheck',
         type: 'get',
         data: { email: email },
-        beforeSend: function () {  },
+        beforeSend: function () { },
         success: function (data) {
             if (data.HasErrors) {
                 $.each(data.ErrorMessages, function (inx, val) {
@@ -339,7 +339,7 @@ function SubscriptionCheck(email) {
 
                 throw "Error encountered";
             } else if (data.HasBool) {
-                
+
                 if (data.ReturnedBool) {
                     isAddPropertyFormInputsValid = false;
                     var errMsg = 'This email address is already associated with a subscription <br/> Please ' +
@@ -356,7 +356,7 @@ function SubscriptionCheck(email) {
         error: function () {
             alert('An error occurred while checking subscription');
         },
-        complete: function () {  }
+        complete: function () { }
     });
 }
 
@@ -653,6 +653,8 @@ function SubscriptionCheck(email) {
         $('#flPropertyPicsFileNameOutput').val(filenameOutput);//outputing to the textbox
 
         var field = $('#flPropertyPicsFileNameOutput');
+
+        isClickableContentValid = true;
         removeErrorField(field);
     });
 
@@ -830,7 +832,6 @@ function SubscriptionCheck(email) {
         }*/
 
         if (isClickableContentValid && isAddPropertyFormInputsValid) {
-            loadingGifLocation = $('.AdvertisePropertyBtn');
             var formData = new FormData($('#ad-submission')[0]);
 
             $.ajax({
@@ -840,7 +841,7 @@ function SubscriptionCheck(email) {
                 cache: false,
                 contentType: false,
                 processData: false,
-                beforeSend: function () { $(loadingGifHTML).insertAfter(loadingGifLocation); },
+                beforeSend: function () { $('#modal-loading').fadeIn(); },
                 success: function (data) {
                     if (data.hasErrors) {
                         alert('Error encountered while uploading property. Contact Website Administrator');
@@ -858,7 +859,7 @@ function SubscriptionCheck(email) {
                     }
                 },
                 error: function (data) { alert('Error encountered while uploading property. Contact Website Administrator'); },
-                complete: function () { $('#loading-gif').remove(); },
+                complete: function () { $('#modal-loading').fadeOut(); },
             });
         } else {
             var errMessage = 'Highlight fields are required';
@@ -981,11 +982,13 @@ function SubscriptionCheck(email) {
         }
 
         if (uploadedFiles.length == 0) {
-            alert('Upload at least one property image');
             isClickableContentValid = false;
 
             var field = $('#flPropertyPics');
             highlightErrorField(field);
+
+            addErrorMessage('Upload at least one property image');
+            displayErrorMessages();
         }
 
 
@@ -1100,18 +1103,25 @@ function SubscriptionCheck(email) {
     }
 
     //ensures that only numbers are entered into the MinPrice and MaxPrice fields
-    $('#cellnum').keypress(function (e) {
+    $(document.body).on('keyup', '#cellnum, #price, #securitydeposit, #StreetNumber, #occupancy, #TotAvailableBathroom, #TotRooms, #area', function (e) {
         //if the letter is not digit then display error and don't type anything
-        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        /*if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
             return false;
+        }*/
+        var numericExpression = /^[0-9]+$/;
+        if (this.value.match(numericExpression)) {
+            return true;
+        } else {
+            $(this).val('');
         }
     });
+
     //checks if user already has a subscription
     $(document.body).on('blur', '#email', function (event) {
         try {
             var email = $(this).val();
 
-            SubscriptionCheck(email); 
+            SubscriptionCheck(email);
         } catch (err) {
             alert(err);
         }

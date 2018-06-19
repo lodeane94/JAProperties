@@ -56,5 +56,22 @@ namespace SS.Models.Repositories
                 .OrderBy(x => x.DateTCreated)
                 .ToList();
         }
+
+        public IEnumerable<User> GetMsgUsers(Guid userId)
+        {
+            var fromUserIds = EasyFindPropertiesEntities.Message
+                .Where(x => x.To.Equals(userId))
+                .Select(x => x.From).Distinct().ToList();
+
+            var toUserIds = EasyFindPropertiesEntities.Message
+                .Where(x => x.From.Equals(userId))
+                .Select(x => x.To).Distinct().ToList();
+
+            var userIds = fromUserIds.Concat(toUserIds);
+
+            return EasyFindPropertiesEntities.User
+                .Where(x => userIds.Contains(x.ID))
+                .ToList();
+        }
     }
 }

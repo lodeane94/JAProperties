@@ -40,7 +40,11 @@
                                 }
                                 <div class="rTableRow">
                                     <div class="rTableCell" style="font-size:12px;">@count</div>
-                                    <div class="rTableCell"><img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" /></div>
+                                    <div class="rTableCell">
+                                        <a href="~/properties/getproperty/@req.PropertyRequisition.PropertyID">
+                                            <img style="width:100px;height:100px;" src="~/Uploads/@req.ImageUrl" />
+                                        </a>
+                                    </div>
                                     <div class="rTableCell first_name"> @req.PropertyRequisition.User.FirstName &nbsp; @req.PropertyRequisition.User.LastName</div>
                                     @if (req.isUserPropOwner)
                                     {
@@ -88,6 +92,15 @@
                     }
                 }
             </div>
+        </div>
+    </div>
+</div>
+<button id="view-req-his-btn" class="btn btn-outline-secondary btn-block">View Requisition History</button>
+<div class="requisition-history hide">
+    <div class="ctnr-headers">Requisition History</div>
+    <div class="card">
+        <div class="card-body requisition-history-body">
+
         </div>
     </div>
 </div>

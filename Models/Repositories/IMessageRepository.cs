@@ -9,5 +9,6 @@ namespace SS.Models.Repositories
     {
         IEnumerable<Message> GetMsgsForUserID(Guid Id, int take = 0);
         IEnumerable<Message> GetMsgThreadByMsgID(Guid Id, Guid userId);
+        IEnumerable<User> GetMsgUsers(Guid userId);
     }
 }

@@ -539,6 +539,7 @@
     <Content Include="Views\Accounts\RecoverPassword.cshtml" />
     <Content Include="Views\Accounts\ResetPassword.cshtml" />
     <Content Include="Views\Shared\_partialModalSubscriptionChange.cshtml" />
+    <Content Include="Views\Shared\_RequisitionHistory.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

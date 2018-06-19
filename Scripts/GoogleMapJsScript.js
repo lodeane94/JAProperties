@@ -2,7 +2,7 @@
 var geocoder = null;
 var mapCountryBounds, countryBounds = null;
 var elementCalledBy = null;
-var address, establishment = null;
+var address, shortAddress, establishment = null;
 
 var componentForm = {
    // street_number: 'long_name',
@@ -14,18 +14,6 @@ var componentForm = {
     premise: 'long_name'
 };
 
-//sets up listener for the search near by places
-//TODO allow init auto complete generic
-/*
-(function () {
-    searchType = $('#searchType:checked').val();
-
-    $('input[type=radio][name=searchType]').change(function () {
-        searchType = $(this).val();
-        initAutocomplete('SearchTerm');//called by the search term text box
-    });
-})();*/
-
 //function initiate the autocomplete object
 //if it is called by the searchterm element then it should filter results by establishments
 //otherwise it should filter by address
@@ -33,6 +21,7 @@ function initAutocomplete(calledBy) {
 
     //clear element first before any operation
    // $('#' + elementCalledBy).val('');
+    var country = 'Jamaica';
 
     if (autocomplete != null) {
         google.maps.event.clearInstanceListeners(autocomplete);
@@ -43,14 +32,26 @@ function initAutocomplete(calledBy) {
 
     searchType = $('#searchType:checked').val();
 
+    geocoder = new google.maps.Geocoder();
+
     if ((searchType != null && searchType == 'nearByPlaces' && elementCalledBy == 'SearchTerm')
         || elementCalledBy == 'nearBy') {
 
-        autocomplete = new google.maps.places.Autocomplete((document.getElementById(elementCalledBy)), { types: ['establishment'] });
-        autocomplete.addListener('place_changed', fillInAddress);
-    } else if (elementCalledBy == 'StreetAddress' || elementCalledBy == 'community') {
+        var options = {
+            types: ['establishment'],
+            componentRestrictions: { country: 'jm' }
+        };
 
-        autocomplete = new google.maps.places.Autocomplete((document.getElementById(elementCalledBy)), { types: ['address'] });
+        autocomplete = new google.maps.places.Autocomplete((document.getElementById(elementCalledBy)), options);
+        autocomplete.addListener('place_changed', fillInAddress);
+    } else if (elementCalledBy == 'StreetAddress' || elementCalledBy == 'community' || calledBy == 'nearBy') {
+
+        var options = {
+            types: ['address'],
+            componentRestrictions: { country: 'jm' }
+        };
+
+        autocomplete = new google.maps.places.Autocomplete((document.getElementById(elementCalledBy)), options);
         autocomplete.addListener('place_changed', fillInAddress);
     }
 }
@@ -93,7 +94,7 @@ function fillInAddress() {
 
     if (!isEstablishmentSearch) {
         setLocation(address, lat, lng);
-        element.val(address);
+        element.val(shortAddress);
     } else {
         var output = element.val();
         setLocation(output, lat, lng);
@@ -106,7 +107,9 @@ function fillInAddress() {
 
 //geolocate function is used to bind results returned by the autocomplete list
 //within the specified country selected
-function geolocate(calledBy) {
+/*function geolocate(calledBy) {
+    searchType = $('#searchType:checked').val();
+    
     if ((searchType != null && searchType == 'nearByPlaces' && calledBy == 'SearchTerm')
         || (calledBy == 'StreetAddress' || calledBy == 'community' || calledBy == 'nearBy')) {
         var map = null;
@@ -118,8 +121,8 @@ function geolocate(calledBy) {
             return;
         }
 
-        geocoder = new google.maps.Geocoder();
         
+        initAutocomplete(calledBy);
         geocoder.geocode({ address: country }, function (locations, status) {
             if (status == 'OK') {
                 mapCountryBounds = { lat: locations[0].geometry.location.lat(), lng: locations[0].geometry.location.lng() };
@@ -127,8 +130,9 @@ function geolocate(calledBy) {
 
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: { lat: mapCountryBounds.lat, lng: mapCountryBounds.lng },
-                    zoom: 0
+                    zoom: 7
                 });
+
 
                 autocomplete.bindTo('bounds', map);
 
@@ -140,6 +144,7 @@ function geolocate(calledBy) {
         });
     }
 }
+*/
 ////////////////////////////////////////////////////////
 //function sets the value on the appropriate coordinate hidden element
 function setLocation(address, lat, lng) {
@@ -161,7 +166,7 @@ function setLocation(address, lat, lng) {
 function setLocationComponents() {   
     // Get the place details from the autocomplete object.
     var place = autocomplete.getPlace();
-    ///console.log(place);
+    
     if (place != undefined) {
         // Get each component of the address from the place details
         // and fill the corresponding field on the form.
@@ -170,9 +175,10 @@ function setLocationComponents() {
 
             if (addressType == 'route') {
                 var val = place.address_components[i][componentForm[addressType]];
-                address = val;
+                shortAddress = val;
             }
         }
+        address = place.formatted_address;
     } else {
         alert('Unable to identify coordinates for that location');
     }

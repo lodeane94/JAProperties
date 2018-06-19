@@ -71,7 +71,7 @@ namespace SS.Core
 
         public static class Application
         {
-            public static readonly String Host = System.Net.Dns.GetHostEntry("").HostName;
+            public static readonly String Host = "jprops.net";
         }
 
         public static class Audit

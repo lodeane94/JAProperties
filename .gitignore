@@ -247,3 +247,6 @@ ModelManifest.xml
 # ignore bin directory
 /bin/
 /Content/sunset.jpg
+/(null)/Logs
+/App_Data
+/Uploads

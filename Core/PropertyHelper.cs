@@ -318,7 +318,8 @@ namespace SS.Core
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
                 String errMsg = String.Empty;
-                User ownerUser = request.Property.Owner.User;
+                User ownerUser = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
+                User user = unitOfWork.User.Get(userId);
 
                 if (contactPurpose.Equals("requisition"))
                 {
@@ -336,7 +337,7 @@ namespace SS.Core
                     unitOfWork.PropertyRequisition.Add(requisition);
 
                     MailHelper mail = new MailHelper(ownerUser.Email, "JProps - Your have a property requisition",
-                        createRequestEmail(request, true), ownerUser.FirstName);
+                        createRequestEmail(user, true), ownerUser.FirstName);
 
                     if (mail.SendMail())
                     {
@@ -355,12 +356,10 @@ namespace SS.Core
                 }
                 else
                 {
-                    var userTo = unitOfWork.Property.GetPropertyOwnerByPropID(request.PropertyID).User;
-
                     Message message = new Message()
                     {
                         ID = Guid.NewGuid(),
-                        To = userTo.ID,
+                        To = ownerUser.ID,
                         From = userId,
                         Msg = request.Msg,
                         Seen = false,
@@ -370,13 +369,13 @@ namespace SS.Core
                     unitOfWork.Message.Add(message);
 
                     MailHelper mail = new MailHelper(ownerUser.Email, "JProps - Your have a new message",
-                        createRequestEmail(request, false), ownerUser.FirstName);
+                        createRequestEmail(user, false), ownerUser.FirstName);
 
                     if (mail.SendMail())
                     {
                         unitOfWork.save();
 
-                        DashboardHub.BroadcastUserMessages(userTo.Email);
+                        DashboardHub.BroadcastUserMessages(ownerUser.Email);
                     }
                     else
                     {
@@ -396,21 +395,21 @@ namespace SS.Core
         /// <param name="req"></param>
         /// <param name="isRequisition"></param>
         /// <returns></returns>
-        private static string createRequestEmail(PropertyRequisition req, bool isRequisition)
+        private static string createRequestEmail(User user, bool isRequisition)
         {
             String body = String.Empty;
 
             if (isRequisition)
             {
-                body = "<p>" + req.User.FirstName + " " + req.User.LastName + "sent a request to your property</p>";
-                body += "<p>Click the following link to go to your portal";
-                body += "http://www." + EFPConstants.Application.Host + "/landlordManagement/Dashboard</p>";
+                body = "<p>" + user.FirstName + " " + user.LastName + " sent a request to your property.</p> ";
+                body += "<p>Click the following link to go to your portal ";
+                body += "http://www." + EFPConstants.Application.Host + "/landlordmanagement/dashboard</p>";
             }
             else
             {
-                body = "</p>" + req.User.FirstName + " " + req.User.LastName + "sent a message to your property</p>";
-                body += "Click the following link to go to your portal";
-                body += "http://www." + EFPConstants.Application.Host + "/landlordManagement/Dashboard</p>";
+                body = "</p>" + user.FirstName + " " + user.LastName + " sent a message to your property.</p> ";
+                body += "Click the following link to go to your portal ";
+                body += "http://www." + EFPConstants.Application.Host + "/landlordmanagement/dashboard</p>";
             }
 
             return body;
@@ -802,8 +801,8 @@ namespace SS.Core
                 user = new User()
                 {
                     ID = userID,
-                    FirstName = fName,
-                    LastName = lName,
+                    FirstName = MiscellaneousHelper.UppercaseFirst(fName),
+                    LastName = MiscellaneousHelper.UppercaseFirst(lName),
                     CellNum = cellNum,
                     Email = email,
                     DOB = dob,
@@ -1040,8 +1039,8 @@ namespace SS.Core
 
             var property = requisition.Property;
             var propertyUser = property.Owner.User;
-            var propCategoryCode = property.CategoryCode;
-            var adTypeCode = property.AdTypeCode;
+            //var propCategoryCode = property.CategoryCode;
+            //var adTypeCode = property.AdTypeCode;
 
             //email address which acceptance letter should be sent to
             string emailTo = reqUser.Email;
@@ -1049,6 +1048,7 @@ namespace SS.Core
             //body of the email
             string body = string.Empty;
 
+            /*
             if (propCategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate)
                 &&
                 (adTypeCode.Equals(EFPConstants.PropertyAdType.Rent)
@@ -1063,12 +1063,16 @@ namespace SS.Core
 
             }
             else
-                body = "Congratulations!!, your property request was accepted. The property owner will contact you if there"
-                        + " is further negotiations or concerns.";
+                body = "Congratulations!!, your property request was accepted. The property owner will contact you with any additional information "
+                        + "or concerns. Thank you for using JProps.";*/
+
+            body = "Congratulations!!, your property request was accepted. The property owner will contact you with any additional information "
+                        + "or concerns. Thank you for using JProps.";
 
             //getting information about the owner of the property to give back to the requestee
-            body += "<br/> Owner Information<br/> First Name:&nbsp;" + propertyUser.FirstName + "<br/>Last Name:&nbsp;" + propertyUser.LastName
-                            + "<br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/>Email:&nbsp;" + propertyUser.Email;
+            body += "<br/><br/><strong>Property Owner Information</strong><br/><br/> First Name:&nbsp;" 
+                + propertyUser.FirstName + "<br/><br/>Last Name:&nbsp;" + propertyUser.LastName
+                            + "<br/><br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/><br/>Email:&nbsp;" + propertyUser.Email;
 
             MailHelper mail = new MailHelper(emailTo, subject, body, reqUser.FirstName);
 
@@ -1106,7 +1110,7 @@ namespace SS.Core
             {
                 body = "<p> We are sorry to advise you that " +
                         " the owner ( " + ownerUser.FirstName + " " + ownerUser.LastName + " ) of the property have declined your requisition." +
-                        " Please feel free to request more properties. <br /> http://jprops.net </p>";
+                        " Please feel free to request more properties. <br /> http://www." + EFPConstants.Application.Host + "</p>";
 
                 subject = "JProps - Property Requisition Declined";
                 emailTo = requisition.User.Email;
@@ -1223,6 +1227,7 @@ namespace SS.Core
                 ViewModel.PropertyCondition = property.PropertyCondition.Name;
                 ViewModel.Occupancy = property.Occupancy.ToString();
                 ViewModel.Price = property.Price;
+                ViewModel.Area = property.Area.HasValue ? property.Area.Value : 0;
                 ViewModel.Description = property.Description;
                 ViewModel.OwnerFirstName = user.FirstName;
                 ViewModel.OwnerLastName = user.LastName;
@@ -1530,7 +1535,6 @@ namespace SS.Core
                     }
 
                     //if user already exists and they are not a property owner, then associate user with that user type as well
-                    //TODO: user's role will have to be manipulated as well
                     if (user != null)
                     {
                         var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
@@ -1718,21 +1722,22 @@ namespace SS.Core
 
             if (!doesOwnerExist)
             {
+                /*
                 Guid guid = Guid.NewGuid();
                 String fileName = String.Empty;
-
+                
                 if (model.organizationLogo != null)
                 {
                     fileName = guid.ToString() + Path.GetExtension(model.organizationLogo.FileName);
                     UploadPropertyImages(model.organizationLogo, fileName);
-                }
+                }*/
 
                 Owner owner = new Owner()
                 {
                     ID = ownerID,
                     UserID = user.ID,
-                    Organization = model.Organization,
-                    LogoUrl = fileName,
+                    Organization = null,//model.Organization,
+                    LogoUrl = null,//fileName,
                     DateTCreated = DateTime.Now
                 };
 
@@ -2506,8 +2511,8 @@ namespace SS.Core
             string emailTo = email;
             string subject = "JProps - Password Recovery";
             string body = "Your access code to reset your password is <b>" + accessCode + "</b> ";
-            body += "Please click the link below or copy and paste it in a new browser window to reset your password: <br/><br/>";
-            body += "http://www." + EFPConstants.Application.Host + "/accounts/resetPassword?userId=" + userId.ToString();
+            body += ". Please click the link below or copy and paste it in a new browser window to reset your password: <br/><br/>";
+            body += "http://www." + EFPConstants.Application.Host + "/ accounts/resetpassword?userId=" + userId.ToString();
             body += "<br/><br/><small>Your access code will expire 10 minutes after recieving this mail</small>";
 
             MailHelper mail = new MailHelper(emailTo, subject, body, fName);
@@ -2851,7 +2856,7 @@ namespace SS.Core
                         case PropertySubscriptionType.Basic:
                             if ((propertiesCount + 1) > 1)
                             {
-                                adAccessErrMessage = "Basic subscription is only limited to 1 properties <br/>"
+                                adAccessErrMessage = "Basic subscription is only limited to 1 properties "
                                     + "Please upgrade your subscription to add more than 1 properties";
                                 return false;
                             }
@@ -2945,6 +2950,57 @@ namespace SS.Core
             foreach (var property in properties)
             {
                 unitOfWork.Property.Remove(property);
+            }
+        }
+
+        /// <summary>
+        /// returns the requisition history for any user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static IEnumerable<RequisitionViewModel> GetRequisitionHistory(Guid userId)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                try
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    List<RequisitionViewModel> requisitionInfo = null;
+                    var requisitions = unitOfWork.PropertyRequisition.GetRequestsHistoryByUserId(userId);
+
+                    if (requisitions != null)
+                    {
+                        requisitionInfo = new List<RequisitionViewModel>();
+
+                        foreach (var req in requisitions)
+                        {
+                            RequisitionViewModel model = new RequisitionViewModel();
+
+                            model.PropertyRequisition.User = new User();
+
+                            model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
+                            model.PropertyRequisition.ID = req.ID;
+                            model.PropertyRequisition.PropertyID = req.PropertyID;
+                            model.PropertyRequisition.User.FirstName = req.User.FirstName;
+                            model.PropertyRequisition.User.LastName = req.User.LastName;
+                            model.PropertyRequisition.User.Email = req.User.Email;
+                            model.PropertyRequisition.User.CellNum = req.User.CellNum;
+                            model.PropertyRequisition.Msg = req.Msg;
+                            model.PropertyRequisition.IsAccepted = req.IsAccepted;
+                            model.PropertyRequisition.DateTCreated = req.DateTCreated;
+                            
+                            requisitionInfo.Add(model);
+                        }
+                    }
+
+                    return requisitionInfo;
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Error occurred while retrieving the requisition history", ex);
+                    return null;
+                }
             }
         }
     }

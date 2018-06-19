@@ -74,5 +74,15 @@ namespace SS.Models.Repositories
                 .Select(x => x.Property.Owner.User)
                 .Distinct();
         }
+
+        public IEnumerable<PropertyRequisition> GetRequestsHistoryByUserId(Guid Id, int take=10, int pgNo=0)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => (x.UserID.Equals(Id) || x.Property.Owner.UserID.Equals(Id)))
+                .OrderByDescending(x => x.DateTCreated)
+                .Skip(pgNo * take)
+                .Take(take)
+                .ToList();
+        }
     }
 }

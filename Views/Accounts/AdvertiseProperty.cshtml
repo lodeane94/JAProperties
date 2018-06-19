@@ -47,10 +47,10 @@
                 </a>
                 <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Land spaces on which can be used to create buildings or farming etc.">
                     <div id="Lot" class="clickable-box">Lot</div>
-                </a>
+                </a><!--
                 <a href="#" class="clickable-box-link" data-toggle="popover" data-content="Properties that can be used to reduce manual labour">
                     <div id="Machinery" class="clickable-box">Machinery</div>
-                </a>
+                </a>-->
             </div>
             <div class="col-md-4" id="property-purpose">
                 <div class="content-heading">Select the purpose of the property</div>
@@ -121,38 +121,37 @@
                 <div class="col-md-4">
                     <input id="lastname" value="" type="text" class="form-control" name="lastname" placeholder="Last Name" required>
                 </div>
-                <br /><br />
+             <!--   <br /><br />
                 <div class="col-md-4">
                     <input id="organization" type="text" class="form-control" name="organization" placeholder="Organization">
-                </div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-md-3">
+                </div> -->
+				<div class="col-md-4">
                     <input id="cellnum" value="" type="text" class="form-control" name="cellnum" placeholder="Cellphone Number" required>
                 </div>
                 <br /><br />
-                <div class="col-md-3">
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-4">
                     <input id="email" value="" type="email" class="form-control" name="email" placeholder="Email Address" required>
                 </div>
                 <br /><br />
-                <div class="col-md-3">
-
+                <div class="col-md-4">
                     <input id="password" value="" type="password" class="form-control" name="password" placeholder="Password" required>
                 </div>
                 <br /><br />
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <input id="ConfirmPassword" value="" type="password" class="form-control" name="ConfirmPassword" placeholder="Confirm Password" required>
                 </div>
             </div>
             <br />
         }
-        <div class="row">
+  <!--      <div class="row">
             <div class="col-md-6">
                 <div class="content-heading">Company Logo</div>
                 <input id="organizationLogo" accept="image/*" name="organizationLogo" type="file" class="form-control" />
             </div>
-        </div>
+        </div> -->
         <br />
         <div class="flex-md-wrap" style="float:right;">
             <button type="button" class="btn btn-sm btn-primary previous-advertise-section"><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous Section</button>
@@ -177,15 +176,15 @@
         <br />
         <div class="row">
             <div class="col-md-2">
-                <input id="StreetNumber" type="text" class="form-control" name="StreetNumber" placeholder="Street Number">
+                <input id="StreetNumber" type="number" class="form-control" name="StreetNumber" placeholder="Street Number">
             </div>
             <br /><br />
             <div class="col-md-5">
-                <input id="StreetAddress" value="" onclick="geolocate('StreetAddress'); initAutocomplete('StreetAddress');" type="text" class="form-control" name="streetaddress" placeholder="Street Address" data-toggle="popover" data-content="If your address is not visible don't worry just enter the street address" required>
+                <input id="StreetAddress" value="" onclick="initAutocomplete('StreetAddress');" type="text" class="form-control" name="streetaddress" placeholder="Street Address" data-toggle="popover" data-content="If your address is not visible don't worry just enter the street address" required>
             </div>
             <br /><br />
             <div class="col-md-5">
-                <input id="community" onclick="geolocate('community'); initAutocomplete('community');" value="" type="text" class="form-control" name="community" placeholder="Community" data-toggle="popover" data-content="If your address is not visible don't worry just enter your community address" required>
+                <input id="community" onclick="initAutocomplete('community');" value="" type="text" class="form-control" name="community" placeholder="Community" data-toggle="popover" data-content="If your address is not visible don't worry just enter your community address" required>
             </div>
         </div>
         <br />
@@ -195,7 +194,7 @@
             </div>
             <br /><br />
             <div class="col-md-9">
-                <input id="nearBy" onclick="geolocate('nearBy'); initAutocomplete('nearBy');" type="text"
+                <input id="nearBy" onclick="initAutocomplete('nearBy');" type="text"
                        class="form-control" name="nearBy" placeholder="Landmark Closest To" data-toggle="popover" data-content="Enter and select the name of an establishment that is close to your property" />
             </div>
         </div>
@@ -210,7 +209,7 @@
             </div>
             <br /><br />
             <div class="col-md-3">
-                <input id="occupancy" value="" disabled type="text" class="form-control" name="occupancy" placeholder="Occupancy" required>
+                <input id="occupancy" value="" disabled type="number" class="form-control" name="occupancy" placeholder="Occupancy" required>
             </div>
             <br /><br />
             <div class="col-md-3">
@@ -226,24 +225,24 @@
         <br />
         <div class="row">
             <div class="col-md-3">
-                <input id="TotAvailableBathroom" value="" disabled type="text" class="form-control" name="TotAvailableBathroom" placeholder="Total Bathrooms" required>
+                <input id="TotAvailableBathroom" value="" disabled type="number" class="form-control" name="TotAvailableBathroom" placeholder="Total Bathrooms" required>
             </div>
             <br /><br />
             <div class="col-md-3">
-                <input id="TotRooms" value="" disabled type="text" class="form-control" name="TotRooms" placeholder="Total Rooms" required>
+                <input id="TotRooms" value="" disabled type="number" class="form-control" name="TotRooms" placeholder="Total Rooms" required>
             </div>
             <br /><br />
             <div class="col-md-3">
-                <input id="area" value="" disabled type="text" class="form-control" name="area" placeholder="Property Area">
+                <input id="area" value="" disabled type="number" class="form-control" name="area" placeholder="Area in Acres">
             </div>
-            <br /><br />
+           <!-- <br /><br />
             <div class="col-md-3">
                 <select class="form-control" id="isReviewable" name="isReviewable">
                     <option disabled selected value="na">Allow Reviews</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
-                </select>
-            </div>
+                </select> 
+            </div> -->
         </div>
         <br />
         <div class="row">
@@ -251,17 +250,15 @@
                 <textarea id="description" rows="4" class="form-control" name="description" placeholder="Property's Description" required></textarea>
             </div>
         </div>
-        <br />
+      <!--  <br />
         <div class="row">
             <div class="col-md-12">
                 <textarea id="termsagreement" rows="4" class="form-control" name="termsagreement" placeholder="Terms and Agreement for you property"></textarea>
             </div>
-        </div>
+        </div>  -->
         <br />
         <div class="content-heading">Select the tags that best describes your property</div>
-        <div id="property-tags" class="row">
-        </div>
-        <br />
+        <div id="property-tags" class="row"></div>
         <div class="row">
             @if (ViewBag.calledByManagement == null)
             {

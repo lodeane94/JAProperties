@@ -202,7 +202,7 @@ else
                     using (Html.BeginForm("RequestProperty", "Properties", FormMethod.Post, new { id = "requestPropertyForm" }))
                     {
                                             <div style="display:none;" class="col-md-12 error-container"></div>
-                                            <div class="ctnr-info"><strong>Request Property or Ask a Question</strong></div>
+                                            <div class="ctnr-headers"><strong>Request Property or Ask a Question</strong></div>
                                             <br />
                                             <div class="card">
                                                 <div class="card-header">
@@ -216,8 +216,10 @@ else
                                                     </div>
                                                 </div>
                                                 <div class="card-body">
-                                                    <textarea id="msg" cols="5" class="form-control" name="msg" placeholder="Optional message to the property owner"></textarea>
-                                                    <br />
+                                                    <div class="contact-msg hide">
+                                                        <textarea id="msg" cols="5" class="form-control" name="msg" placeholder="Optional message to the property owner"></textarea>
+                                                        <br />
+                                                    </div>
                                                     <div id="mvcCaptcha">@Html.Partial("_PartialMvcCaptcha")</div>
                                                     <br />
                                                     <div class="requestPropertySec float-right">

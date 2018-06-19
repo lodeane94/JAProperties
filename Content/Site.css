@@ -879,6 +879,7 @@ button.jumbotron-button {
     padding-bottom: 30px;
     line-height: 33px;
     overflow: auto;
+    position:relative;
 }
 
 .msg-absolute-spacer {
@@ -889,32 +890,50 @@ button.jumbotron-button {
     display: block;
     position: absolute;
     left: 0;
+    margin-bottom: 0px;
 }
 .msg-right-ctnr {
     display: block;
-    position:absolute;
-    right:0;
+    position: absolute;
+    right: 0;
+    margin-bottom: 0px;
 }
 
-.msg-add-mrg {
-    margin-top:30px;
+.msg-ctnr {
+    display: block;
+    position: absolute;
+    margin-bottom: 0px;
+}
+
+.msg-date {
+    color: #C1C1C1 !important;
+    font-size: 12px !important;
+    font-style: italic !important;
 }
 
 .management-action-section .msg-container .user {
     display: block;
     position: relative;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     width: 150px;
     word-wrap: break-word;
+    padding: 10px;
+    background-color: #AD0051;
+    border-radius: 4px;
+    color: #FFFFFF;
 }
 
-    .management-action-section .msg-container .not-user {
-        display: block;
-        position: relative;
-        margin-bottom: 15px;
-        width: 150px;
-        word-wrap: break-word;
-    }
+.management-action-section .msg-container .not-user {
+    display: block;
+    position: relative;
+    margin-bottom: 20px;
+    width: 150px;
+    word-wrap: break-word;
+    padding: 10px;
+    background-color: #007bff;
+    border-radius: 4px;
+    color: #FFFFFF;
+}
 
 .not-user .single-msg-menu {
     cursor: pointer;

@@ -203,7 +203,7 @@ function populateDistanceMatrixInformation(data) {
 
         var distance, duration = '';
         //console.log(val);
-
+        
         $.each(data.rows[0].elements, function (index, value) {
             if (value.status != null
                 && value.status != undefined
@@ -232,14 +232,14 @@ function populateDistanceMatrixInformation(data) {
                         var addressType = locations[0].address_components[i].types[0];
 
                         if (addressType == 'route') {
-                            streetAddr = locations[0].address_components[i]['long_name'];
+                            streetAddr = locations[0].address_components[i]['short_name'];
 
                             destinationInfo = {
                                 streetAddress: streetAddr,
                                 distance: distance,
                                 duration: duration
                             };
-
+                            
                             destinationGeocodeCallback(destinationInfo, destinationAddrLength);
                         }
                     }
@@ -847,9 +847,11 @@ $(document).ready(function () {
         input.attr('checked', true);
 
         if (val == 'requisition') {
+            $('.contact-msg').addClass('hide');
             $('input[id="contact-purpose-msg"]').removeAttr('checked');
             $('#msg').attr('placeholder', 'Optional message to the property owner');
         } else {
+            $('.contact-msg').removeClass('hide');
             $('input[id="contact-purpose-req"').removeAttr('checked');
             $('#msg').attr('placeholder', 'Ask your question here');
         }
