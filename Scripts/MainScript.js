@@ -201,7 +201,7 @@ function removeErrorField(field) {
 //displays error messages from property upload
 function displayErrorMessages() {
     if (errMessages != null && errMessages.length > 0) {
-        $('.error-container').empty();
+        $('.error-container').html('');
 
         $.each(errMessages, function (index, value) {
             $('.error-container').append(value + '<br>').show();
@@ -758,6 +758,8 @@ function SubscriptionCheck(email) {
             errorPlacement: function (error, element) { },
 
             showErrors: function (errorMap, errorList) {
+                errMessages = [];
+
                 $.each(errorList, function () {
                     addErrorMessage(this.message);
                 });

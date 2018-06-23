@@ -143,6 +143,7 @@ namespace SS.Controllers
         public JsonResult SignUp(User user, String password, String confirmPassword)
         {
             ErrorModel errorModel = new ErrorModel();
+            var isUserCreated = false;
 
             if (ModelState.IsValid)
             {
@@ -163,6 +164,8 @@ namespace SS.Controllers
                                    user.LastName, user.CellNum, DateTime.MinValue);
 
                             PropertyHelper.createUserAccount(user.Email, password);
+
+                            isUserCreated = true;
                         }
                         else
                             throw new Exception("This email address already exists");
@@ -176,7 +179,9 @@ namespace SS.Controllers
                     }
                     catch (Exception ex)
                     {
-                        PropertyHelper.RemoveUserAccount(user.Email);
+                        if (!String.IsNullOrEmpty(user.Email) && isUserCreated)
+                            PropertyHelper.RemoveUserAccount(user.Email);
+
                         errorModel.AddErrorMessage(ex.Message);
                     }
 

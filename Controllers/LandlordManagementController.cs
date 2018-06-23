@@ -123,7 +123,12 @@ namespace SS.Controllers
 
                     foreach (var msg in messages)
                     {
-                        var user = unitOfWork.User.Get(msg.From);
+                        User user = null;
+
+                        if(userId.Equals(msg.From))
+                            user = unitOfWork.User.Get(msg.To);
+                        else
+                            user = unitOfWork.User.Get(msg.From);
 
                         MessageViewModel messageViewModel = new MessageViewModel()
                         {
@@ -149,11 +154,12 @@ namespace SS.Controllers
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="id"></param>
-        public void updateMsgSeen(UnitOfWork unitOfWork, Guid id)
+        public void updateMsgSeen(UnitOfWork unitOfWork, Guid id, Guid userId)
         {
             var message = unitOfWork.Message.Get(id);
+            var from = message.From;
 
-            if (!message.Seen)
+            if (!userId.Equals(from) && !message.Seen)
             {
                 message.Seen = true;
                 unitOfWork.save();
@@ -215,7 +221,7 @@ namespace SS.Controllers
             {
                 var userId = (Guid)Session["userId"];
 
-                updateMsgSeen(unitOfWork, id);
+                updateMsgSeen(unitOfWork, id, userId);
                 messages = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
             }
 
@@ -261,12 +267,19 @@ namespace SS.Controllers
                 if ((Guid)Session["userId"] != null && message != null)
                 {
                     userId = (Guid)Session["userId"];
-                    var userTo = unitOfWork.User.Get(message.From);
+                    var threadId = message.ThreadId;
+                    User userTo = null;
+
+                    if(userId.Equals(message.From))
+                        userTo = unitOfWork.User.Get(message.To);
+                    else
+                        userTo = unitOfWork.User.Get(message.From);
 
                     Message newMsg = new Message()
                     {
                         ID = Guid.NewGuid(),
-                        To = message.From,
+                        ThreadId = threadId,
+                        To = userTo.ID,
                         From = userId,
                         Msg = msg,
                         Seen = false,
@@ -505,9 +518,12 @@ namespace SS.Controllers
 
                     foreach (var recipientId in msgRecipients)
                     {
+                        var threadId = unitOfWork.Message.GetThreadIdForUser(userId, recipientId);
+
                         Message message = new Message()
                         {
                             ID = Guid.NewGuid(),
+                            ThreadId = threadId != Guid.Empty ? threadId : Guid.NewGuid(),
                             To = recipientId,
                             From = userId,
                             Msg = msg,

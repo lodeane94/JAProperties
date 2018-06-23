@@ -207,7 +207,7 @@ namespace SS.Core
             Size size = new Size(0, 350);
             string path = Path.Combine(System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads"), fileName);
 
-            ISupportedImageFormat format = new JpegFormat { Quality = 70 };
+            ISupportedImageFormat format = new JpegFormat { Quality = 100 };
 
             using (MemoryStream inStream = new MemoryStream(File.ReadAllBytes(path)))
             {
@@ -1070,7 +1070,7 @@ namespace SS.Core
                         + "or concerns. Thank you for using JProps.";
 
             //getting information about the owner of the property to give back to the requestee
-            body += "<br/><br/><strong>Property Owner Information</strong><br/><br/> First Name:&nbsp;" 
+            body += "<br/><br/><strong>Property Owner Information</strong><br/><br/> First Name:&nbsp;"
                 + propertyUser.FirstName + "<br/><br/>Last Name:&nbsp;" + propertyUser.LastName
                             + "<br/><br/>Cellphone Number:&nbsp;" + propertyUser.CellNum + "<br/><br/>Email:&nbsp;" + propertyUser.Email;
 
@@ -1567,7 +1567,7 @@ namespace SS.Core
                 }
                 catch (Exception ex)
                 {
-                    if (!String.IsNullOrEmpty(model.Email))
+                    if (!String.IsNullOrEmpty(model.Email) && isUserCreated)
                         RemoveUserAccount(model.Email);
 
                     if (PropertyHelper.uploadedImageNames != null && PropertyHelper.uploadedImageNames.Count > 0)
@@ -1615,7 +1615,10 @@ namespace SS.Core
         {
             bool doesOwnerExist = user != null && user.Owner.Select(x => x.ID).Count() > 0 ? true : false;
             Guid ownerID = doesOwnerExist ? user.Owner.Select(x => x.ID).Single() : Guid.NewGuid();
-            var currSubscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(ownerID);
+            Subscription currSubscription = null;
+
+            if (doesOwnerExist)
+                currSubscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(ownerID);
 
             Guid propertyID = Guid.NewGuid();
             String lat = String.Empty;
@@ -2477,25 +2480,37 @@ namespace SS.Core
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                var userExist = unitOfWork.User.DoesUserExist(email);
-                var fName = unitOfWork.User.GetUserByEmail(email).FirstName;
-
-                if (!userExist)
+                try
                 {
-                    string errMessage = "The email address was not recognised";
-                    errorModel.AddErrorMessage(errMessage);
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var userExist = unitOfWork.User.DoesUserExist(email);
+
+                    if (!userExist)
+                    {
+                        string errMessage = "The email address was not recognised";
+                        errorModel.AddErrorMessage(errMessage);
+
+                        return false;
+                    }
+
+                    var fName = unitOfWork.User.GetUserByEmail(email).FirstName;
+                    var userId = unitOfWork.User.GetUserByEmail(email).ID;
+                    var uniqueKey = getRandomKey(5);
+
+                    savePasswordRecoveryRequest(unitOfWork, userId, uniqueKey);
+
+                    return sendRecoverPasswordEmail(email, userId, fName, uniqueKey, errorModel);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = "An error occurred while recovering password";
+                    errorModel.AddErrorMessage(errMsg);
+                    log.Error(errMsg, ex);
 
                     return false;
                 }
 
-                var userId = unitOfWork.User.GetUserByEmail(email).ID;
-                var uniqueKey = getRandomKey(5);
-
-                savePasswordRecoveryRequest(unitOfWork, userId, uniqueKey);
-
-                return sendRecoverPasswordEmail(email, userId, fName, uniqueKey, errorModel);
             }
         }
         /// <summary>
@@ -2512,7 +2527,7 @@ namespace SS.Core
             string subject = "JProps - Password Recovery";
             string body = "Your access code to reset your password is <b>" + accessCode + "</b> ";
             body += ". Please click the link below or copy and paste it in a new browser window to reset your password: <br/><br/>";
-            body += "http://www." + EFPConstants.Application.Host + "/ accounts/resetpassword?userId=" + userId.ToString();
+            body += "http://www." + EFPConstants.Application.Host + "/accounts/resetpassword?userId=" + userId.ToString();
             body += "<br/><br/><small>Your access code will expire 10 minutes after recieving this mail</small>";
 
             MailHelper mail = new MailHelper(emailTo, subject, body, fName);
@@ -2815,10 +2830,15 @@ namespace SS.Core
                     else
                     {
                         var user = unitOfWork.User.GetUserByEmail(email);
-                        var OwnerId = unitOfWork.Owner.GetOwnerByUserID(user.ID).ID;
+                        var owner = unitOfWork.Owner.GetOwnerByUserID(user.ID);
 
-                        var subscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(OwnerId);
-                        requestModel.AddBool(subscription != null ? true : false);
+                        if (owner != null)
+                        {
+                            var subscription = unitOfWork.Subscription.GetSubscriptionByOwnerID(owner.ID);
+                            requestModel.AddBool(subscription != null ? true : false);
+                        }
+                        else
+                            requestModel.AddBool(false);
                     }
 
                     return requestModel;
@@ -2969,31 +2989,14 @@ namespace SS.Core
                     List<RequisitionViewModel> requisitionInfo = null;
                     var requisitions = unitOfWork.PropertyRequisition.GetRequestsHistoryByUserId(userId);
 
-                    if (requisitions != null)
-                    {
-                        requisitionInfo = new List<RequisitionViewModel>();
+                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
+                    bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
 
-                        foreach (var req in requisitions)
-                        {
-                            RequisitionViewModel model = new RequisitionViewModel();
-
-                            model.PropertyRequisition.User = new User();
-
-                            model.ImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(req.PropertyID);
-                            model.PropertyRequisition.ID = req.ID;
-                            model.PropertyRequisition.PropertyID = req.PropertyID;
-                            model.PropertyRequisition.User.FirstName = req.User.FirstName;
-                            model.PropertyRequisition.User.LastName = req.User.LastName;
-                            model.PropertyRequisition.User.Email = req.User.Email;
-                            model.PropertyRequisition.User.CellNum = req.User.CellNum;
-                            model.PropertyRequisition.Msg = req.Msg;
-                            model.PropertyRequisition.IsAccepted = req.IsAccepted;
-                            model.PropertyRequisition.DateTCreated = req.DateTCreated;
-                            
-                            requisitionInfo.Add(model);
-                        }
-                    }
-
+                    if (isUserPropOwner)
+                        requisitionInfo = PropertyHelper.populateRequisitionVMForOwner(unitOfWork, requisitions);
+                    else
+                        requisitionInfo = PropertyHelper.populateRequisitionVMForRequestor(unitOfWork, requisitions);
+                    
                     return requisitionInfo;
                 }
                 catch (Exception ex)

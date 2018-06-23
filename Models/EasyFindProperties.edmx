@@ -104,6 +104,7 @@
           <Property Name="To" Type="uniqueidentifier" Nullable="false" />
           <Property Name="From" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Msg" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ThreadId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Seen" Type="bit" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
@@ -1993,6 +1994,7 @@
           <Property Name="Seen" Type="Boolean" Nullable="false" />
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="MessageTrash" Relationship="EasyFindPropertiesModel.fk_msg_trash_msg_id" FromRole="Message" ToRole="MessageTrash" />
+          <Property Name="ThreadId" Type="Guid" Nullable="false" />
         </EntityType>
         <EntityType Name="MessageTrash">
           <Key>
@@ -2543,6 +2545,7 @@
           <EntitySetMapping Name="Message">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.Message">
               <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="ThreadId" ColumnName="ThreadId" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="Seen" ColumnName="Seen" />
                 <ScalarProperty Name="Msg" ColumnName="Msg" />

@@ -27,6 +27,7 @@ namespace SS.Models
         public string Msg { get; set; }
         public bool Seen { get; set; }
         public System.DateTime DateTCreated { get; set; }
+        public System.Guid ThreadId { get; set; }
 
         [ScriptIgnore(ApplyToOverrides = true)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

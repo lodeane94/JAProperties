@@ -19,7 +19,10 @@
                                 <div class="rTableHead"></div>
                                 <div class="rTableHead">Property Image</div>
                                 <div class="rTableHead">Name</div>
-                                <div class="rTableHead">Email</div>
+                                @if (req.isUserPropOwner)
+                                {
+                                    <div class="rTableHead">Email</div>
+                                }
                                 <div class="rTableHead">Cell</div>
                                 <div class="rTableHead">Date</div>
                                 <div class="rTableHead"></div>
@@ -34,7 +37,10 @@
                             </a>
                         </div>
                         <div class="rTableCell first_name"> @req.PropertyRequisition.User.FirstName &nbsp; @req.PropertyRequisition.User.LastName</div>
-                        <div class="rTableCell email"> @req.PropertyRequisition.User.Email</div>
+                        @if (req.isUserPropOwner)
+                        {
+                            <div class="rTableCell email"> @req.PropertyRequisition.User.Email</div>
+                        }
                         <div class="rTableCell cell"> @req.PropertyRequisition.User.CellNum</div>
                         <div class="rTableCell date"> @req.PropertyRequisition.DateTCreated.ToShortDateString()</div>
 

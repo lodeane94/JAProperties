@@ -18,7 +18,7 @@ namespace SS.Models.Repositories
 
         public Owner GetOwnerByUserID(Guid ID)
         {
-            return EasyFindPropertiesEntities.Owner.Where(x => x.UserID.Equals(ID)).Single();
+            return EasyFindPropertiesEntities.Owner.Where(x => x.UserID.Equals(ID)).SingleOrDefault();
         }
 
         /* public bool DoesOwnerExist(string cellNum)
