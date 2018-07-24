@@ -298,11 +298,7 @@ a.clickable-box-link {
 }
 
 .ctnr-options {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    
 }
 
     .ctnr-options li {
@@ -977,6 +973,11 @@ button.jumbotron-button {
     color: #FFFFFF;
 }
 
+.notif-alert {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 11px;
+    color: #AD0051;
+}
 /* Set width on the form input elements since they're 100% wide by default */
 select {
     max-width: 280px;
@@ -1312,10 +1313,18 @@ label {
 }
 
 .logo {
-    color: #AD0051;
-    font-size: 23px;
-    font-weight: 500;
+    /* color: #AD0051;*/
     text-decoration: none;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    border: none;
+    font: normal 34px/normal "advent-pro", Helvetica, sans-serif;
+    color: #AD0051;
+    text-align: center;
+    -o-text-overflow: clip;
+    text-overflow: clip;
+    text-shadow: 0 15px 29px rgba(0,0,0,0.0980392), 10px 10px 5px rgba(0,0,0,0.0470588), -10px 10px 5px rgba(0,0,0,0.0470588);
     margin-right: 30px;
 }
 

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -35,7 +36,7 @@ namespace SS.Controllers
              }
          }*/
 
-        public ActionResult getProperties(PropertySearchViewModel model)
+        public async Task<ActionResult> getProperties(PropertySearchViewModel model)
         {
             var userId = Guid.Empty;
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
@@ -50,7 +51,7 @@ namespace SS.Controllers
             if (String.IsNullOrEmpty(model.SearchTerm) && PropertyHelper.createFilterList(model).Count() < 1 && model.Tags == null)
                 return RedirectToAction("/", "home");
 
-            featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(model, userId);
+            featuredPropertiesSlideViewModelList = await PropertyHelper.PopulatePropertiesViewModel(model, userId);
 
             initPropertiesTags(model);
             initPropertiesPgValues(model);
@@ -94,11 +95,14 @@ namespace SS.Controllers
         /// <returns></returns>
         private String getRunningHeader(PropertySearchViewModel model)
         {
-            String header = "Showing results ";
+            String header = "Results ";
 
             if (!String.IsNullOrEmpty(model.SearchTerm))
             {
-                header += "for the search : " + model.SearchTerm;
+                if (model.DistanceRadius > 0)
+                    header += "for properties that are "+ model.DistanceRadius + " KM from " + model.SearchTerm;
+                else
+                    header += "for the search : " + model.SearchTerm;
             }
             else if (!String.IsNullOrEmpty(model.PropertyCategory))
             {
@@ -120,11 +124,19 @@ namespace SS.Controllers
             return header;
         }
 
-        public ActionResult getNearbyProperties(String distanceMtxInfo, double distanceRadius = 20.0)
+        public async Task<ActionResult> getNearbyProperties(String distanceMtxInfo, int ? pgNo, double ? distanceRadius)
         {
             var userId = Guid.Empty;
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
             var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
+
+            if (pgNo.HasValue)
+                searchViewModel.PgNo = pgNo.Value;
+
+            if (!distanceRadius.HasValue)
+                searchViewModel.DistanceRadius = 20;
+            else
+                searchViewModel.DistanceRadius = distanceRadius.Value;
 
             if (Session["userId"] != null)
             {
@@ -146,14 +158,15 @@ namespace SS.Controllers
                 //distance radius is in KM TODO give option to convert to miles
                 //will be used to eliminate properties that are of further distance
                 var model = JsonConvert.DeserializeObject<NearbyPropertySearchViewModel>(distanceMtxInfo);
-                var revisedModel = PropertyHelper.NarrowSearchResultsToDistanceRadius(model, distanceRadius);
+                var revisedModel = PropertyHelper.NarrowSearchResultsToDistanceRadius(model, searchViewModel.DistanceRadius);
 
                 searchViewModel.PgNo = searchViewModel.PgNo > 0 ? searchViewModel.PgNo - 1 : 0;
-                featuredPropertiesSlideViewModelList = PropertyHelper.PopulatePropertiesViewModel(revisedModel, searchViewModel, userId);
+                featuredPropertiesSlideViewModelList = await PropertyHelper.PopulatePropertiesViewModel(revisedModel, searchViewModel, userId);
 
                 ViewBag.SearchTerm = searchViewModel.SearchTerm;
                 ViewBag.SearchType = searchViewModel.SearchType;
-                ViewBag.DistanceRadius = distanceRadius;
+                ViewBag.DistanceRadius = searchViewModel.DistanceRadius;
+                ViewBag.NearByPropModel = revisedModel;
 
                 initPropertiesTags(searchViewModel);
                 initPropertiesPgValues(searchViewModel);
@@ -163,13 +176,32 @@ namespace SS.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetPropertiesCoordinates(PropertySearchViewModel model)
+        public async Task<JsonResult> GetPropertiesCoordinates(PropertySearchViewModel model)
         {
-            Array propertyCoordinates = PropertyHelper.PopulateModelForPropertyCoordinates(model);
+            Array propertyCoordinates = await PropertyHelper.PopulateModelForPropertyCoordinates(model);
 
             Session["PropertySearchViewModel"] = model;
 
             return Json(propertyCoordinates, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetPropertiesCounts(PropertySearchViewModel model)
+        {
+            return Json(await PropertyHelper.GetPropertiesCount(model), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetNearbyPropertiesCounts(List<NearbyPropertySearchModel> model, PropertySearchViewModel searchViewModel)
+        {
+            int count = 0;
+
+            if (model != null)
+            {
+                count = await PropertyHelper.GetNearbyPropertiesCount(model, searchViewModel);
+            }
+
+            return Json(count, JsonRequestBehavior.AllowGet); ;
         }
 
         public ActionResult getProperty(Guid id)

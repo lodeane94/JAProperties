@@ -49,7 +49,7 @@ namespace SS.Core
             {
                 MailModel mailModel = new MailModel()
                 {
-                    To = "lodeanekelly@gmail.com",//emailTo,
+                    To = emailTo,
                     Subject = subject,
                     From = "JProps@jprops.net",
                     Body = GenerateHTML(System.Web.Hosting.HostingEnvironment.MapPath("~/Content/EmailTemplate.html")).ToString()
@@ -69,7 +69,7 @@ namespace SS.Core
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new System.Net.NetworkCredential("jprops@jprops.net", "Gihtiwm88*");
                 smtp.EnableSsl = false;
-
+                throw new Exception("trst");
                 smtp.Send(mail);
 
                 return true;
@@ -77,7 +77,8 @@ namespace SS.Core
             catch (Exception ex)
             {
                 log.Error("Error encountered while sending email", ex);
-                return false;
+
+                throw new Exception(ex.Message, ex);
             }
         }
 
@@ -95,7 +96,6 @@ namespace SS.Core
             {
                 using (StreamReader htmlReader = new StreamReader(htmlTemplatePath))
                 {
-
                     while ((line = htmlReader.ReadLine()) != null)
                     {
                         htmlContent.Append(fillTemplateHolders(line));

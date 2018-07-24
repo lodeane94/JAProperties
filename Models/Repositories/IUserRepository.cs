@@ -9,5 +9,6 @@ namespace SS.Models.Repositories
     {
         bool DoesUserExist(string email);
         User GetUserByEmail(string email);
+        User GetUserByCellNum(string cellnum);
     }
 }

@@ -2,12 +2,13 @@
 using System.Web.Mvc;
 using SS.Core;
 using log4net;
+using System.Threading.Tasks;
 
 namespace SS.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Home()
+        public async Task<ActionResult> Home()
         {
             var userId = Guid.Empty;
 
@@ -18,7 +19,7 @@ namespace SS.Controllers
 
             int take = 8; //amount of featured properties to be retieved per category
             
-            return View(PropertyHelper.PopulateHomePageViewModel(take, userId));
+            return View(await PropertyHelper.PopulateHomePageViewModel(take, userId));
         }        
         
     }

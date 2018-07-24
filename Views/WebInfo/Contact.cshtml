@@ -1,7 +1,7 @@
-﻿
+﻿@using SS.Core
 @{
     ViewBag.Title = "JProps - Contact";
-    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section pageScript
 {
@@ -14,13 +14,63 @@
         display: none;
     }
 </style>
-<div class="row">
-    <div class="col-md-12">
-        <div class="ctnr-headers"><label>Contact Website Administrator</label></div>
-        <div class="ctnr-info">
-            The site administrator can be contacted via email at admin@jprops.net.
-            To be used for any enqueries or problems with the website.
-        </div>
-    </div>
-</div>
-
+<form action="~/webinfo/contactadmin" method="post">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="ctnr-headers"><label>Contact Website Administrator</label></div>
+			@{
+				if(TempData["response"] != null)
+				{
+					var data = (RequestModel)TempData["response"];
+					if(data.HasErrors)
+					{
+						foreach(var error in data.ErrorMessages)
+						{
+							<div class="col-md-12 error-container">@error</div>    				
+						}
+					}
+					else if(data.HasMessage)
+					{
+						foreach(var msg in data.ReturnedMessages)
+						{
+							<div class="col-md-12 alert alert-success" >@msg</div>    				
+						}
+					}
+				}
+			}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-8">			
+			<br />
+			<div class="card">
+				<div class="card-body">
+					<div class="form-group">
+						<label for="subject">Subject</label>
+						<input type="text" name="subject" id="subject" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="fName">First Name</label>
+						<input type="text" name="fName" id="fName" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="lName">Last Name</label>
+						<input type="text" name="lName" id="lName" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" name="email" id="email" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="Message">Message</label>
+						<textarea id="Message" rows="3" class="form-control" name="Message" required></textarea>
+					</div>
+					<br />
+					<div class="requestPropertySec float-right">
+						<button id="contactAdminBtn" type="submit" class="btn btn-sm btn-accent">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>

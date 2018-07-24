@@ -1,5 +1,5 @@
 ﻿var selectedLocation = { country: 'Jamaica', countryCode: 'jm', division: '' };
-var postBackInfo, postBackInfoRaw = null;
+var postBackInfo, postBackInfoRaw, nearByPropModel, nearByPropModelRaw = null;
 var distanceMtxInfo = null;
 var activeSearchFilterElement = null;
 var activeSearchFilterId = null;
@@ -7,7 +7,7 @@ var activeSearchFilterHeight = null;
 var rangeDistanceRadius = null;
 
 //used to display a loading element
-var loadingGifHTML = '<div id="loading-gif" class="col-xs-1">'
+var loadingGifHTML = '<div id="loading-gif" class="loading-gif" class="col-xs-1">'
     + '<img src="/Content/ajax-loader-dark.gif" />'
     + '</div>';
 
@@ -36,14 +36,14 @@ function populateDivisionByCountryCode() {
                     reapplySelectSearchFilterOnPostback(elementId, postBackInfo.Division);
                 }
             } else {
-                alert('Error occurred while retrieving divisions, contact system administrator');
+                console.log('Error occurred while retrieving divisions, contact system administrator');
             }
         },
         complete: function () {
             $('#division option[value="selectHolder"]').remove();
         },
         error: function () {
-            alert('Error occurred while retrieving divisions, contact system administrator');
+            console.log('Error occurred while retrieving divisions, contact system administrator');
         }
     });
 
@@ -66,7 +66,7 @@ function populatePropertyTypeByCategoryName(categoryName, isStudentAccommodation
             }
         },
         error: function () {
-            alert('Error occurred while retrieving property types, contact system administrator');
+            console.log('Error occurred while retrieving property types, contact system administrator');
         }
     });
 
@@ -95,7 +95,7 @@ function populatePropertyType() {
             }
         },
         error: function () {
-            alert('Error occurred while retrieving property types, contact system administrator');
+            console.log('Error occurred while retrieving property types, contact system administrator');
         }
     });
 }
@@ -117,7 +117,7 @@ function populatePropertyPurpose() {
             }
         },
         error: function () {
-            alert('Error occurred while retrieving property types, contact system administrator');
+            console.log('Error occurred while retrieving property types, contact system administrator');
         }
     });
 }
@@ -164,7 +164,7 @@ function reapplyAddFilterBtnOnPostBack(elementId, value1, value2) {
 
         var filterBtn = $(elementId).parent().siblings('.add-filter-btn');
 
-        addFilterBtnClick(filterElement, value1, value2, filterBtn);
+        addFilterBtnClick(filterElement, value1, value2, filterBtn, true);
     }
 }
 
@@ -203,7 +203,7 @@ function populateDistanceMatrixInformation(data) {
 
         var distance, duration = '';
         //console.log(val);
-        
+
         $.each(data.rows[0].elements, function (index, value) {
             if (value.status != null
                 && value.status != undefined
@@ -239,7 +239,7 @@ function populateDistanceMatrixInformation(data) {
                                 distance: distance,
                                 duration: duration
                             };
-                            
+
                             destinationGeocodeCallback(destinationInfo, destinationAddrLength);
                         }
                     }
@@ -275,7 +275,7 @@ function setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl) {
         type: 'get',
         data: { Url: distanceMatrixUrl },
         success: function (data) {
-             //console.log(data);
+            //console.log(data);
 
             if (data.status == "OK") {
                 populateDistanceMatrixInformation(data);
@@ -284,7 +284,7 @@ function setDistanceMatrixInformation(orLat, orlng, encodedCoordinatesUrl) {
             }
         },
         error: function () {
-            alert('Error occurred while retrieving details, contact system administrator');
+            console.log('Error occurred while retrieving details, contact system administrator');
         }
     });
 }
@@ -376,6 +376,14 @@ function appySearchFilterName(filterElement, selectedFilter) {
         //find the closest 'search-filter-popdown' element then insert the remove filter html after it
         $(selectedFilter).closest('.search-filter-popdown').after(removeFilterElementHtml);
     }
+
+    //using the searchterm, search type to apply filter to in the event that the searchterm box is empty
+    var sTerm = $('#SearchTerm').val();
+
+    if (sTerm == '') {
+        var searchTypeElement = $('input[name="searchType"][value="SearchTerm"]');
+        searchTypeElement.prop('checked', true);
+    }
 }
 
 //Removes the search filter from the search criteria and remove highlight from the element
@@ -417,33 +425,51 @@ function resetInputValues(searchFilterElement) {
     });
 }
 
-function addFilterBtnClick(filterElement, value1, value2, thisBtn) {
+function addFilterBtnClick(filterElement, value1, value2, thisBtn, isPostback) {
     var filterText = '';
-
-    //alert(value1.value);
-
+    var isValid = false
     //price range
-    if (value2 != null)
-        filterText = '$' + value1 + ' - ' + '$' + value2;
-    else
+    if (value2 != null && value2 != '') {
+        if (value1 != '' && value1 != null) {
+            filterText = '$' + value1 + ' - ' + '$' + value2;
+            isValid = true;
+        }
+    } else if (value1 != '' && value1 != null) {
         filterText = value1;
+        isValid = true;
+    }
 
-    $(filterElement).text(filterText);
-    $(filterElement).addClass('active');
+    if (!isValid)
+        alert('Enter a valid value');
+    else {
+        $(filterElement).text(filterText);
+        $(filterElement).addClass('active');
 
-    deactivateSearchFilterPopdown(activeSearchFilterElement, activeSearchFilterHeight);
+        deactivateSearchFilterPopdown(activeSearchFilterElement, activeSearchFilterHeight);
 
-    var searchFilterElementId = $(filterElement).attr('id');
-    var filterResetValue = $(filterElement).attr('title');
+        var searchFilterElementId = $(filterElement).attr('id');
+        var filterResetValue = $(filterElement).attr('title');
 
-    //only create element if it does not already exist
-    if ($(filterElement).siblings('.search-filter-popdown').siblings('.remove-filter-container').length < 1) {
+        //only create element if it does not already exist
+        if ($(filterElement).siblings('.search-filter-popdown').siblings('.remove-filter-container').length < 1) {
 
-        var removeFilterElementHtml = createRemoveFilterElement(null, searchFilterElementId, filterResetValue, 'this');
+            var removeFilterElementHtml = createRemoveFilterElement(null, searchFilterElementId, filterResetValue, 'this');
 
-        // alert($(thisBtn).attr('id'));
-        //find the closest 'search-filter-popdown' element then insert the remove filter html after it
-        $(thisBtn).closest('.search-filter-popdown').after(removeFilterElementHtml);
+            // alert($(thisBtn).attr('id'));
+            //find the closest 'search-filter-popdown' element then insert the remove filter html after it
+            $(thisBtn).closest('.search-filter-popdown').after(removeFilterElementHtml);
+        }
+
+        //using the searchterm, search type to apply filter to in the event that the searchterm box is empty
+        var sTerm = $('#SearchTerm').val();
+
+        if (sTerm == '') {
+            var searchTypeElement = $('input[name="searchType"][value="SearchTerm"]');
+            searchTypeElement.prop('checked', true);
+        }
+
+        if (!isPostback)
+            $('.btn-search').click();
     }
 }
 
@@ -461,18 +487,26 @@ function escapeHtml(text) {
 
 //dynamically sets the search type
 function setSearchType() {
+    var searchTerm = $('#SearchTerm');
+    var placeholder = '';
     if (postBackInfoRaw != null && postBackInfo != null
-        && postBackInfo.SearchType != null && postBackInfo.SearchType != 'SearchTerm') {
+        && postBackInfo.SearchType != null && postBackInfo.SearchType != 'nearByPlaces') {
 
         var searchTypeElement = $('input[name="searchType"][value="' + postBackInfo.SearchType + '"]');
         searchTypeElement.prop('checked', true);
         searchTypeElement.parent().siblings().removeClass('active');
         searchTypeElement.parent().addClass('active');
+
+        placeholder = 'Enter a search term';
+        searchTerm.attr('placeholder', placeholder);
     } else {
         //default behavior for the search type element
-        var searchTypeElement = $('input[name="searchType"][value="SearchTerm"]');
+        var searchTypeElement = $('input[name="searchType"][value="nearByPlaces"]');
         searchTypeElement.prop('checked', true);
         searchTypeElement.parent().addClass('active');
+
+        placeholder = 'Enter the name of a land mark eg. utech, pricesmart, kph, etc';
+        searchTerm.attr('placeholder', placeholder);
     }
 }
 
@@ -481,7 +515,7 @@ function setRangeDistanceRadius() {
     var element = $('#range-distance-radius');
 
     if (element != null && element.length) {
-        rangeDistanceRadius = element.val(); 
+        rangeDistanceRadius = element.val();
         $("#range-distance-radius-val").text(rangeDistanceRadius + ' KM');
     }
 }
@@ -496,10 +530,80 @@ function setBodyHeight() {
     else
         $('#body').height(filterTagsHeight);
 }
+//returns the total properties count
+function getPropertiesCounts() {
+    if (postBackInfo != null) {
+        
+        loadingGifLocation1 = $('.previous-page-holder');
+        loadingGifLocation2 = $('.next-page-holder');
+        loadingGifLocation3 = $('.pgTotHolder');
 
-//displays previous and next signs depending on the number of properties returned
-$(function () {
-    var noOfPages = $('#noOfPages').val();
+        $.ajax({
+            url: '/properties/getPropertiesCounts',
+            type: 'post',
+            dataType: 'json',
+            data: JSON.stringify(postBackInfo),
+            contentType: 'application/json; charset=utf-8',
+            beforeSend: function () {
+                $(loadingGifHTML).appendTo(loadingGifLocation1);
+                $(loadingGifHTML).appendTo(loadingGifLocation2);
+                $(loadingGifHTML).appendTo(loadingGifLocation3);
+            },
+            success: function (data) {
+                setPagination(data);
+            },
+            complete: function () {
+                $('.loading-gif').remove();
+            },
+            error: function () {
+                console.log('Error occurred while getting total properties count');
+            }
+        });
+    }
+}
+
+//returns the total properties count
+function getNearByPropertiesCounts() {
+    if (nearByPropModel != null) {
+        loadingGifLocation1 = $('.previous-page-holder');
+        loadingGifLocation2 = $('.next-page-holder');
+        loadingGifLocation3 = $('.pgTotHolder');
+
+        var dataModel = {};
+        dataModel.model = nearByPropModel;
+        dataModel.searchViewModel = postBackInfo;
+
+        console.log(JSON.stringify(dataModel));
+
+        $.ajax({
+            url: '/properties/getNearbyPropertiesCounts',
+            type: 'post',
+            dataType: 'json',
+            data: JSON.stringify(dataModel),
+            contentType: 'application/json; charset=utf-8',
+            beforeSend: function () {
+                $(loadingGifHTML).appendTo(loadingGifLocation1);
+                $(loadingGifHTML).appendTo(loadingGifLocation2);
+                $(loadingGifHTML).appendTo(loadingGifLocation3);
+            },
+            success: function (data) {
+                setPagination(data);
+            },
+            complete: function () {
+                $('.loading-gif').remove();
+            },
+            error: function () {
+                console.log('Error occurred while getting total properties count');
+            }
+        });
+    }
+}
+
+//Determines the appropriate pagination links to be displayed
+function setPagination(count) {
+    var fetchAmount = Number($('#fetchAmount').val());
+    var noOfPages = Math.ceil(count / fetchAmount);
+   // alert(count);
     var currentPageNumber = $('#pgNo').val();
     //front of list show only forward button
     if (currentPageNumber == 1 && noOfPages - 1 > 0) {
@@ -515,16 +619,65 @@ $(function () {
         $('.previous-page').show();
     }
 
+    $('#currentPg').append(currentPageNumber);
+    $('#totPgs').append(noOfPages);
+
+    setBodyHeight();
+}
+
+//displays previous and next signs depending on the number of properties returned
+$(function () {
+    //  var noOfPages = $('#noOfPages').val();
+    var currentPageNumber = $('#pgNo').val();
+    //front of list show only forward button
+    /*  if (currentPageNumber == 1 && noOfPages - 1 > 0) {
+          $('.next-page').show();
+      }
+      //end of list show only back button
+      if (currentPageNumber == noOfPages && noOfPages - 1 > 0) {
+          $('.previous-page').show();
+      }
+      //somewhere within the list show both back and forward button
+      if (currentPageNumber != 1 && currentPageNumber != noOfPages && noOfPages - 1 > 0) {
+          $('.next-page').show();
+          $('.previous-page').show();
+      }
+
+    if (currentPageNumber >= 1) {
+        $('.next-page').show();
+        $('.previous-page').show();
+    }
+
+    if (currentPageNumber == 1) {
+        $('.previous-page').hide();
+    }*/
+
     //properties pagination next 
     $('.next-page').click(function (event) {
         event.preventDefault();
 
         var redirectionURL = '';
         var queryStr = $('#queryString').val();
-        queryStr = queryStr.replace(/&pgNo=[0-9]/g, '');
+
+        //TODO make more generic
+        if (window.location.pathname != '/properties/getNearbyProperties')
+            queryStr = queryStr.replace(/&pgNo=\d+/g, '');
+        else
+            queryStr = queryStr.replace(/pgNo=\d+/g, '');
+
         var currentPageNumber = parseInt($('#pgNo').val());
 
-        redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber + 1);
+        //TODO make more generic
+        if (window.location.pathname != '/properties/getNearbyProperties')
+            redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber + 1);
+        else
+            redirectionURL = window.location.pathname + '?' + queryStr + 'pgNo=' + (currentPageNumber + 1);
+
+        if (window.location.pathname == '/properties/getNearbyProperties') {
+            redirectionURL = redirectionURL.replace(/&distanceRadius=\d+/g, '');
+            redirectionURL += "&distanceRadius=" + rangeDistanceRadius;
+        }
+
         window.location = redirectionURL;
     });
 
@@ -534,10 +687,25 @@ $(function () {
 
         var redirectionURL = '';
         var queryStr = $('#queryString').val();
-        queryStr = queryStr.replace(/&pgNo=[0-9]/g, '');
+
+        //TODO make more generic
+        if (window.location.pathname != '/properties/getNearbyProperties')
+            queryStr = queryStr.replace(/&pgNo=\d+/g, '');
+        else
+            queryStr = queryStr.replace(/pgNo=\d+/g, '');
+
         var currentPageNumber = parseInt($('#pgNo').val());
 
-        redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber - 1);
+        if (window.location.pathname != '/properties/getNearbyProperties')
+            redirectionURL = window.location.pathname + '?' + queryStr + '&pgNo=' + (currentPageNumber - 1);
+        else
+            redirectionURL = window.location.pathname + '?' + queryStr + 'pgNo=' + (currentPageNumber - 1);
+
+        if (window.location.pathname == '/properties/getNearbyProperties') {
+            redirectionURL = redirectionURL.replace(/&distanceRadius=\d+/g, '');
+            redirectionURL += "&distanceRadius=" + rangeDistanceRadius;
+        }
+
         window.location = redirectionURL;
     });
 
@@ -565,6 +733,7 @@ $(function () {
 
 $(document).ready(function () {
     postBackInfoRaw = $('#_postBackInformation').val();
+    nearByPropModelRaw = $('#_nearByPropModel').val();
 
     //setting back the search filter values after postback response from the server
     if (postBackInfoRaw != 'null' && postBackInfoRaw != undefined) {
@@ -577,6 +746,15 @@ $(document).ready(function () {
 
         $('#coordinateLat').val(postBackInfo.coordinateLat);
         $('#coordinateLng').val(postBackInfo.coordinateLng);
+
+        if (nearByPropModelRaw != 'null' && nearByPropModelRaw != undefined) {
+            nearByPropModel = JSON.parse(nearByPropModelRaw);
+        }
+        
+        if (postBackInfo.SearchType == 'SearchTerm' || postBackInfo.SearchType == null)
+            getPropertiesCounts();
+        else if (postBackInfo.SearchType == 'nearByPlaces') 
+            getNearByPropertiesCounts();
     }
 
     setSearchType();
@@ -698,7 +876,7 @@ $(document).ready(function () {
                     $('#mvcCaptcha').load('/servicer/GetMvcCaptchaView');//reloads captcha image if error occurred
                     alert('Error encountered while uploading property. Contact Website Administrator');
                 },
-                complete: function () { $('#loading-gif').remove(); },
+                complete: function () { $('#loading-gif').remove(); }
             });
         }
     });
@@ -859,6 +1037,14 @@ $(document).ready(function () {
     //adds or remove the selected tags 
     $('.chkTags').change(function () {
 
+        //using the searchterm, search type to apply filter to in the event that the searchterm box is empty
+        var sTerm = $('#SearchTerm').val();
+
+        if (sTerm == '') {
+            var searchTypeElement = $('input[name="searchType"][value="SearchTerm"]');
+            searchTypeElement.prop('checked', true);
+        }
+
         var newId = $(this).attr('name').replace(' ', '_').replace('Tags', '').replace('[', '').replace(']', '');
 
         if ($(this).prop('checked')) {
@@ -875,7 +1061,7 @@ $(document).ready(function () {
         $('.btn-search').click();
     });
 
-    $(document).on("input","#range-distance-radius", function (e) {
+    $(document).on("input", "#range-distance-radius", function (e) {
         rangeDistanceRadius = $(e.target).val();
         $("#range-distance-radius-val").text(rangeDistanceRadius + ' KM');
     });
@@ -884,7 +1070,20 @@ $(document).ready(function () {
         searchNearByProperties();
     });
 
-    initializeSockets();
-    getVisitorsCount();
+    $('input[name="searchType"]').change(function () {
+        var selectedVal = $(this).val();
+        var searchTerm = $('#SearchTerm');
+        var placeholder = '';
+
+        if (selectedVal != 'nearByPlaces') {
+
+            placeholder = 'Enter a search term';
+            searchTerm.attr('placeholder', placeholder);
+        } else {
+
+            placeholder = 'Enter the name of a land mark eg. utech, pricesmart, kph, etc';
+            searchTerm.attr('placeholder', placeholder);
+        }
+    });
 
 });

@@ -3,6 +3,7 @@ var geocoder = null;
 var mapCountryBounds, countryBounds = null;
 var elementCalledBy = null;
 var address, shortAddress, establishment = null;
+var btnSearch = null;
 
 var componentForm = {
    // street_number: 'long_name',
@@ -62,6 +63,11 @@ function fillInAddress() {
     var element = null;
     var lat, lng = null;
     var isEstablishmentSearch = false;
+
+    //disabling btn search until process is finished
+    btnSearch = $('.btn-search');
+    btnSearch.addClass('disabled');
+    btnSearch.prop('disabled', true);
 
     //setting coordinates
     if (elementCalledBy == 'SearchTerm') {
@@ -160,6 +166,9 @@ function setLocation(address, lat, lng) {
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
         }
+
+        btnSearch.removeClass('disabled');
+        btnSearch.prop('disabled', false);
     });
 }
 

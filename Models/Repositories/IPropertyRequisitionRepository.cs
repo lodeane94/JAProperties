@@ -14,6 +14,8 @@ namespace SS.Models.Repositories
         IEnumerable<PropertyRequisition> GetAcceptedRequestsByOwnerId(Guid Id);
         IEnumerable<User> GetRequestedPropertyUsersByOwnerId(Guid Id);
         IEnumerable<User> GetRequestedPropertyUsers(Guid RequesteeUserId);
-        IEnumerable<PropertyRequisition> GetRequestsHistoryByUserId(Guid Id, int take = 10, int pgNo = 0);
+        IEnumerable<PropertyRequisition> GetRequestHistoryByOwnerId(Guid Id);
+        IEnumerable<PropertyRequisition> GetRequestsHistoryByUserId(Guid Id);
+        int GetTotUnseenForUser(Guid userId);
     }
 }

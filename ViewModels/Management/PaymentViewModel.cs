@@ -12,6 +12,7 @@ namespace SS.ViewModels.Management
         public Guid SubscriptionID { get; set; }
         public string PaymentMethod { get; set; }
         public string PaymentMethodID { get; set; }
+        public string Email { get; set; }
         public int Period { get; set; }
         public decimal Amount { get; set; }
         public string VoucherNumber { get; set; }

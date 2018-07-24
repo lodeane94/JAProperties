@@ -2,18 +2,19 @@
 var currentUserNameSelected = null;
 var $calendar = null;
 var orRentCntrDataContent = null;
+var clickedSubCost = null;
 
-function initializeSockets() {
+function initializeManagementSockets() {
     var dashboardHub = $.connection.notificationHub;
 
-    $.connection.hub.logging = true;
+    $.connection.hub.logging = false;
 
     $.connection.hub.start().done(function () {
         console.log('Connection establised');
     });
 
     dashboardHub.client.updateUserMessages = function () {
-        loadMessagesView();
+        updateUnseenMsgCount();
     }
 
     dashboardHub.client.updateMeeting = function () {
@@ -22,7 +23,7 @@ function initializeSockets() {
     }
 
     dashboardHub.client.newRequisitionAlert = function () {
-        alert('A new property requisition was just made');
+        updateUnseenReqCount();
     }
 }
 
@@ -30,6 +31,48 @@ function initializeSockets() {
 function pointToSelectedAction(position) {
     $('.arrow-top').animate({
         left: position.left + 40
+    });
+}
+
+function updateUnseenMsgCount() {
+    $.ajax({
+        url: '/landlordmanagement/GetUnseenMsgsCount',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('#notif-msg').html(data);
+        },
+        error: function () {
+            console.log('Error occurred while updating unseen messages count');
+            //alert('An error occurred while loading messages');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+
+    });
+}
+
+function updateUnseenReqCount() {
+    $.ajax({
+        url: '/landlordmanagement/GetUnseenReqsCount',
+        type: 'GET',
+        beforeSend: function () {
+            $('#modal-loading').fadeIn();
+        },
+        success: function (data) {
+            $('#notif-req').html(data);
+        },
+        error: function () {
+            console.log('Error occurred while updating unseen requisition count');
+            //alert('An error occurred while loading messages');
+        },
+        complete: function () {
+            $('#modal-loading').fadeOut();
+        }
+
     });
 }
 
@@ -490,36 +533,6 @@ function getMsgThread() {
         });
     }
 }
-//used to return the appropriate message tag i.e. with or without margin
-function shouldAddMargin(userCounter, notUserCounter, isUser) {
-    var mConstant = 60;
-
-    var marginObj = {
-        check: false,
-        margin: 0
-    };
-
-    if (isUser) {
-        if (userCounter == notUserCounter)
-            return marginObj;
-
-        if (userCounter > notUserCounter)
-            return marginObj;
-        else {
-            marginObj.check = true;
-            marginObj.margin = ((notUserCounter - userCounter) + 1) * mConstant;
-        }
-    } else {
-        if (userCounter > notUserCounter) {
-            marginObj.check = true;
-            marginObj.margin = ((userCounter - notUserCounter) + 1) * mConstant;
-        }
-        else
-            return marginObj;
-    }
-
-    return marginObj;
-}
 
 //loads the tennants view on the management portal
 function loadTennantsView() {
@@ -722,10 +735,6 @@ function sendNotice(tennantId) {
 
 //loads properties in the dashboard page
 $(document).ready(function () {
-    //initialize signalr sockets which will broadcast notifications 
-    //in real time
-    initializeSockets();
-
     //initialization of bootstrap popover
     $('[data-toggle="popover"]').popover({
         trigger: 'hover',
@@ -1424,12 +1433,12 @@ $(document).ready(function () {
 
     $(document.body).on('click', '#make-payment', function (event) {
         event.preventDefault();
-
+        
         var subscriptionID = $('#subscriptionID').val();
         var subPeriod = $('#subscription-period').val();
-        var period = (subPeriod == '' || subPeriod == undefined) ? 1 : $('#subscription-period').val();
+        var period = (subPeriod == '' || subPeriod == undefined) ? $('#origPeriod').val() : $('#subscription-period').val();
         var price = $('#monthlyCost').text();
-        var total = price * period;
+        var total = price;
 
         //if an subscription expiry date exists then the subscription should be extended with this payment
         var isExtension = $('#expiry-date').length ? true : false;
@@ -1468,7 +1477,7 @@ $(document).ready(function () {
 
         if (method == 'D' || method == 'F') {//D - Digicel | F - Flow
             $('#soon-feature').remove();
-            $('#voucher').slideToggle();
+            $('#voucher').slideDown();
             $('#submit-payment').removeAttr('disabled');
             $('#submit-payment').removeAttr('tabindex');
             $('#submit-payment').removeClass('disabled');
@@ -1749,10 +1758,11 @@ $(document).ready(function () {
         var subscriptionID = $('#subscriptionID').val();
         var period = null;
 
-        if ($('#subscription-period').length)
-            period = $('#subscription-period').val();
+        if ($('#subscription-period-chg').length)
+            period = $('#subscription-period-chg').val();
 
         if (newSubscriptionType != null) {
+            
             if (confirm("Are you sure ?")) {
                 $.ajax({
                     url: '/landlordmanagement/changeSubscription',
@@ -1763,7 +1773,7 @@ $(document).ready(function () {
                             $.each(data.ReturnedMessages, function (inx, val) {
                                 var html = '<div class="badge badge-success" style="width:100%;">' + val + '</div> <br/>';
                                 $(html).prependTo('.subscription-container-main').hide().fadeIn(1000, function () {
-                                    $(this).fadeOut(10000, function () {
+                                    $(this).fadeOut(40000, function () {
                                         loadSubscriptionView();
                                     });
                                 });
@@ -1797,23 +1807,24 @@ $(document).ready(function () {
     $(document.body).on('click', '#subscription-type .clickable-box', function (event) {
         event.preventDefault();
         var currentSubCost = $('#activeSubscriptionCost').val();
-        var clickedSubCost = $(this).find(".monthly-cost").html();
+        clickedSubCost = $(this).find(".monthly-cost").html();
 
         $('#subscription-period-chg option[value="0"]').prop('selected', true);
         $('#subscription-period-chg').prop('disabled', true);
-        $('#chg-subscription-period').prop('checked', false);
+       // $('#chg-subscription-period').prop('checked', false);
 
-        if (clickedSubCost > currentSubCost)
-            $('#chg-sub-fc').removeClass('hide');
-        else
-            $('#chg-sub-fc').addClass('hide');
+        if (clickedSubCost > currentSubCost) {
+            //$('#chg-sub-fc').removeClass('hide');
+            $('#subscription-period-chg option[value="1"]').prop('selected', true);
+            $('#subscription-period-chg').prop('disabled', false);
+        }
 
         $('#clickedSubscriptionCost').html(clickedSubCost);
 
         computeSubChgPrice();
     });
 
-    $(document.body).on('change', '#chg-subscription-period', function (event) {
+ /*   $(document.body).on('change', '#chg-subscription-period', function (event) {
 
         var isChecked = $(this).prop('checked');
 
@@ -1823,7 +1834,7 @@ $(document).ready(function () {
             $('#subscription-period-chg').prop('disabled', true);
             computeSubChgPrice();
         }
-    });
+    });*/
 
     $(document.body).on('change', '#subscription-period-chg', function (event) {
         computeSubChgPrice();
@@ -1930,6 +1941,9 @@ $(document).ready(function () {
         $('.requisition-history').addClass('hide');
     });
 
+    //initialize signalr sockets which will broadcast notifications 
+    //in real time
+    initializeManagementSockets();
 
     /* $(window).resize(function () {
          var position = $('.management-action .active').position();

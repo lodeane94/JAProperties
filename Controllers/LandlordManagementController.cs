@@ -24,9 +24,8 @@ namespace SS.Controllers
         {
             if (Session["username"] != null && Session["userId"] != null)
             {
-                var userId = (Guid)Session["userId"];//unitOfWork.User.GetUserByEmail(HttpContext.User.Identity.Name).ID;
-                                                     // var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
-                                                     // bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
+                var userId = (Guid)Session["userId"];
+
                 var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
 
                 ViewBag.userId = Session["userId"];
@@ -42,6 +41,9 @@ namespace SS.Controllers
                 {
                     ViewBag.propertyImages = PropertyHelper.GetAllSavedPropertyImages(userId);
                 }
+
+                ViewBag.unseenMsgCount = PropertyHelper.GetUnseenMsgsCount(userId);
+                ViewBag.unseenReqCount = PropertyHelper.GetUnseenReqsCount(userId);
 
                 return View();
             }
@@ -154,15 +156,27 @@ namespace SS.Controllers
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="id"></param>
-        public void updateMsgSeen(UnitOfWork unitOfWork, Guid id, Guid userId)
+        private void updateMsgSeen(UnitOfWork unitOfWork, Guid id, Guid userId)
         {
-            var message = unitOfWork.Message.Get(id);
-            var from = message.From;
+            var msgThread = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
+            var wasUpdated = false;
 
-            if (!userId.Equals(from) && !message.Seen)
+            foreach (var msg in msgThread)
             {
-                message.Seen = true;
-                unitOfWork.save();
+                var from = msg.From;
+
+                if (!userId.Equals(from) && !msg.Seen)
+                {
+                    msg.Seen = true;
+                    unitOfWork.save();
+                    wasUpdated = true;
+                }
+            }
+
+            if (wasUpdated)
+            {
+                var user = unitOfWork.User.Get(userId);
+                DashboardHub.BroadcastUserMessages(user.Email);
             }
         }
 
@@ -304,34 +318,14 @@ namespace SS.Controllers
         /// <returns></returns>
         public IEnumerable<RequisitionViewModel> getRequisitions()
         {
-            List<RequisitionViewModel> requisitionInfo = null;
-            IEnumerable<PropertyRequisition> requisitions = null;
+            IEnumerable<RequisitionViewModel> requisitionInfo = null;
 
-            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            if (Session["userId"] != null)
             {
-                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                if (Session["userId"] != null)
-                {
-                    var userId = (Guid)Session["userId"];
-
-                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
-                    bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
-
-                    if (isUserPropOwner)
-                    {
-                        var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
-                        requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
-                        requisitionInfo = PropertyHelper.populateRequisitionVMForOwner(unitOfWork, requisitions);
-                    }
-                    else
-                    {
-                        requisitions = unitOfWork.PropertyRequisition.GetRequestsMadeByUserId(userId);
-                        requisitionInfo = PropertyHelper.populateRequisitionVMForRequestor(unitOfWork, requisitions);
-                    }
-                }
+                var userId = (Guid)Session["userId"];
+                requisitionInfo = PropertyHelper.GetRequisitions(userId, false);
             }
-
+            
             return requisitionInfo;
         }
 
@@ -691,7 +685,7 @@ namespace SS.Controllers
         [HttpGet]
         public ActionResult GetRequisitionsView()
         {
-            var requisitions = getRequisitions();
+            var requisitions = getRequisitions().ToList();
             return PartialView("_Requisitions", requisitions);
         }
 
@@ -1104,15 +1098,43 @@ namespace SS.Controllers
         [HttpGet]
         public ActionResult GetRequisitionHistory()
         {
-            IEnumerable<RequisitionViewModel> requisitions = null;
+            List<RequisitionViewModel> requisitions = null;
 
             if (Session["userId"] != null)
             {
                 var userId = (Guid)Session["userId"];
-                requisitions = PropertyHelper.GetRequisitionHistory(userId);
+                requisitions = PropertyHelper.GetRequisitionHistory(userId).ToList();
             }
 
             return PartialView("_RequisitionHistory", requisitions);
+        }
+
+        [HttpGet]
+        public JsonResult GetUnseenMsgsCount()
+        {
+            var count = 0;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                count = PropertyHelper.GetUnseenMsgsCount(userId);
+            }
+
+            return Json(count, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetUnseenReqsCount()
+        {
+            var count = 0;
+
+            if (Session["userId"] != null)
+            {
+                var userId = (Guid)Session["userId"];
+                count = PropertyHelper.GetUnseenReqsCount(userId);
+            }
+
+            return Json(count, JsonRequestBehavior.AllowGet);
         }
     }
 

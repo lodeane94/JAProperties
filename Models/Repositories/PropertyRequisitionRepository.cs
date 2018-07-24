@@ -75,7 +75,7 @@ namespace SS.Models.Repositories
                 .Distinct();
         }
 
-        public IEnumerable<PropertyRequisition> GetRequestsHistoryByUserId(Guid Id, int take=10, int pgNo=0)
+        public IEnumerable<PropertyRequisition> GetRequestsHistoryByUserId(Guid Id, int take = 10, int pgNo = 0)
         {
             return EasyFindPropertiesEntities.PropertyRequisition
                 .Where(x => (x.UserID.Equals(Id) || x.Property.Owner.UserID.Equals(Id)))
@@ -83,6 +83,31 @@ namespace SS.Models.Repositories
                 .Skip(pgNo * take)
                 .Take(take)
                 .ToList();
+        }
+
+        public IEnumerable<PropertyRequisition> GetRequestHistoryByOwnerId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.Property.OwnerID.Equals(Id))
+                .OrderByDescending(x => x.DateTCreated)
+                .ToList();
+        }
+
+        public IEnumerable<PropertyRequisition> GetRequestsHistoryByUserId(Guid Id)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                .Where(x => x.UserID.Equals(Id))
+                .OrderByDescending(x => x.DateTCreated)
+                .ToList();
+        }
+
+        public int GetTotUnseenForUser(Guid userId)
+        {
+            return EasyFindPropertiesEntities.PropertyRequisition
+                 .Where(x => (x.Property.Owner.User.ID.Equals(userId)
+                 || x.UserID.Equals(userId))
+                     && !x.Seen)
+                     .Count();
         }
     }
 }

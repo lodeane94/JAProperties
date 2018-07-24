@@ -259,6 +259,7 @@
           <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Msg" Type="varchar" MaxLength="255" />
           <Property Name="IsAccepted" Type="bit" />
+          <Property Name="Seen" Type="bit" Nullable="false" />
           <Property Name="ExpiryDate" Type="date" Nullable="false" />
           <Property Name="DateTCreated" Type="datetime" Nullable="false" />
         </EntityType>
@@ -1489,6 +1490,7 @@
           <Property Name="DateTCreated" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Property" Relationship="EasyFindPropertiesModel.fk_property_requisition_property_id" FromRole="PropertyRequisition" ToRole="Property" />
           <NavigationProperty Name="User" Relationship="EasyFindPropertiesModel.fk_property_requisition_user_id" FromRole="PropertyRequisition" ToRole="User" />
+          <Property Name="Seen" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="PropertyType">
           <Key>
@@ -2424,6 +2426,7 @@
           <EntitySetMapping Name="PropertyRequisition">
             <EntityTypeMapping TypeName="EasyFindPropertiesModel.PropertyRequisition">
               <MappingFragment StoreEntitySet="PropertyRequisition">
+                <ScalarProperty Name="Seen" ColumnName="Seen" />
                 <ScalarProperty Name="DateTCreated" ColumnName="DateTCreated" />
                 <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
                 <ScalarProperty Name="IsAccepted" ColumnName="IsAccepted" />

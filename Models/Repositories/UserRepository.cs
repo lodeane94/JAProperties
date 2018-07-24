@@ -25,7 +25,12 @@ namespace SS.Models.Repositories
 
         public User GetUserByEmail(string email)
         {
-            return EasyFindPropertiesEntities.User.Where(x => x.Email.Equals(email)).Single();
+            return EasyFindPropertiesEntities.User.Where(x => x.Email.Equals(email)).SingleOrDefault();
+        }
+
+        public User GetUserByCellNum(string cellnum)
+        {
+            return EasyFindPropertiesEntities.User.Where(x => x.CellNum.Equals(cellnum)).SingleOrDefault();
         }
     }
 }

@@ -107,5 +107,16 @@ namespace SS.Models.Repositories
                      .FirstOrDefault();
 
         }
+
+        public int GetTotUnseenForUser(Guid userId)
+        {
+            var deletedMsgIds = EasyFindPropertiesEntities.MessageTrash.Where(x => x.UserID.Equals(userId)).Select(x => x.MessageID).ToList();
+
+            return EasyFindPropertiesEntities.Message
+                 .Where(x => x.To.Equals(userId)
+                     && !deletedMsgIds.Contains(x.ID)
+                     && !x.Seen)
+                     .Count();
+        }
     }
 }

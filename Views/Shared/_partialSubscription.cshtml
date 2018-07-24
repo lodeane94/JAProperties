@@ -107,7 +107,7 @@
 								<select class="custom-select" id="subscription-period" name="subscriptionperiod">
 									<option selected value="">Subscription Period</option>
 									<option value="1">1 Month</option>
-									<option value="2">2 Months</option>
+							<!--		<option value="2">2 Months</option> temp limit to one month
 									<option value="3">3 Months</option>
 									<option value="4">4 Months</option>
 									<option value="5">5 Months</option>
@@ -115,7 +115,7 @@
 									<option value="7">7 Months</option>
 									<option value="8">8 Months</option>
 									<option value="9">9 Months</option>
-									<option value="10">10 Months</option>
+									<option value="10">10 Months</option>-->
 								</select>
 								<br />
 								<div class="clearfix" id="sub-ext-price-cal-container">
@@ -139,6 +139,7 @@
                 </div>
                 <button id="change-subscription-modal-btn" class="btn btn-sm btn-outline-info">Change Subscription</button>
                 @Html.Hidden("subscriptionID", Model.ID)
+                @Html.Hidden("origPeriod", Model.Period)
             </div>
         </div>
     </div>

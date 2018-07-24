@@ -1,4 +1,5 @@
 ﻿using SS.Models;
+using SS.ViewModels.WebInfo;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,6 +75,49 @@ namespace SS.Core
             }
             // Return char and concat substring.
             return char.ToUpper(s[0]) + s.Substring(1);
+        }
+
+        /// <summary>
+        /// Sends an email to the admin's email address
+        /// </summary>
+        /// <param name="model"></param>
+        public static void SendMessageToAdmin(ContactFormViewModel model, RequestModel requestModel)
+        {
+            User adminUser = null;
+            String msg = String.Empty;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                adminUser = unitOfWork.User.GetUserByEmail(EFPConstants.Admin.Email);
+            }
+
+            if (adminUser == null)
+            {
+                msg = "Admin user's email could not be found - Submission failed";
+                requestModel.AddErrorMessage(msg);
+                throw new Exception(msg);
+            }
+            else
+            {
+                string subject = "JProps - " + model.Subject;
+                string body = model.Message;
+
+                MailHelper mail = new MailHelper(adminUser.Email, subject, body, adminUser.FirstName);
+
+                if (mail.SendMail())
+                {
+                    msg = "Your message was successfully sent to the system adminstrator";
+                    requestModel.AddMessage(msg);
+                }
+                else
+                {
+                    msg = "An unexpected error occurred while sending your message - Please try again later";
+                    requestModel.AddErrorMessage(msg);
+                    throw new Exception(msg);
+                }
+            }            
         }
     }
 }

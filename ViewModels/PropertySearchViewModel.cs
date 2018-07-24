@@ -1,4 +1,5 @@
 ﻿using System;
+using SS.Core;
 
 namespace SS.ViewModels
 {
@@ -8,7 +9,13 @@ namespace SS.ViewModels
         public String PropertyCategory
         {
             get { return propertyCategory; }
-            set { propertyCategory = Core.PropertyHelper.mapPropertyCategoryNameToCode(value); }
+            set {
+                var holder = PropertyHelper.mapPropertyCategoryNameToCode(value);
+                holder = !string.IsNullOrEmpty(holder) ? holder : 
+                    PropertyHelper.mapPropertyCategoryNameToCode(PropertyHelper.mapPropertyCategoryCodeToName(value));
+
+                propertyCategory = holder;
+            }
         }
         public String PropertyType { get; set; }
         public String Country { get; set; }
@@ -20,10 +27,11 @@ namespace SS.ViewModels
         public String SearchTerm { get; set; }
         public System.Collections.Generic.Dictionary<String, Boolean> Tags { get; set; }
         public int PgNo { get; set; }
-        public int take { get; set; } = 16;
+        public int take { get; set; } = 1;
         public String coordinateLat { get; set; }
         public String coordinateLng { get; set; }
         public String SearchType { get; set; }
         public Boolean IsStudentAccommodationCat { get; set; }
+        public Double DistanceRadius { get; set; }
     }
 }

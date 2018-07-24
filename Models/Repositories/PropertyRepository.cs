@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Linq.Expressions;
+using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace SS.Models.Repositories
 {
@@ -23,44 +25,53 @@ namespace SS.Models.Repositories
             return EasyFindPropertiesEntities.Property.Where(x => x.OwnerID.Equals(Id)).ToList();
         }
 
-        public IEnumerable<Property> GetFeaturedProperties(int take)
+        public async Task<IEnumerable<Property>> GetFeaturedProperties(int take)
         {
             /*ensuring that all property categories are retrieved*/
-            IEnumerable<Property> realEstateProperties = EasyFindPropertiesEntities.Property
+            IEnumerable<Property> realEstateProperties = await EasyFindPropertiesEntities.Property
                 .Where(x => x.Availability.Equals(true) && x.PropertyType.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
-                .OrderBy(x => x.AdPriority.Value)
-                .ThenBy(x => x.DateTCreated)
+                .OrderByDescending(x => x.DateTCreated)
+                .ThenBy(x => x.Price)
                 .Take(take)
-                .ToList();
+                .ToListAsync();
 
-            IEnumerable<Property> lotProperties = EasyFindPropertiesEntities.Property
+            IEnumerable<Property> lotProperties = await EasyFindPropertiesEntities.Property
                 .Where(x => x.Availability.Equals(true) && x.PropertyType.CategoryCode.Equals(EFPConstants.PropertyCategory.Lot))
-                .OrderBy(x => x.AdPriority.Value)
-                .ThenBy(x => x.DateTCreated)
+                .OrderByDescending(x => x.DateTCreated)
+                .ThenBy(x => x.Price)
                 .Take(take)
-                .ToList();
+                .ToListAsync();
 
-            IEnumerable<Property> machineryProperties = EasyFindPropertiesEntities.Property
+            IEnumerable<Property> machineryProperties = await EasyFindPropertiesEntities.Property
                 .Where(x => x.Availability.Equals(true) && x.PropertyType.CategoryCode.Equals(EFPConstants.PropertyCategory.Machinery))
-                .OrderBy(x => x.AdPriority.Value)
-                .ThenBy(x => x.DateTCreated)
+                .OrderByDescending(x => x.DateTCreated)
+                .ThenBy(x => x.Price)
                 .Take(take)
-                .ToList();
+                .ToListAsync();
 
             return realEstateProperties.Concat(lotProperties).Concat(machineryProperties);
         }
 
-        public IEnumerable<Property> FindProperties(Expression<Func<Property, bool>> predicate, int take = 16, int pgNo = 0)
+        public async Task<IEnumerable<Property>> FindProperties(Expression<Func<Property, bool>> predicate, int take = 10, int pgNo = 0)
         {
             if (predicate != null)
             {
-                return EasyFindPropertiesEntities.Property
-                   .Where(predicate)
-                   .OrderBy(x => x.AdPriority.Value)
-                   .ThenBy(x => x.DateTCreated)
-                   .Skip(pgNo * take)
-                   .Take(take)
-                   .ToList();
+                if (take > 0)
+                {
+                    return await EasyFindPropertiesEntities.Property
+                       .Where(predicate)
+                       .OrderBy(x => x.Price)
+                       .ThenByDescending(x => x.DateTCreated)
+                       .Skip(pgNo * take)
+                       .Take(take)
+                       .ToListAsync();
+                }
+                else
+                    return await EasyFindPropertiesEntities.Property
+                       .Where(predicate)
+                       .OrderBy(x => x.Price)
+                       .ThenByDescending(x => x.DateTCreated)
+                       .ToListAsync();
             }
             else
                 return new List<Property>();
@@ -72,8 +83,8 @@ namespace SS.Models.Repositories
             {
                 return EasyFindPropertiesEntities.Property
                 .Where(x => x.Availability.Equals(true) && x.PropertyType.CategoryCode.Equals(categoryCode))
-                .OrderBy(x => x.AdPriority.Value)
-                .ThenBy(x => x.DateTCreated)
+                .OrderBy(x => x.Price)
+                .ThenByDescending(x => x.DateTCreated)
                 .Skip(pgNo * take)
                 .Take(take)
                 .ToList();
@@ -82,17 +93,17 @@ namespace SS.Models.Repositories
             {
                 return EasyFindPropertiesEntities.Property
                 .Where(x => x.Availability.Equals(true) && x.PropertyType.CategoryCode.Equals(categoryCode))
-                .OrderBy(x => x.AdPriority.Value)
-                .ThenBy(x => x.DateTCreated)
+                .OrderBy(x => x.Price)
+                .ThenByDescending(x => x.DateTCreated)
                 .Skip(pgNo * take)
                 .ToList();
             }
 
         }
 
-        public IEnumerable<Property> FindPropertiesBySearchTerm(string searchTerm, String propertyCategory, int take = 0, int pgNo = 0)
+        public async Task<IEnumerable<Property>> FindPropertiesBySearchTerm(string searchTerm, String propertyCategory, int take = 0, int pgNo = 0)
         {
-            IEnumerable<Property> properties = null;
+            IQueryable<Property> properties = null;
 
             if (!string.IsNullOrEmpty(propertyCategory))
             {
@@ -111,7 +122,8 @@ namespace SS.Models.Repositories
                                       || p.Description.Contains(searchTerm)
                                       || t.TagType.Name.Contains(searchTerm))
                                       && p.CategoryCode.Equals(propertyCategory)
-                              orderby p.AdPriority.Value, p.DateTCreated
+                              orderby p.Price
+                              orderby p.DateTCreated descending
                               select p);
             }
             else
@@ -130,20 +142,21 @@ namespace SS.Models.Repositories
                                       || p.Country.Contains(searchTerm)
                                       || p.Description.Contains(searchTerm)
                                       || t.TagType.Name.Contains(searchTerm))
-                              orderby p.AdPriority.Value, p.DateTCreated
+                              orderby p.Price
+                              orderby p.DateTCreated descending
                               select p);
             }
 
             if (take > 0)
             {
-                return properties.Skip(pgNo * take)
+                return await properties.Skip(pgNo * take)
                     .Distinct().Take(take)
-                    .ToList();
+                    .ToListAsync();
             }
             else
-                return properties.Skip(pgNo * take)
+                return await properties.Skip(pgNo * take)
                     .Distinct()
-                    .ToList();
+                    .ToListAsync();
         }
 
         public Owner GetPropertyOwnerByPropID(Guid Id)
@@ -156,36 +169,47 @@ namespace SS.Models.Repositories
             return EasyFindPropertiesEntities.Property.Where(x => x.ID.Equals(Id)).Select(x => x.EnrolmentKey).Single();
         }
 
-        public Array FindPropertiesCoordinates(Expression<Func<Property, bool>> predicate)
+        public async Task<Array> FindPropertiesCoordinates(Expression<Func<Property, bool>> predicate)
         {
             if (predicate != null)
             {
-                return EasyFindPropertiesEntities.Property
+                return await EasyFindPropertiesEntities.Property
                    .Where(predicate)
-                   .Select(x => new { x.Latitude, x.Longitude }).ToArray();
+                   .Select(x => new { x.Latitude, x.Longitude }).ToArrayAsync();
             }
             else
             {
-                return EasyFindPropertiesEntities.Property
+                return await EasyFindPropertiesEntities.Property
                     .Where(x => x.Availability == true)
-                   .Select(x => new { x.Latitude, x.Longitude }).ToArray();
+                    .Select(x => new { x.Latitude, x.Longitude }).ToArrayAsync();
             }
         }
 
-        public IEnumerable<Property> FindPropertiesByStreetAddress(List<NearbyPropertySearchModel> model, int take = 16, int pgNo = 0)
+        public async Task<IEnumerable<Property>> FindPropertiesByStreetAddress(List<NearbyPropertySearchModel> model, int take = 10, int pgNo = 0)
         {
             //TODO use another alternative to AsEnumerable as this will execute slowly
-            var properties = (from p in EasyFindPropertiesEntities.Property.AsEnumerable()
-                              where model.Select(x => x.StreetAddress).Contains(p.StreetAddress)
-                              select p
-                              )
-                              .OrderBy(x => x.AdPriority.Value)
-                              .ThenBy(x => x.DateTCreated)
-                              .Skip(pgNo * take)
-                              .Take(take)
-                              .ToList();
+            var propertiesSA = (from p in EasyFindPropertiesEntities.Property
+                                .Select(x => x.StreetAddress).AsEnumerable()
+                                where model.Select(x => x.StreetAddress).Contains(p)
+                                select p
+                              ).ToList();
 
-            return properties;
+            if (take > 0)
+            {
+                return await EasyFindPropertiesEntities.Property
+                    .Where(x => propertiesSA.Contains(x.StreetAddress))
+                    .OrderBy(x => x.Price)
+                    .ThenByDescending(x => x.DateTCreated)
+                    .Skip(pgNo * take)
+                    .Take(take)
+                    .ToListAsync();
+            }
+            else
+                return await EasyFindPropertiesEntities.Property
+                .Where(x => propertiesSA.Contains(x.StreetAddress))
+                .OrderBy(x => x.Price)
+                .ThenByDescending(x => x.DateTCreated)
+                .ToListAsync();
         }
 
         public IEnumerable<Property> FilterPropertiesByTagNames(IEnumerable<Property> properties, IEnumerable<String> tags)

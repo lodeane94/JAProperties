@@ -11,5 +11,6 @@ namespace SS.Models.Repositories
         IEnumerable<Message> GetMsgThreadByMsgID(Guid Id, Guid userId);
         IEnumerable<User> GetMsgUsers(Guid userId);
         Guid GetThreadIdForUser(Guid from, Guid to);
+        int GetTotUnseenForUser(Guid userId);
     }
 }

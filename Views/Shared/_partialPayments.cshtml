@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SS.ViewModels.Management.PaymentViewModel>
+﻿@using SS.ViewModels.Management
+@model IEnumerable<PaymentViewModel>
 
 <div class="payments-container jumbotron-container">
     <div class="ctnr-headers">Payments</div>
@@ -15,6 +16,10 @@
                                     <div class="rTableRow">
                                         <div class="rTableHead">&nbsp;</div>
                                         <div class="rTableHead"><strong>Date</strong></div>
+                                        @if (!String.IsNullOrEmpty(((PaymentViewModel)Model.First()).Email))
+                                        {
+                                            <div class="rTableHead"><strong>Email</strong></div>
+                                        }
                                         <div class="rTableHead"><strong>Paid</strong></div>
                                         <div class="rTableHead"><strong>Payment Method</strong></div>
                                         <div class="rTableHead"><strong>Voucher</strong></div>
@@ -29,6 +34,10 @@
                                     <div class="rTableRow">
                                         <div class="rTableCell">@count</div>
                                         <div class="rTableCell">@payment.DateTCreated.ToShortDateString()</div>
+                                        @if (!String.IsNullOrEmpty(payment.Email))
+                                        { 
+                                            <div class="rTableCell">@payment.Email</div>
+                                        }
                                         <div class="rTableCell">&#36 @payment.Amount</div>
                                         <div class="rTableCell">@payment.PaymentMethod</div>
                                         <div class="rTableCell">@payment.VoucherNumber</div>

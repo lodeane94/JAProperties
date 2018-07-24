@@ -10,12 +10,12 @@ namespace SS.Models.Repositories
     public interface IPropertyRepository : IRepository<Property>
     {
         IEnumerable<Property> GetPropertiesByOwnerId(Guid Id);
-        IEnumerable<Property> GetFeaturedProperties(int take);
-        IEnumerable<Property> FindProperties(Expression<Func<Property, bool>> predicate, int take = 16, int pgNo = 0);
-        IEnumerable<Property> FindPropertiesByCategoryCode(String categoryCode, int take = 16, int pgNo = 0);
-        IEnumerable<Property> FindPropertiesBySearchTerm(String searchTerm, string propertyCategory, int take = 16, int pgNo = 0);
-        IEnumerable<Property> FindPropertiesByStreetAddress(List<Core.NearbyPropertySearchModel> model, int take = 16, int pgNo = 0);
-        Array FindPropertiesCoordinates(Expression<Func<Property, bool>> predicate);
+        Task<IEnumerable<Property>> GetFeaturedProperties(int take);
+        Task<IEnumerable<Property>> FindProperties(Expression<Func<Property, bool>> predicate, int take = 10, int pgNo = 0);
+        IEnumerable<Property> FindPropertiesByCategoryCode(String categoryCode, int take = 10, int pgNo = 0);
+        Task<IEnumerable<Property>> FindPropertiesBySearchTerm(String searchTerm, string propertyCategory, int take = 10, int pgNo = 0);
+        Task<IEnumerable<Property>> FindPropertiesByStreetAddress(List<Core.NearbyPropertySearchModel> model, int take = 10, int pgNo = 0);
+        Task<Array> FindPropertiesCoordinates(Expression<Func<Property, bool>> predicate);
         Owner GetPropertyOwnerByPropID(Guid Id);
         String GetEnrolmentKeyByPropID(Guid Id);
         IEnumerable<Property> FilterPropertiesByTagNames(IEnumerable<Property> properties, IEnumerable<String> tags);

@@ -10,6 +10,7 @@ namespace SS.ViewModels.Management
         public Guid ID { get; set; }
         public String Title { get; set; }
         public String PropertyCategory { get; set; }
+        public String AdType { get; set; }
         public decimal Price { get; set; }
         public decimal SecurityDeposit { get; set; }
         public int Occupancy { get; set; }

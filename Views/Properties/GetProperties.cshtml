@@ -29,7 +29,7 @@
     else{
     populatePropertyTypeByCategoryName('@ViewBag.category','@ViewBag.isStudentAccommodationCat');
     }
-    setBodyHeight();
+    
     });
     })();
 
@@ -37,8 +37,13 @@
 <a href="#" onclick="goBack();" class="badge badge-primary"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back</a>
 <br /><br />
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10">
         <div class="ctnr-headers">@ViewBag.runningHeader</div>
+    </div>
+	<div class="col-md-2">
+        <div class="ctnr-headers pgTotHolder">
+			Pg &nbsp; <span id="currentPg" ></span>&nbsp;/&nbsp;<span id="totPgs" ></span> 
+		</div>
     </div>
 </div>
 <div class="property-listing">
@@ -54,7 +59,7 @@
                             {
                                 <div class="slidecontainer">
                                     <div class="ctnr-info" style="font-size:12px;">Properties Distance</div>
-                                    <input type="range" min="1" max="100" value="@(ViewBag.DistanceRadius != null ? ViewBag.DistanceRadius : 20)" class="slider" id="range-distance-radius">
+                                    <input type="range" min="1" max="100" value="@ViewBag.DistanceRadius" class="slider" id="range-distance-radius">
                                     &nbsp;<span class="ctnr-info" style="font-size:11px;float:right;" id="range-distance-radius-val"></span>
                                 </div>
                                 <div class="horizontal-separator"></div>
@@ -75,6 +80,11 @@
                     </div>
                 </div>
             </div>
+        }
+        else
+        {
+            //keeping track of distance radius if no tags were returned
+            <input type="hidden" value="@ViewBag.DistanceRadius" id="range-distance-radius">
         }
         @{
             if (Model != null && Model.Count > 0)
@@ -145,6 +155,7 @@
                         <br />
                     </div>
                 }
+
                 <input type="hidden" id="currentPageNumber" value="@ViewBag.pageNumber" />
             }
             else
@@ -156,25 +167,16 @@
                 </div>
             }
         }
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-md-12">
-            <div class="ctnr-options">
-                <ul class="pagination pagination-sm">
-                    @{
-                        double noOfPages = Math.Ceiling((Convert.ToDouble(Model.Count) / Convert.ToDouble(ViewBag.fetchAmount)));
-                        for (int itemCount = 1; itemCount <= noOfPages; itemCount++)
-                        {
-                            <li><a class="pageNumber" href="@itemCount">@itemCount</a></li>
-                        }
-                    }
-                </ul>
-                <span class="previous-page" style="float: left; display:none;"><a href="previous"><span class="glyphicon glyphicon-chevron-left"></span></a></span>
-                <span class="next-page" style="float:right; display:none;"><a href="next"><span class="glyphicon glyphicon-chevron-right"></span></a></span>
-                <input type="hidden" id="noOfPages" value="@noOfPages" />
-                <input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
-            </div>
+        <br />
+        <div class="offset-md-3 offset-sm-0 col-md-9">
+			<div class="ctnr-options">
+				<span class="previous-page-holder" style="float: left;"></span>
+				<span class="next-page-holder" style="float:right;"></span>
+				<span class="previous-page" style="float: left; display: none;"><a href="previous">Previous <i class="fa fa-chevron-left" aria-hidden="true"></i></a></span>
+				<span class="next-page" style="float:right; display: none;"><a href="next">Next <i class="fa fa-chevron-right" aria-hidden="true"></i></a></span>
+				<input type="hidden" id="pgNo" value="@ViewBag.pageNumber" />
+				<input type="hidden" id="fetchAmount" value="@ViewBag.fetchAmount" />
+			</div>
         </div>
     </div>
 </div>

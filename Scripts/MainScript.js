@@ -28,10 +28,10 @@ var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
 
 /***GENERAL FUNCTIONS*/
 //initialize functions to be called by SignalR
-function initializeSockets() {
+function initializeMainSockets() {
     var applicationHub = $.connection.applicationHub;
 
-    $.connection.hub.logging = true;
+    $.connection.hub.logging = false;
 
     $.connection.hub.start().done(function () {
         console.log('Connection establised');
@@ -49,7 +49,7 @@ function getVisitorsCount() {
             updateVisitorCount(data);
         },
         error: function () {
-            alert('An error occurred while retrieving visitors count');
+            console.log('An error occurred while retrieving visitors count');
         }
     });
 }
@@ -95,7 +95,7 @@ function setIsCollapsable(value) {
 //load subscription period values
 function loadAdvertisePropertySubscriptionPeriod() {
     var monthVar = '';
-    for (var i = 1; i <= 12; i++) {
+    for (var i = 1; i <= 1; i++) {//changed to 1 - tmp
         if (i > 1) {
             monthVar = 'Months';
         } else {
@@ -283,7 +283,7 @@ function loadPropertyTypes(selectedItem) {
             });
         },
         error: function () {
-            alert('An error occurred while retrieving property types');
+            console.log('An error occurred while retrieving property types');
         },
         complete: function () { $('#loading-gif').remove(); }
     });
@@ -318,7 +318,7 @@ function loadPropertyTags(selectedItem) {
             }
         },
         error: function () {
-            alert('An error occurred while retrieving property tags');
+            console.log('An error occurred while retrieving property tags');
         },
         complete: function () { $('#loading-gif').remove(); }
     });
@@ -1105,7 +1105,7 @@ function SubscriptionCheck(email) {
     }
 
     //ensures that only numbers are entered into the MinPrice and MaxPrice fields
-    $(document.body).on('keyup', '#cellnum, #price, #securitydeposit, #StreetNumber, #occupancy, #TotAvailableBathroom, #TotRooms, #area', function (e) {
+    $(document.body).on('keyup', '#cellnum, #price, #securitydeposit, #StreetNumber, #occupancy, #TotAvailableBathroom, #TotRooms, #area, #cellNum', function (e) {
         //if the letter is not digit then display error and don't type anything
         /*if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
             return false;
@@ -1129,6 +1129,8 @@ function SubscriptionCheck(email) {
         }
     });
 
+    initializeMainSockets();
+    getVisitorsCount();
 })();
 /***ADVERTISEPROPERTY FUNCTIONS*/
 /***Enrolment Function*/

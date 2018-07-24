@@ -41,6 +41,7 @@ namespace SS.ViewModels
         public bool IsPropertySaved { get; set; }
         public List<string> tags { get; set; }
         public string AdType { get; set; }
+        public DateTime DateTCreated { get; set; }
         public string DateAddedModified { get; set; }
     }
 }

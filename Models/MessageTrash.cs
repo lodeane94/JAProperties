@@ -17,7 +17,7 @@ namespace SS.Models
         public System.Guid UserID { get; set; }
         public System.Guid MessageID { get; set; }
         public System.DateTime DateTCreated { get; set; }
-
+    
         public virtual Message Message { get; set; }
         public virtual User User { get; set; }
     }

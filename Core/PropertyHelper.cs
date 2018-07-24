@@ -11,6 +11,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using System.Transactions;
 using System.Web;
 using System.Web.Security;
 using static SS.Core.EFPConstants;
@@ -39,8 +41,8 @@ namespace SS.Core
                 {
                     return EFPConstants.PropertyCategory.Lot;
                 }
-
-                return EFPConstants.PropertyCategory.Machinery;
+                else if (propertyCategoryName.Equals(nameof(EFPConstants.PropertyCategory.Machinery)))
+                    return EFPConstants.PropertyCategory.Machinery;
             }
 
             return null;
@@ -62,8 +64,8 @@ namespace SS.Core
                 {
                     return nameof(EFPConstants.PropertyCategory.Lot);
                 }
-
-                return nameof(EFPConstants.PropertyCategory.Machinery);
+                else if (code.Equals(EFPConstants.PropertyCategory.Machinery))
+                    return nameof(EFPConstants.PropertyCategory.Machinery);
             }
             return null;
         }
@@ -244,7 +246,12 @@ namespace SS.Core
             }
         }
 
-        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(PropertySearchViewModel model, Guid userId)
+        /// <summary>
+        /// retrieves the total properties found for a normal search
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async static Task<int> GetPropertiesCount(PropertySearchViewModel model)
         {
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
 
@@ -259,8 +266,61 @@ namespace SS.Core
                 List<Core.Filter> filters = createFilterList(model);
                 var deleg = ExpressionBuilder.GetExpression<Property>(filters);
 
-                filteredProperties = unitOfWork.Property.FindProperties(deleg, model.take, model.PgNo);
-                searchTermProperties = unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.PropertyCategory, model.take, model.PgNo);
+                filteredProperties = await unitOfWork.Property.FindProperties(deleg, 0, 0);
+                searchTermProperties = await unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.PropertyCategory, 0, 0);
+                var combinedProperties = filteredProperties.Concat(searchTermProperties).Distinct();
+
+                properties = getTaggedFilterPropsIfApplicable(combinedProperties, model, unitOfWork);
+            }
+
+            return properties.Count();
+        }
+
+        /// <summary>
+        /// retrieves the total properties found for a near by search
+        /// </summary>
+        /// <param name="revisedModel"></param>
+        /// <param name="svModel"></param>
+        /// <returns></returns>
+        public async static Task<int> GetNearbyPropertiesCount(List<NearbyPropertySearchModel> revisedModel, PropertySearchViewModel svModel)
+        {
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+            IEnumerable<Property> properties = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var saProperties = await unitOfWork.Property.FindPropertiesByStreetAddress(revisedModel, 0, 0);
+                properties = getTaggedFilterPropsIfApplicable(saProperties, svModel, unitOfWork);
+            }
+
+            return properties.Count();
+        }
+
+        /// <summary>
+        /// retrieve all properties based on the criteria 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async static Task<List<FeaturedPropertiesSlideViewModel>> PopulatePropertiesViewModel(PropertySearchViewModel model, Guid userId)
+        {
+            List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
+
+            IEnumerable<Property> filteredProperties = null;
+            IEnumerable<Property> searchTermProperties = null;
+            IEnumerable<Property> properties = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                List<Core.Filter> filters = createFilterList(model);
+                var deleg = ExpressionBuilder.GetExpression<Property>(filters);
+
+                filteredProperties = await unitOfWork.Property.FindProperties(deleg, model.take, model.PgNo);
+                searchTermProperties = await unitOfWork.Property.FindPropertiesBySearchTerm(model.SearchTerm, model.PropertyCategory, model.take, model.PgNo);
                 var combinedProperties = filteredProperties.Concat(searchTermProperties).Distinct();
 
                 properties = getTaggedFilterPropsIfApplicable(combinedProperties, model, unitOfWork);
@@ -307,6 +367,72 @@ namespace SS.Core
 
             return featuredPropertiesSlideViewModelList;
         }
+        /// <summary>
+        /// returns the requisitions for a property owner or a property requestor
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="shouldGetHist"></param>
+        /// <returns></returns>
+        public static IEnumerable<RequisitionViewModel> GetRequisitions(Guid userId, bool shouldGetHist)
+        {
+            IEnumerable<RequisitionViewModel> requisitionInfo = null;
+            IEnumerable<PropertyRequisition> requisitions = null;
+            IEnumerable<PropertyRequisition> ownerRequisitions = null;
+            IEnumerable<PropertyRequisition> requestorRequisitions = null;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
+                bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
+                bool isUserConsumer = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Consumer);
+
+                if (isUserPropOwner && isUserConsumer)
+                {
+                    var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+
+                    if (!shouldGetHist)
+                    {
+                        ownerRequisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
+                        requestorRequisitions = unitOfWork.PropertyRequisition.GetRequestsMadeByUserId(userId);
+                    }
+                    else
+                    {
+                        ownerRequisitions = unitOfWork.PropertyRequisition.GetRequestHistoryByOwnerId(owner.ID);
+                        requestorRequisitions = unitOfWork.PropertyRequisition.GetRequestsHistoryByUserId(userId);
+                    }
+
+                    var requisitionInfoOwner = PropertyHelper.populateRequisitionVMForOwner(unitOfWork, ownerRequisitions);
+                    var requisitionInfoRequestor = PropertyHelper.populateRequisitionVMForRequestor(unitOfWork, requestorRequisitions);
+
+                    requisitionInfo = requisitionInfoOwner.Concat(requisitionInfoRequestor);
+                }
+                else if (isUserPropOwner)
+                {
+                    var owner = unitOfWork.Owner.GetOwnerByUserID(userId);
+
+                    if (!shouldGetHist)
+                        requisitions = unitOfWork.PropertyRequisition.GetRequestsByOwnerId(owner.ID);
+                    else
+                        requisitions = unitOfWork.PropertyRequisition.GetRequestHistoryByOwnerId(owner.ID);
+
+                    requisitionInfo = PropertyHelper.populateRequisitionVMForOwner(unitOfWork, requisitions);
+                }
+                else
+                {
+                    if (!shouldGetHist)
+                        requisitions = unitOfWork.PropertyRequisition.GetRequestsMadeByUserId(userId);
+                    else
+                        requisitions = unitOfWork.PropertyRequisition.GetRequestsHistoryByUserId(userId);
+
+                    requisitionInfo = PropertyHelper.populateRequisitionVMForRequestor(unitOfWork, requisitions);
+                }
+            }
+
+            return requisitionInfo;
+        }
+
         /// <summary>
         /// Allows viewers to request the property or ask a question about the property
         /// </summary>
@@ -356,9 +482,12 @@ namespace SS.Core
                 }
                 else
                 {
+                    var threadId = unitOfWork.Message.GetThreadIdForUser(userId, ownerUser.ID);
+
                     Message message = new Message()
                     {
                         ID = Guid.NewGuid(),
+                        ThreadId = threadId != Guid.Empty ? threadId : Guid.NewGuid(),
                         To = ownerUser.ID,
                         From = userId,
                         Msg = request.Msg,
@@ -401,13 +530,13 @@ namespace SS.Core
 
             if (isRequisition)
             {
-                body = "<p>" + user.FirstName + " " + user.LastName + " sent a request to your property.</p> ";
+                body = "<p>" + user.FirstName + " " + user.LastName + " is requesting your property.</p> ";
                 body += "<p>Click the following link to go to your portal ";
                 body += "http://www." + EFPConstants.Application.Host + "/landlordmanagement/dashboard</p>";
             }
             else
             {
-                body = "</p>" + user.FirstName + " " + user.LastName + " sent a message to your property.</p> ";
+                body = "</p>" + user.FirstName + " " + user.LastName + " sent a message to you regarding your property.</p> ";
                 body += "Click the following link to go to your portal ";
                 body += "http://www." + EFPConstants.Application.Host + "/landlordmanagement/dashboard</p>";
             }
@@ -415,7 +544,7 @@ namespace SS.Core
             return body;
         }
 
-        public static List<FeaturedPropertiesSlideViewModel> PopulatePropertiesViewModel(List<NearbyPropertySearchModel> revisedModel, PropertySearchViewModel svModel, Guid userId)
+        public async static Task<List<FeaturedPropertiesSlideViewModel>> PopulatePropertiesViewModel(List<NearbyPropertySearchModel> revisedModel, PropertySearchViewModel svModel, Guid userId)
         {
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = new List<FeaturedPropertiesSlideViewModel>();
             IEnumerable<Property> properties = null;
@@ -424,7 +553,7 @@ namespace SS.Core
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                var saProperties = unitOfWork.Property.FindPropertiesByStreetAddress(revisedModel, svModel.take, svModel.PgNo);
+                var saProperties = await unitOfWork.Property.FindPropertiesByStreetAddress(revisedModel, svModel.take, svModel.PgNo);
                 properties = getTaggedFilterPropsIfApplicable(saProperties, svModel, unitOfWork);
 
                 //TODO optimize by removing extra calls to the database
@@ -450,6 +579,7 @@ namespace SS.Core
                     model.PropertyAverageRatings = avgPropRatings.Count() > 0 ? (int)avgPropRatings.Average() : 0;
                     model.IsPropertySaved = !userId.Equals(Guid.Empty) ? unitOfWork.SavedProperties.IsPropertySavedForUser(userId, property.ID) : false;
                     model.AdType = property.AdType.Name;
+                    model.DateTCreated = property.DateTCreated;
                     model.DateAddedModified = property.DateTModified.HasValue ? property.DateTModified.Value.ToShortDateString() : property.DateTCreated.ToShortDateString();
 
                     if (property.CategoryCode.Equals(EFPConstants.PropertyCategory.RealEstate))
@@ -469,17 +599,20 @@ namespace SS.Core
                     if (matchCount > 0)
                     {
                         model.DistanceFromSearchedAddress = revisedModel.Where(x => x.StreetAddress.Equals(property.StreetAddress))
-                            .Select(x => x.Distance).SingleOrDefault();
+                            .Select(x => x.Distance).FirstOrDefault();
 
                         model.DuratiionFromSearchedAddress = revisedModel.Where(x => x.StreetAddress.Equals(property.StreetAddress))
-                            .Select(x => x.Duration).SingleOrDefault();
+                            .Select(x => x.Duration).FirstOrDefault();
                     }
 
                     featuredPropertiesSlideViewModelList.Add(model);
                 }
             }
-
-            return featuredPropertiesSlideViewModelList;
+            //TODO add sort button on page
+            return featuredPropertiesSlideViewModelList
+                    .OrderBy(x => double.Parse(x.DistanceFromSearchedAddress))
+                    .ThenBy(x => x.Price)
+                    .ThenByDescending(x => x.DateTCreated).ToList();
         }
 
         private static IEnumerable<Property> getTaggedFilterPropsIfApplicable(IEnumerable<Property> properties, PropertySearchViewModel model, UnitOfWork unitOfWork)
@@ -516,7 +649,7 @@ namespace SS.Core
             return searchResultPropertyTags;
         }
 
-        public static HomePageViewModel PopulateHomePageViewModel(int take, Guid userId)
+        public async static Task<HomePageViewModel> PopulateHomePageViewModel(int take, Guid userId)
         {
             log.Info("Populating home page");
 
@@ -530,7 +663,7 @@ namespace SS.Core
 
                 try
                 {
-                    foreach (var property in unitOfWork.Property.GetFeaturedProperties(take))
+                    foreach (var property in await unitOfWork.Property.GetFeaturedProperties(take))
                     {
                         avgPropRatings = unitOfWork.PropertyRating.GetPropertyRatingsCountByPropertyId(property.ID);
 
@@ -814,8 +947,8 @@ namespace SS.Core
                 user = new User()
                 {
                     ID = userID,
-                    FirstName = fName,
-                    LastName = lName,
+                    FirstName = MiscellaneousHelper.UppercaseFirst(fName),
+                    LastName = MiscellaneousHelper.UppercaseFirst(lName),
                     CellNum = cellNum,
                     Email = email,
                     DateTCreated = DateTime.Now
@@ -953,7 +1086,7 @@ namespace SS.Core
         /// <param name="unitOfWork"></param>
         /// <param name="requisitions"></param>
         /// <returns></returns>
-        public static List<RequisitionViewModel> populateRequisitionVMForOwner(UnitOfWork unitOfWork, IEnumerable<PropertyRequisition> requisitions)
+        public static IEnumerable<RequisitionViewModel> populateRequisitionVMForOwner(UnitOfWork unitOfWork, IEnumerable<PropertyRequisition> requisitions)
         {
             List<RequisitionViewModel> requisitionInfo = null;
 
@@ -975,6 +1108,7 @@ namespace SS.Core
                     model.PropertyRequisition.User.Email = req.User.Email;
                     model.PropertyRequisition.User.CellNum = req.User.CellNum;
                     model.PropertyRequisition.Msg = req.Msg;
+                    model.PropertyRequisition.ExpiryDate = req.ExpiryDate;
                     model.PropertyRequisition.IsAccepted = req.IsAccepted;
                     model.PropertyRequisition.DateTCreated = req.DateTCreated;
                     model.isUserPropOwner = true;
@@ -992,7 +1126,7 @@ namespace SS.Core
         /// <param name="unitOfWork"></param>
         /// <param name="requisitions"></param>
         /// <returns></returns>
-        public static List<RequisitionViewModel> populateRequisitionVMForRequestor(UnitOfWork unitOfWork, IEnumerable<PropertyRequisition> requisitions)
+        public static IEnumerable<RequisitionViewModel> populateRequisitionVMForRequestor(UnitOfWork unitOfWork, IEnumerable<PropertyRequisition> requisitions)
         {
             List<RequisitionViewModel> requisitionInfo = null;
 
@@ -1013,6 +1147,7 @@ namespace SS.Core
                     model.PropertyRequisition.User.LastName = req.Property.Owner.User.LastName;
                     model.PropertyRequisition.User.CellNum = req.Property.Owner.User.CellNum;
                     model.PropertyRequisition.Msg = req.Msg;
+                    model.PropertyRequisition.ExpiryDate = req.ExpiryDate;
                     model.PropertyRequisition.IsAccepted = req.IsAccepted;
                     model.PropertyRequisition.DateTCreated = req.DateTCreated;
                     model.isUserPropOwner = false;
@@ -1066,8 +1201,8 @@ namespace SS.Core
                 body = "Congratulations!!, your property request was accepted. The property owner will contact you with any additional information "
                         + "or concerns. Thank you for using JProps.";*/
 
-            body = "Congratulations!!, your property request was accepted. The property owner will contact you with any additional information "
-                        + "or concerns. Thank you for using JProps.";
+            body = "Congratulations!!, your property request was accepted. Please make the necessary communication with the property owner to acquire any additional information "
+                        + "to secure your reservation. Thank you for using JProps.";
 
             //getting information about the owner of the property to give back to the requestee
             body += "<br/><br/><strong>Property Owner Information</strong><br/><br/> First Name:&nbsp;"
@@ -1080,7 +1215,11 @@ namespace SS.Core
             {
                 //sets the accepted field of the requisition table to true for the accepted property request
                 requisition.IsAccepted = true;
+                requisition.Seen = true;
                 unitOfWork.save();
+
+                DashboardHub.alertRequisition(propertyUser.Email);
+                DashboardHub.alertRequisition(reqUser.Email);
 
                 return true;
             }
@@ -1117,7 +1256,7 @@ namespace SS.Core
             }
             else
             {
-                body = "<p> The property requisition for (" + requisition.User.FirstName + " " + requisition.User.LastName + " ) has been cancelled </p>";
+                body = "<p> The property requisition for (" + requisition.User.FirstName + " " + requisition.User.LastName + " ) has been cancelled. </p>";
                 subject = "JProps - Property Requisition Cancelled";
                 emailTo = requisition.Property.Owner.User.Email;
             }
@@ -1127,7 +1266,11 @@ namespace SS.Core
             if (mail.SendMail())
             {
                 requisition.IsAccepted = null;
+                requisition.Seen = true;
                 unitOfWork.save();
+
+                DashboardHub.alertRequisition(ownerUser.Email);
+                DashboardHub.alertRequisition(requisition.User.Email);
 
                 return true;
             }
@@ -1180,7 +1323,7 @@ namespace SS.Core
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static Array PopulateModelForPropertyCoordinates(PropertySearchViewModel model)
+        public async static Task<Array> PopulateModelForPropertyCoordinates(PropertySearchViewModel model)
         {
             Array propertyCoordinates = null;
 
@@ -1191,7 +1334,7 @@ namespace SS.Core
                 List<Core.Filter> filters = createFilterList(model);
                 var deleg = ExpressionBuilder.GetExpression<Property>(filters);
 
-                propertyCoordinates = unitOfWork.Property.FindPropertiesCoordinates(deleg);
+                propertyCoordinates = await unitOfWork.Property.FindPropertiesCoordinates(deleg);
             }
 
             return propertyCoordinates;
@@ -1227,6 +1370,7 @@ namespace SS.Core
                 ViewModel.PropertyCondition = property.PropertyCondition.Name;
                 ViewModel.Occupancy = property.Occupancy.ToString();
                 ViewModel.Price = property.Price;
+                ViewModel.SecurityDeposit = property.SecurityDeposit.HasValue ? property.SecurityDeposit.Value : 0;
                 ViewModel.Area = property.Area.HasValue ? property.Area.Value : 0;
                 ViewModel.Description = property.Description;
                 ViewModel.OwnerFirstName = user.FirstName;
@@ -1460,9 +1604,10 @@ namespace SS.Core
                     IsReviewable = property.IsReviewable.HasValue ? property.IsReviewable.Value : false,
                     Occupancy = property.Occupancy.HasValue ? property.Occupancy.Value : 0,
                     Description = property.Description,
-                    PropertyCategory = property.PropertyCategory.Name,
+                    PropertyCategory = property.PropertyCategory.ID,
                     Title = property.Title,
                     GenderPreferenceCode = property.GenderPreferenceCode,
+                    AdType = property.AdType.ID,
                     PrimaryImageUrl = unitOfWork.PropertyImage.GetPrimaryImageURLByPropertyId(ID),
                     PropertyImages = unitOfWork.PropertyImage.GetAllImagesByPropertyId(ID, 0)
                 };
@@ -1509,20 +1654,15 @@ namespace SS.Core
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var doesUserExist = false;
+                var propertyId = Guid.Empty;
                 var isUserCreated = false;
                 User user = null;
 
                 try
                 {
-                    if (model.Password != null && !model.Password.Equals(model.ConfirmPassword))
-                    {
-                        String errMsg = "The fields Password and Confirm Password are not equal";
-                        errorModel.AddErrorMessage(errMsg);
-                        throw new Exception(errMsg);
-                    }
-
                     var unitOfWork = new UnitOfWork(dbCtx);
+
+                    validateAdRequest(model, errorModel);
 
                     if (!userId.Equals(Guid.Empty))
                     {
@@ -1530,13 +1670,21 @@ namespace SS.Core
                     }
                     else
                     {
-                        doesUserExist = unitOfWork.User.DoesUserExist(model.Email);
-                        user = doesUserExist ? unitOfWork.User.GetUserByEmail(model.Email) : null;
+                        user = unitOfWork.User.GetUserByEmail(model.Email);
+                        user = user ?? unitOfWork.User.GetUserByCellNum(model.CellNum);
                     }
 
                     //if user already exists and they are not a property owner, then associate user with that user type as well
                     if (user != null)
                     {
+                        //ensuring that the user's email matches
+                        if (!model.Email.Equals(user.Email))
+                        {
+                            String errMsg = "There is already an account that is registered to that cell number. Please use that email address instead";
+                            errorModel.AddErrorMessage(errMsg);
+                            throw new Exception(errMsg);
+                        }
+
                         var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
                         bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
 
@@ -1553,15 +1701,14 @@ namespace SS.Core
                         isUserCreated = true;
                     }
 
-                    insertProperty(model, unitOfWork, user);
+                    propertyId = insertProperty(model, unitOfWork, user);
 
                     if (!isUserCreated)
                         unitOfWork.save();
                     else
                     {
-                        if (SendUserCreatedEmail(user, true))
-                            unitOfWork.save();
-                        else
+                        unitOfWork.save();
+                        if (!SendUserCreatedEmail(user, true))
                             throw new Exception("Unable to send user created email");
                     }
                 }
@@ -1570,14 +1717,30 @@ namespace SS.Core
                     if (!String.IsNullOrEmpty(model.Email) && isUserCreated)
                         RemoveUserAccount(model.Email);
 
-                    if (PropertyHelper.uploadedImageNames != null && PropertyHelper.uploadedImageNames.Count > 0)
+                    if(!propertyId.Equals(Guid.Empty))
+                        RemoveProperty(propertyId);
+
+                    if (uploadedImageNames != null && uploadedImageNames.Count > 0)
                     {
-                        PropertyHelper.removeUploadedImages(PropertyHelper.uploadedImageNames);
+                        removeUploadedImages(uploadedImageNames);
                     }
 
                     errorModel.AddErrorMessage("Error occurred - Property was not added");
                     log.Error("Could not advertise property", ex);
                 }
+            }
+        }
+        /// <summary>
+        /// valiidates the advertisment request
+        /// </summary>
+        /// <param name="model"></param>
+        private static void validateAdRequest(AdvertisePropertyViewModel model, ErrorModel errorModel)
+        {
+            if (model.Password != null && !model.Password.Equals(model.ConfirmPassword))
+            {
+                String errMsg = "The fields Password and Confirm Password are not equal";
+                errorModel.AddErrorMessage(errMsg);
+                throw new Exception(errMsg);
             }
         }
 
@@ -1611,7 +1774,7 @@ namespace SS.Core
         /// Inserts the property along with it's owner, subscription period and also the property images
         /// </summary>
         /// <param name="model"></param>
-        private static void insertProperty(AdvertisePropertyViewModel model, UnitOfWork unitOfWork, User user)
+        private static Guid insertProperty(AdvertisePropertyViewModel model, UnitOfWork unitOfWork, User user)
         {
             bool doesOwnerExist = user != null && user.Owner.Select(x => x.ID).Count() > 0 ? true : false;
             Guid ownerID = doesOwnerExist ? user.Owner.Select(x => x.ID).Single() : Guid.NewGuid();
@@ -1751,6 +1914,8 @@ namespace SS.Core
 
             associateTagsWithProperty(unitOfWork, propertyID, model.selectedTags);
             PropertyHelper.AssociateImagesWithProperty(unitOfWork, model.flPropertyPics, propertyID);
+
+            return property.ID;
         }
 
         /// <summary>
@@ -2064,6 +2229,7 @@ namespace SS.Core
                     var paymentVM = new PaymentViewModel()
                     {
                         ID = payment.ID,
+                        Email = !userId.HasValue ? unitOfWork.Payment.GetEmailForPayment(payment.ID) : null,
                         PaymentMethod = payment.PaymentMethod.Name,
                         Amount = payment.Amount,
                         VoucherNumber = payment.VoucherNumber,
@@ -2111,19 +2277,19 @@ namespace SS.Core
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                Payment payment = new Payment()
-                {
-                    ID = Guid.NewGuid(),
-                    SubscriptionID = model.SubscriptionID,
-                    PaymentMethodID = model.PaymentMethodID,
-                    Amount = model.Amount,
-                    VoucherNumber = model.VoucherNumber,
-                    IsVerified = false,
-                    DateTCreated = DateTime.Now
-                };
-
                 try
                 {
+                    Payment payment = new Payment()
+                    {
+                        ID = Guid.NewGuid(),
+                        SubscriptionID = model.SubscriptionID,
+                        PaymentMethodID = model.PaymentMethodID,
+                        Amount = model.Amount,
+                        VoucherNumber = model.VoucherNumber,
+                        IsVerified = false,
+                        DateTCreated = DateTime.Now
+                    };
+
                     unitOfWork.Payment.Add(payment);
 
                     if (model.IsExtension)
@@ -2140,8 +2306,9 @@ namespace SS.Core
                     }
 
                     var user = unitOfWork.Subscription.Get(model.SubscriptionID).Owner.User;
+                    var adminUser = unitOfWork.User.GetUserByEmail(Admin.Email);
 
-                    if (sendPaymentReviewEmail(user))
+                    if (sendPaymentReviewEmail(user) && sendPaymentMadeEmail(adminUser, user, payment))
                     {
                         unitOfWork.save();
                         return true; //indicating success
@@ -2158,6 +2325,28 @@ namespace SS.Core
                 }
             }
         }
+
+        /// <summary>
+        /// sends email to the admin regarding new payments that are made
+        /// </summary>
+        /// <param name="adminUser"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private static bool sendPaymentMadeEmail(User adminUser, User user, Payment payment)
+        {
+            string subject = "JProps - New Payment Recieved ";
+            string body = "<p>A new payment of " + payment.Amount + " was made by " + user.Email + " . </p> " +
+                "Please verify payment by going to the following link and log in using the admin account : " +
+                "<br/> Go to JProps - http://www." + EFPConstants.Application.Host + "/landlordmanagement/dashboard ";
+
+            MailHelper mail = new MailHelper(adminUser.Email, subject, body, adminUser.FirstName);
+
+            if (mail.SendMail())
+                return true;
+
+            return false;
+        }
+
         /// <summary>
         /// Sends an email to the property owner, indicating that their payment is
         /// currently being reviewed
@@ -2174,7 +2363,8 @@ namespace SS.Core
                 "to your account using your recently created credentials</li> " +
                 "<li>Select the <b>Account</b> link at the top the screen</li> " +
                 "<li>Select the <b>Subscription link</b> </li> " +
-                "<li>Click the <b>Make Payment link</b></li></ol></p>";
+                "<li>Click the <b>Make Payment link</b></li></ol></p> " +
+                "<br/> Go to JProps - http://www." + EFPConstants.Application.Host + "/landlordmanagement/dashboard";
 
             MailHelper mail = new MailHelper(user.Email, subject, body, user.FirstName);
 
@@ -2232,7 +2422,7 @@ namespace SS.Core
                     extendSubscription(unitOfWork, payment, userName);//extending subscription date if necessary
                     makePropertiesAvailableForOwner(unitOfWork, subscription, propertyOwnerID, userName); //make properties available after payment
 
-                    if (sendPaymentVerifiedEmail(unitOfWork.User.Get(userId)))
+                    if (sendPaymentVerifiedEmail(subscription.Owner.User))
                     {
                         unitOfWork.save();
                     }
@@ -2480,37 +2670,42 @@ namespace SS.Core
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                try
+                using (var txscope = new TransactionScope(TransactionScopeOption.RequiresNew))
                 {
-                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-
-                    var userExist = unitOfWork.User.DoesUserExist(email);
-
-                    if (!userExist)
+                    try
                     {
-                        string errMessage = "The email address was not recognised";
-                        errorModel.AddErrorMessage(errMessage);
+                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                        var userExist = unitOfWork.User.DoesUserExist(email);
+
+                        if (!userExist)
+                        {
+                            string errMessage = "The email address was not recognised";
+                            errorModel.AddErrorMessage(errMessage);
+
+                            return false;
+                        }
+
+                        var fName = unitOfWork.User.GetUserByEmail(email).FirstName;
+                        var userId = unitOfWork.User.GetUserByEmail(email).ID;
+                        var uniqueKey = getRandomKey(5);
+
+                        savePasswordRecoveryRequest(unitOfWork, userId, uniqueKey);
+                        var emailSent = sendRecoverPasswordEmail(email, userId, fName, uniqueKey, errorModel);
+
+                        txscope.Complete();
+
+                        return emailSent;
+                    }
+                    catch (Exception ex)
+                    {
+                        string errMsg = "An error occurred while recovering password";
+                        errorModel.AddErrorMessage(errMsg);
+                        log.Error(errMsg, ex);
 
                         return false;
                     }
-
-                    var fName = unitOfWork.User.GetUserByEmail(email).FirstName;
-                    var userId = unitOfWork.User.GetUserByEmail(email).ID;
-                    var uniqueKey = getRandomKey(5);
-
-                    savePasswordRecoveryRequest(unitOfWork, userId, uniqueKey);
-
-                    return sendRecoverPasswordEmail(email, userId, fName, uniqueKey, errorModel);
                 }
-                catch (Exception ex)
-                {
-                    string errMsg = "An error occurred while recovering password";
-                    errorModel.AddErrorMessage(errMsg);
-                    log.Error(errMsg, ex);
-
-                    return false;
-                }
-
             }
         }
         /// <summary>
@@ -2523,27 +2718,26 @@ namespace SS.Core
         /// <returns></returns>
         private static bool sendRecoverPasswordEmail(string email, Guid userId, string fName, string accessCode, ErrorModel errorModel)
         {
-            string emailTo = email;
-            string subject = "JProps - Password Recovery";
-            string body = "Your access code to reset your password is <b>" + accessCode + "</b> ";
-            body += ". Please click the link below or copy and paste it in a new browser window to reset your password: <br/><br/>";
-            body += "http://www." + EFPConstants.Application.Host + "/accounts/resetpassword?userId=" + userId.ToString();
-            body += "<br/><br/><small>Your access code will expire 10 minutes after recieving this mail</small>";
-
-            MailHelper mail = new MailHelper(emailTo, subject, body, fName);
-
-            if (mail.SendMail())
+            try
             {
-                return true;
+                string emailTo = email;
+                string subject = "JProps - Password Recovery";
+                string body = "Your access code to reset your password is <b>" + accessCode + "</b> ";
+                body += ". Please click the link below or copy and paste it in a new browser window to reset your password: <br/><br/>";
+                body += "http://www." + EFPConstants.Application.Host + "/accounts/resetpassword?userId=" + userId.ToString();
+                body += "<br/><br/><small>Your access code will expire 10 minutes after recieving this mail</small>";
+
+                MailHelper mail = new MailHelper(emailTo, subject, body, fName);
+
+                return mail.SendMail();
             }
-            else
+            catch (Exception ex)
             {
                 string errMessage = "An unexpected error occurred while sending the recovery password <br /> Please try again later";
                 errorModel.AddErrorMessage(errMessage);
-
                 log.Error(errMessage);
 
-                return false;
+                throw new Exception(errMessage, ex);
             }
         }
 
@@ -2661,9 +2855,11 @@ namespace SS.Core
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
                 UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                var userName = String.Empty;
                 try
                 {
                     var subscription = unitOfWork.Subscription.Get(subscriptionID);
+                    userName = subscription.Owner.User.Email;
                     subscription.IsActive = false;
 
                     var newSubscriptionType = unitOfWork.SubscriptionType
@@ -2677,7 +2873,7 @@ namespace SS.Core
                         DateTCreated = DateTime.Now
                     };
 
-                    //ensure that users who have not subscribed can cahnge their subsc
+                    //ensure that users who have not subscribed can change their subscription
 
                     if (newSubscriptionType.MonthlyCost < subscription.SubscriptionType.MonthlyCost)
                     {
@@ -2689,12 +2885,14 @@ namespace SS.Core
                         newSubscription.IsActive = true;
 
                         requestModel.AddMessage(msg);
+
+                        makePropertiesAvailableForOwner(unitOfWork, newSubscription, Guid.Empty, userName);
                     }
                     else
                     {
                         if (period.HasValue)
                         {
-                            var msg = "A payment of " + newSubscriptionType.MonthlyCost + " is required to activate your subscription. <br />";
+                            var msg = "A payment of " + (newSubscriptionType.MonthlyCost * period.Value) + " is required to activate your subscription. <br />";
                             msg += "Your properties will not be displayed until payment is confirmed";
 
                             newSubscription.Period = period.Value;
@@ -2874,18 +3072,10 @@ namespace SS.Core
                     switch (subscription.SubscriptionType.ID)
                     {
                         case PropertySubscriptionType.Basic:
-                            if ((propertiesCount + 1) > 1)
+                            if ((propertiesCount + 1) > 3)
                             {
-                                adAccessErrMessage = "Basic subscription is only limited to 1 properties "
-                                    + "Please upgrade your subscription to add more than 1 properties";
-                                return false;
-                            }
-                            break;
-
-                        case PropertySubscriptionType.Realtor:
-                            if ((propertiesCount + 1) > 5)
-                            {
-                                adAccessErrMessage = "Realtor subscription is only limited to 6 properties";
+                                adAccessErrMessage = "Basic subscription is only limited to 3 properties "
+                                    + "Please upgrade your subscription to add more than 3 properties";
                                 return false;
                             }
                             break;
@@ -2980,29 +3170,46 @@ namespace SS.Core
         /// <returns></returns>
         public static IEnumerable<RequisitionViewModel> GetRequisitionHistory(Guid userId)
         {
+            return GetRequisitions(userId, true);
+        }
+
+        /// <summary>
+        /// Gets the total unseen messages
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static int GetUnseenMsgsCount(Guid userId)
+        {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
                 try
                 {
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                    List<RequisitionViewModel> requisitionInfo = null;
-                    var requisitions = unitOfWork.PropertyRequisition.GetRequestsHistoryByUserId(userId);
-
-                    var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
-                    bool isUserPropOwner = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
-
-                    if (isUserPropOwner)
-                        requisitionInfo = PropertyHelper.populateRequisitionVMForOwner(unitOfWork, requisitions);
-                    else
-                        requisitionInfo = PropertyHelper.populateRequisitionVMForRequestor(unitOfWork, requisitions);
-                    
-                    return requisitionInfo;
+                    return unitOfWork.Message.GetTotUnseenForUser(userId);
                 }
                 catch (Exception ex)
                 {
-                    log.Error("Error occurred while retrieving the requisition history", ex);
-                    return null;
+                    log.Error("Error occurred while retrieving the total unseen messages for user + " + userId, ex);
+                    return 0;
+                }
+            }
+        }
+
+        public static int GetUnseenReqsCount(Guid userId)
+        {
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                try
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    return unitOfWork.PropertyRequisition.GetTotUnseenForUser(userId);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Error occurred while retrieving the total unseen requisition for user + " + userId, ex);
+                    return 0;
                 }
             }
         }

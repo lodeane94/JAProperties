@@ -66,5 +66,13 @@ namespace SS.Models.Repositories
         {
             return EasyFindPropertiesEntities.Payment.Count();
         }
+
+        public String GetEmailForPayment(Guid ID)
+        {
+            return EasyFindPropertiesEntities.Payment
+                .Where(x => x.ID.Equals(ID))
+                .Select(x => x.Subscription.Owner.User.Email)
+                .SingleOrDefault();
+        }
     }
 }

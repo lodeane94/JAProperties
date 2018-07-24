@@ -7,14 +7,14 @@
 {
 
     (function(){
-	$.getScript('/Scripts/MainScript.js', function () {
-            //initialization of bootstrap popover
-            $('[data-toggle="popover"]').popover({
-                trigger: 'click',
-                container: 'body'
-            });
+    $.getScript('/Scripts/MainScript.js', function () {
+    //initialization of bootstrap popover
+    $('[data-toggle="popover"]').popover({
+    trigger: 'click',
+    container: 'body'
+    });
 
-        });
+    });
     $('#dashboard').attr('class','active');
     })();
 }
@@ -38,7 +38,7 @@
         <br />
     }
 
-	if (TempData["errorMsg"] != null)
+    if (TempData["errorMsg"] != null)
     {
         <div class="row">
             <div class="col-md-12">
@@ -55,6 +55,7 @@
     <div class="row">
         <div class="col-md-2">
             <div class="management-action">
+                @{var isuserPropertyOwner = false;}
                 @if (ViewBag.isUserPropOwner != null && ViewBag.isUserPropOwner)
                 {
                     <a href="properties" class="action active">
@@ -63,27 +64,25 @@
                         </div>
                         <div class="management-action-title">Properties</div>
                     </a>
+                    isuserPropertyOwner = true;
                 }
-                else
-                {
-                    <a href="saved-properties" class="action active">
-                        <div class="img-circle img-circle-sm" id="saved-properties">
-                            <i class="fa fa-thumbs-up"></i>
-                        </div>
-                        <div class="management-action-title">Liked Properties</div>
-                    </a>
-                }
+                <a href="saved-properties" class="action @(!isuserPropertyOwner ? "active" : "")">
+                    <div class="img-circle img-circle-sm" id="saved-properties">
+                        <i class="fa fa-thumbs-up"></i>
+                    </div>
+                    <div class="management-action-title">Liked Properties</div>
+                </a>
                 <a href="messages" class="action">
                     <div class="img-circle img-circle-sm" id="messages">
                         <i class="fa fa-envelope-o"></i>
                     </div>
-                    <div class="management-action-title">Messages</div>
+                    <div class="management-action-title">Messages <span id="notif-msg" class="notif-alert">(@ViewBag.unseenMsgCount)</span></div>
                 </a>
                 <a href="requisitions" class="action">
                     <div class="img-circle img-circle-sm" id="requisitions">
                         <i class="fa fa-hand-paper-o"></i>
                     </div>
-                    <div class="management-action-title">Requisitions</div>
+                    <div class="management-action-title">Requisitions <span id="notif-req" class="notif-alert">(@ViewBag.unseenReqCount)</span></div>
                 </a>
                 <!--
                 <a href="meetings" class="action">
@@ -92,7 +91,7 @@
                     </div>
                     <div class="management-action-title">Meetings</div>
                 </a>
-                
+
                 <a href="complaints" class="action">
                     <div class="img-circle img-circle-sm" id="complaints">
                         <i class="fa fa-newspaper-o"></i>

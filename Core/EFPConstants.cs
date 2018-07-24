@@ -94,5 +94,10 @@ namespace SS.Core
             public static readonly String Body = "{body}";
         }
 
+        public static class Admin
+        {
+            public static readonly String Email = "admin@jprops.net";
+        }
+        
     }
 }

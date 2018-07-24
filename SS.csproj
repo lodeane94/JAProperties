@@ -475,6 +475,7 @@
     <Compile Include="ViewModels\PropertySearchViewModel.cs" />
     <Compile Include="ViewModels\RazorHelperModels\PropertyViewHelper.cs" />
     <Compile Include="ViewModels\RequisitionViewModel.cs" />
+    <Compile Include="ViewModels\WebInfo\ContactFormViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

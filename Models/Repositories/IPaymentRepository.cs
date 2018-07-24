@@ -13,5 +13,6 @@ namespace SS.Models.Repositories
         int GetPaymentsByOwnerIDCount(Guid ID);
         int GetAllPaymentsCount();
         bool IsPaymentVerified(Guid ID);
+        String GetEmailForPayment(Guid ID);
     }
 }

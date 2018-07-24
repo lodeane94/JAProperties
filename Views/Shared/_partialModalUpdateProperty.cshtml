@@ -1,5 +1,6 @@
 ﻿@model SS.ViewModels.Management.UpdatePropertyViewModel
 @using SS.ViewModels.RazorHelperModels
+@using SS.Core
 
 <div id="updatePropertyModalContainer" class="container-fluid">
     <div class="row">
@@ -19,7 +20,7 @@
                                     <div class="row">
                                         <div class="col-md-5">
                                             <div class="upd-property-images-ctnr">
-                                                @Html.Partial("_partialUpdatePropertyImage",Model)
+                                                @Html.Partial("_partialUpdatePropertyImage", Model)
                                             </div>
                                         </div>
                                         <div class="col-md-7">
@@ -48,34 +49,43 @@
                                             <label for="securitydeposit">Security Deposit</label>
                                             <input id="securitydeposit" value="@(Model.SecurityDeposit > 0 ? Model.SecurityDeposit.ToString() : "")" type="text" class="form-control" name="securitydeposit">
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="occupancy">Occupancy</label>
-                                            <input id="occupancy" value="@(Model.Occupancy > 0 ? Model.Occupancy.ToString() : "")" type="text" class="form-control" name="occupancy">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="GenderPreferenceCode">Gender Preference Code</label>
-                                            @Html.DropDownListFor(m => m.GenderPreferenceCode, PropertyViewHelper.GenderPreferenceCode, new { @class = "form-control", @required = true })
-                                        </div>
+                                        @if (Model.PropertyCategory.Equals(EFPConstants.PropertyCategory.RealEstate))
+                                        {
+                                            <div class="col-md-3">
+                                                <label for="occupancy">Occupancy</label>
+                                                <input required id="occupancy" value="@(Model.Occupancy > 0 ? Model.Occupancy.ToString() : "")" type="text" class="form-control" name="occupancy">
+                                            </div>
+                                            if (Model.AdType.Equals(EFPConstants.PropertyAdType.Rent) || Model.AdType.Equals(EFPConstants.PropertyAdType.Lease))
+                                            {
+                                                <div class="col-md-3">
+                                                    <label for="GenderPreferenceCode">Gender Preference Code</label>
+                                                    @Html.DropDownListFor(m => m.GenderPreferenceCode, PropertyViewHelper.GenderPreferenceCode, new { @class = "form-control", @required = true })
+                                                </div>
+                                            }
+                                        }
                                     </div>
                                     <br />
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <label for="TotAvailableBathroom">Total Bathrooms</label>
-                                            <input id="TotAvailableBathroom" value="@(Model.TotAvailableBathroom > 0 ? Model.TotAvailableBathroom.ToString() : "")" type="text" class="form-control" name="TotAvailableBathroom">
-                                        </div>
-                                        <br /><br />
-                                        <div class="col-md-3">
-                                            <label for="TotRooms">Total Bedrooms</label>
-                                            <input id="TotRooms" value="@(Model.TotRooms > 0 ? Model.TotRooms.ToString() : "")" type="text" class="form-control" name="TotRooms">
-                                        </div>
+                                        @if (Model.PropertyCategory.Equals(EFPConstants.PropertyCategory.RealEstate))
+                                        {
+                                            <div class="col-md-3">
+                                                <label for="TotAvailableBathroom">Total Bathrooms</label>
+                                                <input required id="TotAvailableBathroom" value="@(Model.TotAvailableBathroom > 0 ? Model.TotAvailableBathroom.ToString() : "")" type="text" class="form-control" name="TotAvailableBathroom">
+                                            </div>
+                                            <br /><br />
+                                            <div class="col-md-3">
+                                                <label for="TotRooms">Total Bedrooms</label>
+                                                <input required id="TotRooms" value="@(Model.TotRooms > 0 ? Model.TotRooms.ToString() : "")" type="text" class="form-control" name="TotRooms">
+                                            </div>
+                                        }
                                         <div class="col-md-3">
                                             <label for="area">Area</label>
                                             <input id="area" value="@(Model.Area > 0 ? Model.Area.ToString() : "")" type="text" class="form-control" name="area" placeholder="Property Area">
                                         </div>
-                                        <div class="col-md-3">
+                                <!--        <div class="col-md-3">
                                             <label for="IsReviewable">Allow Reviews</label>
                                             @Html.DropDownListFor(m => m.IsReviewable, PropertyViewHelper.IsReviewable, new { @class = "form-control", @required = true })
-                                        </div>
+                                        </div>-->
                                     </div>
                                     <br />
                                     <div class="row">
@@ -84,13 +94,14 @@
                                             <textarea id="description" rows="4" class="form-control" name="description" required>@Model.Description</textarea>
                                         </div>
                                     </div>
-                                    <br />
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="termsagreement">Terms and Agreement</label>
-                                            <textarea id="termsagreement" rows="4" class="form-control" name="termsagreement">@Model.TermsAgreement</textarea>
-                                        </div>
-                                    </div>
+                                    <!-- <br />
+                                     <div class="row">
+                                         <div class="col-md-12">
+                                             <label for="termsagreement">Terms and Agreement</label>
+                                             <textarea id="termsagreement" rows="4" class="form-control" name="termsagreement">@Model.TermsAgreement</textarea>
+                                         </div>
+                                     </div>
+                                        -->
                                 </div>
                             </div>
                             <div class="modal-footer">

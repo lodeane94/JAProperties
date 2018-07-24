@@ -50,6 +50,12 @@
                                 <div class="alert alert-info" style="display:inline-flex;"><label>Accepted</label></div>
                             </div>
                         }
+                        else if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value && req.PropertyRequisition.ExpiryDate > DateTime.Now)
+                        {
+                            <div class="rTableCell">
+                                <div class="alert alert-info" style="display:inline-flex;"><label>Pending</label></div>
+                            </div>
+                        }
                         else if (req.PropertyRequisition.IsAccepted.HasValue && !req.PropertyRequisition.IsAccepted.Value && req.PropertyRequisition.ExpiryDate < DateTime.Now)
                         {
                             <div class="rTableCell">
