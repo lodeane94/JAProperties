@@ -1,5 +1,7 @@
-﻿using SS.Core;
+﻿using log4net;
+using SS.Core;
 using SS.Models;
+using SS.Services;
 using SS.ViewModels;
 using SS.ViewModels.Management;
 using System;
@@ -12,6 +14,14 @@ namespace SS.Controllers
 {
     public class ServicerController : Controller
     {
+        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PropertyService propertyService;
+
+        public ServicerController()
+        {
+            propertyService = new PropertyService();
+        }
+
         [HttpGet]
         public JsonResult RequestJsonDataFromUrl(String Url)
         {
@@ -192,7 +202,12 @@ namespace SS.Controllers
         [HttpGet]
         public ActionResult GetModalUpdatePropertyView(Guid ID)
         {
-            return PartialView("_partialModalUpdateProperty", PropertyHelper.GetUpdatePropertyVM(ID));
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                return PartialView("_partialModalUpdateProperty", propertyService.GetUpdatePropertyVM(ID, unitOfWork));
+            }
         }
 
         /// <summary>

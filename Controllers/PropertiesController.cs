@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using SS.Code;
 using SS.Core;
 using SS.Models;
+using SS.Services;
 using SS.SignalR;
 using SS.ViewModels;
 using System;
@@ -21,38 +22,36 @@ namespace SS.Controllers
 {
     public class PropertiesController : Controller
     {
-        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private string filterString = string.Empty;
-        private string conditionToBeRemoved = string.Empty;
+        private readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PropertyService propertyService;
 
-        //TODO get function to reload user id upon restart of application
-        /* PropertiesController()
-         {
-             var userId = MiscellaneousHelper.getLoggedInUser();
-
-             if (!userId.Equals(new Guid()))
-             {
-                 Session["userId"] = userId;
-             }
-         }*/
+        public PropertiesController()
+        {
+            propertyService = new PropertyService();
+        }
 
         public async Task<ActionResult> getProperties(PropertySearchViewModel model)
         {
-            var userId = Guid.Empty;
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
 
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                userId = (Guid)Session["userId"];
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var userId = Guid.Empty;
+
+                if (Session["userId"] != null)
+                {
+                    userId = (Guid)Session["userId"];
+                }
+
+                model.PgNo = model.PgNo > 0 ? model.PgNo - 1 : 0;
+
+                if (String.IsNullOrEmpty(model.SearchTerm) && PropertyHelper.CreateFilterList(model, unitOfWork).Count() < 1 && model.Tags == null)
+                    return RedirectToAction("/", "home");
+
+                featuredPropertiesSlideViewModelList = await propertyService.PopulatePropertiesViewModel(model, userId, unitOfWork);
             }
-
-            model.PgNo = model.PgNo > 0 ? model.PgNo - 1 : 0;
-
-            if (String.IsNullOrEmpty(model.SearchTerm) && PropertyHelper.createFilterList(model).Count() < 1 && model.Tags == null)
-                return RedirectToAction("/", "home");
-
-            featuredPropertiesSlideViewModelList = await PropertyHelper.PopulatePropertiesViewModel(model, userId);
-
             initPropertiesTags(model);
             initPropertiesPgValues(model);
 
@@ -100,7 +99,7 @@ namespace SS.Controllers
             if (!String.IsNullOrEmpty(model.SearchTerm))
             {
                 if (model.DistanceRadius > 0)
-                    header += "for properties that are "+ model.DistanceRadius + " KM from " + model.SearchTerm;
+                    header += "for properties that are " + model.DistanceRadius + " KM from " + model.SearchTerm;
                 else
                     header += "for the search : " + model.SearchTerm;
             }
@@ -124,52 +123,58 @@ namespace SS.Controllers
             return header;
         }
 
-        public async Task<ActionResult> getNearbyProperties(String distanceMtxInfo, int ? pgNo, double ? distanceRadius)
+        public async Task<ActionResult> getNearbyProperties(String distanceMtxInfo, int? pgNo, double? distanceRadius)
         {
-            var userId = Guid.Empty;
             List<FeaturedPropertiesSlideViewModel> featuredPropertiesSlideViewModelList = null;
-            var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
+            var userId = Guid.Empty;
 
-            if (pgNo.HasValue)
-                searchViewModel.PgNo = pgNo.Value;
-
-            if (!distanceRadius.HasValue)
-                searchViewModel.DistanceRadius = 20;
-            else
-                searchViewModel.DistanceRadius = distanceRadius.Value;
-
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                userId = (Guid)Session["userId"];
-            }
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-            if (!String.IsNullOrEmpty(distanceMtxInfo) && !distanceMtxInfo.Equals("null"))
-                Session["distanceMtxInfo"] = distanceMtxInfo;
-            else if (Session["distanceMtxInfo"] != null)
-                distanceMtxInfo = (String)Session["distanceMtxInfo"];
-            else
-                return RedirectToAction("/", "home");
+                var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
 
-            if (searchViewModel == null)
-                return RedirectToAction("/", "home");
+                if (pgNo.HasValue)
+                    searchViewModel.PgNo = pgNo.Value;
 
-            if (!String.IsNullOrEmpty(distanceMtxInfo))
-            {
-                //distance radius is in KM TODO give option to convert to miles
-                //will be used to eliminate properties that are of further distance
-                var model = JsonConvert.DeserializeObject<NearbyPropertySearchViewModel>(distanceMtxInfo);
-                var revisedModel = PropertyHelper.NarrowSearchResultsToDistanceRadius(model, searchViewModel.DistanceRadius);
+                if (!distanceRadius.HasValue)
+                    searchViewModel.DistanceRadius = 20;
+                else
+                    searchViewModel.DistanceRadius = distanceRadius.Value;
 
-                searchViewModel.PgNo = searchViewModel.PgNo > 0 ? searchViewModel.PgNo - 1 : 0;
-                featuredPropertiesSlideViewModelList = await PropertyHelper.PopulatePropertiesViewModel(revisedModel, searchViewModel, userId);
+                if (Session["userId"] != null)
+                {
+                    userId = (Guid)Session["userId"];
+                }
 
-                ViewBag.SearchTerm = searchViewModel.SearchTerm;
-                ViewBag.SearchType = searchViewModel.SearchType;
-                ViewBag.DistanceRadius = searchViewModel.DistanceRadius;
-                ViewBag.NearByPropModel = revisedModel;
+                if (!String.IsNullOrEmpty(distanceMtxInfo) && !distanceMtxInfo.Equals("null"))
+                    Session["distanceMtxInfo"] = distanceMtxInfo;
+                else if (Session["distanceMtxInfo"] != null)
+                    distanceMtxInfo = (String)Session["distanceMtxInfo"];
+                else
+                    return RedirectToAction("/", "home");
 
-                initPropertiesTags(searchViewModel);
-                initPropertiesPgValues(searchViewModel);
+                if (searchViewModel == null)
+                    return RedirectToAction("/", "home");
+
+                if (!String.IsNullOrEmpty(distanceMtxInfo))
+                {
+                    //distance radius is in KM TODO give option to convert to miles
+                    //will be used to eliminate properties that are of further distance
+                    var model = JsonConvert.DeserializeObject<NearbyPropertySearchViewModel>(distanceMtxInfo);
+                    var revisedModel = propertyService.NarrowSearchResultsToDistanceRadius(model, searchViewModel.DistanceRadius);
+
+                    searchViewModel.PgNo = searchViewModel.PgNo > 0 ? searchViewModel.PgNo - 1 : 0;
+                    featuredPropertiesSlideViewModelList = await propertyService.PopulatePropertiesViewModel(revisedModel, searchViewModel, userId, unitOfWork);
+
+                    ViewBag.SearchTerm = searchViewModel.SearchTerm;
+                    ViewBag.SearchType = searchViewModel.SearchType;
+                    ViewBag.DistanceRadius = searchViewModel.DistanceRadius;
+                    ViewBag.NearByPropModel = revisedModel;
+
+                    initPropertiesTags(searchViewModel);
+                    initPropertiesPgValues(searchViewModel);
+                }
             }
 
             return View("getProperties", featuredPropertiesSlideViewModelList);
@@ -178,9 +183,16 @@ namespace SS.Controllers
         [HttpGet]
         public async Task<JsonResult> GetPropertiesCoordinates(PropertySearchViewModel model)
         {
-            Array propertyCoordinates = await PropertyHelper.PopulateModelForPropertyCoordinates(model);
+            Array propertyCoordinates = null;
 
-            Session["PropertySearchViewModel"] = model;
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                propertyCoordinates = await propertyService.PopulateModelForPropertyCoordinates(model, unitOfWork);
+
+                Session["PropertySearchViewModel"] = model;
+            }
 
             return Json(propertyCoordinates, JsonRequestBehavior.AllowGet);
         }
@@ -188,7 +200,16 @@ namespace SS.Controllers
         [HttpPost]
         public async Task<JsonResult> GetPropertiesCounts(PropertySearchViewModel model)
         {
-            return Json(await PropertyHelper.GetPropertiesCount(model), JsonRequestBehavior.AllowGet);
+            int count = 0;
+
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                
+                count = await propertyService.GetPropertiesCount(model, unitOfWork);
+            }
+
+            return Json(count, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -196,9 +217,14 @@ namespace SS.Controllers
         {
             int count = 0;
 
-            if (model != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                count = await PropertyHelper.GetNearbyPropertiesCount(model, searchViewModel);
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (model != null)
+                {
+                    count = await propertyService.GetNearbyPropertiesCount(model, searchViewModel, unitOfWork);
+                }
             }
 
             return Json(count, JsonRequestBehavior.AllowGet); ;
@@ -206,11 +232,20 @@ namespace SS.Controllers
 
         public ActionResult getProperty(Guid id)
         {
-            var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
+            SelectedPropertyViewModel property = null;
 
-            ViewBag.searchViewModel = searchViewModel;
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-            return View(PropertyHelper.GetProperty(id));
+                var searchViewModel = (PropertySearchViewModel)Session["PropertySearchViewModel"];
+
+                ViewBag.searchViewModel = searchViewModel;
+
+                property = propertyService.GetProperty(id, unitOfWork);
+            }
+
+            return View(property);
         }
 
         /// <summary>
@@ -221,7 +256,7 @@ namespace SS.Controllers
         private Dictionary<String, Boolean> setPropertyTags()
         {
             var uncheckedTags = new Dictionary<String, Boolean>();
-            var tags = PropertyHelper.GetSearchResultPropertyTags();
+            var tags = propertyService.GetSearchResultPropertyTags();
 
             foreach (var tag in tags)
             {
@@ -239,7 +274,7 @@ namespace SS.Controllers
         private Dictionary<String, Boolean> setPropertyTags(Dictionary<String, Boolean> checkedTags)
         {
             var checkedPTags = new Dictionary<String, Boolean>();
-            var tags = PropertyHelper.GetSearchResultPropertyTags();
+            var tags = propertyService.GetSearchResultPropertyTags();
             bool isChecked;
 
             foreach (var tag in tags)
@@ -262,8 +297,6 @@ namespace SS.Controllers
 
             return checkedPTags;
         }
-        /*
-         * makes requisition for the property that the user selected if they wanted to use the system*/
 
         /// <summary>
         /// Allows viewers to request the property or ask a question about the property
@@ -277,15 +310,21 @@ namespace SS.Controllers
         public JsonResult RequestProperty(PropertyRequisition request, String contactPurpose)
         {
             ErrorModel errorModel = new ErrorModel();
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (Session["userId"] != null)
+                    using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                     {
-                        Guid userId = (Guid)Session["userId"];
+                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                        PropertyHelper.RequestProperty(request, contactPurpose, userId, errorModel);
+                        if (Session["userId"] != null)
+                        {
+                            Guid userId = (Guid)Session["userId"];
+
+                            propertyService.ContactPropertyOwner(request, contactPurpose, userId, errorModel, unitOfWork);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -311,13 +350,18 @@ namespace SS.Controllers
         {
             string result = "False";
 
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
-                result = PropertyHelper.SaveLikedProperty(userId, propertyId).ToString();
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+                    result = propertyService.SaveLikedProperty(userId, propertyId, unitOfWork).ToString();
+                }
+                else
+                    result = "Sign in to add property to your liked list";
             }
-            else
-                result = "Sign in to add property to your liked list";
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }

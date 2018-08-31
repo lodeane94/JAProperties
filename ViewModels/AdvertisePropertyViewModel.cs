@@ -18,6 +18,7 @@ namespace SS.ViewModels
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public String CellNum { get; set; }
+        public String AreaCode { get; set; }
         public String Email { get; set; }
         public String Organization { get; set; }
         public String Password { get; set; }

@@ -57,7 +57,12 @@
         <div class="row">
             <div class="col-md-12">
                 <label for="cellnum">Cell Number</label>
-                <input id="cellnum" value="" type="text" class="form-control" name="cellnum" required>
+				<div class="input-group mb-3">
+					  <div class="input-group-prepend">
+						<input style="max-width:7em;" id="areacode" name="areacode" placeholder="Area Code" value="" class="form-control" required />
+					  </div>
+					  <input id="cellnum" value="" type="text" class="form-control" name="cellnum" required />
+				</div>
             </div>
         </div>
         <br />

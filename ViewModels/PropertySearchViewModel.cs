@@ -27,7 +27,7 @@ namespace SS.ViewModels
         public String SearchTerm { get; set; }
         public System.Collections.Generic.Dictionary<String, Boolean> Tags { get; set; }
         public int PgNo { get; set; }
-        public int take { get; set; } = 1;
+        public int take { get; set; } = 20;
         public String coordinateLat { get; set; }
         public String coordinateLng { get; set; }
         public String SearchType { get; set; }

@@ -69,7 +69,7 @@ namespace SS.Core
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new System.Net.NetworkCredential("jprops@jprops.net", "Gihtiwm88*");
                 smtp.EnableSsl = false;
-                throw new Exception("trst");
+                //throw new Exception("trst");
                 smtp.Send(mail);
 
                 return true;

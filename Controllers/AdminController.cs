@@ -1,4 +1,9 @@
-﻿using System;
+﻿using log4net;
+using SS.Models;
+using SS.Services;
+using SS.ViewModels.Management;
+using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace SS.Controllers
@@ -6,15 +11,30 @@ namespace SS.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        private readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PaymentService paymentService;
+
+        public AdminController()
+        {
+            paymentService = new PaymentService();
+        }
+
         public ActionResult VerifyPayments(int pgNo = 0)
         {
-            int pgTake = 16;
+            IEnumerable<PaymentViewModel> paymentsVM = null;
 
-            var paymentsVM = Core.PropertyHelper.GetPayments(pgTake, pgNo,null);
-            ViewBag.pgNo = pgNo;
-            ViewBag.pgTake = pgTake;
-            ViewBag.itemsCount = Core.PropertyHelper.GetPaymentsCount(null);
-            ViewBag.isAdmin = true;
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                int pgTake = 16;
+
+                paymentsVM = paymentService.GetPayments(pgTake, pgNo, null, unitOfWork);
+                ViewBag.pgNo = pgNo;
+                ViewBag.pgTake = pgTake;
+                ViewBag.itemsCount = paymentService.GetPaymentsCount(null, unitOfWork);
+                ViewBag.isAdmin = true;
+            }
 
             return View(paymentsVM);
         }
@@ -28,7 +48,13 @@ namespace SS.Controllers
             {
                 var userId = (Guid)Session["userId"];
 
-                errorModel = Core.PropertyHelper.VerifyPayment(paymentID, userId);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    errorModel = paymentService.VerifyPayment(paymentID, userId, unitOfWork);
+                }
+
                 return Json(errorModel);
             }
 

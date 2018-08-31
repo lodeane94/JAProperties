@@ -187,7 +187,6 @@
     <Content Include="Content\normalize.css" />
     <Content Include="Content\safe-state.png" />
     <Content Include="Content\Site.css" />
-    <Content Include="Content\sunset.jpg" />
     <Content Include="Content\twitter.svg" />
     <Content Include="Content\user.svg" />
     <Content Include="Content\EmailTemplate.html" />
@@ -206,7 +205,6 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="App_Data\EasyFindProperties-2017-06-10.bak" />
     <EntityDeploy Include="Models\EasyFindProperties.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>EasyFindProperties.Designer.cs</LastGenOutput>
@@ -214,7 +212,6 @@
     <Content Include="Models\EasyFindProperties.edmx.diagram">
       <DependentUpon>EasyFindProperties.edmx</DependentUpon>
     </Content>
-    <Content Include="App_Data\EasyFindProperties_22112017.bak" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\fullcalendar.min.js" />
     <Content Include="Scripts\GoogleMapJsScript.js" />
@@ -237,7 +234,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\MainScript.js" />
-    <Content Include="Scripts\MainScript_discard.js" />
     <Content Include="Scripts\ManagementScript.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\moment-with-locales.js" />
@@ -254,12 +250,10 @@
     <Compile Include="Controllers\ServicerController.cs" />
     <Compile Include="Core\EFPConstants.cs" />
     <Compile Include="Core\ErrorModel.cs" />
-    <Compile Include="Core\FilterHelper.cs" />
     <Compile Include="Core\MailHelper.cs" />
     <Compile Include="Core\MailModel.cs" />
     <Compile Include="Core\MiscellaneousHelper.cs" />
     <Compile Include="Core\NearbyPropertySearchModel.cs" />
-    <Compile Include="Core\Parish.cs" />
     <Compile Include="Core\PropertyConstants.cs" />
     <Compile Include="Core\PropertyHelper.cs" />
     <Compile Include="Controllers\AdvertismentsController.cs" />
@@ -444,6 +438,13 @@
     </Compile>
     <Compile Include="Quartz\JobScheduler.cs" />
     <Compile Include="Quartz\Jobs\SubscriptionPropertyMaintainanceJob.cs" />
+    <Compile Include="Services\MailingService.cs" />
+    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Services\PaymentService.cs" />
+    <Compile Include="Services\PropertyRequisitionService.cs" />
+    <Compile Include="Services\PropertyService.cs" />
+    <Compile Include="Services\SubscriptionService.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="SignalR\ApplicationHub.cs" />
     <Compile Include="SignalR\DashboardHub.cs" />
     <Compile Include="Startup.cs" />
@@ -452,7 +453,6 @@
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LandlordManagementController.cs" />
-    <Compile Include="Controllers\MailController.cs" />
     <Compile Include="Controllers\PropertiesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -484,20 +484,15 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Home.cshtml" />
     <Content Include="Views\Accounts\Registration_discard.cshtml" />
-    <Content Include="Views\Shared\_OwnerInformationRegistration.cshtml" />
-    <Content Include="Views\Shared\_RoomInformationRegistration.cshtml" />
     <Content Include="Views\Accounts\SignIn.cshtml" />
     <Content Include="Views\Shared\_ManagementLayout.cshtml" />
     <Content Include="Views\LandlordManagement\Feed.cshtml" />
     <Content Include="Views\LandlordManagement\Requisitions.cshtml" />
     <Content Include="Views\Accounts\Requisition.cshtml" />
     <Content Include="Views\LandlordManagement\Utilities.cshtml" />
-    <Content Include="Views\Shared\_UtilityManagement.cshtml" />
     <Content Include="Views\Shared\_BillsForm.cshtml" />
     <Content Include="Views\LandlordManagement\Complaints.cshtml" />
     <Content Include="Views\LandlordManagement\Dashboard.cshtml" />
-    <Content Include="Views\Shared\_HouseInformationRegistration.cshtml" />
-    <Content Include="Views\Shared\_LandInformationRegistration.cshtml" />
     <Content Include="Views\Properties\Rooms.cshtml" />
     <Content Include="Views\Shared\_ModelManagement.cshtml" />
     <Content Include="Views\Accounts\PremiumFeature.cshtml" />
@@ -549,6 +544,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Uploads\" />
     <Folder Include="Views\Enrolment\" />
     <Folder Include="Views\Image\" />

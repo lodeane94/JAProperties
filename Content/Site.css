@@ -475,6 +475,11 @@ a.clickable-box-link {
         color: #BDBDBD;
     }
 
+input,
+input::-webkit-input-placeholder {
+    font-size:15px;
+}
+
 input:-moz-placeholder,
 textarea:-moz-placeholder {
     color: #BDBDBD;

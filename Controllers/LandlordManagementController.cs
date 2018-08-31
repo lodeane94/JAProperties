@@ -8,12 +8,32 @@ using SS.Core;
 using SS.ViewModels;
 using SS.SignalR;
 using SS.ViewModels.Management;
+using log4net;
+using SS.Services;
 
 namespace SS.Controllers
 {
     [Authorize]
     public class LandlordManagementController : Controller
     {
+        private readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PropertyService propertyService;
+        private readonly PropertyRequisitionService propertyRequisitionService;
+        private readonly MessageService messageService;
+        private readonly UserService userService;
+        private readonly PaymentService paymentService;
+        private readonly SubscriptionService subscriptionService;
+
+        public LandlordManagementController()
+        {
+            propertyService = new PropertyService();
+            propertyRequisitionService = new PropertyRequisitionService();
+            messageService = new MessageService();
+            userService = new UserService();
+            paymentService = new PaymentService();
+            subscriptionService = new SubscriptionService();
+        }
+
         //loads the help page
         public ActionResult Help()
         {
@@ -22,33 +42,38 @@ namespace SS.Controllers
         //loads dashboard page
         public ActionResult Dashboard()
         {
-            if (Session["username"] != null && Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
-
-                ViewBag.userId = Session["userId"];
-                ViewBag.isUserPropOwner = isUserPropOwner;
-                ViewBag.isUserConsumer = Session["isUserConsumer"] != null ? (bool)Session["isUserConsumer"] : false;
-                ViewBag.isUserTennant = Session["isUserTennant"] != null ? (bool)Session["isUserTennant"] : false;
-
-                if (isUserPropOwner)
+                if (Session["username"] != null && Session["userId"] != null)
                 {
-                    ViewBag.propertyImages = PropertyHelper.GetAllPropertyImages(userId);
+                    var userId = (Guid)Session["userId"];
+
+                    var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
+
+                    ViewBag.userId = Session["userId"];
+                    ViewBag.isUserPropOwner = isUserPropOwner;
+                    ViewBag.isUserConsumer = Session["isUserConsumer"] != null ? (bool)Session["isUserConsumer"] : false;
+                    ViewBag.isUserTennant = Session["isUserTennant"] != null ? (bool)Session["isUserTennant"] : false;
+
+                    if (isUserPropOwner)
+                    {
+                        ViewBag.propertyImages = propertyService.GetAllPropertyImages(userId, unitOfWork);
+                    }
+                    else
+                    {
+                        ViewBag.propertyImages = propertyService.GetAllSavedPropertyImages(userId, unitOfWork);
+                    }
+
+                    ViewBag.unseenMsgCount = messageService.GetUnseenMsgsCount(userId, unitOfWork);
+                    ViewBag.unseenReqCount = propertyRequisitionService.GetUnseenReqsCount(userId, unitOfWork);
+
+                    return View();
                 }
                 else
-                {
-                    ViewBag.propertyImages = PropertyHelper.GetAllSavedPropertyImages(userId);
-                }
-
-                ViewBag.unseenMsgCount = PropertyHelper.GetUnseenMsgsCount(userId);
-                ViewBag.unseenReqCount = PropertyHelper.GetUnseenReqsCount(userId);
-
-                return View();
+                    return RedirectToAction("signin", "accounts");
             }
-            else
-                return RedirectToAction("signin", "accounts");
         }
 
         [HttpPost]
@@ -60,7 +85,7 @@ namespace SS.Controllers
                 using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                    PropertyHelper.AcceptPropertyRequisition(unitOfWork, reqID);
+                    propertyRequisitionService.AcceptPropertyRequisition(unitOfWork, reqID);
                 }
             }
             catch (Exception ex)
@@ -86,7 +111,7 @@ namespace SS.Controllers
                 using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
                     UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
-                    PropertyHelper.CancelOrDenyPropertyRequisition(unitOfWork, reqID, isUserPropOwner);
+                    propertyRequisitionService.CancelOrDenyPropertyRequisition(unitOfWork, reqID, isUserPropOwner);
                 }
             }
             catch (Exception ex)
@@ -102,13 +127,13 @@ namespace SS.Controllers
 
 
         /// <summary>
-        /// returns latest 5 messages for a specific user
+        /// returns messages for a specific user
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="take"></param>
         /// <returns></returns>
         //
-        public JsonResult getMessages()
+        public JsonResult GetMessages()
         {
             List<MessageViewModel> messagesViewModel = null;
 
@@ -120,31 +145,7 @@ namespace SS.Controllers
                 {
                     var userId = (Guid)Session["userId"];
 
-                    var messages = unitOfWork.Message.GetMsgsForUserID(userId);
-                    messagesViewModel = new List<MessageViewModel>();
-
-                    foreach (var msg in messages)
-                    {
-                        User user = null;
-
-                        if(userId.Equals(msg.From))
-                            user = unitOfWork.User.Get(msg.To);
-                        else
-                            user = unitOfWork.User.Get(msg.From);
-
-                        MessageViewModel messageViewModel = new MessageViewModel()
-                        {
-                            ID = msg.ID,
-                            From = user.FirstName + " " + user.LastName,
-                            CellNum = user.CellNum,
-                            Email = user.Email,
-                            Msg = msg.Msg,
-                            Seen = msg.Seen,
-                            DateTCreated = msg.DateTCreated.ToShortDateString()
-                        };
-
-                        messagesViewModel.Add(messageViewModel);
-                    }
+                    messagesViewModel = messageService.GetMessages(userId, unitOfWork);
                 }
             }
 
@@ -152,40 +153,11 @@ namespace SS.Controllers
         }
 
         /// <summary>
-        /// Updates the seen column on the selected message
-        /// </summary>
-        /// <param name="unitOfWork"></param>
-        /// <param name="id"></param>
-        private void updateMsgSeen(UnitOfWork unitOfWork, Guid id, Guid userId)
-        {
-            var msgThread = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
-            var wasUpdated = false;
-
-            foreach (var msg in msgThread)
-            {
-                var from = msg.From;
-
-                if (!userId.Equals(from) && !msg.Seen)
-                {
-                    msg.Seen = true;
-                    unitOfWork.save();
-                    wasUpdated = true;
-                }
-            }
-
-            if (wasUpdated)
-            {
-                var user = unitOfWork.User.Get(userId);
-                DashboardHub.BroadcastUserMessages(user.Email);
-            }
-        }
-
-        /// <summary>
         /// removes the selected message from the system
         /// </summary>
         /// <param name="id"></param>
         [HttpGet]
-        public void deleteMsg(Guid id)
+        public void DeleteMsg(Guid id)
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
@@ -194,25 +166,7 @@ namespace SS.Controllers
                 if ((Guid)Session["userId"] != null)
                 {
                     var userId = (Guid)Session["userId"];
-                    var userTo = unitOfWork.User.Get(userId);
-
-                    var message = unitOfWork.Message.Get(id);
-
-                    if (message != null)
-                    {
-                        MessageTrash messageTrash = new MessageTrash()
-                        {
-                            UserID = userId,
-                            MessageID = id,
-                            DateTCreated = DateTime.Now
-                        };
-
-                        unitOfWork.MessageTrash.Add(messageTrash);
-                        unitOfWork.save();
-
-                        //broadcast the new messages to the recipient 
-                        DashboardHub.BroadcastUserMessages(userTo.Email);
-                    }
+                    messageService.DeleteMsg(id, userId, unitOfWork);
                 }
             }
         }
@@ -223,24 +177,23 @@ namespace SS.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult getMsgThread(Guid id)
+        public JsonResult GetMsgThread(Guid id)
         {
-            //using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
-            // {
-            EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities();
-            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
             IEnumerable<Message> messages = null;
 
-            if ((Guid)Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                updateMsgSeen(unitOfWork, id, userId);
-                messages = unitOfWork.Message.GetMsgThreadByMsgID(id, userId);
+                if ((Guid)Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    messages = messageService.GetMsgThread(unitOfWork, id, userId);
+                }
+
+                return Json(messages, JsonRequestBehavior.AllowGet); ;
             }
-
-            return Json(messages, JsonRequestBehavior.AllowGet); ;
-            //  }
         }
 
         /// <summary>
@@ -249,7 +202,7 @@ namespace SS.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public void deleteMsgThread(Guid id)
+        public void DeleteMsgThread(Guid id)
         {
             using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
@@ -259,7 +212,7 @@ namespace SS.Controllers
                 {
                     var userId = (Guid)Session["userId"];
 
-                    PropertyHelper.deleteMsgsFromMsgThread(unitOfWork, userId, id);
+                    messageService.DeleteMsgsFromMsgThread(unitOfWork, userId, id);
                 }
             }
         }
@@ -284,7 +237,7 @@ namespace SS.Controllers
                     var threadId = message.ThreadId;
                     User userTo = null;
 
-                    if(userId.Equals(message.From))
+                    if (userId.Equals(message.From))
                         userTo = unitOfWork.User.Get(message.To);
                     else
                         userTo = unitOfWork.User.Get(message.From);
@@ -322,10 +275,15 @@ namespace SS.Controllers
 
             if (Session["userId"] != null)
             {
-                var userId = (Guid)Session["userId"];
-                requisitionInfo = PropertyHelper.GetRequisitions(userId, false);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var userId = (Guid)Session["userId"];
+                    requisitionInfo = propertyRequisitionService.GetRequisitions(userId, false, unitOfWork);
+                }
             }
-            
+
             return requisitionInfo;
         }
 
@@ -739,24 +697,33 @@ namespace SS.Controllers
         [HttpGet]
         public ActionResult GetManagementPropertiesView()
         {
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                ViewBag.propertyImages = PropertyHelper.GetAllPropertyImages(userId);
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    ViewBag.propertyImages = propertyService.GetAllPropertyImages(userId, unitOfWork);
+                }
             }
-
             return PartialView("_partialPropertiesOwned");
         }
 
         [HttpGet]
         public ActionResult GetSavedPropertiesView()
         {
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                ViewBag.propertyImages = PropertyHelper.GetAllSavedPropertyImages(userId);
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+
+                    ViewBag.propertyImages = propertyService.GetAllSavedPropertyImages(userId, unitOfWork);
+                }
             }
 
             return PartialView("_partialPropertiesSaved");
@@ -809,8 +776,14 @@ namespace SS.Controllers
         /// <returns></returns>
         public ActionResult UpdateProperty(UpdatePropertyViewModel model)
         {
-            var isUpdated = PropertyHelper.UpdateProperty(model);
-            TempData["PropertyUpdated"] = isUpdated;
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                var isUpdated = propertyService.UpdateProperty(model, unitOfWork);
+
+                TempData["PropertyUpdated"] = isUpdated;
+            }
 
             return RedirectToAction("dashboard");
         }
@@ -822,8 +795,13 @@ namespace SS.Controllers
         [HttpPut]
         public ActionResult UpdatePropertyPrimaryImg(Guid propertyId, Guid imgId)
         {
-            if (PropertyHelper.UpdatePropertyPrimaryImg(propertyId, imgId))
-                return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (propertyService.UpdatePropertyPrimaryImg(propertyId, imgId, unitOfWork))
+                    return PartialView("_partialUpdatePropertyImage", propertyService.GetUpdatePropertyVM_PropertyImages(propertyId, unitOfWork));
+            }
 
             return null;
         }
@@ -835,9 +813,13 @@ namespace SS.Controllers
         [HttpDelete]
         public ActionResult DeletePropertyImage(Guid propertyId, Guid imageId)
         {
-            if (PropertyHelper.DeletePropertyImage(imageId))
-                return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(propertyId));
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
+                if (propertyService.DeletePropertyImage(imageId, unitOfWork))
+                    return PartialView("_partialUpdatePropertyImage", propertyService.GetUpdatePropertyVM_PropertyImages(propertyId, unitOfWork));
+            }
             return null;
         }
 
@@ -848,8 +830,13 @@ namespace SS.Controllers
         [HttpPost]
         public ActionResult AddPropertyImage(HttpPostedFileBase propertyImgUpload, Guid ID)
         {
-            if (!String.IsNullOrEmpty(PropertyHelper.AssociateImageWithProperty(propertyImgUpload, ID)))
-                return PartialView("_partialUpdatePropertyImage", PropertyHelper.GetUpdatePropertyVM_PropertyImages(ID));
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (!String.IsNullOrEmpty(propertyService.AssociateImageWithProperty(propertyImgUpload, ID, unitOfWork)))
+                    return PartialView("_partialUpdatePropertyImage", propertyService.GetUpdatePropertyVM_PropertyImages(ID, unitOfWork));
+            }
 
             return null;
         }
@@ -860,15 +847,19 @@ namespace SS.Controllers
             if (Session["userId"] != null)
             {
                 var userId = (Guid)Session["userId"];
-
-                if (PropertyHelper.IsAdAccessValid(userId))
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    TempData["layout"] = "~/Views/Shared/_ManagementLayout.cshtml";
-                    TempData["calledByManagement"] = true;
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                    return RedirectToAction("advertiseproperty", "accounts");
+                    if (subscriptionService.IsAdAccessValid(userId, unitOfWork))
+                    {
+                        TempData["layout"] = "~/Views/Shared/_ManagementLayout.cshtml";
+                        TempData["calledByManagement"] = true;
+
+                        return RedirectToAction("advertiseproperty", "accounts");
+                    }
+                    else TempData["errorMsg"] = subscriptionService.GetAdAccessErrMessage();
                 }
-                else TempData["errorMsg"] = PropertyHelper.GetAdAccessErrMessage();
             }
             else
                 TempData["errorMsg"] = "User session has ended. Please log out then log in";
@@ -899,7 +890,12 @@ namespace SS.Controllers
                 var userId = (Guid)Session["userId"];
                 var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
 
-                profileVM = PropertyHelper.PopulateProfileViewModel(userId, isUserPropOwner);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    profileVM = userService.PopulateProfileViewModel(userId, isUserPropOwner, unitOfWork);
+                }
 
                 ViewBag.userId = userId;
                 return View(profileVM);
@@ -922,7 +918,12 @@ namespace SS.Controllers
                 var userId = (Guid)Session["userId"];
                 var isUserPropOwner = Session["isUserPropOwner"] != null ? (bool)Session["isUserPropOwner"] : false;
 
-                profileVM = PropertyHelper.PopulateProfileViewModel(userId, isUserPropOwner);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    profileVM = userService.PopulateProfileViewModel(userId, isUserPropOwner, unitOfWork);
+                }
             }
 
             return PartialView("_partialProfile", profileVM);
@@ -940,7 +941,13 @@ namespace SS.Controllers
             if (Session["userId"] != null)
             {
                 var userId = (Guid)Session["userId"];
-                subscriptionVM = PropertyHelper.PopulateSubscriptionViewModel(userId);
+
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    subscriptionVM = subscriptionService.PopulateSubscriptionViewModel(userId, unitOfWork);
+                }
             }
 
             return PartialView("_partialSubscription", subscriptionVM);
@@ -955,14 +962,19 @@ namespace SS.Controllers
         {
             IEnumerable<PaymentViewModel> payments = null;
 
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
-                payments = PropertyHelper.GetPayments(pgTake, pgNo, userId);
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-                ViewBag.pgNo = pgNo;
-                ViewBag.pgTake = pgTake;
-                ViewBag.itemsCount = PropertyHelper.GetPaymentsCount(userId);
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+                    payments = paymentService.GetPayments(pgTake, pgNo, userId, unitOfWork);
+
+                    ViewBag.pgNo = pgNo;
+                    ViewBag.pgTake = pgTake;
+                    ViewBag.itemsCount = paymentService.GetPaymentsCount(userId, unitOfWork);
+                }
             }
 
             return PartialView("_partialPayments", payments);
@@ -978,7 +990,12 @@ namespace SS.Controllers
         {
             if (ModelState.IsValid)
             {
-                return Json(PropertyHelper.UpdateProfile(model), JsonRequestBehavior.AllowGet);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    return Json(userService.UpdateProfile(model, unitOfWork), JsonRequestBehavior.AllowGet);
+                }
             }
             return Json(false, JsonRequestBehavior.AllowGet);
         }
@@ -999,7 +1016,12 @@ namespace SS.Controllers
         {
             if (ModelState.IsValid)
             {
-                return Json(PropertyHelper.MakePayment(model));
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    return Json(paymentService.MakePayment(model, unitOfWork));
+                }
             }
             else
             {
@@ -1014,8 +1036,13 @@ namespace SS.Controllers
 
             if (Session["userId"] != null)
             {
-                var userId = (Guid)Session["userId"];
-                result = PropertyHelper.RemoveSavedProperty(userId, propertyID);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    var userId = (Guid)Session["userId"];
+                    result = propertyService.RemoveSavedProperty(userId, propertyID, unitOfWork);
+                }
             }
 
             return Json(result);
@@ -1026,8 +1053,13 @@ namespace SS.Controllers
         {
             ErrorModel errorModel = new ErrorModel();
 
-            if (Session["userId"] != null)
-                errorModel = PropertyHelper.TogglePropertyAvailability(propertyID);
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                    errorModel = propertyService.TogglePropertyAvailability(propertyID, unitOfWork);
+            }
 
             return Json(errorModel);
         }
@@ -1037,8 +1069,13 @@ namespace SS.Controllers
         {
             bool result = false;
 
-            if (Session["userId"] != null)
-                result = PropertyHelper.RemoveProperty(propertyID);
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                    result = propertyService.RemoveProperty(propertyID, unitOfWork);
+            }
 
             return Json(result);
         }
@@ -1046,10 +1083,15 @@ namespace SS.Controllers
         [HttpGet]
         public ActionResult GetModalSubscriptionChange(Guid subscriptionID)
         {
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                ViewBag.currentSubType = PropertyHelper.GetSubscriptionTypeByUserSubId(subscriptionID);
-                ViewBag.subscriptionTypes = PropertyHelper.GetSubscriptionTypes();
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    ViewBag.currentSubType = subscriptionService.GetSubscriptionTypeByUserSubId(subscriptionID, unitOfWork);
+                    ViewBag.subscriptionTypes = subscriptionService.GetSubscriptionTypes(unitOfWork);
+                }
             }
             return PartialView("_partialModalSubscriptionChange");
         }
@@ -1061,7 +1103,12 @@ namespace SS.Controllers
 
             if (Session["userId"] != null)
             {
-                result = PropertyHelper.ChangeSubscription(subscriptionID, subscriptionType, period);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    result = subscriptionService.ChangeSubscription(subscriptionID, subscriptionType, period, unitOfWork);
+                }
             }
 
             return Json(result);
@@ -1074,8 +1121,13 @@ namespace SS.Controllers
 
             if (Session["userId"] != null)
             {
-                var userId = (Guid)Session["userId"];
-                result = PropertyHelper.RenewSubscription(subscriptionID, userId);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                    var userId = (Guid)Session["userId"];
+
+                    result = subscriptionService.RenewSubscription(subscriptionID, userId, unitOfWork);
+                }
             }
 
             return Json(result);
@@ -1088,8 +1140,13 @@ namespace SS.Controllers
 
             if (Session["userId"] != null)
             {
-                var userId = (Guid)Session["userId"];
-                result = PropertyHelper.CancelSubscription(subscriptionID, userId);
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                    var userId = (Guid)Session["userId"];
+
+                    result = subscriptionService.CancelSubscription(subscriptionID, userId, unitOfWork);
+                }
             }
 
             return Json(result);
@@ -1102,8 +1159,13 @@ namespace SS.Controllers
 
             if (Session["userId"] != null)
             {
-                var userId = (Guid)Session["userId"];
-                requisitions = PropertyHelper.GetRequisitionHistory(userId).ToList();
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                {
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+                    var userId = (Guid)Session["userId"];
+
+                    requisitions = propertyRequisitionService.GetRequisitionHistory(userId, unitOfWork).ToList();
+                }
             }
 
             return PartialView("_RequisitionHistory", requisitions);
@@ -1114,10 +1176,15 @@ namespace SS.Controllers
         {
             var count = 0;
 
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
-                count = PropertyHelper.GetUnseenMsgsCount(userId);
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+                    count = messageService.GetUnseenMsgsCount(userId, unitOfWork);
+                }
             }
 
             return Json(count, JsonRequestBehavior.AllowGet);
@@ -1128,10 +1195,15 @@ namespace SS.Controllers
         {
             var count = 0;
 
-            if (Session["userId"] != null)
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
             {
-                var userId = (Guid)Session["userId"];
-                count = PropertyHelper.GetUnseenReqsCount(userId);
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                if (Session["userId"] != null)
+                {
+                    var userId = (Guid)Session["userId"];
+                    count = propertyRequisitionService.GetUnseenReqsCount(userId, unitOfWork);
+                }
             }
 
             return Json(count, JsonRequestBehavior.AllowGet);

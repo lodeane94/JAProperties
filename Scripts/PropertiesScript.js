@@ -7,7 +7,7 @@ var activeSearchFilterHeight = null;
 var rangeDistanceRadius = null;
 
 //used to display a loading element
-var loadingGifHTML = '<div id="loading-gif" class="loading-gif" class="col-xs-1">'
+var loadingGifHTML = '<div id="loading-gif" class="loading-gif col-xs-1">'
     + '<img src="/Content/ajax-loader-dark.gif" />'
     + '</div>';
 
@@ -750,10 +750,10 @@ $(document).ready(function () {
         if (nearByPropModelRaw != 'null' && nearByPropModelRaw != undefined) {
             nearByPropModel = JSON.parse(nearByPropModelRaw);
         }
-        
+
         if (postBackInfo.SearchType == 'SearchTerm' || postBackInfo.SearchType == null)
             getPropertiesCounts();
-        else if (postBackInfo.SearchType == 'nearByPlaces') 
+        else if (postBackInfo.SearchType == 'nearByPlaces')
             getNearByPropertiesCounts();
     }
 

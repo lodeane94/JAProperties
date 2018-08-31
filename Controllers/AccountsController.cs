@@ -12,12 +12,23 @@ using System.Text;
 using SS.Core;
 using SS.ViewModels;
 using log4net;
+using SS.Services;
 
 namespace SS.Controllers
 {
     public class AccountsController : Controller
     {
         private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PropertyService propertyService;
+        private readonly UserService userService;
+        private readonly SubscriptionService subscriptionService;
+
+        public AccountsController()
+        {
+            propertyService = new PropertyService();
+            userService = new UserService();
+            subscriptionService = new SubscriptionService();
+        }
 
         public ActionResult SignOut()
         {
@@ -121,9 +132,9 @@ namespace SS.Controllers
                 var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(userId);
 
                 Session["userId"] = userId;
-                Session["isUserPropOwner"] = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
-                Session["isUserConsumer"] = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Consumer);
-                Session["isUserTennant"] = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Tennant);
+                Session["isUserPropOwner"] = userService.IsUserOfType(userTypes, EFPConstants.UserType.PropertyOwner);
+                Session["isUserConsumer"] = userService.IsUserOfType(userTypes, EFPConstants.UserType.Consumer);
+                Session["isUserTennant"] = userService.IsUserOfType(userTypes, EFPConstants.UserType.Tennant);
             }
         }
 
@@ -140,7 +151,7 @@ namespace SS.Controllers
         /// <param name="confirmPassword"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SignUp(User user, String password, String confirmPassword)
+        public JsonResult SignUp(User user, String areaCode, String password, String confirmPassword)
         {
             ErrorModel errorModel = new ErrorModel();
             var isUserCreated = false;
@@ -149,42 +160,39 @@ namespace SS.Controllers
             {
                 using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
+                    var unitOfWork = new UnitOfWork(dbCtx);
+
                     try
                     {
                         if (!password.Equals(confirmPassword))
                             throw new Exception("The fields Password and Confirm Password are not equal");
 
-                        var unitOfWork = new UnitOfWork(dbCtx);
-
                         var doesUserExist = unitOfWork.User.DoesUserExist(user.Email);
 
                         if (!doesUserExist)
                         {
-                            user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Consumer, "", user.Email, user.FirstName,
-                                   user.LastName, user.CellNum, DateTime.MinValue);
+                            user = userService.CreateUser(unitOfWork, EFPConstants.UserType.Consumer, "", user.Email, user.FirstName,
+                                   user.LastName, user.CellNum, areaCode, DateTime.MinValue);
 
-                            PropertyHelper.createUserAccount(user.Email, password);
+                            userService.CreateUserAccount(user.Email, password);
 
                             isUserCreated = true;
                         }
                         else
                             throw new Exception("This email address already exists");
 
-                        if (PropertyHelper.SendUserCreatedEmail(user, false))
-                        {
-                            unitOfWork.save();
-                        }
-                        else
+                        unitOfWork.save();
+
+                        if (!propertyService.SendUserCreatedEmail(user, false))
                             throw new Exception("Unable to send user created email");
                     }
                     catch (Exception ex)
                     {
                         if (!String.IsNullOrEmpty(user.Email) && isUserCreated)
-                            PropertyHelper.RemoveUserAccount(user.Email);
+                            userService.RemoveUserAccount(unitOfWork,user.Email);
 
                         errorModel.AddErrorMessage(ex.Message);
                     }
-
                 }
             }
             else
@@ -216,7 +224,12 @@ namespace SS.Controllers
             else
                 ViewBag.layout = "~/Views/Shared/_Layout.cshtml";
 
-            model.SubscriptionTypes = PropertyHelper.GetSubscriptionTypes();
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                var unitOfWork = new UnitOfWork(dbCtx);
+
+                model.SubscriptionTypes = subscriptionService.GetSubscriptionTypes(unitOfWork);
+            }
 
             return View(model);
         }
@@ -229,11 +242,17 @@ namespace SS.Controllers
 
             if (ModelState.IsValid)
             {
-                if (Session["userId"] != null)
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    userId = (Guid)Session["userId"];
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    if (Session["userId"] != null)
+                    {
+                        userId = (Guid)Session["userId"];
+                    }
+
+                    propertyService.AdvertiseProperty(model, userId, errorModel, unitOfWork);
                 }
-                PropertyHelper.AdvertiseProperty(model, userId, errorModel);
             }
             else
             {
@@ -326,17 +345,17 @@ namespace SS.Controllers
                 if (enrolKey.Equals(model.EnrolmentKey))
                 {
 
-                    PropertyHelper.createRolesIfNotExist();
+                    userService.CreateRolesIfNotExist();
 
                     var user = requisition.User;
                     var property = requisition.Property;
                     //assigning user as tennant if he/she isn't
                     var userTypes = unitOfWork.UserTypeAssoc.GetUserTypesByUserID(user.ID);
-                    bool isUserTennant = PropertyHelper.isUserOfType(userTypes, EFPConstants.UserType.Tennant);
+                    bool isUserTennant = userService.IsUserOfType(userTypes, EFPConstants.UserType.Tennant);
 
                     if (!isUserTennant)
                     {
-                        PropertyHelper.associateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.Tennant);
+                        userService.AssociateUserWithUserType(unitOfWork, user.ID, EFPConstants.UserType.Tennant);
                     }
 
                     Tennant tennant = new Tennant()
@@ -377,10 +396,10 @@ namespace SS.Controllers
 
             if (enrolKey.Equals(model.EnrolmentKey))
             {
-                var user = PropertyHelper.createUser(unitOfWork, EFPConstants.UserType.Tennant, "", model.Email, model.FirstName,
-                    model.LastName, model.CellNum, DateTime.Parse(model.DOB));
+                var user = userService.CreateUser(unitOfWork, EFPConstants.UserType.Tennant, "", model.Email, model.FirstName,
+                    model.LastName, model.CellNum, model.AreaCode, DateTime.Parse(model.DOB));
 
-                PropertyHelper.createUserAccount(EFPConstants.UserType.Tennant, model.Password);
+                userService.CreateUserAccount(EFPConstants.UserType.Tennant, model.Password);
 
                 var propertyPrice = unitOfWork.Property.Get(model.PropertyID).Price;
 
@@ -418,9 +437,14 @@ namespace SS.Controllers
 
             if (ModelState.IsValid)
             {
-                if (PropertyHelper.RecoverPassword(email, errorModel))
+                using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                 {
-                    TempData["success"] = "An email was sent to you containing a access code to reset your password. Check your spam emails if you do not see our email";
+                    UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                    if (userService.RecoverPassword(email, errorModel, unitOfWork))
+                    {
+                        TempData["success"] = "An email was sent to you containing a access code to reset your password. Check your spam emails if you do not see our email";
+                    }
                 }
             }
             else
@@ -455,13 +479,18 @@ namespace SS.Controllers
                 {
                     if (password.Length > 4)
                     {
-                        if (PropertyHelper.ResetPassword(userId, password, errorModel))
+                        using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
                         {
-                            TempData["pwdChangedSuccess"] = "Your password was changed successfully";
-                            Session["accessCodeValid"] = null;
+                            UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                            if (userService.ResetPassword(userId, password, errorModel, unitOfWork))
+                            {
+                                TempData["pwdChangedSuccess"] = "Your password was changed successfully";
+                                Session["accessCodeValid"] = null;
+                            }
+                            else
+                                errorModel.AddErrorMessage("An error occurred");
                         }
-                        else
-                            errorModel.AddErrorMessage("An error occurred");
                     }
                     else
                         errorModel.AddErrorMessage("The password length should be at least 5 characters");
@@ -487,10 +516,15 @@ namespace SS.Controllers
             {
                 if (!string.IsNullOrEmpty(accessCode))
                 {
-                    if (PropertyHelper.ValidateAccessCode(userId, accessCode))
-                        Session["accessCodeValid"] = 4;
-                    else
-                        errorModel.AddErrorMessage("This access code is not valid or has expired");
+                    using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+                    {
+                        UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
+
+                        if (userService.ValidateAccessCode(userId, accessCode, unitOfWork))
+                            Session["accessCodeValid"] = 4;
+                        else
+                            errorModel.AddErrorMessage("This access code is not valid or has expired");
+                    }
                 }
                 else
                     errorModel.AddErrorMessage("Access code cannot be null");
@@ -508,9 +542,14 @@ namespace SS.Controllers
         [HttpGet]
         public JsonResult SubscriptionCheck(String email)
         {
-            var result = PropertyHelper.SubscriptionCheck(email);
+            using (EasyFindPropertiesEntities dbCtx = new EasyFindPropertiesEntities())
+            {
+                UnitOfWork unitOfWork = new UnitOfWork(dbCtx);
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+                var result = subscriptionService.SubscriptionCheck(email, unitOfWork);
+
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }

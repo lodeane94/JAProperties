@@ -1,4 +1,7 @@
-﻿using System;
+﻿using log4net;
+using SS.Models;
+using SS.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +11,14 @@ namespace SS.ViewModels.RazorHelperModels
 {
     public class PropertyViewHelper
     {
+        private readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PaymentService paymentService;
+
+        public PropertyViewHelper()
+        {
+            paymentService = new PaymentService();
+        }
+
         public static List<SelectListItem> GenderPreferenceCode = new List<SelectListItem>()
         {
             new SelectListItem{ Text = "Gender Preference", Value="na", Selected = true, Disabled = true},
@@ -23,11 +34,17 @@ namespace SS.ViewModels.RazorHelperModels
             new SelectListItem{ Text = "No", Value="false"}
         };
 
-        public static List<SelectListItem> GetPaymentMethods()
+        /// <summary>
+        /// Retrieves the payment methods and populates an selectlistitem
+        /// object
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <returns></returns>
+        public List<SelectListItem> GetPaymentMethods(UnitOfWork unitOfWork)
         {
             List<SelectListItem> paymentMethodItems = new List<SelectListItem>();
-            var methods = Core.PropertyHelper.GetPaymentMethods();
 
+            var methods = paymentService.GetPaymentMethods(unitOfWork);
             SelectListItem defaultItem = new SelectListItem() { Text = "Select Payment Method", Value = "", Selected = true, Disabled = true };
             paymentMethodItems.Add(defaultItem);
 

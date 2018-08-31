@@ -36,6 +36,7 @@ namespace SS.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string CellNum { get; set; }
+        public string AreaCode { get; set; }
         public string Email { get; set; }
         public String DOB { get; set; }
         /*  {

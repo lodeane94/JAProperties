@@ -12,7 +12,7 @@ var loadingGifLocation = null;//element at which the loading gif will be display
 var errMessages = [];//array of error messages related to the submission of a property 
 
 //used to display a loading element
-var loadingGifHTML = '<div id="loading-gif" class="col-xs-3">'
+var loadingGifHTML = '<div id="loading-gif" class="loading-gif col-xs-1">'
     + '<img src="/Content/ajax-loader-dark.gif" />'
     + '</div>';
 
@@ -1105,7 +1105,7 @@ function SubscriptionCheck(email) {
     }
 
     //ensures that only numbers are entered into the MinPrice and MaxPrice fields
-    $(document.body).on('keyup', '#cellnum, #price, #securitydeposit, #StreetNumber, #occupancy, #TotAvailableBathroom, #TotRooms, #area, #cellNum', function (e) {
+    $(document.body).on('keyup', '#cellnum, #price, #securitydeposit, #StreetNumber, #occupancy, #TotAvailableBathroom, #TotRooms, #area, #cellNum, #areacode', function (e) {
         //if the letter is not digit then display error and don't type anything
         /*if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
             return false;
